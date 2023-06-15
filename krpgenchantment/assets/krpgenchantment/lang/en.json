@@ -1,0 +1,24 @@
+{
+  "block-krpg-enchanting-table": "Enchanting Table",
+
+  "item-krpg-reagent-temporal": "Temporal Reagent",
+  "item-krpg-reagent-lightning": "Lightning Reagent",
+  "item-krpg-sword-earth-admin": "Sword of Earth",
+  "item-krpg-sword-fire-admin": "Sword of Fire",
+  "item-krpg-sword-frost-admin": "Sword of Frost",
+  "item-krpg-sword-lightning-admin": "Sword of Lightning",
+
+  "krpg-enchanted": "Enchanted",
+  "krpg-enchanted-chilling": "Chilling",
+  "krpg-enchanted-harming": "Harming",
+  "krpg-enchanted-healing": "Healing",
+  "krpg-enchanted-ignite": "Igniting",
+  "krpg-enchanted-kb": "Knockback",
+  "krpg-enchanted-lightning": "Call Lightning",
+  "krpg-enchanted-pit": "Pit",
+
+  "krpg-magicdamage-arcane": "Arcane Damage",
+
+  "craftinginfo-enchanting-title": "Enchanting",
+  "craftinginfo-enchanting-text": "You can enchant things! Wow!"
+}
