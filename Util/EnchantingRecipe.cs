@@ -63,6 +63,8 @@ namespace KRPGLib.Enchantment
 
         public EnchantingRecipeIngredient[] resolvedIngredients;
 
+        IWorldAccessor world;
+
         /// <summary>
         /// Returns an Enchanted ItemStack
         /// </summary>
@@ -90,6 +92,8 @@ namespace KRPGLib.Enchantment
         /// <returns>True on successful resolve</returns>
         public bool ResolveIngredients(IWorldAccessor world)
         {
+            this.world = world;
+
             // HARDCODED TO 2 INGREDIENTS CURRENTLY
             // TODO: FIX THIS BULLSHIT
             string code = "";
@@ -289,13 +293,46 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public bool Matches(ItemSlot inputSlot, ItemSlot reagentSlot)
         {
-            // Verify Target
-            if (inputSlot.Itemstack?.Collectible.Code.ToShortString() != resolvedIngredients[1].Code.ToShortString()) return false;
-            // Verify Reagent
-            if (reagentSlot.Itemstack?.Collectible.Code.ToShortString() != resolvedIngredients[0].Code.ToShortString()) return false;
+            // Null Check
+            if (inputSlot?.Itemstack == null || reagentSlot?.Itemstack == null) return false;
 
+            // Check Reagent
+            if (reagentSlot?.Itemstack != null)
+            {
+                if (resolvedIngredients[0].IsWildCard)
+                {
+                    bool foundw = false;
+                    foundw =
+                            resolvedIngredients[0].Type == reagentSlot.Itemstack.Class &&
+                            WildcardUtil.Match(resolvedIngredients[0].Code, reagentSlot.Itemstack.Collectible.Code, resolvedIngredients[0].AllowedVariants) &&
+                            reagentSlot.Itemstack.StackSize >= resolvedIngredients[0].Quantity
+                        ;
+                    if (!foundw) return false;
+                }
+                else if (!resolvedIngredients[0].ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) return false;
+            }
+
+            // Check Input/Target
+            if (inputSlot?.Itemstack != null)
+            {
+                if (resolvedIngredients[1].IsWildCard)
+                {
+                    inputSlot.Itemstack.Collectible.WildCardMatch(resolvedIngredients[1].Code);
+
+                    bool foundw = false;
+                    foundw =
+                            resolvedIngredients[1].Type == inputSlot.Itemstack.Class &&
+                            WildcardUtil.Match(resolvedIngredients[1].Code, inputSlot.Itemstack.Collectible.Code, resolvedIngredients[1].AllowedVariants) &&
+                            inputSlot.Itemstack.StackSize >= resolvedIngredients[1].Quantity
+                        ;
+                    if (!foundw) return false;
+                }
+                else if (!resolvedIngredients[1].ResolvedItemstack.Satisfies(inputSlot.Itemstack)) return false;
+            }
+            
             return true;
         }
+
         /// <summary>
         /// Returns only the first matching itemstack, there may be multiple
         /// </summary>

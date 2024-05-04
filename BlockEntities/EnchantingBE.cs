@@ -136,13 +136,11 @@ namespace KRPGLib.Enchantment
         }
         private void TickEnchanting(float dt)
         {
-            //Api.Logger.Event("Enchanter {0} is ticking", Block.FirstCodePart() + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z);
             if (CurrentRecipe == null)
                 GetMatchingEnchantingRecipe();
 
             if (CanEnchant && nowEnchanting)
             {
-                Api.Logger.Event("Ticking an enchantment.");
 
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
@@ -204,8 +202,12 @@ namespace KRPGLib.Enchantment
         {
             for (int i = 0; i < EnchantingRecipeSystem.EnchantingRecipes.Count; i++)
             {
+                Api.World.Logger.Event("Matching Enchanting Recipe: " + EnchantingRecipeSystem.EnchantingRecipes[i].Name);
+
                 if (EnchantingRecipeSystem.EnchantingRecipes[i].Matches(InputSlot, ReagentSlot))
                 {
+                    Api.World.Logger.Event("Matched Enchanting Recipe: " + EnchantingRecipeSystem.EnchantingRecipes[i].Name);
+
                     CurrentRecipe = EnchantingRecipeSystem.EnchantingRecipes[i].Clone();
 
                     // inventory.Slots[1].Itemstack = CurrentRecipe.OutStack(InputSlot.Itemstack).Clone();
@@ -213,6 +215,8 @@ namespace KRPGLib.Enchantment
                     return CurrentRecipe;
                 }
             }
+
+            CurrentRecipe = null;
             return null;
         }
         public string GetOutputText()

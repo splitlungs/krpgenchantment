@@ -63,7 +63,8 @@ namespace KRPGLib.Enchantment
                     if (ebbt == null)
                         return;
 
-                    ebbt.CurBodyTemperature = -40f;
+                    float temp = (itemslot.Itemstack.Attributes.GetInt("chilling", 0) * -10f);
+                    ebbt.CurBodyTemperature = temp;
                 }
 
                 //if (eb.EnchantProps.Harm > 0)
