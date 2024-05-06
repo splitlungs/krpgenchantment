@@ -18,9 +18,6 @@ namespace KRPGLib.Enchantment
     {
         ICoreAPI Api;
         
-        /// <summary>
-        /// List of all loaded Enchanting recipes
-        /// </summary>
         public override void Start(ICoreAPI api)
         {
             base.Start(api);
@@ -29,8 +26,6 @@ namespace KRPGLib.Enchantment
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));
             api.RegisterBlockEntityClass("EnchantingBE", typeof(EnchantingBE));
-            // EnchantingRecipeSystem ers = api.ModLoader.GetModSystem<EnchantingRecipeSystem>();
-            // ers.LoadEnchantingRecipes(api);
             DoHarmonyPatch(api);
             Api.Logger.Event("KRPG Enchantment loaded.");
         }
@@ -44,20 +39,5 @@ namespace KRPGLib.Enchantment
         }
 
         private static Harmony harmony;
-
-        private void TestAttributes()
-        {
-            // Setting and getting values
-            TreeAttribute tree;
-            tree = new TreeAttribute();
-
-            float someValue = 0.35f;
-            string someKey = "valueKey";
-
-            // Set the value
-            tree.SetFloat(someKey, someValue);
-            // Retrieve the value
-            tree.GetFloat(someKey);
-        }
     }
 }

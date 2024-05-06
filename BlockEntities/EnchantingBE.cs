@@ -22,6 +22,7 @@ namespace KRPGLib.Enchantment
         public int msEnchantTick = 3000;
         public double inputEnchantTime;
         public double prevInputEnchantTime;
+        public double maxEnchantTime = 1;
         public bool nowEnchanting = false;
         public bool invLocked = false;
         public ItemStack[] lockedInv = new ItemStack[3];
@@ -46,13 +47,14 @@ namespace KRPGLib.Enchantment
                 return 0;
             }
         }
+        /*
         public virtual double maxEnchantHours()
         {
             double time = 1;
             //double time = 3600000;
             //if (CurrentRecipe != null) { time = CurrentRecipe.processingHours * 3600000; }
             return time;
-        }
+        }*/
         public virtual string DialogTitle
         {
             get { return Lang.Get("krpgenchantment:block-enchanting-table"); }
@@ -97,6 +99,8 @@ namespace KRPGLib.Enchantment
             // Can we listen only when Enchanting? Maybe use an event?
             if (api.Side == EnumAppSide.Server)
                 RegisterGameTickListener(TickEnchanting, 3000);
+
+            GetMatchingEnchantingRecipe();
         }
         public override void CreateBehaviors(Block block, IWorldAccessor worldForResolve)
         {
@@ -139,24 +143,27 @@ namespace KRPGLib.Enchantment
             if (CurrentRecipe == null)
                 GetMatchingEnchantingRecipe();
 
+            if (clientDialog != null)
+                clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+
             if (CanEnchant && nowEnchanting)
             {
 
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
-                if (hours >= maxEnchantHours())
+                if (hours >= maxEnchantTime)
                 {
                     enchantInput();
                     inputEnchantTime = 0;
                     nowEnchanting = false;
 
-                    Api.Logger.Event("Performaned an enchantment!");
+                    // Api.Logger.Event("Performaned an enchantment!");
                 }
                 MarkDirty();
 
                 
                 if (clientDialog != null) 
-                    clientDialog.Update(inputEnchantTime, maxEnchantHours(), GetOutputText(), Api);
+                    clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
             }
         }
         private bool CanEnchant
@@ -172,9 +179,11 @@ namespace KRPGLib.Enchantment
         }
         private void OnSlotModified(int slotid)
         {
+            GetMatchingEnchantingRecipe();
+
             if (Api is ICoreClientAPI)
             {
-                clientDialog.Update(inputEnchantTime, maxEnchantHours(), GetOutputText(), Api);
+                clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
             }
 
             if (slotid == 0 || slotid > 1)
@@ -202,14 +211,10 @@ namespace KRPGLib.Enchantment
         {
             for (int i = 0; i < EnchantingRecipeSystem.EnchantingRecipes.Count; i++)
             {
-                Api.World.Logger.Event("Matching Enchanting Recipe: " + EnchantingRecipeSystem.EnchantingRecipes[i].Name);
-
                 if (EnchantingRecipeSystem.EnchantingRecipes[i].Matches(InputSlot, ReagentSlot))
                 {
-                    Api.World.Logger.Event("Matched Enchanting Recipe: " + EnchantingRecipeSystem.EnchantingRecipes[i].Name);
-
                     CurrentRecipe = EnchantingRecipeSystem.EnchantingRecipes[i].Clone();
-
+                    maxEnchantTime = CurrentRecipe.processingHours;
                     // inventory.Slots[1].Itemstack = CurrentRecipe.OutStack(InputSlot.Itemstack).Clone();
 
                     return CurrentRecipe;
@@ -221,7 +226,7 @@ namespace KRPGLib.Enchantment
         }
         public string GetOutputText()
         {
-            GetMatchingEnchantingRecipe();
+            // GetMatchingEnchantingRecipe();
             string outText = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
 
             if (CurrentRecipe != null)
@@ -231,10 +236,11 @@ namespace KRPGLib.Enchantment
         }
         protected void toggleInventoryDialogClient(IPlayer byPlayer)
         {
+            GetMatchingEnchantingRecipe();
             clientDialog = new GuiDialogEnchantingBE(DialogTitle, Inventory, Pos, Api as ICoreClientAPI);
             clientDialog.TryOpen();
             clientDialog.OnClosed += () => clientDialog = null;
-            clientDialog.Update(inputEnchantTime, maxEnchantHours(), GetOutputText(), Api);
+            clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
 
             if (clientDialog == null)
             {
@@ -262,7 +268,16 @@ namespace KRPGLib.Enchantment
         {
             base.FromTreeAttributes(tree, worldForResolving);
 
+            Inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
+            if (Api != null)
+            {
+                Inventory.AfterBlocksLoaded(Api.World);
+            }
+
             nowEnchanting = tree.GetBool("nowEnchanting");      // Update Enchanting status before we generate the new mesh!
+            inputEnchantTime = tree.GetDouble("inputEnchantTime");
+            prevInputEnchantTime = tree.GetDouble("prevInputEnchantTime");
+
             if (Api?.Side == EnumAppSide.Client)
             {
                 // currentMesh = GenMesh();
@@ -270,28 +285,48 @@ namespace KRPGLib.Enchantment
                 // invDialog?.UpdateContents();
             }
 
-            inputEnchantTime = tree.GetDouble("inputEnchantTime");
-
             if (Api != null)
             {
                 GetMatchingEnchantingRecipe();
             }
         }
+        void SetDialogValues(ITreeAttribute dialogTree)
+        {
+
+            dialogTree.SetDouble("inputEnchantTime", inputEnchantTime);
+            dialogTree.SetDouble("maxEnchantTime", maxEnchantTime);
+            dialogTree.SetBool("nowEnchanting", nowEnchanting);
+            dialogTree.SetString("outputText", GetOutputText());
+        }
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
+            ITreeAttribute invtree = new TreeAttribute();
+            Inventory.ToTreeAttributes(invtree);
+            tree["inventory"] = invtree;
 
-            if (Block != null) tree.SetString("forBlockCode", Block.Code.ToShortString());
+
+            // if (Block != null) tree.SetString("forBlockCode", Block.Code.ToShortString());
             
             tree.SetBool("nowEnchanting", nowEnchanting);
             tree.SetDouble("inputEnchantTime", inputEnchantTime);
+            tree.SetDouble("prevInputEnchantTime", prevInputEnchantTime);
+
         }
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel.SelectionBoxIndex == 1) return false;
 
+            /*if (Api.Side == EnumAppSide.Client)
+                toggleInventoryDialogClient(byPlayer);*/
+
+            GetMatchingEnchantingRecipe();
+            // if (clientDialog != null)
+                // clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+
             if (Api.World is IServerWorldAccessor)
             {
+
                 ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
                     (IServerPlayer)byPlayer,
                     Pos.X, Pos.Y, Pos.Z,
@@ -299,12 +334,13 @@ namespace KRPGLib.Enchantment
                     null
                 );
 
-                byPlayer.InventoryManager.OpenInventory(inventory);
-                MarkDirty();
+                // byPlayer.InventoryManager.OpenInventory(inventory);
+                // MarkDirty();
             }
 
             return true;
         }
+
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
             if (packetid < 1000)
@@ -322,10 +358,19 @@ namespace KRPGLib.Enchantment
                 player.InventoryManager?.CloseInventory(Inventory);
             }
 
+            if (packetid == (int)EnumBlockEntityPacketId.Open && (clientDialog == null || !clientDialog.IsOpened()))
+            {
+                clientDialog = new GuiDialogEnchantingBE(DialogTitle, Inventory, Pos, Api as ICoreClientAPI);
+                clientDialog.TryOpen();
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+            }
+
+            /*
             if (packetid == (int)EnumBlockEntityPacketId.Open)
             {
                 player.InventoryManager?.OpenInventory(Inventory);
-            }
+            }*/
 
             if (packetid == 1337)
             {
@@ -339,7 +384,7 @@ namespace KRPGLib.Enchantment
                 clientDialog = new GuiDialogEnchantingBE(DialogTitle, Inventory, Pos, Api as ICoreClientAPI);
                 clientDialog.TryOpen();
                 clientDialog.OnClosed += () => clientDialog = null;
-                clientDialog.Update(inputEnchantTime, maxEnchantHours(), GetOutputText(), Api);
+                clientDialog.Update(inputEnchantTime, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
             }
 
             if (packetid == (int)EnumBlockEntityPacketId.Close)
