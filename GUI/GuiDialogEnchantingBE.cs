@@ -21,11 +21,16 @@ namespace KRPGLib.Enchantment
         bool nowEnchanting;
 
         // protected override double FloatyDialogPosition => 0.75;
-
-        public GuiDialogEnchantingBE(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi)
+        //public GuiDialogEnchantingBE(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi)
+        public GuiDialogEnchantingBE(string DialogTitle, double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi)
             : base(DialogTitle, Inventory, BlockEntityPosition, capi)
         {
             if (IsDuplicate) return;
+
+            this.outputText = outputText;
+            this.inputEnchantTime = inputProcessTime;
+            this.maxEnchantTime = maxProcessTime;
+            this.nowEnchanting = isEnchanting;
 
             capi.World.Player.InventoryManager.OpenInventory(Inventory);
 
@@ -43,8 +48,6 @@ namespace KRPGLib.Enchantment
             {
                 hoveredSlot = null;
             }
-
-
 
             ElementBounds reagentSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, 30 + 45, 6, 1);
             reagentSlotBounds.fixedHeight += 10;
@@ -64,24 +67,23 @@ namespace KRPGLib.Enchantment
             bgBounds.BothSizing = ElementSizing.FitToChildren;
             //bgBounds.WithChildren(quernBounds);
 
-            // 3. Finally Dialog
+            // 3. Dialog
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.RightMiddle)
                 .WithFixedAlignmentOffset(-GuiStyle.DialogToScreenPadding, 0);
 
-            ClearComposers();
-
-            // I may or may not have added this shit
-            string ot = "";
+            // 4. Enchanting Recipe Data
+            string ot = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
             if (outputText != null)
             { ot = outputText; }
+
+            ClearComposers();
 
             SingleComposer = capi.Gui
                 .CreateCompo("enchantingtablebe" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(DialogTitle, OnTitleBarClose)
                 .BeginChildElements(bgBounds)
-                    //.AddSmallButton(Lang.Get("krpgenchantment:krpg-enchant"), onEnchantClick, enchantButton, EnumButtonStyle.Normal)
-                    .AddToggleButton(Lang.Get("krpgenchantment:krpg-enchant"), CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), onEnchantToggle, enchantButton)
+                    .AddToggleButton(Lang.Get("krpgenchantment:krpg-enchant"), CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), onEnchantToggle, enchantButton, "enchantToggle")
                     .AddDynamicCustomDraw(arrowBounds, OnBgDraw, "symbolDrawer")
                     .AddDynamicText(ot, CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), ElementBounds.Fixed(0, 30, 210, 45), "outputText")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 0 }, inputSlotBounds, "inputSlot")
@@ -90,6 +92,10 @@ namespace KRPGLib.Enchantment
                 .EndChildElements()
                 .Compose()
             ;
+
+            SingleComposer.GetDynamicText("outputText").SetNewText(outputText);
+            SingleComposer.GetToggleButton("enchantToggle").SetValue(nowEnchanting);
+            SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
 
             lastRedrawMs = capi.ElapsedMilliseconds;
 
@@ -105,55 +111,30 @@ namespace KRPGLib.Enchantment
             capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337);
         }
 
-        
-
         public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, ICoreAPI api)
         {
-            api.Logger.Event("Updating GUIDialogEnchantingBE");
-
-            // From the Recipe
             this.outputText = outputText;
             this.inputEnchantTime = inputProcessTime;
             this.maxEnchantTime = maxProcessTime;
             this.nowEnchanting = isEnchanting;
             
-            if (!IsOpened() || !isEnchanting) return;
-            
-            if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
+            // if (!IsOpened()) return;
+            SingleComposer.GetDynamicText("outputText").SetNewText(outputText);
+            SingleComposer.GetToggleButton("enchantToggle").SetValue(isEnchanting);
 
-            /*
+            if (!isEnchanting) return;
+
             if (capi.ElapsedMilliseconds - lastRedrawMs > 3000)
             {
                 if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
                 lastRedrawMs = capi.ElapsedMilliseconds;
-            }*/
-            //SingleComposer.GetDynamicText("outputText").SetNewText(outputText);            
+            }
         }
 
         private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
         {
             double top = 30;
 
-            // 2. Arrow Right
-            ctx.Save();
-            Matrix m = ctx.Matrix;
-            m.Translate(GuiElement.scaled(63), GuiElement.scaled(top + 2));
-            m.Scale(GuiElement.scaled(0.6), GuiElement.scaled(0.6));
-            ctx.Matrix = m;
-            capi.Gui.Icons.DrawArrowRight(ctx, 2);
-
-            double cookingRel = inputEnchantTime / maxEnchantTime;
-            ctx.Rectangle(5, 0, 125 * cookingRel, 100);
-            ctx.Clip();
-            LinearGradient gradient = new LinearGradient(0, 0, 200, 0);
-            gradient.AddColorStop(0, new Color(0, 0.4, 0, 1));
-            gradient.AddColorStop(1, new Color(0.2, 0.6, 0.2, 1));
-            ctx.SetSource(gradient);
-            capi.Gui.Icons.DrawArrowRight(ctx, 0, false, false);
-            gradient.Dispose();
-            ctx.Restore();
-
-            /*
             // Arrow Right
             ctx.Save();
             Matrix m = ctx.Matrix;
@@ -162,8 +143,7 @@ namespace KRPGLib.Enchantment
             ctx.Matrix = m;
             capi.Gui.Icons.DrawArrowRight(ctx, 2);
 
-            double dx = inputProcessTime / maxProcessTime;
-
+            double dx = inputEnchantTime / maxEnchantTime;
 
             ctx.Rectangle(GuiElement.scaled(5), 0, GuiElement.scaled(125 * dx), GuiElement.scaled(100));
             ctx.Clip();
@@ -173,22 +153,7 @@ namespace KRPGLib.Enchantment
             ctx.SetSource(gradient);
             capi.Gui.Icons.DrawArrowRight(ctx, 0, false, false);
             gradient.Dispose();
-            ctx.Restore();*/
-        }
-
-        private bool onEnchantClick()
-        {
-            EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
-            if (enchanter == null || enchanter.invLocked)
-            {
-                //capi.Event.EnqueueMainThreadTask(enchanter.StopEnchanting, "stopenchanting"); 
-                return true;
-            }
-            // enchanter.IsEnchanting(capi.World.Player);
-            
-            // capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337);
-            // capi.Event.EnqueueMainThreadTask(enchanter.BeginEnchanting, "beginenchanting");
-            return true;
+            ctx.Restore();
         }
 
         private void OnInventorySlotModified(int slotid)
@@ -211,7 +176,7 @@ namespace KRPGLib.Enchantment
         {
             base.OnGuiOpened();
             Inventory.SlotModified += OnInventorySlotModified;
-            SetupDialog();
+            // SetupDialog();
         }
 
         public override void OnGuiClosed()

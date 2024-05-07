@@ -89,10 +89,9 @@ namespace KRPGLib.Enchantment
             enchanter = enchantingTable;
             stackNum = num;
         }
-
         public override bool CanHold(ItemSlot sourceSlot)
         {
-            if (enchanter.invLocked) return false;
+            // if (enchanter.invLocked) return false;
 
             return base.CanHold(sourceSlot);
         }
@@ -153,6 +152,7 @@ namespace KRPGLib.Enchantment
         }
         protected override void ActivateSlotRightClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {
+            /*
             if (sourceSlot.Empty)
             {
                 base.ActivateSlotRightClick(sourceSlot, ref op);
@@ -190,7 +190,7 @@ namespace KRPGLib.Enchantment
             }
 
             if (sourceSlot.Itemstack?.ItemAttributes?["contentItem2BlockCodes"].Exists == true || sourceSlot.Itemstack?.ItemAttributes?["contentItemCode"].AsString() != null) return;
-
+            */
             base.ActivateSlotRightClick(sourceSlot, ref op);
         }
     }
