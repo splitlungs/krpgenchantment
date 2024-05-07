@@ -1,12 +1,10 @@
 # krpgenchantment
-Warning: This is a Work In Progress 
+Warning: This is a Work In Progress 
 Expect lots of game-breaking changes as development continues.
-This is only a placeholder until the mod is completed.
-If you use the mod right now, it's your fault.
+You have been warned.
 
-Requires KRPGLib.
+Requires KRPGLib
 
- 
 
 This mod aims to add a "Minecraft-like" style of Enchanting system.
 
