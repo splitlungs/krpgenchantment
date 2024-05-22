@@ -1,0 +1,78 @@
+﻿using System;
+using System.Linq;
+using System.Text;
+using HarmonyLib;
+using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.Server;
+
+namespace KRPGLib.Enchantment
+{
+    [HarmonyPatch(typeof(CollectibleObject))]
+    internal class CollectibleObject_Patch
+    {
+        [HarmonyPatch("GetHeldItemInfo")]
+        public static void Postfix(CollectibleObject __instance, ItemSlot inSlot, StringBuilder dsc)
+        {
+            // Sanity check. Make sure your object has the Enchantment Behavior before proceeding.
+            if (__instance.HasBehavior<EnchantmentBehavior>() != true)
+                return;
+
+            //JsonObject attributes = __instance.Attributes;
+
+            EnchantmentBehavior eb = __instance.GetBehavior<EnchantmentBehavior>();
+            // eb.EnchantProps.LightVal = 1f;
+            eb.SetAttributes(inSlot.Itemstack);
+
+            // Check Attributes
+            // if (eb.EnchantProps.EnchantableVal == true)
+            if (inSlot.Itemstack.Attributes.GetBool(eb.EnchantProps.Enchantable, false) == true)
+                dsc.AppendLine(string.Format("<font color=\"green\">" + Lang.Get("krpgenchantment:krpg-enchantable") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.ChillingID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-chilling") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.HarmID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-harming") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.HealID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-healing") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.IgniteID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-igniting") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.KnockbackID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-knockback") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.LightID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-light") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.LightningID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-lightning") + "</font>"));
+            if (inSlot.Itemstack.Attributes.GetFloat(eb.EnchantProps.PitID, 0f) > 0)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:krpg-enchantment-pit") + "</font>"));
+        }
+        
+        // public virtual void OnAttackingWith(IWorldAccessor world, Entity byEntity, Entity attackedEntity, ItemSlot itemslot);
+        [HarmonyPatch("OnAttackingWith")]
+        public static void Postfix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, Entity attackedEntity, ItemSlot itemslot)
+        {
+            // Sanity check. Make sure your object has the Enchantment Behavior before proceeding.
+            if (__instance.HasBehavior<EnchantmentBehavior>() != true)
+                return;
+
+            // JsonObject attributes = __instance.Attributes;
+
+            EnchantmentBehavior eb = __instance.GetBehavior<EnchantmentBehavior>();
+            if (eb.EnchantProps.ChillingVal > 0)
+                eb.ChillEntity(attackedEntity);
+            //if (eb.EnchantProps.Harm > 0)
+            //if (eb.EnchantProps.Heal > 0)
+            if (eb.EnchantProps.IgniteVal > 0)
+                eb.IgniteEntity(attackedEntity);
+            //if (eb.EnchantProps.Knockback > 0)
+            //if (eb.EnchantProps.Light > 0)
+            if (eb.EnchantProps.LightningVal > 0)
+                eb.CallLightning(world, attackedEntity.SidedPos.XYZ);
+            if (eb.EnchantProps.PitVal > 0)
+                eb.CreatePit(attackedEntity.ServerPos, byEntity, (int)eb.EnchantProps.PitVal, (int)eb.EnchantProps.PitVal);
+
+            //itemslot.Itemstack.Attributes.SetFloat(eb.EnchantProps.HarmID, 0);
+        }
+    }
+}

@@ -1,0 +1,317 @@
+﻿using Cairo;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
+using Vintagestory.GameContent;
+
+namespace KRPGLib.Enchantment
+{
+    public class EnchantingBE : BlockEntityOpenableContainer
+    {
+        GuiDialogEnchantingBE clientDialog;
+        EnchantingInventory inventory;
+        public int msEnchantTime = 3000;
+        public double inputEnchantTime;
+        public double prevInputEnchantTime;
+        public bool nowEnchanting = false;
+        public bool invLocked = false;
+        public ItemStack[] lockedInv = new ItemStack[3];
+        public EnchantingRecipe CurrentRecipe;
+
+        // Server side only
+        // Dictionary<string, long> playersEnchanting = new Dictionary<string, long>();
+        // Client and serverside
+        int quantityPlayersEnchanting;
+
+        public string Material
+        {
+            get { return Block.LastCodePart(); }
+        }
+        // TODO: Conform to KRPGClasses
+        public float EnchantSpeed
+        {
+            get
+            {
+                if (quantityPlayersEnchanting > 0) return 1f;
+
+                return 0;
+            }
+        }
+        public virtual double maxEnchantTime()
+        {
+            double time = 3600000;
+            if (CurrentRecipe != null) { time = CurrentRecipe.processingHours * 3600000; }
+            return time;
+        }
+        public virtual string DialogTitle
+        {
+            get { return Lang.Get("krpgenchantment:block-enchanting-table"); }
+        }
+        public override string InventoryClassName
+        {
+            get { return Block.FirstCodePart(); }
+        }
+        public override InventoryBase Inventory
+        {
+            get { return inventory; }
+        }
+        public ItemSlot InputSlot
+        {
+            get { return inventory[0]; }
+        }
+        public ItemSlot OutputSlot
+        {
+            get { return inventory[1]; }
+        }
+        public ItemStack OutputStack
+        {
+            get { return inventory[1].Itemstack; }
+            set { inventory[1].Itemstack = value; inventory[1].MarkDirty(); }
+        }
+        public ItemSlot ReagentSlot
+        {
+            get { return inventory[2]; }
+        }
+        public EnchantingBE()
+        {
+            inventory = new EnchantingInventory(null, null, this);
+            inventory.SlotModified += OnSlotModified;
+        }
+
+        public override void Initialize(ICoreAPI api)
+        {
+            base.Initialize(api);
+
+            inventory.LateInitialize(Block.FirstCodePart() + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
+            
+            // Can we listen only when Enchanting? Maybe use an event?
+            if (api.Side == EnumAppSide.Server)
+                RegisterGameTickListener(TickEnchanting, msEnchantTime);
+        }
+        public override void CreateBehaviors(Block block, IWorldAccessor worldForResolve)
+        {
+            base.CreateBehaviors(block, worldForResolve);
+        }
+        private void enchantInput()
+        {
+            OutputSlot.MarkDirty();
+        }
+        public void UpdateEnchantingState()
+        {
+            if (Api.World == null) return;
+
+            if (Api.Side == EnumAppSide.Server)
+            {
+                if (!invLocked)
+                    invLocked = true;
+                else
+                    invLocked = false;
+
+                // MarkDirty();
+                // Api.World.BlockAccessor.MarkBlockEntityDirty(Pos);
+            }
+        }
+        private void TickEnchanting(float dt)
+        {
+            if (Api.Side == EnumAppSide.Server && invLocked == true && (EnchantSpeed > 0 || prevInputEnchantTime != inputEnchantTime) && InputSlot.Itemstack?.Collectible != null)  //don't spam update packets when empty, as inputEnchantTime is irrelevant when empty
+            {
+                MarkDirty();
+            }
+
+            prevInputEnchantTime = inputEnchantTime;
+
+            //float enchantSpeed = EnchantSpeed;
+
+            // Only tick on the server and merely sync to client
+
+            // Use up reagent
+            if (CanEnchant)
+            {
+                inputEnchantTime += dt;
+
+                if (inputEnchantTime >= maxEnchantTime())
+                {
+                    enchantInput();
+                    inputEnchantTime = 0;
+                }
+
+                //MarkDirty();
+            }
+            // clientDialog.Update(inputEnchantTime, maxEnchantTime(), GetOutputText());
+        }
+        private bool CanEnchant
+        {
+            get
+            {
+                GetMatchingEnchantingRecipe();
+                if (CurrentRecipe.Matches(InputSlot, ReagentSlot) != true) return false;
+                
+                return true;
+            }
+        }
+        private void OnSlotModified(int slotid)
+        {
+            if (Api is ICoreClientAPI)
+            {
+                clientDialog.Update(inputEnchantTime, maxEnchantTime(), GetOutputText());
+            }
+
+            if (slotid == 0 || slotid > 1)
+            {
+                inputEnchantTime = 0.0d; //reset the progress to 0 if any of the input is changed.
+                MarkDirty();
+
+                if (clientDialog != null && clientDialog.IsOpened())
+                {
+                    clientDialog.SingleComposer.ReCompose();
+                }
+            }
+        }
+        public EnchantingRecipe GetMatchingEnchantingRecipe()
+        {
+            for (int i = 0; i < EnchantingRecipeSystem.EnchantingRecipes.Count; i++)
+            {
+                if (EnchantingRecipeSystem.EnchantingRecipes[i].Matches(InputSlot, ReagentSlot))
+                {
+                    CurrentRecipe = EnchantingRecipeSystem.EnchantingRecipes[i].Clone();
+                    return CurrentRecipe;
+                }
+            }
+            return null;
+        }
+        public string GetOutputText()
+        {
+            EnchantingRecipe erecipe = GetMatchingEnchantingRecipe();
+            string outText = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
+
+            if (erecipe != null)
+                return outText + Lang.Get(erecipe.Name.ToShortString());
+            else 
+                return outText;
+        }
+        protected void toggleInventoryDialogClient(IPlayer byPlayer)
+        {
+            clientDialog = new GuiDialogEnchantingBE(DialogTitle, Inventory, Pos, Api as ICoreClientAPI);
+            clientDialog.TryOpen();
+            clientDialog.OnClosed += () => clientDialog = null;
+            clientDialog.Update(inputEnchantTime, maxEnchantTime(), GetOutputText());
+
+            if (clientDialog == null)
+            {
+                ICoreClientAPI capi = Api as ICoreClientAPI;
+                clientDialog = new GuiDialogEnchantingBE(Lang.Get("krpgenchantment:block-enchanting-table"), Inventory, Pos, Api as ICoreClientAPI);
+                clientDialog.OnClosed += () =>
+                {
+                    clientDialog = null;
+                    capi.Network.SendBlockEntityPacket(Pos.X, Pos.Y, Pos.Z, (int)EnumBlockEntityPacketId.Close, null);
+                    capi.Network.SendPacketClient(Inventory.Close(byPlayer));
+                };
+                clientDialog.OpenSound = AssetLocation.Create("game:sounds/block/barrelopen", Block.Code.Domain);
+                clientDialog.CloseSound = AssetLocation.Create("game:sounds/block/barrelclose", Block.Code.Domain);
+
+                clientDialog.TryOpen();
+                capi.Network.SendPacketClient(Inventory.Open(byPlayer));
+                capi.Network.SendBlockEntityPacket(Pos.X, Pos.Y, Pos.Z, (int)EnumBlockEntityPacketId.Open, null);
+            }
+            else
+            {
+                clientDialog.TryClose();
+            }
+        }
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
+        {
+            if (Api != null && Api.Side == EnumAppSide.Client)
+            {
+                MarkDirty(true);
+            }
+
+            base.FromTreeAttributes(tree, worldForResolving);
+        }
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+
+            if (Block != null) tree.SetString("forBlockCode", Block.Code.ToShortString());
+        }
+        public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
+        {
+            if (blockSel.SelectionBoxIndex == 1) return false;
+
+            if (Api.World is IServerWorldAccessor)
+            {
+                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
+                    (IServerPlayer)byPlayer,
+                    Pos.X, Pos.Y, Pos.Z,
+                    (int)EnumBlockEntityPacketId.Open,
+                    null
+                );
+
+                byPlayer.InventoryManager.OpenInventory(inventory);
+                MarkDirty();
+            }
+
+            return true;
+        }
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (packetid < 1000)
+            {
+                Inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
+
+                // Tell server to save this chunk to disk again
+                Api.World.BlockAccessor.GetChunkAtBlockPos(Pos).MarkModified();
+
+                return;
+            }
+
+            if (packetid == (int)EnumBlockEntityPacketId.Close)
+            {
+                player.InventoryManager?.CloseInventory(Inventory);
+            }
+
+            if (packetid == (int)EnumBlockEntityPacketId.Open)
+            {
+                player.InventoryManager?.OpenInventory(Inventory);
+            }
+
+            if (packetid == 1337)
+            {
+                UpdateEnchantingState();
+            }
+        }
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid == (int)EnumBlockEntityPacketId.Open && (clientDialog == null || !clientDialog.IsOpened()))
+            {
+                clientDialog = new GuiDialogEnchantingBE(DialogTitle, Inventory, Pos, Api as ICoreClientAPI);
+                clientDialog.TryOpen();
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.Update(inputEnchantTime, maxEnchantTime(), GetOutputText());
+            }
+
+            if (packetid == (int)EnumBlockEntityPacketId.Close)
+            {
+                (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
+                clientDialog?.TryClose();
+                clientDialog?.Dispose();
+                clientDialog = null;
+            }
+        }
+        public override void OnBlockBroken(IPlayer byPlayer = null)
+        {
+            base.OnBlockBroken(byPlayer);
+
+            invDialog?.TryClose();
+            invDialog = null;
+        }
+    }
+}

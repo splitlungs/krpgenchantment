@@ -1,0 +1,24 @@
+{
+  "ingredientPattern": "ILI,IGI,ILI",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "I": {
+      "type": "item",
+      "code": "game:ingot-gold",
+      "quantity": 4
+    },
+    "L": {
+      "type": "block",
+      "code": "game:lightningrod"
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-shocking"
+  }
+}

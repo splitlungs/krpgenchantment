@@ -1,0 +1,370 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
+using Vintagestory.GameContent;
+using Newtonsoft.Json;
+
+namespace KRPGLib.Enchantment
+{
+    /// <summary>
+    /// Holds all Enchantment data at runtime.
+    /// </summary>
+    public class EnchantmentProperties
+    {
+        public string Enchantable = "enchantable";
+        public string ChillingID = "chilling";
+        public string HarmID = "harm";
+        public string HealID = "heal";
+        public string IgniteID = "ignite";
+        public string KnockbackID = "knockback";
+        public string LightID = "light";
+        public string LightningID = "lightning";
+        public string PitID = "pit";
+
+        public bool EnchantableVal = false;
+        public int ChillingVal = 0;
+        public int HarmVal = 0;
+        public int HealVal = 0;
+        public int IgniteVal = 0;
+        public int KnockbackVal = 0;
+        public int LightVal = 0;
+        public int LightningVal = 0;
+        public int PitVal = 0;
+
+        /// <summary>
+        /// Returns a copy.
+        /// </summary>
+        /// <returns></returns>
+        public EnchantmentProperties Clone()
+        {
+            return new EnchantmentProperties()
+            {
+                Enchantable = Enchantable,
+                ChillingID = ChillingID,
+                HarmID = HarmID,
+                HealID = HealID,
+                IgniteID = IgniteID,
+                KnockbackID = KnockbackID,
+                LightID = LightID,
+                LightningID = LightningID,
+                PitID = PitID,
+
+                EnchantableVal = EnchantableVal,
+                ChillingVal = ChillingVal,
+                HarmVal = HarmVal,
+                HealVal = HealVal,
+                IgniteVal = IgniteVal,
+                KnockbackVal = KnockbackVal,
+                LightVal = LightVal,
+                LightningVal = LightningVal,
+                PitVal = PitVal
+            };
+        }
+    }
+
+    class EnchantmentBehavior : CollectibleBehavior
+    {
+        public ICoreAPI Api { get; protected set; }
+        /// <summary>
+        /// Class for storing default enchantment configuration. Do not save your active enchantments here.
+        /// </summary>
+        public EnchantmentProperties EnchantProps { get; protected set; }
+        public ITreeAttribute Enchantments { get; protected set; }
+        public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
+        {
+            this.EnchantProps = new EnchantmentProperties();
+        }
+        public override void OnLoaded(ICoreAPI api)
+        {
+            base.OnLoaded(api);
+            Api = api;
+        }
+        #region Data
+        public override void Initialize(JsonObject properties)
+        {
+            base.Initialize(properties);
+            EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
+            GetProperties(properties);
+            // Enchantments = (TreeAttribute)properties.ToAttribute();
+            // GetTreeAttributes(Enchantments);
+            // IAttribute Enchantments = collObj.Attributes["enchantments"].ToAttribute();
+        }
+        public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot, ref EnumHandling handling)
+        {
+            handling = EnumHandling.PassThrough;
+            return new WorldInteraction[]
+            {
+                new WorldInteraction
+                {
+                    //HotKeyCodes = StorageProps.SprintKey ? new string[] {"ctrl", "shift" } : new string[] {"shift"},
+                    ActionLangCode = "heldhelp-enchantment",
+                    MouseButton = EnumMouseButton.Right
+                }
+            };
+        }
+        /// <summary>
+        /// Applies default JSON properties to EnchantProps.
+        /// </summary>
+        /// <param name="properties"></param>
+        public virtual void GetProperties(JsonObject properties)
+        {
+            EnchantProps.EnchantableVal = properties["enchantable"].AsBool(false);
+            EnchantProps.ChillingVal = properties["chilling"].AsInt(0);
+            EnchantProps.HarmVal = properties["harm"].AsInt(0);
+            EnchantProps.HealVal = properties["heal"].AsInt(0);
+            EnchantProps.IgniteVal = properties["ignite"].AsInt(0);
+            EnchantProps.KnockbackVal = properties["knockback"].AsInt(0);
+            EnchantProps.LightVal = properties["light"].AsInt(0);
+            EnchantProps.LightningVal = properties["lightning"].AsInt(0);
+            EnchantProps.PitVal = properties["pit"].AsInt(0);
+        }
+        /// <summary>
+        /// Save all EnchantProps to ItemStack's Attributes.
+        /// </summary>
+        /// <param name="itemStack"></param>
+        public void SetAttributes(ItemStack itemStack)
+        {
+            itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+
+            itemStack.Attributes.SetBool(EnchantProps.Enchantable, EnchantProps.EnchantableVal);
+            itemStack.Attributes.SetInt(EnchantProps.ChillingID, EnchantProps.ChillingVal);
+            itemStack.Attributes.SetInt(EnchantProps.HarmID, EnchantProps.HarmVal);
+            itemStack.Attributes.SetInt(EnchantProps.HealID, EnchantProps.HealVal);
+            itemStack.Attributes.SetInt(EnchantProps.IgniteID, EnchantProps.IgniteVal);
+            itemStack.Attributes.SetInt(EnchantProps.KnockbackID, EnchantProps.KnockbackVal);
+            itemStack.Attributes.SetInt(EnchantProps.LightID, EnchantProps.LightVal);
+            itemStack.Attributes.SetInt(EnchantProps.LightningID, EnchantProps.LightningVal);
+            itemStack.Attributes.SetInt(EnchantProps.PitID, EnchantProps.PitVal);
+        }
+        public void GetAttributes(ItemStack itemStack)
+        {
+            itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+
+            EnchantProps.EnchantableVal = itemStack.Attributes.GetBool(EnchantProps.Enchantable, false);
+            EnchantProps.ChillingVal = itemStack.Attributes.GetInt(EnchantProps.ChillingID, 0);
+            EnchantProps.HarmVal = itemStack.Attributes.GetInt(EnchantProps.HarmID, 0);
+            EnchantProps.HealVal = itemStack.Attributes.GetInt(EnchantProps.HealID, 0);
+            EnchantProps.IgniteVal = itemStack.Attributes.GetInt(EnchantProps.IgniteID, 0);
+            EnchantProps.KnockbackVal = itemStack.Attributes.GetInt(EnchantProps.KnockbackID, 0);
+            EnchantProps.LightVal = itemStack.Attributes.GetInt(EnchantProps.LightID, 0);
+            EnchantProps.LightningVal = itemStack.Attributes.GetInt(EnchantProps.LightningID, 0);
+            EnchantProps.PitVal = itemStack.Attributes.GetInt(EnchantProps.PitID, 0);
+        }
+        #endregion
+        #region Effects
+        public void ChillEntity(Entity entity)
+        {
+            EntityBehaviorBodyTemperature ebbt = entity.GetBehavior<EntityBehaviorBodyTemperature>();
+
+            // If we encounter something without one, bail
+            if (ebbt == null)
+                return;
+
+            ebbt.CurBodyTemperature = -40f;
+        }
+        public void CreatePit(EntityPos pos, Entity byEntity, int depth, int width)
+        {
+            BlockPos bpos = pos.AsBlockPos;
+            List<Vec3d> pitArea = new List<Vec3d>();
+
+            for (int x = 0; x <= width; x++)
+            {
+                for (int y = 0; y <= depth; y++)
+                {
+                    for (int z = 0; z <= width; z++)
+                    {
+                        pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z + z));
+                        pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z - z));
+                        pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z - z));
+                        pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z + z));
+                    }
+                }
+            }
+
+            for (int i = 0; i < pitArea.Count; i++)
+            {
+                BlockPos ipos = bpos;
+                ipos.Set(pitArea[i]);
+                Block block = byEntity.World.BlockAccessor.GetBlock(ipos);
+
+                if (block != null)
+                {
+                    string blockCode = block.Code.ToString();
+                    if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel"))
+                        byEntity.World.BlockAccessor.BreakBlock(ipos, byEntity as IPlayer);
+                }
+            }
+        }
+        public void DeathPoison(Entity entity, DamageSource byEntity)
+        {
+            Api.Event.TriggerEntityDeath(entity, byEntity);
+        }
+        public void IgniteEntity(Entity entity)
+        {
+            entity.IsOnFire = true;
+        }
+        public void CallLightning(IWorldAccessor world, Vec3d pos)
+        {
+            WeatherSystemServer weatherSystem = world.Api.ModLoader.GetModSystem<WeatherSystemServer>();
+            // It should default to 0f. Stun should stop at 0.5. Absorbtion should start at 1f.
+            if (weatherSystem != null)
+                weatherSystem.SpawnLightningFlash(pos);
+            else
+                world.Api.Logger.Debug("Could not find Weather System!");
+        }
+        #endregion
+        #region Junk
+        // Not in use yet, but probably should be to crustomize collision processing
+        /*
+        public bool TryEffects(IWorldAccessor world, Entity byEntity, float impactSpeed, EntitySelection entitySel)
+        {
+            if (world is IClientWorldAccessor || world.ElapsedMilliseconds <= msCollide + 250) return false;
+            if (impactSpeed <= 0.01) return false;
+
+            Entity target = entitySel.Entity;
+            EntityPos pos = target.SidedPos;
+
+            Cuboidd projectileBox = target.SelectionBox.ToDouble().Translate(target.ServerPos.X, target.ServerPos.Y, target.ServerPos.Z);
+
+            // We give it a bit of extra leeway of 50% because physics ticks can run twice or 3 times in one game tick 
+            if (target.ServerPos.Motion.X < 0) projectileBox.X1 += 1.5 * target.ServerPos.Motion.X;
+            else projectileBox.X2 += 1.5 * target.ServerPos.Motion.X;
+            if (target.ServerPos.Motion.Y < 0) projectileBox.Y1 += 1.5 * target.ServerPos.Motion.Y;
+            else projectileBox.Y2 += 1.5 * target.ServerPos.Motion.Y;
+            if (target.ServerPos.Motion.Z < 0) projectileBox.Z1 += 1.5 * target.ServerPos.Motion.Z;
+            else projectileBox.Z2 += 1.5 * target.ServerPos.Motion.Z;
+
+            Entity entity = world.GetNearestEntity(target.ServerPos.XYZ, 5f, 5f, (e) => {
+                if (e.EntityId == this.EntityId || !e.IsInteractable) return false;
+
+                if (FiredBy != null && e.EntityId == FiredBy.EntityId && World.ElapsedMilliseconds - msLaunch < 500)
+                {
+                    return false;
+                }
+
+                Cuboidd eBox = e.SelectionBox.ToDouble().Translate(e.ServerPos.X, e.ServerPos.Y, e.ServerPos.Z);
+
+                return eBox.IntersectsOrTouches(projectileBox);
+            });
+
+            if (entity != null)
+            {
+                impactOnEntity(entity);
+                return true;
+            }
+
+            return false;
+        }
+        */
+        /*
+        private void UnusedShit()
+        {
+            public float Chilling = 0f;
+            public float Harm = 0f;
+            public float Heal = 0f;
+            public float Ignite = 0f;
+            public float Knockback = 0f;
+            public float Light = 0f;
+            public float Lightning = 0f;
+            public float Pit = 0f;
+            private int msCollide;
+            JsonObject[] enchantObjects = enchantmentsObj["enchantments"].AsArray();
+            if (enchantObjects.Length > 0)
+            {
+                int i = 1;
+                foreach (JsonObject obj in enchantObjects)
+                {
+                    Enchantment curEnchant = new Enchantment();
+                    curEnchant.Code = enchantObjects[i]["code"].AsString("null");
+                    curEnchant.Name = enchantObjects[i]["name"].AsString("null");
+                    curEnchant.Description = enchantObjects[i]["description"].AsString("null");
+                    curEnchant.Trigger = enchantObjects[i]["trigger"].AsString("null");
+                    curEnchant.ItemType = enchantObjects[i]["itemType"].AsString("null");
+                    curEnchant.Multiplier = enchantObjects[i]["multiplier"].AsFloat(0);
+                    curEnchant.Enabled = enchantObjects[i]["enabled"].AsBool(false);
+                    Enchantments.Add(curEnchant);
+                    i++;
+                }
+            }
+        }
+        */
+        /*
+        public TreeAttribute enchantments { get { return enchantments; } set { enchantments = (TreeAttribute)value; } }
+        public void GetTreeAttributes(ITreeAttribute tree)
+        {
+            // base.FromTreeAttributes(tree, worldAccessForResolve);
+            EnchantProps.ChillingVal = tree.GetFloat("chilling", 0f);
+            EnchantProps.HarmVal = tree.GetFloat("harm", 0);
+            EnchantProps.HealVal = tree.GetFloat("heal", 0);
+            EnchantProps.IgniteVal = tree.GetFloat("ignite", 0);
+            EnchantProps.KnockbackVal = tree.GetFloat("knockback", 0);
+            EnchantProps.LightVal = tree.GetFloat("light", 0);
+            EnchantProps.LightningVal = tree.GetFloat("lightning", 0);
+            EnchantProps.PitVal = tree.GetFloat("pit", 0);
+        }
+        public void SetTreeAttributes()
+        {
+            //collObj.Attributes["harm"] = 1f;
+            // base.ToTreeAttributes(tree);
+            enchantments.SetFloat("chilling", EnchantProps.ChillingVal);
+            enchantments.SetFloat("harm", EnchantProps.HarmVal);
+            enchantments.SetFloat("heal", EnchantProps.HealVal);
+            enchantments.SetFloat("ignite", EnchantProps.IgniteVal);
+            enchantments.SetFloat("knockback", EnchantProps.KnockbackVal);
+            enchantments.SetFloat("light", EnchantProps.LightVal);
+            enchantments.SetFloat("lightning", EnchantProps.LightningVal);
+            enchantments.SetFloat("pit", EnchantProps.PitVal);
+        }
+        // TODO: Inherit Enchantment properties from JSON other pre-determined location
+        public void GetEnchantments(ItemSlot inSlot)
+        {
+            if (inSlot.Itemstack.Collectible.HasBehavior<EnchantmentBehavior>() != true)
+                return;
+
+            // killswitch while I fix it
+            bool killswitch = true;
+            if (killswitch == false)
+            {
+                EnchantmentBehavior enchantmentBehavior = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
+                float lightningMulti = enchantmentBehavior.EnchantProps.LightningVal;
+                //enchantmentBehavior.Initialize();
+                if (lightningMulti > 0f)
+                {
+                    Enchantment newEnchant = new Enchantment
+                    {
+                        Code = "lightning",
+                        Name = "Lightning",
+                        Description = "Call down a lightning strike.",
+                        Trigger = "attack",
+                        ItemType = "collectible",
+                        Multiplier = 1f,
+                        Enabled = true
+                    };
+                    // Enchantments.Add(newEnchant);
+                }
+
+                // api.Logger.Debug("Lightning Enchantment value is " + lightningMulti);
+            }
+        }
+        public void UpdateTree()
+        {
+            TreeAttribute tAttribute = new TreeAttribute();
+        }
+        public void MarkDirty()
+        {
+            this.UpdateTree();
+        }
+        */
+        #endregion
+    }
+}

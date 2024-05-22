@@ -1,0 +1,19 @@
+{
+  "ingredientPattern": "III,IGI,III",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "I": {
+      "type": "block",
+      "code": "game:lightningrod"
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-lightning"
+  }
+}

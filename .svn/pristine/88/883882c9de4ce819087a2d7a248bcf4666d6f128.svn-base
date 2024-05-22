@@ -1,0 +1,726 @@
+﻿using Cairo.Freetype;
+using HarmonyLib;
+using KRPGLib.Enchantment;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Vintagestory.API.Common;
+using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.Util;
+using Vintagestory.GameContent;
+
+namespace KRPGLib.Enchantment
+{
+    #region Recipe
+    public class EnchantingRecipe : IByteSerializable
+    {
+        public int RecipeId;
+        /// <summary>
+        /// Name of the recipe, optional
+        /// </summary>
+        public AssetLocation Name;
+        /// <summary>
+        /// Set by the recipe loader during json deserialization, if false the recipe will never be loaded.
+        /// If loaded however, you can use this field to disable recipes during runtime.
+        /// </summary>
+        public bool Enabled = true;
+        public string code;
+        public double processingHours;
+        /// <summary>
+        /// If set only players with given trait can use this recipe
+        /// </summary>
+        public string RequiresTrait;
+        /// <summary>
+        /// The recipes ingredients in any order
+        /// </summary>
+        public Dictionary<string, EnchantingRecipeIngredient> Ingredients;
+        public EnchantingRecipeOutput[] Enchantments;
+        /// <summary>
+        /// The resulting Stack
+        /// </summary>
+        public EnchantingRecipeIngredient Output;
+
+        /// <summary>
+        /// Optional attribute data that you can attach any data to
+        /// </summary>
+        [JsonConverter(typeof(JsonAttributesConverter))]
+        public JsonObject Attributes;
+        /// <summary>
+        /// If set, it will copy over the itemstack attributes from given ingredient code
+        /// </summary>
+        public string CopyAttributesFrom = null;
+        public EnchantingRecipeIngredient[] resolvedIngredients;
+
+        IWorldAccessor world;
+
+        /// <summary>
+        /// Turns Ingredients into IItemStacks
+        /// </summary>
+        /// <param name="world"></param>
+        /// <returns>True on successful resolve</returns>
+        public bool ResolveIngredients(IWorldAccessor world)
+        {
+            this.world = world;
+
+            // IngredientPattern = IngredientPattern.Replace(",", "").Replace("\t", "").Replace("\r", "").Replace("\n", "");
+            /*
+            if (IngredientPattern == null)
+            {
+                world.Logger.Error("Grid Recipe with output {0} has no ingredient pattern.", Output);
+                return false;
+            }*/
+            /*
+            if (Width * Height != IngredientPattern.Length)
+            {
+                world.Logger.Error("Grid Recipe with output {0} has and incorrect ingredient pattern length. Ignoring recipe.", Output);
+                return false;
+            }*/
+
+            // HARDCODED TO 2 INGREDIENTS CURRENTLY
+            // TODO: FIX THIS BULLSHIT
+            resolvedIngredients = new EnchantingRecipeIngredient[2];
+            for (int i = 0; i < 2; i++)
+            {
+                /*
+                if (!Ingredients.ContainsKey(code))
+                {
+                    world.Logger.Error("Enchanting Recipe with output {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Output, code);
+                    return false;
+                }*/
+
+                if (!Ingredients[code].Resolve(world, "Enchanting recipe"))
+                {
+                    world.Logger.Error("Enchanting Recipe with output {0} contains an ingredient that cannot be resolved: {1}", Output, Ingredients[code]);
+                    return false;
+                }
+
+                resolvedIngredients[i] = Ingredients[code].CloneTo<EnchantingRecipeIngredient>();
+                //resolvedIngredients[i] = Ingredients[code].CloneTo<EnchantingRecipeIngredient>();
+                //resolvedIngredients[i].PatternCode = code;
+            }
+
+            if (!Output.Resolve(world, "Enchanting recipe"))
+            {
+                world.Logger.Error("Enchanting Recipe '{0}': Output {1} cannot be resolved", Name, Output);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Resolves Wildcards in the ingredients
+        /// </summary>
+        /// <param name="world"></param>
+        /// <returns></returns>
+        public Dictionary<string, string[]> GetNameToCodeMapping(IWorldAccessor world)
+        {
+            Dictionary<string, string[]> mappings = new Dictionary<string, string[]>();
+
+            foreach (var val in Ingredients)
+            {
+                if (val.Value.Name == null || val.Value.Name.Length == 0) continue;
+                if (!val.Value.Code.Path.Contains('*')) continue;
+                int wildcardStartLen = val.Value.Code.Path.IndexOf('*');
+                int wildcardEndLen = val.Value.Code.Path.Length - wildcardStartLen - 1;
+
+                List<string> codes = new List<string>();
+
+
+                if (val.Value.Type == EnumItemClass.Block)
+                {
+                    for (int i = 0; i < world.Blocks.Count; i++)
+                    {
+                        var block = world.Blocks[i];
+                        if (block?.Code == null || block.IsMissing) continue;
+                        if (val.Value.SkipVariants != null && WildcardUtil.MatchesVariants(val.Value.Code, block.Code, val.Value.SkipVariants)) continue;
+
+                        if (WildcardUtil.Match(val.Value.Code, block.Code, val.Value.AllowedVariants))
+                        {
+                            string code = block.Code.Path.Substring(wildcardStartLen);
+                            string codepart = code.Substring(0, code.Length - wildcardEndLen);
+                            codes.Add(codepart);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < world.Items.Count; i++)
+                    {
+                        var item = world.Items[i];
+                        if (item?.Code == null || item.IsMissing) continue;
+                        if (val.Value.SkipVariants != null && WildcardUtil.MatchesVariants(val.Value.Code, item.Code, val.Value.SkipVariants)) continue;
+
+                        if (WildcardUtil.Match(val.Value.Code, item.Code, val.Value.AllowedVariants))
+                        {
+                            string code = item.Code.Path.Substring(wildcardStartLen);
+                            string codepart = code.Substring(0, code.Length - wildcardEndLen);
+                            codes.Add(codepart);
+                        }
+                    }
+                }
+
+                mappings[val.Value.Name] = codes.ToArray();
+            }
+
+            return mappings;
+        }
+        /// <summary>
+        /// Serialized the recipe
+        /// </summary>
+        /// <param name="writer"></param>
+        public void ToBytes(BinaryWriter writer)
+        {
+            Output.ToBytes(writer);
+
+            for (int i = 0; i < resolvedIngredients.Length; i++)
+            {
+                if (resolvedIngredients[i] == null)
+                {
+                    writer.Write(true);
+                    continue;
+                }
+
+                writer.Write(false);
+                resolvedIngredients[i].ToBytes(writer);
+            }
+
+            writer.Write(Name.ToShortString());
+
+            writer.Write(Attributes == null);
+            if (Attributes != null)
+            {
+                writer.Write(Attributes.Token.ToString());
+            }
+
+            writer.Write(RequiresTrait != null);
+            if (RequiresTrait != null)
+            {
+                writer.Write(RequiresTrait);
+            }
+
+            writer.Write(CopyAttributesFrom != null);
+            if (CopyAttributesFrom != null)
+            {
+                writer.Write(CopyAttributesFrom);
+            }
+
+            writer.Write(Ingredients.Count);
+            foreach (var val in Ingredients)
+            {
+                writer.Write(val.Key);
+                val.Value.ToBytes(writer);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the recipe
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="resolver"></param>
+        public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
+        {
+            Output = new EnchantingRecipeIngredient();
+            Output.FromBytes(reader, resolver);
+
+            resolvedIngredients = new EnchantingRecipeIngredient[2];
+            for (int i = 0; i < resolvedIngredients.Length; i++)
+            {
+                bool isnull = reader.ReadBoolean();
+                if (isnull) continue;
+
+                resolvedIngredients[i] = new EnchantingRecipeIngredient();
+                resolvedIngredients[i].FromBytes(reader, resolver);
+            }
+
+            Name = new AssetLocation(reader.ReadString());
+
+            if (!reader.ReadBoolean())
+            {
+                string json = reader.ReadString();
+                Attributes = new JsonObject(JToken.Parse(json));
+            }
+
+            if (reader.ReadBoolean())
+            {
+                RequiresTrait = reader.ReadString();
+            }
+
+            int cnt = reader.ReadInt32();
+            Ingredients = new Dictionary<string, EnchantingRecipeIngredient>();
+            for (int i = 0; i < cnt; i++)
+            {
+                var key = reader.ReadString();
+                var ing = new EnchantingRecipeIngredient();
+                ing.FromBytes(reader, resolver);
+                Ingredients[key] = ing;
+            }
+        }
+
+        /// <summary>
+        /// Creates a deep copy
+        /// </summary>
+        /// <returns></returns>
+        public EnchantingRecipe Clone()
+        {
+            EnchantingRecipe recipe = new EnchantingRecipe();
+
+            recipe.Ingredients = new Dictionary<string, EnchantingRecipeIngredient>();
+            if (Ingredients != null)
+            {
+                foreach (var val in Ingredients)
+                {
+                    recipe.Ingredients[val.Key] = val.Value.Clone();
+                }
+            }
+            if (resolvedIngredients != null)
+            {
+                recipe.resolvedIngredients = new EnchantingRecipeIngredient[resolvedIngredients.Length];
+                for (int i = 0; i < resolvedIngredients.Length; i++)
+                {
+                    recipe.resolvedIngredients[i] = resolvedIngredients[i]?.CloneTo<EnchantingRecipeIngredient>();
+                }
+            }
+
+            recipe.Output = Output.Clone();
+            recipe.Name = Name;
+            recipe.Attributes = Attributes?.Clone();
+            recipe.RequiresTrait = RequiresTrait;
+            recipe.CopyAttributesFrom = CopyAttributesFrom;
+            return recipe;
+        }
+        // DEPRECATED
+        /*
+        //public EnchantingRecipeIngredient[] Ingredients;
+        //public EnchantingRecipeIngredient[] ValidTargets;
+        // Dummy data to satisfy IRecipeBase ?
+        // public EnchantingRecipeOutput Output;
+
+        // IRecipeIngredient[] IRecipeBase<EnchantingRecipe>.Ingredients => Ingredients;
+        // IRecipeOutput IRecipeBase<EnchantingRecipe>.Output => Output;
+
+        public bool Matches(ItemSlot[] inputSlots, out int outputStackSize)
+        {
+            outputStackSize = 0;
+
+            List<KeyValuePair<ItemSlot, EnchantingRecipeIngredient>> matched = pairInput(inputSlots);
+            if (matched == null) return false;
+
+            outputStackSize = getOutputSize(matched);
+
+            return outputStackSize >= 0;
+        }
+
+        List<KeyValuePair<ItemSlot, EnchantingRecipeIngredient>> pairInput(ItemSlot[] inputStacks)
+        {
+            List<EnchantingRecipeIngredient> ingredientList = new List<EnchantingRecipeIngredient>(Ingredients);
+
+            Queue<ItemSlot> inputSlotsList = new Queue<ItemSlot>();
+            foreach (var val in inputStacks) if (!val.Empty) inputSlotsList.Enqueue(val);
+
+            if (inputSlotsList.Count != Ingredients.Length) return null;
+
+            List<KeyValuePair<ItemSlot, EnchantingRecipeIngredient>> matched = new List<KeyValuePair<ItemSlot, EnchantingRecipeIngredient>>();
+
+            while (inputSlotsList.Count > 0)
+            {
+                ItemSlot inputSlot = inputSlotsList.Dequeue();
+                bool found = false;
+
+                for (int i = 0; i < ingredientList.Count; i++)
+                {
+                    EnchantingRecipeIngredient ingred = ingredientList[i];
+
+                    if (ingred.SatisfiesAsIngredient(inputSlot.Itemstack))
+                    {
+                        matched.Add(new KeyValuePair<ItemSlot, EnchantingRecipeIngredient>(inputSlot, ingred));
+                        found = true;
+                        ingredientList.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                if (!found) return null;
+            }
+
+            // We're missing ingredients
+            if (ingredientList.Count > 0)
+            {
+                return null;
+            }
+
+            return matched;
+        }
+
+        int getOutputSize(List<KeyValuePair<ItemSlot, EnchantingRecipeIngredient>> matched)
+        {
+            int outQuantityMul = -1;
+
+            foreach (var val in matched)
+            {
+                ItemSlot inputSlot = val.Key;
+                EnchantingRecipeIngredient ingred = val.Value;
+
+                if (ingred.ConsumeQuantity == null)
+                {
+                    outQuantityMul = inputSlot.StackSize / ingred.Quantity;
+                }
+            }
+
+            if (outQuantityMul == -1)
+            {
+                return -1;
+            }
+
+
+            foreach (var val in matched)
+            {
+                ItemSlot inputSlot = val.Key;
+                EnchantingRecipeIngredient ingred = val.Value;
+
+                if (ingred.ConsumeQuantity == null)
+                {
+                    // Input stack size must be equal or a multiple of the ingredient stack size
+                    if ((inputSlot.StackSize % ingred.Quantity) != 0) return -1;
+
+                    // Ingredients must be at the same ratio
+                    if (outQuantityMul != inputSlot.StackSize / ingred.Quantity) return -1;
+
+                }
+                else
+                {
+                    // Must have same or more than the total crafted amount
+                    if (inputSlot.StackSize < ingred.Quantity * outQuantityMul) return -1;
+                }
+            }
+
+            return Output.StackSize * outQuantityMul;
+        }
+
+        public bool TryCraftNow(ICoreAPI api, double nowProcessedHours, ItemSlot[] inputslots)
+        {
+            if (processingHours > 0 && nowProcessedHours < processingHours) return false;
+
+            var matched = pairInput(inputslots);
+
+            ItemStack mixedStack = Output.ResolvedItemstack.Clone();
+            mixedStack.StackSize = getOutputSize(matched);
+
+            if (mixedStack.StackSize < 0) return false;
+
+            // Carry over freshness
+            TransitionableProperties[] props = mixedStack.Collectible.GetTransitionableProperties(api.World, mixedStack, null);
+            TransitionableProperties perishProps = props != null && props.Length > 0 ? props[0] : null;
+
+            if (perishProps != null)
+            {
+                CollectibleObject.CarryOverFreshness(api, inputslots, new ItemStack[] { mixedStack }, perishProps);
+            }
+
+            ItemStack remainStack = null;
+            foreach (var val in matched)
+            {
+                if (val.Value.ConsumeQuantity != null)
+                {
+                    remainStack = val.Key.Itemstack;
+                    remainStack.StackSize -= (int)val.Value.ConsumeQuantity * (mixedStack.StackSize / Output.StackSize);
+                    if (remainStack.StackSize <= 0)
+                    {
+                        remainStack = null;
+                    }
+                    break;
+                }
+            }
+
+            // Slot 0: Input/Item slot
+            // Slot 1: Liquid slot
+            if (shouldBeInLiquidSlot(mixedStack))
+            {
+                inputslots[0].Itemstack = remainStack;
+                inputslots[1].Itemstack = mixedStack;
+            }
+            else
+            {
+                inputslots[1].Itemstack = remainStack;
+                inputslots[0].Itemstack = mixedStack;
+            }
+
+            inputslots[0].MarkDirty();
+            inputslots[1].MarkDirty();
+
+            return true;
+        }
+
+        // Minor Fugly hack - copied from LiquidContainer.cs
+        public bool shouldBeInLiquidSlot(ItemStack stack)
+        {
+            return stack?.ItemAttributes?["waterTightContainerProps"].Exists == true;
+        }
+
+        /// <summary>
+        /// Creates a deep copy.
+        /// </summary>
+        /// <returns></returns>
+        public EnchantingRecipe Clone()
+        {
+            EnchantingRecipeIngredient[] ingredients = new EnchantingRecipeIngredient[Ingredients.Length];
+            for (int i = 0; i < Ingredients.Length; i++)
+            {
+                ingredients[i] = Ingredients[i].Clone();
+            }
+            
+            EnchantingRecipeIngredient[] validTargets = new EnchantingRecipeIngredient[ValidTargets.Length];
+            for (int i = 0; i < ValidTargets.Length; i++)
+            {
+                validTargets[i] = ValidTargets[i].Clone();
+            }
+            EnchantingRecipeOutput[] enchantments = new EnchantingRecipeOutput[Enchantments.Length];
+            for (int i = 0; i < Enchantments.Length;)
+            {
+                enchantments[i] = Enchantments[i].Clone();
+            }
+            
+            EnchantingRecipeOutput[] output = new EnchantingRecipeOutput[Output.Length];
+            for (int i = 0; i < Output.Length;)
+            {
+                output[i] = Output[i].Clone();
+            }
+            return new EnchantingRecipe()
+            {
+                RecipeId = RecipeId,
+                Enabled = Enabled,
+                Name = Name,
+                code = code,
+                processingHours = processingHours,
+                Ingredients = ingredients,
+                Enchantments = enchantments,
+                Output = Output
+                //ValidTargets = validTargets,
+
+            };
+        }
+        /// <summary>
+        /// Resolves Wildcards in the ingredients
+        /// </summary>
+        /// <param name="world"></param>
+        /// <returns></returns>
+        public Dictionary<string, string[]> GetNameToCodeMapping(IWorldAccessor world)
+        {
+            Dictionary<string, string[]> mappings = new Dictionary<string, string[]>();
+
+            if (Ingredients == null || Ingredients.Length == 0) return mappings;
+
+            foreach (var ingred in Ingredients)
+            {
+                if (!ingred.Code.Path.Contains('*')) continue;
+
+                int wildcardStartLen = ingred.Code.Path.IndexOf('*');
+                int wildcardEndLen = ingred.Code.Path.Length - wildcardStartLen - 1;
+
+                List<string> codes = new List<string>();
+
+                if (ingred.Type == EnumItemClass.Block)
+                {
+                    for (int i = 0; i < world.Blocks.Count; i++)
+                    {
+                        if (world.Blocks[i].Code == null || world.Blocks[i].IsMissing) continue;
+
+                        if (WildcardUtil.Match(ingred.Code, world.Blocks[i].Code))
+                        {
+                            string code = world.Blocks[i].Code.Path.Substring(wildcardStartLen);
+                            string codepart = code.Substring(0, code.Length - wildcardEndLen);
+                            if (ingred.AllowedVariants != null && !ingred.AllowedVariants.Contains(codepart)) continue;
+
+                            codes.Add(codepart);
+
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < world.Items.Count; i++)
+                    {
+                        if (world.Items[i].Code == null || world.Items[i].IsMissing) continue;
+
+                        if (WildcardUtil.Match(ingred.Code, world.Items[i].Code))
+                        {
+                            string code = world.Items[i].Code.Path.Substring(wildcardStartLen);
+                            string codepart = code.Substring(0, code.Length - wildcardEndLen);
+                            if (ingred.AllowedVariants != null && !ingred.AllowedVariants.Contains(codepart)) continue;
+
+                            codes.Add(codepart);
+                        }
+                    }
+                }
+
+                mappings[ingred.Name ?? "wildcard" + mappings.Count] = codes.ToArray();
+            }
+
+            return mappings;
+        }
+
+        public bool Resolve(IWorldAccessor world, string sourceForErrorLogging)
+        {
+            bool ok = true;
+
+            for (int i = 0; i < Ingredients.Length; i++)
+            {
+                ok &= Ingredients[i].Resolve(world, sourceForErrorLogging);
+            }
+
+            for (int i = 0; i < ValidTargets.Length; i++)
+            {
+                ok &= ValidTargets[i].Resolve(world, sourceForErrorLogging);
+            }
+            for (int i = 0; i < Enchantments.Length; i++)
+            {
+                ok &= Enchantments[i].Resolve(world, sourceForErrorLogging);
+            }
+            for (int i = 0; i < Output.Length; i++)
+            {
+                ok &= Output[i].Resolve(world, sourceForErrorLogging);
+            }
+
+            return ok;
+        }
+        /// <summary>
+        /// Serializes the enchantment
+        /// </summary>
+        /// <param name="writer"></param>
+        public void ToBytes(BinaryWriter writer)
+        {
+            writer.Write(code);
+            writer.Write(Ingredients.Length);
+            writer.Write(processingHours);
+            for (int i = 0; i < Ingredients.Length; i++)
+            {
+                Ingredients[i].ToBytes(writer);
+            }
+            
+            for (int i = 0; i < ValidTargets.Length; i++)
+            {
+                ValidTargets[i].ToBytes(writer);
+            }
+            for (int i = 0; i < Enchantments.Length; i++)
+            {
+                Enchantments[i].ToBytes(writer);
+            }
+            
+            for (int i = 0; i < Output.Length; i++)
+            {
+                Output[i].ToBytes(writer);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the enchantment
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="resolver"></param>
+        public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
+        {
+            code = reader.ReadString();
+            Ingredients = new EnchantingRecipeIngredient[reader.ReadInt32()];
+
+            for (int i = 0; i < Ingredients.Length; i++)
+            {
+                Ingredients[i] = new EnchantingRecipeIngredient();
+                Ingredients[i].FromBytes(reader, resolver);
+                Ingredients[i].Resolve(resolver, "Enchanting Recipe (FromBytes)");
+            }
+            
+            for (int i = 0; i < ValidTargets.Length; i++)
+            {
+                ValidTargets[i] = new EnchantingRecipeIngredient();
+                ValidTargets[i].FromBytes(reader, resolver);
+                ValidTargets[i].Resolve(resolver, "Enchanting Recipe (FromBytes)");
+            }
+            for (int i = 0; i < Enchantments.Length; i++)
+            {
+                Enchantments[i] = new EnchantingRecipeOutput();
+                Enchantments[i].FromBytes(reader, resolver.ClassRegistry);
+                Enchantments[i].Resolve(resolver, "Enchanting Recipe (FromBytes)");
+
+                
+                for (int i = 0; i < Output.Length; i++)
+                {
+                    Output[i] = new EnchantingRecipeOutput();
+                    Output[i].FromBytes(reader, resolver.ClassRegistry);
+                    Output[i].Resolve(resolver, "Enchanting Recipe (FromBytes)");
+                }
+
+                processingHours = reader.ReadDouble();
+            }
+        }*/
+    }
+    #endregion
+    #region Output
+    public class EnchantingRecipeOutput : JsonItemStack
+    {
+        public string enchantName;
+        public int enchantPower;
+
+        public new EnchantingRecipeOutput Clone()
+        {
+            EnchantingRecipeOutput stack = new EnchantingRecipeOutput()
+            {
+                enchantName = enchantName,
+                enchantPower = enchantPower
+            };
+
+            if (Attributes != null) stack.Attributes = Attributes.Clone();
+
+            return stack;
+        }
+        /// <summary>
+        /// Deserializes the enchantment
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="resolver"></param>
+        public override void ToBytes(BinaryWriter writer)
+        {
+            writer.Write(enchantName);
+            writer.Write((int)enchantPower);
+        }
+        /// <summary>
+        /// Deserializes the enchantment
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="resolver"></param>
+        public override void FromBytes(BinaryReader reader, IClassRegistryAPI instancer)
+        {
+            base.FromBytes(reader, instancer);
+
+            enchantName = reader.ReadString();
+            enchantPower = reader.ReadInt32();
+        }
+    }
+    #endregion
+    #region IRecipeBase
+    /*
+    public interface IEnchantingBase<T>
+    {
+        AssetLocation Name { get; set; }
+
+        bool Enabled { get; set; }
+
+        IRecipeIngredient[] Ingredients { get; }
+
+        IRecipeOutput Output { get; }
+
+        Dictionary<string, string[]> GetNameToCodeMapping(IWorldAccessor world);
+
+        bool Resolve(IWorldAccessor world, string sourceForErrorLogging);
+
+        T Clone();
+    }*/
+    #endregion
+}

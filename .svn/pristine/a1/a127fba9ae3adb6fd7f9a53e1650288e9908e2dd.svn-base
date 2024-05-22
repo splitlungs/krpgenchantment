@@ -1,0 +1,183 @@
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Vintagestory.API.Common;
+using Vintagestory.API.Config;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
+using Vintagestory.ServerMods;
+using Vintagestory.GameContent;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
+
+namespace KRPGLib.Enchantment
+{
+    public class EnchantingRecipeRegistry
+    {
+        private static EnchantingRecipeRegistry loaded;
+        private List<EnchantingRecipe> enchantingRecipes = new List<EnchantingRecipe>();
+
+        public List<EnchantingRecipe> EnchantingRecipes
+        {
+            get
+            {
+                return enchantingRecipes;
+            }
+            set
+            {
+                enchantingRecipes = value;
+            }
+        }
+
+        public static EnchantingRecipeRegistry Create()
+        {
+            if (loaded == null)
+            {
+                loaded = new EnchantingRecipeRegistry();
+            }
+            return Loaded;
+        }
+
+        public static EnchantingRecipeRegistry Loaded
+        {
+            get
+            {
+                if (loaded == null)
+                {
+                    loaded = new EnchantingRecipeRegistry();
+                }
+                return loaded;
+            }
+        }
+
+        public static void Dispose()
+        {
+            if (loaded == null) return;
+            loaded = null;
+        }
+    }
+
+    public class EnchantingRecipeSystem : ModSystem
+    {
+        public static bool canRegister = true;
+        public static List<EnchantingRecipe> EnchantingRecipes { get; private set; }
+        // public static Dictionary<string, EnchantingRecipe> EnchantingRecipes = new Dictionary<string, EnchantingRecipe>();
+        ICoreAPI Api;
+        ICoreServerAPI sApi;
+        bool classExclusiveRecipes = true;
+
+        public override double ExecuteOrder()
+        {
+            return 0.6;
+        }
+        public override void StartPre(ICoreAPI api)
+        {
+            canRegister = true;
+        }
+        public override bool ShouldLoad(EnumAppSide side)
+        {
+            return side == EnumAppSide.Server;
+        }
+        public override void Start(ICoreAPI api)
+        {
+            base.Start(api);
+            Api = api;
+        }
+        public override void StartServerSide(ICoreServerAPI api)
+        {
+            EnchantingRecipeRegistry.Create();
+            this.sApi = api;
+            Api.Logger.Event("KRPG Enchanting Recipe System loaded.");
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            EnchantingRecipeRegistry.Dispose();
+        }
+        // TODO: Change classExclusiveRecipes to our own config
+        public override void AssetsLoaded(ICoreAPI api)
+        {
+            if (!(api is ICoreServerAPI sapi)) return;
+            Dictionary<AssetLocation, EnchantingRecipe> recipes = sapi.Assets.GetMany<EnchantingRecipe>(sapi.Server.Logger, "recipes/enchanting");
+
+            // TODO: Change classExclusiveRecipes to our own config
+            classExclusiveRecipes = sapi.World.Config.GetBool("classExclusiveRecipes", true);
+
+            EnchantingRecipes = new List<EnchantingRecipe>();
+
+            // LoadEnchantingRecipes(sapi);
+            foreach (var val in recipes)
+            {
+                if (!val.Value.Enabled) continue;
+
+                val.Value.ResolveIngredients(sapi.World);
+                //val.Value.Resolve(sapi.World, "enchanting recipe " + val.Key);
+                RegisterEnchantingRecipe(val.Value);
+            }
+            sapi.World.Logger.Event("{0} enchanting recipes loaded.", EnchantingRecipes.Count);
+            sapi.World.Logger.StoryEvent("Enchanting...");
+        }
+        public static EnchantingRecipe matchRecipeEnchanter(IWorldAccessor world, ItemStack reagentInput, ItemStack targetInput, string[] setup, EnchantingBE enchanter = null)
+        {
+            string recipeKey = "setup: ";
+            foreach (string s in setup)
+            {
+                recipeKey += s + "+";
+            }
+            recipeKey += "ingredients: ";
+            if (reagentInput != null)
+            {
+                recipeKey += "+" + reagentInput.Collectible.Code;
+            }
+            return null;
+        }
+        // Load from files
+        public void LoadEnchantingRecipes(ICoreAPI api)
+        {
+            Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Logger, "recipes/enchanting-table");
+            int recipeQuantity = 0;
+
+            foreach (var val in files)
+            {
+                if (val.Value is JObject)
+                {
+                    EnchantingRecipe rec = val.Value.ToObject<EnchantingRecipe>();
+                    if (!rec.Enabled) continue;
+
+                    rec.ResolveIngredients(api.World);
+                    //rec.Resolve(api.World, "enchanting recipe " + val.Key);
+                    EnchantingRecipeRegistry.Loaded.EnchantingRecipes.Add(rec);
+
+                    recipeQuantity++;
+                }
+                if (val.Value is JArray)
+                {
+                    foreach (var token in (val.Value as JArray))
+                    {
+                        EnchantingRecipe rec = token.ToObject<EnchantingRecipe>();
+                        if (!rec.Enabled) continue;
+
+                        rec.ResolveIngredients(api.World);
+                        // rec.Resolve(api.World, "enchanting recipe " + val.Key);
+                        EnchantingRecipeRegistry.Loaded.EnchantingRecipes.Add(rec);
+
+                        recipeQuantity++;
+                    }
+                }
+            }
+
+            api.World.Logger.Event("{0} enchanting recipes loaded", recipeQuantity);
+            api.World.Logger.StoryEvent(Lang.Get("Enchanted evenings..."));
+        }
+
+        // Register to EnchantingRecipeSystem
+        public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
+        {
+            if (!canRegister) throw new InvalidOperationException("Coding error: Can no long register enchanting recipes. Register them during AssetsLoad/AssetsFinalize and with ExecuteOrder < 99999");
+            EnchantingRecipes.Add(recipe);
+        }
+    }
+}

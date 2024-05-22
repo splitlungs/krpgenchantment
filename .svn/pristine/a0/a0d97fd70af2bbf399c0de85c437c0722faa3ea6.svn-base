@@ -1,0 +1,24 @@
+{
+  "code": "enchantment-lightning-1",
+  "name": "Call Lightning I",
+  "processingHours": 24,
+  "requiresTrait": null,
+  "ingredients": {
+    "reagent": {
+      "type": "item",
+      "code": "krpgenchantment:reagent-lightning",
+      "quantity": 1
+    },
+    "target": {
+      "type": "item",
+      "code": "game:knife-generic-gold",
+      "quantity": 1
+    }
+  },
+  "enchantments": [
+    {
+      "enchantName": "enchantment-lightning",
+      "enchantPower": 1
+    }
+  ]
+}

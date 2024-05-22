@@ -1,0 +1,25 @@
+{
+  "name": "enchantment-lightning-1",
+  "processingHours": 1,
+  "requiresTrait": null,
+  "ingredients": {
+    "reagent": {
+      "type": "item",
+      "code": "krpgenchantment:reagent-lightning",
+      "quantity": 1
+    },
+    "target": {
+      "type": "item",
+      "code": "game:blade-*",
+      "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver" ],
+      "quantity": 1
+    }
+  },
+  "enchantments": [
+    {
+      "enchantCode": "lightning",
+      "enchantName": "enchantment-lightning-1",
+      "enchantPower": 1
+    }
+  ]
+}

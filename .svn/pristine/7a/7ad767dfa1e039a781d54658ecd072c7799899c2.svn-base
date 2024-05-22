@@ -1,0 +1,25 @@
+{
+  "name": "enchantment-pit-1",
+  "processingHours": 1,
+  "requiresTrait": null,
+  "ingredients": {
+    "reagent": {
+      "type": "item",
+      "code": "krpgenchantment:reagent-pit",
+      "quantity": 1
+    },
+    "target": {
+      "type": "item",
+      "code": "game:bow-*",
+      "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+      "quantity": 1
+    }
+  },
+  "enchantments": [
+    {
+      "enchantCode": "pit",
+      "enchantName": "enchantment-pit-1",
+      "enchantPower": 1
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "code",
+  "modid": "krpgenchantment",
+  "name": "KRPGEnchantment",
+  "authors": ["BloodThunder"],
+  "description": "Adds enchantments for use with KRPG systems.",
+  "version": "0.2.1",
+  "dependencies": {
+    "game": ""
+  }
+}

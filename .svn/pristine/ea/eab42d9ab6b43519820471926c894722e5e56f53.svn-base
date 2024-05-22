@@ -1,0 +1,25 @@
+{
+  "code": "enchantment-lightning-1",
+  "processingHours": 24,
+  "requiresTrait": null,
+  "ingredients": [
+    {
+      "type": "item",
+      "code": "krpg-reagent-lightning",
+      "quantity": 1
+    }
+  ],
+  "validTargets": [
+    {
+      "type": "item",
+      "code": "krpg-wand-*",
+      "quantity": 1
+    }
+  ],
+  "enchantments": [
+    {
+      "code": "enchantment-lightning",
+      "enchantPower": 1
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "code": "enchanting-table",
+  "class": "EnchantingBlock",
+  "entityClass": "EnchantingBE",
+  "maxStackSize": 1,
+  "maxSlotStackSize": 2,
+  "behaviors": [
+    { "name": "BreakIfFloating" },
+    { "name": "Container" }
+  ],
+  "storageFlags": 5,
+  "attributes": {
+    "propickable": true,
+    "drop": {
+      "normal-generic": true
+    }
+    },
+    "variantgroups": [
+      {
+        "code": "type",
+        "state": "normal-generic"
+      }
+    ],
+    "creativeinventory": {
+      "general": [ "*" ],
+      "terrain": [ "*" ],
+      "construction": [ "*" ]
+    },
+    "shape": { "base": "krpgenchantment:block/enchanting-table" },
+    "replaceable": 90,
+    "requiredMiningTier": 0,
+    "fertility": 0,
+    "sounds": {
+      "walk": "game:walk/stone",
+      "byTool": {
+        "Pickaxe": {
+          "hit": "game:block/rock-hit-pickaxe",
+          "break": "game:block/rock-break-pickaxe"
+        }
+      }
+    },
+    "heldTpIdleAnimation": "holdbothhandslarge",
+    "heldTpUseAnimation": "twohandplaceblock",
+    "tpHandTransform": {
+      "translation": {
+        "x": -1.23,
+        "y": -0.91,
+        "z": -0.8
+      },
+      "rotation": {
+        "x": -2,
+        "y": 25,
+        "z": -78
+      },
+      "scale": 0.4
+    },
+    "particleProperties": [
+      {
+        "hsvaColor": [
+          {
+            "avg": 20,
+            "var": 20
+          },
+          {
+            "avg": 255,
+            "var": 50
+          },
+          {
+            "avg": 255,
+            "var": 50
+          },
+          {
+            "avg": 255,
+            "var": 0
+          }
+        ],
+        "gravityEffect": {
+          "avg": 0,
+          "var": 0
+        },
+        "posOffset": [
+          {
+            "avg": 0,
+            "var": 0.1
+          },
+          {
+            "avg": 0,
+            "var": 0
+          },
+          {
+            "avg": 0,
+            "var": 0.1
+          }
+        ],
+        "velocity": [
+          {
+            "avg": 0,
+            "var": 0.025
+          },
+          {
+            "avg": 0.5,
+            "var": 0.1
+          },
+          {
+            "avg": 0,
+            "var": 0.025
+          }
+        ],
+        "quantity": { "avg": 0.015 },
+        "size": {
+          "avg": 0.5,
+          "var": 0
+        },
+        "sizeEvolve": {
+          "transform": "quadratic",
+          "factor": -0.7
+        },
+        "lifeLength": { "avg": 1.5 },
+        "glowLevel": 64
+      },
+      {
+        "hsvaColor": [
+          {
+            "avg": 0,
+            "var": 0
+          },
+          {
+            "avg": 0,
+            "var": 0
+          },
+          {
+            "avg": 40,
+            "var": 30
+          },
+          {
+            "avg": 220,
+            "var": 50
+          }
+        ],
+        "opacityEvolve": {
+          "transform": "quadratic",
+          "factor": -16
+        },
+        "gravityEffect": {
+          "avg": 0,
+          "var": 0
+        },
+        "posOffset": [
+          {
+            "avg": 0,
+            "var": 0.1
+          },
+          {
+            "avg": 0,
+            "var": 0
+          },
+          {
+            "avg": 0,
+            "var": 0.1
+          }
+        ],
+        "velocity": [
+          {
+            "avg": 0,
+            "var": 0.025
+          },
+          {
+            "avg": 0.15,
+            "var": 0.1
+          },
+          {
+            "avg": 0,
+            "var": 0.025
+          }
+        ],
+        "quantity": { "avg": 0.05 },
+        "size": {
+          "avg": 0.25,
+          "var": 0.05
+        },
+        "sizeEvolve": {
+          "transform": "linear",
+          "factor": 0.5
+        },
+        "particleModel": "Quad"
+      }
+    ]
+  }

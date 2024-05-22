@@ -1,0 +1,29 @@
+{
+  "ingredientPattern": "HPH,SGS,HPH",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "P": {
+      "type": "item",
+      "code": "game:poultice-linen-honey-sulfur"
+    },
+    "H": {
+      "type": "item",
+      "code": "game:honeyportion",
+      "quantity": 8
+    },
+    "S": {
+      "type": "item",
+      "code": "game:powderedsulfur",
+      "quantity": 3
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-healing"
+  }
+}

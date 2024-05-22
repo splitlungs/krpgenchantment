@@ -1,0 +1,174 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="cairo-sharp">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\cairo-sharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\protobuf-net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VSCreativeMod">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Mods\VSCreativeMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VSEssentials">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Mods\VSEssentials.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VSSurvivalMod">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Mods\VSSurvivalMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+<!--#if (IncludeVSSurvivalMod)
+    <Reference Include="VSSurvivalMod">
+      <HintPath>$(VINTAGE_STORY)/Mods/VSSurvivalMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeVSEssentials)
+    <Reference Include="VSEssentials">
+      <HintPath>$(VINTAGE_STORY)/Mods/VSEssentials.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeVSCreativeMod)
+    <Reference Include="VSCreativeMod">
+      <HintPath>$(VINTAGE_STORY)/Mods/VSCreativeMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeNewtonsoft)
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeHarmony)
+    <Reference Include="0Harmony">
+      <HintPath>$(VINTAGE_STORY)/Lib/0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeVintagestoryLib)
+    <Reference Include="VintagestoryLib">
+      <HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeProtobuf)
+    <Reference Include="protobuf-net">
+      <HintPath>$(VINTAGE_STORY)/Lib/protobuf-net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeCairoSharp)
+    <Reference Include="cairo-sharp">
+      <HintPath>$(VINTAGE_STORY)/Lib/cairo-sharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+<!--#if (IncludeSQLite)
+    <Reference Include="Microsoft.Data.Sqlite">
+      <HintPath>$(VINTAGE_STORY)/Lib/Microsoft.Data.Sqlite.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+#endif -->
+  </ItemGroup>
+
+<ItemGroup>
+  <Content Include="assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+  <None Remove="assets\krpgenchantment\patches\game-creature-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\game-item-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-chilling-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-igniting-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-chilling-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-flaming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-frost-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-harming-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-healing-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-igniting-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-knockback-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-lightning-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-pit-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-chilling.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-flaming.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-frost.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-harming.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-healing.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-igniting.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-knockback.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-lightning.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-pit.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-shocking.json" />
+  <Content Include="modinfo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Content Update="assets\krpgenchantment\recipes\enchanting-table\axe\axe-shocking-1.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+
+</Project>

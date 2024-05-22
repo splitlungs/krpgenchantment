@@ -1,0 +1,216 @@
+{
+	"code": "krpg-sword",
+	"damagedby": [ "blockbreaking", "attacking" ],
+	"tool": "sword",
+	"class": "ItemSword",
+	"attributes": {
+		"handbook": {
+			"groupBy": [ "sword-*" ]
+		},
+		"toolrackTransformByType": {
+			"*": {
+				"rotation": {
+					"y": 180,
+					"z": 1
+				},
+				"translation": {
+					"x": -0.1,
+					"y": 0.6
+				},
+				"scale": 1.25
+			}
+		},
+		"groundStorageTransformByType": {
+			"*": {
+				"translation": {
+					"x": 0.24,
+					"y": 0.195,
+					"z": -0.06
+				},
+				"rotation": {
+					"x": 24,
+					"y": 61,
+					"z": -87
+				},
+				"scale": 0.88
+			}
+		},
+		"enchantments": {
+			"enchantable": true,
+			"chilling": 0,
+			"harm": 0,
+			"heal": 0,
+			"ignite": 0,
+			"knockback": 0,
+			"light": 0,
+			"lightning": 1,
+			"pit": 0
+		}
+	},
+	"behaviors": [
+		{
+			"name": "GroundStorable",
+			"properties": {
+				"layout": "WallHalves",
+				"wallOffYByType": {
+					"blade-forlorn-iron": 2,
+					"blade-claymore-ruined": 2,
+					"blade-arming-ruined": 2,
+					"*": 1
+				},
+				"sprintKey": true,
+				"selectionBox": {
+					"x1": 0,
+					"y1": 0,
+					"z1": 0,
+					"x2": 1,
+					"y2": 0.1,
+					"z2": 1
+				},
+				"collisionBox": {
+					"x1": 0,
+					"y1": 0,
+					"z1": 0,
+					"x2": 0,
+					"y2": 0,
+					"z2": 0
+				}
+			}
+		},
+		{
+			"name": "EnchantmentBehavior",
+			"properties":
+			{
+				"enchantable": true,
+				"chilling": 0,
+				"harm": 0,
+				"heal": 0,
+				"ignite": 0,
+				"knockback": 0,
+				"light": 0,
+				"lightning": 1,
+				"pit": 0
+			}
+		}
+	],
+	"variantgroups": [
+		{
+			"code": "type",
+			"states": [ "lightning" ]
+		},
+		{
+			"code": "metal",
+			"states": [ "admin" ]
+		}
+	],
+	"shapeByType": {
+		"*": { "base": "game:item/tool/blade/admin" }
+	},
+	"heldTpHitAnimationByType": {
+		"*": "falx"
+	},
+	"texturesByType": {
+		"*": { "metal": { "base": "game:block/fire-pink" } }
+	},
+	"attackRangebytype": {
+		"*": 2.5
+	},
+	"tooltierbytype": {
+		"*": 5
+	},
+	"miningspeedbytype": {
+		"*": {
+			"wood": 7,
+			"leaves": 7
+		}
+	},
+	"attackpowerbytype": {
+		"*": 5
+	},
+	"durabilitybytype": {
+		"*": 9999
+	},
+	"creativeinventoryByType": {
+		"*": {
+			"general": [ "*" ],
+			"items": [ "*" ],
+			"tools": [ "*" ],
+			"clutterByType": { "*-ruined": [ "*" ] }
+		}
+	},
+	"guiTransformByType": {
+		"*": {
+			"translation": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"rotation": {
+				"x": -53,
+				"y": 118,
+				"z": -5
+			},
+			"origin": {
+				"x": 0.65,
+				"y": 0.1,
+				"z": 0.37
+			},
+			"scale": 1.65
+		}
+	},
+	"fpHandTransformByType": {
+		"*": {
+			"translation": {
+				"x": -0.2,
+				"y": -0.2,
+				"z": 0
+			},
+			"rotation": {
+				"x": -3,
+				"y": 15,
+				"z": 90
+			},
+			"scale": 3.18
+		}
+	},
+	"groundTransformByType": {
+		"*": {
+			"translation": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"rotation": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"origin": {
+				"x": 0.5,
+				"y": 0,
+				"z": 0.5
+			},
+			"scale": 3.4
+		}
+	},
+	"tpHandTransformByType": {
+		"*": {
+			"translation": {
+				"x": -1.03,
+				"y": -0.005,
+				"z": -0.66
+			},
+			"rotation": {
+				"x": 85,
+				"y": 0,
+				"z": 2
+			},
+			"origin": {
+				"x": 0.5,
+				"y": 0,
+				"z": 0.5
+			},
+			"scale": 0.8
+		}
+	}
+}

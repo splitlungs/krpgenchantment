@@ -1,0 +1,36 @@
+{
+  "block-krpg-enchanting-table": "Enchanting Table",
+  "krpg-enchanter-locked": "Locked ",
+
+  "item-krpg-reagent-temporal": "Temporal Reagent",
+  "item-krpg-reagent-chilling": "Chilling Reagent",
+  "item-krpg-reagent-harming": "Harming Reagent",
+  "item-krpg-reagent-healing": "Healing Reagent",
+  "item-krpg-reagent-igniting": "Igniting Reagent",
+  "item-krpg-reagent-knockback": "Knockback Reagent",
+  "item-krpg-reagent-light": "Light Reagent",
+  "item-krpg-reagent-lightning": "Lightning Reagent",
+  "item-krpg-reagent-pit": "Pit Reagent",
+  "item-krpg-sword-earth-admin": "Sword of Earth",
+  "item-krpg-sword-fire-admin": "Sword of Fire",
+  "item-krpg-sword-frost-admin": "Sword of Frost",
+  "item-krpg-sword-lightning-admin": "Sword of Lightning",
+
+  "krpg-enchant": "Enchant",
+  "krpg-enchantable": "Enchantable",
+  "krpg-enchantment-chilling": "Chilling",
+  "krpg-enchantment-death": "Death",
+  "krpg-enchantment-harming": "Harming",
+  "krpg-enchantment-healing": "Healing",
+  "krpg-enchantment-igniting": "Igniting",
+  "krpg-enchantment-kb": "Knockback",
+  "krpg-enchantment-lightning": "Call Lightning",
+  "krpg-enchantment-lightning-1": "Call Lightning I",
+  "krpg-enchantment-lightning-2": "Call Lightning II",
+  "krpg-enchantment-pit": "Pit",
+
+  "krpg-magicdamage-arcane": "Arcane Damage",
+
+  "craftinginfo-enchanting-title": "Enchanting",
+  "craftinginfo-enchanting-text": "To begin enchanting, you will need an Enchanting Table. Reagents must be consumed to enchant a Tool."
+}

@@ -1,0 +1,90 @@
+﻿using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Config;
+using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
+
+namespace KRPGLib.Enchantment
+{
+    [HarmonyPatch(typeof(EntityProjectile))]
+    internal class EntityProjectile_Patch
+    {
+        [HarmonyPatch("impactOnEntity")]
+        public static void Postfix(EntityProjectile __instance, Entity entity)
+        {
+            if (__instance != null)
+            {
+                int power = 0;
+
+                // Chilling
+                power = __instance.Attributes.GetInt("chilling", 0);
+                if (power > 0)
+                {
+                    EntityBehaviorBodyTemperature ebbt = entity.GetBehavior<EntityBehaviorBodyTemperature>();
+
+                    // If we encounter something without one, bail
+                    if (ebbt == null)
+                        return;
+
+                    ebbt.CurBodyTemperature = power * -10f;
+                }
+
+                // Igniting
+                if (__instance.Attributes.GetInt("igniting", 0) > 0)
+                {
+                    entity.IsOnFire = true;
+                }
+
+                // Lightning
+                if (__instance.Attributes.GetInt("lightning", 0) > 0)
+                {
+                    WeatherSystemServer weatherSystem = __instance.World.Api.ModLoader.GetModSystem<WeatherSystemServer>();
+                    // It should default to 0f. Stun should stop at 0.5. Absorbtion should start at 1f.
+                    weatherSystem.SpawnLightningFlash(entity.ServerPos.XYZ);
+                }
+
+                // Pit
+                power = __instance.Attributes.GetInt("pit", 0);
+                if (power > 0)
+                {
+                    BlockPos bpos = entity.ServerPos.AsBlockPos;
+                    List<Vec3d> pitArea = new List<Vec3d>();
+
+                    for (int x = 0; x <= power; x++)
+                    {
+                        for (int y = 0; y <= power; y++)
+                        {
+                            for (int z = 0; z <= power; z++)
+                            {
+                                pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z + z));
+                                pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z - z));
+                                pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z - z));
+                                pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z + z));
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < pitArea.Count; i++)
+                    {
+                        BlockPos ipos = bpos;
+                        ipos.Set(pitArea[i]);
+                        Block block = __instance.World.BlockAccessor.GetBlock(ipos);
+
+                        if (block != null)
+                        {
+                            string blockCode = block.Code.ToString();
+                            if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel"))
+                                __instance.World.BlockAccessor.BreakBlock(ipos, entity as IPlayer);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+﻿namespace KRPGLib.Enchantment
+{
+    public enum EnumEnchantments { chilling, flaming, frost, harming, healing, knockback, igniting, lightning, pit, shocking }
+    public class Enchantment
+    {
+        public string Code = "enchantment";
+        public string Name = "Enchantment";
+        public string Description = "Description of an enchantment.";
+        public string Trigger = "attack";
+        public string ItemType = "collectible";
+        public float Multiplier = 1f;
+        public bool Enabled = false;
+    }
+}
