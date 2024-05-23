@@ -109,7 +109,6 @@ namespace KRPGLib.Enchantment
             Api = api;
             ICoreServerAPI sApi = api as ICoreServerAPI;
         }
-        
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
         {
             return assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));

@@ -16,8 +16,10 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.ServerMods.WorldEdit;
 
+// Deprecated for Behaviors
 namespace KRPGLib.Enchantment
 {
+    /*
     [HarmonyPatch(typeof(CollectibleObject))]
     internal class CollectibleObject_Patch
     {
@@ -40,6 +42,7 @@ namespace KRPGLib.Enchantment
             power = itemslot.Itemstack.Attributes.GetInt("igniting", 0);
             if (power > 0)
             {
+                
                 attackedEntity.IsOnFire = true;
             }
             // Knockback
@@ -97,5 +100,5 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
-    }
+    }*/
 }
