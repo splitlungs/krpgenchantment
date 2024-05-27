@@ -20,8 +20,12 @@ using Vintagestory.GameContent;
 namespace KRPGLib.Enchantment
 {
     #region Recipe
-    public class EnchantingRecipe : IByteSerializable
+    public class EnchantingRecipe : IByteSerializable, IRecipeBase<EnchantingRecipe>
     {
+        /// <summary>
+        /// Necessary for registering
+        /// </summary>
+        public string Code = "enchantingrecipes";
         /// <summary>
         /// How many in-game hours to complete recipe.
         /// </summary>
@@ -33,12 +37,17 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Name of the recipe, optional
         /// </summary>
-        public AssetLocation Name;
+        public AssetLocation Name { get; set; }
         /// <summary>
         /// Set by the recipe loader during json deserialization, if false the recipe will never be loaded.
         /// If loaded however, you can use this field to disable recipes during runtime.
         /// </summary>
-        public bool Enabled = true;
+        public bool Enabled { get; set; } = true;
+
+        public JsonItemStack Output = null;
+        IRecipeIngredient[] IRecipeBase<EnchantingRecipe>.Ingredients => Ingredients.Values.ToArray();
+        IRecipeOutput IRecipeBase<EnchantingRecipe>.Output => Output;
+
         /// <summary>
         /// If set only players with given trait can use this recipe
         /// </summary>
@@ -92,6 +101,39 @@ namespace KRPGLib.Enchantment
             }
 
             return outStack;
+        }
+        public bool Resolve(IWorldAccessor world, string csourceForErrorLoggingode)
+        {
+            this.world = world;
+
+            // HARDCODED TO 2 INGREDIENTS CURRENTLY
+            // TODO: FIX THIS BULLSHIT
+            string code = "";
+            resolvedIngredients = new EnchantingRecipeIngredient[2];
+            for (int i = 0; i < 2; i++)
+            {
+                // IT'S HARDCODED, I KNOW
+                // TODO: UUUUUGHHHHHH
+                if (i == 0) code = "reagent";
+                if (i == 1) code = "target";
+
+                if (!Ingredients.ContainsKey(code))
+                {
+                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", code, code);
+                    return false;
+                }
+
+                if (!Ingredients[code].Resolve(world, "Enchanting recipe"))
+                {
+                    world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", code, Ingredients[code]);
+                    return false;
+                }
+
+                resolvedIngredients[i] = Ingredients[code].Clone();
+                resolvedIngredients[i].PatternCode = code;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -381,6 +423,7 @@ namespace KRPGLib.Enchantment
                 writer.Write(false);
                 resolvedIngredients[i].ToBytes(writer);
             }
+            writer.Write(Code);
             writer.Write(Name.ToShortString());
             writer.Write(Attributes == null);
             if (Attributes != null)
@@ -426,6 +469,7 @@ namespace KRPGLib.Enchantment
                 resolvedIngredients[i] = new EnchantingRecipeIngredient();
                 resolvedIngredients[i].FromBytes(reader, resolver);
             }
+            Code = reader.ReadString();
             Name = new AssetLocation(reader.ReadString());
             if (!reader.ReadBoolean())
             {

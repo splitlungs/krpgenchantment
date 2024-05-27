@@ -65,7 +65,6 @@ namespace KRPGLib.Enchantment
             // 2. Around all that is 10 pixel padding
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
-            //bgBounds.WithChildren(quernBounds);
 
             // 3. Dialog
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.RightMiddle)
@@ -119,7 +118,7 @@ namespace KRPGLib.Enchantment
             this.nowEnchanting = isEnchanting;
             
             // if (!IsOpened()) return;
-            SingleComposer.GetDynamicText("outputText").SetNewText(outputText);
+            SingleComposer.GetDynamicText("outputText").SetNewText(outputText, true, true);
             SingleComposer.GetToggleButton("enchantToggle").SetValue(isEnchanting);
 
             if (!isEnchanting) return;
@@ -129,6 +128,7 @@ namespace KRPGLib.Enchantment
                 if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
                 lastRedrawMs = capi.ElapsedMilliseconds;
             }
+            
         }
 
         private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
@@ -176,7 +176,6 @@ namespace KRPGLib.Enchantment
         {
             base.OnGuiOpened();
             Inventory.SlotModified += OnInventorySlotModified;
-            // SetupDialog();
         }
 
         public override void OnGuiClosed()

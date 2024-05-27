@@ -11,97 +11,129 @@ using Vintagestory.ServerMods;
 using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Client;
 
 namespace KRPGLib.Enchantment
 {
+    // TODO: Deprecate
+    /*
+    public class EnchantingRecipeRegistry : RecipeRegistryGeneric<EnchantingRecipe>
+    {   
+        // private EnchantingRecipeRegistry()
+        // {
+        //     //do our intialisation stuff, only once!
+        // }
+        // 
+        // private static readonly EnchantingRecipeRegistry registry = new EnchantingRecipeRegistry();
+        // public static EnchantingRecipeRegistry Registry
+        // {
+        //     get
+        //     {
+        //         return registry;
+        //     }
+        // }
+        // 
+        // private List<EnchantingRecipe> enchantingRecipes = new List<EnchantingRecipe>();
+        // /// <summary>
+        // /// List of all loaded Enchanting Recipes
+        // /// </summary>
+        // public List<EnchantingRecipe> EnchantingRecipes
+        // {
+        //     get
+        //     {
+        //         return enchantingRecipes;
+        //     }
+        //     set
+        //     {
+        //         enchantingRecipes = value;
+        //     }
+        // }
+        public List<EnchantingRecipe> EnchantingRecipes;
 
-    public sealed class EnchantingRecipeRegistry
-    {
-        private EnchantingRecipeRegistry()
-        {
-            //do our intialisation stuff, only once!
+        public EnchantingRecipeRegistry() 
+        { 
+            EnchantingRecipes = new List<EnchantingRecipe>();
         }
-
-        private static readonly EnchantingRecipeRegistry registry = new EnchantingRecipeRegistry();
-        public static EnchantingRecipeRegistry Registry
+        public EnchantingRecipeRegistry(List<EnchantingRecipe> recipes)
         {
-            get
+            EnchantingRecipes = recipes;
+        }
+        public override void FromBytes(IWorldAccessor resolver, int quantity, byte[] data)
+        {
+            using MemoryStream input = new MemoryStream(data);
+            BinaryReader reader = new BinaryReader(input);
+            for (int i = 0; i < quantity; i++)
             {
-                return registry;
+                EnchantingRecipe item = new EnchantingRecipe();
+                item.FromBytes(reader, resolver);
+                EnchantingRecipes.Add(item);
             }
         }
 
-        private List<EnchantingRecipe> enchantingRecipes = new List<EnchantingRecipe>();
-        /// <summary>
-        /// List of all loaded Enchanting Recipes
-        /// </summary>
-        public List<EnchantingRecipe> EnchantingRecipes
+        public override void ToBytes(IWorldAccessor resolver, out byte[] data, out int quantity)
         {
-            get
+            quantity = EnchantingRecipes.Count;
+            using MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(memoryStream);
+            foreach (EnchantingRecipe recipe in EnchantingRecipes)
             {
-                return enchantingRecipes;
+                recipe.ToBytes(writer);
             }
-            set
-            {
-                enchantingRecipes = value;
-            }
-        }
-    }
 
-    public class EnchantingRecipeSystem : RecipeLoader
+            data = memoryStream.ToArray();
+        }
+    }*/
+    public class EnchantingRecipeSystem : ModSystem
     {
         public static bool canRegister = true;
-        
-        
+        /// <summary>
+        /// List of all loaded enchanting recipes
+        /// </summary>
+        public List<EnchantingRecipe> EnchantingRecipes = new List<EnchantingRecipe>();
         ICoreAPI Api;
-        ICoreServerAPI sApi;
-        bool classExclusiveRecipes = true;
 
         public override double ExecuteOrder()
         {
-            return 1;
+            return 0.6;
         }
         public override void StartPre(ICoreAPI api)
         {
             canRegister = true;
         }
-        public override bool ShouldLoad(EnumAppSide side)
-        {
-            return side == EnumAppSide.Server;
-        }
         public override void Start(ICoreAPI api)
         {
             base.Start(api);
             Api = api;
+            EnchantingRecipes = api.RegisterRecipeRegistry<RecipeRegistryGeneric<EnchantingRecipe>>("enchantingrecipes").Recipes;
         }
+        /*
         public override void StartServerSide(ICoreServerAPI api)
         {
+            base.StartServerSide(api);
             sApi = api;
             Api.Logger.Event("KRPG Enchanting Recipe System loaded.");
         }
-
         public override void Dispose()
         {
             base.Dispose();
         }
         public override void AssetsLoaded(ICoreAPI api)
         {
-            //override to prevent double loading
+            // Only load on Server side
             if (!(api is ICoreServerAPI sapi)) return;
             this.sApi = sapi;
 
             // TODO: Change classExclusiveRecipes to our own config
             //classExclusiveRecipes = sapi.World.Config.GetBool("classExclusiveRecipes", true);
 
+            // LoadEnchantingRecipes();
         }
         public override void AssetsFinalize(ICoreAPI api)
         {
-            if (!(api is ICoreServerAPI)) return;
-
-            LoadEnchantingRecipes();
+            base.AssetsFinalize(api);
         }
         // Load from files
-        public void LoadEnchantingRecipes()
+        void LoadEnchantingRecipes()
         {
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table");
             int recipeQuantity = 0;
@@ -126,6 +158,7 @@ namespace KRPGLib.Enchantment
             sApi.World.Logger.Event("{0} enchanting recipes loaded from {1} files", recipeQuantity, files.Count);
             sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
         }
+        
         public void LoadRecipe(AssetLocation loc, EnchantingRecipe recipe)
         {
             if (!recipe.Enabled) return;
@@ -181,15 +214,24 @@ namespace KRPGLib.Enchantment
                 foreach (EnchantingRecipe subRecipe in subRecipes)
                 {
                     if (!subRecipe.ResolveIngredients(sApi.World)) continue;
-                    EnchantingRecipeRegistry.Registry.EnchantingRecipes.Add(subRecipe);
+                    RegisterEnchantingRecipe(subRecipe);
                 }
 
             }
             else
             {
                 if (!recipe.ResolveIngredients(sApi.World)) return;
-                EnchantingRecipeRegistry.Registry.EnchantingRecipes.Add(recipe);
+                RegisterEnchantingRecipe(recipe);
             }
+        }*/
+        public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
+        {
+            if (!canRegister)
+            {
+                throw new InvalidOperationException("Coding error: Can no long register enchanting recipes. Register them during AssetsLoad/AssetsFinalize and with ExecuteOrder < 99999");
+            }
+
+            EnchantingRecipes.Add(recipe);
         }
     }
 }

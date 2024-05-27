@@ -180,7 +180,7 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public EnchantingRecipe GetMatchingEnchantingRecipe(ItemSlot inSlot, ItemSlot rSlot)
         {
-            var enchantingRecipes = EnchantingRecipeRegistry.Registry.EnchantingRecipes;
+            var enchantingRecipes = Api.GetEnchantingRecipes();
             if (enchantingRecipes != null)
             {
                 for (int i = 0; i < enchantingRecipes.Count; i++)
@@ -197,10 +197,14 @@ namespace KRPGLib.Enchantment
             return null;
         }
         /// <summary>
-        /// Gets Name of Matching Enchanting Recipe with prefix
+        /// Gets Name of Matching Enchanting Recipe with Enchanter Prefix
         /// </summary>
         /// <returns></returns>
-        public string GetOutputText()
+        public string OutputText
+        {
+            get { return GetOutputText(); }
+        }
+        private string GetOutputText()
         {
             string outText = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
 
@@ -303,7 +307,7 @@ namespace KRPGLib.Enchantment
             }
             
             if (clientDialog != null)
-                clientDialog.Update(hours, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+                clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
 
             MarkDirty();
         }
@@ -332,7 +336,7 @@ namespace KRPGLib.Enchantment
                 // invDialog?.UpdateContents();
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
                 if (clientDialog != null)
-                    clientDialog.Update(hours, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+                    clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
 
                 MarkDirty(true);
             }
@@ -343,7 +347,7 @@ namespace KRPGLib.Enchantment
             dialogTree.SetDouble("inputEnchantTime", inputEnchantTime);
             dialogTree.SetDouble("maxEnchantTime", maxEnchantTime);
             dialogTree.SetBool("nowEnchanting", nowEnchanting);
-            dialogTree.SetString("outputText", GetOutputText());
+            dialogTree.SetString("outputText", OutputText);
         }
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
@@ -367,7 +371,7 @@ namespace KRPGLib.Enchantment
                 double hours = 0d;
                 if (CurrentRecipe != null && nowEnchanting)
                     hours = Api.World.Calendar.TotalHours - inputEnchantTime;
-                string outText = GetOutputText();
+                string outText = OutputText;
 
                 ICoreClientAPI capi = Api as ICoreClientAPI;
                 clientDialog = new GuiDialogEnchantingBE(DialogTitle, hours, maxEnchantTime, nowEnchanting, outText, Inventory, Pos, Api as ICoreClientAPI);
@@ -413,8 +417,13 @@ namespace KRPGLib.Enchantment
                 // clientDialog.SingleComposer.ReCompose();
             }
             
-            clientDialog?.Update(hours, maxEnchantTime, nowEnchanting, GetOutputText(), Api);
+            clientDialog?.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
             MarkDirty();
+
+            if (clientDialog != null && clientDialog.IsOpened())
+            {
+                clientDialog.SingleComposer.ReCompose();
+            }
         }
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
@@ -436,7 +445,13 @@ namespace KRPGLib.Enchantment
 
             if (packetid == (int)EnumBlockEntityPacketId.Open)
             {
+                double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
+                if (clientDialog != null) { clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api); }
+                
+                MarkDirty();
+                
                 player.InventoryManager?.OpenInventory(Inventory);
+                // toggleInventoryDialogClient(player);
             }
 
             if (packetid == 1337)

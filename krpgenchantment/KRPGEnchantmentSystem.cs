@@ -30,6 +30,11 @@ namespace KRPGLib.Enchantment
             DoHarmonyPatch(api);
             Api.Logger.Event("KRPG Enchantment loaded.");
         }
+        public override void AssetsFinalize(ICoreAPI api)
+        {
+            base.AssetsFinalize(api);
+
+        }
         private static void DoHarmonyPatch(ICoreAPI api)
         {
             if (KRPGEnchantmentSystem.harmony == null)

@@ -9,6 +9,7 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
+    /*
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public class RecipeUpload
     {
@@ -111,5 +112,5 @@ namespace KRPGLib.Enchantment
             };
         }
         #endregion
-    }
+    }*/
 }
