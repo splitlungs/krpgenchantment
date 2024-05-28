@@ -23,10 +23,6 @@ namespace KRPGLib.Enchantment
     public class EnchantingRecipe : IByteSerializable
     {
         /// <summary>
-        /// Necessary for registering
-        /// </summary>
-        //public string Code = "enchantingrecipes";
-        /// <summary>
         /// Name of the recipe, optional
         /// </summary>
         public AssetLocation Name;
@@ -68,7 +64,6 @@ namespace KRPGLib.Enchantment
         /// Enchantments to write to the Output
         /// </summary>
         public Dictionary<string, int> Enchantments;
-        //public EnchantingRecipeOutput[] Enchantments;
 
         public EnchantingRecipeIngredient[] resolvedIngredients;
 
@@ -104,61 +99,8 @@ namespace KRPGLib.Enchantment
                 outStack.Attributes.SetInt(enchant.Key, enchant.Value);
             }
 
-            // Apply Enchantments - DEPRECATED
-            /* for (int i = 0; i < Enchantments.Length; i++)
-            {
-                // Overwrite Healing
-                if (Enchantments[i].enchantCode == "healing")
-                {
-                    outStack.Attributes.SetInt("flaming", 0);
-                    outStack.Attributes.SetInt("frost", 0);
-                    outStack.Attributes.SetInt("harming", 0);
-                    outStack.Attributes.SetInt("shocking", 0);
-                }
-                // Overwrite Alternate Damage
-                else if (Enchantments[i].enchantCode == "flaming" || Enchantments[i].enchantCode == "frost" || Enchantments[i].enchantCode == "harming" 
-                    || Enchantments[i].enchantCode == "shocking")
-                    outStack.Attributes.SetInt("healing", 0);
-                // Write Enchant
-                outStack.Attributes.SetInt(Enchantments[i].enchantCode, Enchantments[i].enchantPower);
-            }*/
-
             return outStack;
         }
-        /*
-        public bool Resolve(IWorldAccessor world, string csourceForErrorLoggingode)
-        {
-            this.world = world;
-
-            // HARDCODED TO 2 INGREDIENTS CURRENTLY
-            // TODO: FIX THIS BULLSHIT
-            string code = "";
-            resolvedIngredients = new EnchantingRecipeIngredient[2];
-            for (int i = 0; i < 2; i++)
-            {
-                // IT'S HARDCODED, I KNOW
-                // TODO: UUUUUGHHHHHH
-                if (i == 0) code = "reagent";
-                if (i == 1) code = "target";
-
-                if (!Ingredients.ContainsKey(code))
-                {
-                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", code, code);
-                    return false;
-                }
-
-                if (!Ingredients[code].Resolve(world, "Enchanting recipe"))
-                {
-                    world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", code, Ingredients[code]);
-                    return false;
-                }
-
-                resolvedIngredients[i] = Ingredients[code].Clone();
-                resolvedIngredients[i].PatternCode = code;
-            }
-
-            return true;
-        }*/
 
         /// <summary>
         /// Turns Ingredients into IItemStacks
@@ -173,8 +115,6 @@ namespace KRPGLib.Enchantment
             resolvedIngredients = new EnchantingRecipeIngredient[2];
             for (int i = 0; i < 2; i++)
             {
-                // IT'S HARDCODED, I KNOW
-                // TODO: UUUUUGHHHHHH
                 if (i == 0) pCode = "reagent";
                 if (i == 1) pCode = "target";
 
@@ -250,11 +190,6 @@ namespace KRPGLib.Enchantment
                 }
 
                 mappings[val.Value.Name] = codes.ToArray();
-            }
-
-            foreach (var key in mappings.Keys)
-            {
-                world.Logger.Event("Name {0} mapped to code {1}", key, mappings[key].ToString());
             }
             return mappings;
         }
@@ -484,11 +419,6 @@ namespace KRPGLib.Enchantment
                 writer.Write(enchant.Key);
                 writer.Write((int)enchant.Value);
             }
-
-            /*for (int i = 0; i < Enchantments.Length; i++)
-            {
-                Enchantments[i].ToBytes(writer);
-            }*/
         }
 
         /// <summary>
@@ -545,13 +475,6 @@ namespace KRPGLib.Enchantment
                 string key = reader.ReadString();
                 Enchantments[key] = reader.ReadInt32();
             }
-
-            /* Enchantments = new EnchantingRecipeOutput[ench];
-            for (int i = 0; i < ench; i++)
-            {
-                Enchantments[i] = new EnchantingRecipeOutput();
-                Enchantments[i].FromBytes(reader, resolver);
-            }*/
         }
 
         /// <summary>
@@ -587,15 +510,6 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            /*if (Enchantments != null)
-            {
-                recipe.Enchantments = new EnchantingRecipeOutput[Enchantments.Length];
-                for (int i = 0;i < Enchantments.Length;i++)
-                {
-                    recipe.Enchantments[i] = Enchantments[i]?.Clone();
-                }
-            }*/
-
             recipe.Name = Name;
             recipe.Attributes = Attributes?.Clone();
             recipe.RequiresTrait = RequiresTrait;
@@ -605,47 +519,24 @@ namespace KRPGLib.Enchantment
         }
     }
     #endregion
-    #region Output
-    /*
-    public class EnchantingRecipeOutput : IByteSerializable
+    #region Ingredient
+    public class EnchantingRecipeIngredient : CraftingRecipeIngredient
     {
-        public string enchantCode;
-        public string enchantName;
-        public int enchantPower;
-
-        public EnchantingRecipeOutput Clone()
-        {
-            EnchantingRecipeOutput stack = new EnchantingRecipeOutput()
-            {
-                enchantCode = enchantCode,
-                enchantName = enchantName,
-                enchantPower = enchantPower
-            };
-
-            return stack;
-        }
         /// <summary>
-        /// Deserializes the enchantment
+        /// Identifier for Ingredients
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="resolver"></param>
-        public void ToBytes(BinaryWriter writer)
+        public string PatternCode;
+
+        public override void ToBytes(BinaryWriter writer)
         {
-            writer.Write(enchantCode.ToString());
-            writer.Write(enchantName.ToString());
-            writer.Write((int)enchantPower);
+            base.ToBytes(writer);
+            writer.Write(PatternCode);
         }
-        /// <summary>
-        /// Deserializes the enchantment
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="resolver"></param>
-        public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
+        public override void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
-            enchantCode = reader.ReadString();
-            enchantName = reader.ReadString();
-            enchantPower = reader.ReadInt32();
+            base.FromBytes(reader, resolver);
+            PatternCode = reader.ReadString();
         }
-    }*/
+    }
     #endregion
 }
