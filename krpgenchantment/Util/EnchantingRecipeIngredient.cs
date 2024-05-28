@@ -11,78 +11,82 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
-{ 
-    public class EnchantingRecipeIngredient : IRecipeIngredient
+{
+    public class EnchantingRecipeIngredient : CraftingRecipeIngredient
     {
         /// <summary>
         /// Identifier for Ingredients
         /// </summary>
         public string PatternCode;
 
+        public override void ToBytes(BinaryWriter writer)
+        {
+            base.ToBytes(writer); 
+            writer.Write(PatternCode);
+        }
+        public override void FromBytes(BinaryReader reader, IWorldAccessor resolver)
+        {
+            base.FromBytes(reader, resolver);
+            PatternCode = reader.ReadString();
+        }
+    }
+    // Custom EnchantingRecipeIngredient seemingly has issues deserializing from RecipeRegistry
+    /*
+    public class EnchantingRecipeIngredient : IRecipeIngredient
+    {
         //
         // Summary:
         //     Item or Block
         public EnumItemClass Type;
-
         //
         // Summary:
         //     How much input items are required
         public int Quantity = 1;
-
         //
         // Summary:
         //     What attributes this itemstack must have
         [JsonProperty]
         [JsonConverter(typeof(JsonAttributesConverter))]
         public JsonObject Attributes;
-
         //
         // Summary:
         //     Optional attribute data that you can attach any data to
         [JsonProperty]
         [JsonConverter(typeof(JsonAttributesConverter))]
         public JsonObject RecipeAttributes;
-
         //
         // Summary:
         //     Whether this crafting recipe ingredient should be regarded as a tool required
         //     to build this item. If true, the recipe will not consume the item but reduce
         //     its durability.
         public bool IsTool;
-
         //
         // Summary:
         //     If IsTool is set, this is the durability cost
         public int ToolDurabilityCost = 1;
-
         //
         // Summary:
         //     When using a wildcard in the item/block code, setting this field will limit the
         //     allowed variants
         public string[] AllowedVariants;
-
         //
         // Summary:
         //     When using a wildcard in the item/block code, setting this field will skip these
         //     variants
         public string[] SkipVariants;
-
         //
         // Summary:
         //     If set, the crafting recipe will give back the consumed stack to be player upon
         //     crafting
         public JsonItemStack ReturnedStack;
-
         //
         // Summary:
         //     The itemstack made from Code, Quantity and Attributes, populated by the engine
         public ItemStack ResolvedItemstack;
-
         //
         // Summary:
         //     Whether this recipe contains a wildcard, populated by the engine
         public bool IsWildCard;
-
         //
         // Summary:
         //     Code of the item or block
@@ -204,30 +208,32 @@ namespace KRPGLib.Enchantment
 
         public EnchantingRecipeIngredient Clone()
         {
-            EnchantingRecipeIngredient recipe = new EnchantingRecipeIngredient();
-            // recipe.PatternCode = PatternCode;
-            recipe.Code = Code.Clone();
-            recipe.Type = Type;
-            recipe.Name = Name;
-            recipe.Quantity = Quantity;
-            recipe.IsWildCard = IsWildCard;
-            recipe.IsTool = IsTool;
-            recipe.ToolDurabilityCost = ToolDurabilityCost;
-            recipe.AllowedVariants = ((AllowedVariants == null) ? null : ((string[])AllowedVariants.Clone()));
-            recipe.SkipVariants = ((SkipVariants == null) ? null : ((string[])SkipVariants.Clone()));
-            recipe.ResolvedItemstack = ResolvedItemstack?.Clone();
-            recipe.ReturnedStack = ReturnedStack?.Clone();
-            recipe.RecipeAttributes = RecipeAttributes?.Clone();
-            
+            return CloneTo<EnchantingRecipeIngredient>();
+        }
+        public T CloneTo<T>() where T : EnchantingRecipeIngredient, new()
+        {
+            T val = new T
+            {
+                Code = Code.Clone(),
+                Type = Type,
+                Name = Name,
+                Quantity = Quantity,
+                IsWildCard = IsWildCard,
+                IsTool = IsTool,
+                ToolDurabilityCost = ToolDurabilityCost,
+                AllowedVariants = ((AllowedVariants == null) ? null : ((string[])AllowedVariants.Clone())),
+                SkipVariants = ((SkipVariants == null) ? null : ((string[])SkipVariants.Clone())),
+                ResolvedItemstack = ResolvedItemstack?.Clone(),
+                ReturnedStack = ReturnedStack?.Clone(),
+                RecipeAttributes = RecipeAttributes?.Clone()
+            };
             if (Attributes != null)
             {
-                recipe.Attributes = Attributes.Clone();
+                val.Attributes = Attributes.Clone();
             }
 
-
-            return recipe;
+            return val;
         }
-
         public override string ToString()
         {
             return Type.ToString() + " code " + Code;
@@ -297,15 +303,15 @@ namespace KRPGLib.Enchantment
             {
                 writer.Write(value: false);
             }
-            // writer.Write(PatternCode);
         }
-
+        
         public virtual void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
             IsWildCard = reader.ReadBoolean();
             Type = (EnumItemClass)reader.ReadInt32();
             Code = new AssetLocation(reader.ReadString());
             Quantity = reader.ReadInt32();
+            
             if (!IsWildCard && reader.ReadBoolean())
             {
                 ResolvedItemstack = new ItemStack(reader, resolver);
@@ -313,7 +319,9 @@ namespace KRPGLib.Enchantment
 
             IsTool = reader.ReadBoolean();
             ToolDurabilityCost = reader.ReadInt32();
-            if (reader.ReadBoolean())
+
+            bool haveVariants = reader.ReadBoolean();
+            if (haveVariants)
             {
                 AllowedVariants = new string[reader.ReadInt32()];
                 for (int i = 0; i < AllowedVariants.Length; i++)
@@ -321,29 +329,30 @@ namespace KRPGLib.Enchantment
                     AllowedVariants[i] = reader.ReadString();
                 }
             }
-
-            if (reader.ReadBoolean())
+            bool haveSkipVariants = reader.ReadBoolean();
+            if (haveSkipVariants)
             {
                 SkipVariants = new string[reader.ReadInt32()];
-                for (int j = 0; j < SkipVariants.Length; j++)
+                for (int i = 0; i < SkipVariants.Length; i++)
                 {
-                    SkipVariants[j] = reader.ReadString();
+                    SkipVariants[i] = reader.ReadString();
                 }
             }
-
-            if (reader.ReadBoolean())
+            SkipVariants = null;
+            
+            bool haveConsumedStack = reader.ReadBoolean();
+            if (haveConsumedStack)
             {
                 ReturnedStack = new JsonItemStack();
                 ReturnedStack.FromBytes(reader, resolver.ClassRegistry);
                 ReturnedStack.ResolvedItemstack.ResolveBlockOrItem(resolver);
             }
 
+            bool haveAttributes = reader.ReadBoolean();
             if (reader.ReadBoolean())
             {
-                RecipeAttributes = new JsonObject(JToken.Parse(reader.ReadString()));
+                // RecipeAttributes = new JsonObject(JToken.Parse(reader.ReadString()));
             }
-
-            // PatternCode = reader.ReadString();
         }
-    }
+    }*/
 }

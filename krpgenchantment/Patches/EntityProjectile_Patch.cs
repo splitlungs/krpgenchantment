@@ -25,7 +25,7 @@ namespace KRPGLib.Enchantment
 
             if (__instance != null)
             {
-                var msCollide = (double)Traverse.Create(__instance).Field("msCollide").GetValue();
+                var msCollide = (long)Traverse.Create(__instance).Field("msCollide").GetValue();
 
                 EntityPos pos = __instance.SidedPos;
 

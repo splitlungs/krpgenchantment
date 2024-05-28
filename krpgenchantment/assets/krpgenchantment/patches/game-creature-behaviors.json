@@ -1,7 +1,7 @@
 [
   {
     "op": "add",
-    "path": "/client/behaviors-",
+    "path": "/server/behaviors-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -9,7 +9,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -17,7 +17,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -25,7 +25,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -33,7 +33,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -41,7 +41,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -49,7 +49,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -57,7 +57,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -65,7 +65,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -73,7 +73,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -81,7 +81,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -89,7 +89,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -97,7 +97,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -105,7 +105,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -113,7 +113,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -121,7 +121,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -129,7 +129,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -137,7 +137,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -145,7 +145,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -153,7 +153,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -161,7 +161,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -169,7 +169,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -177,7 +177,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -185,7 +185,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -193,7 +193,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -201,7 +201,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -209,7 +209,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -217,7 +217,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -225,7 +225,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -233,7 +233,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -241,7 +241,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -249,7 +249,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
@@ -257,7 +257,7 @@
   },
   {
     "op": "add",
-    "path": "/client/behaviors/-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },

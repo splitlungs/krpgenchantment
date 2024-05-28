@@ -1,5 +1,4 @@
 {
-  "name": "enchantment-igniting-1",
   "processingHours": 1,
   "requiresTrait": null,
   "ingredients": {
@@ -11,6 +10,7 @@
     "target": {
       "type": "item",
       "code": "game:spear-generic-*",
+      "name": "material",
       "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
       "quantity": 1
     }

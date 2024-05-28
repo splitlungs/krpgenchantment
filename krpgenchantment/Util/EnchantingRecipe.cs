@@ -20,34 +20,33 @@ using Vintagestory.GameContent;
 namespace KRPGLib.Enchantment
 {
     #region Recipe
-    public class EnchantingRecipe : IByteSerializable, IRecipeBase<EnchantingRecipe>
+    public class EnchantingRecipe : IByteSerializable
     {
         /// <summary>
         /// Necessary for registering
         /// </summary>
-        public string Code = "enchantingrecipes";
-        /// <summary>
-        /// How many in-game hours to complete recipe.
-        /// </summary>
-        public double processingHours;
-        /// <summary>
-        /// Enchantments to write to the Output
-        /// </summary>
-        public EnchantingRecipeOutput[] Enchantments;
+        //public string Code = "enchantingrecipes";
         /// <summary>
         /// Name of the recipe, optional
         /// </summary>
-        public AssetLocation Name { get; set; }
+        public AssetLocation Name;
         /// <summary>
         /// Set by the recipe loader during json deserialization, if false the recipe will never be loaded.
         /// If loaded however, you can use this field to disable recipes during runtime.
         /// </summary>
         public bool Enabled { get; set; } = true;
-
-        public JsonItemStack Output = null;
-        IRecipeIngredient[] IRecipeBase<EnchantingRecipe>.Ingredients => Ingredients.Values.ToArray();
-        IRecipeOutput IRecipeBase<EnchantingRecipe>.Output => Output;
-
+        /// <summary>
+        /// How many in-game hours to complete recipe.
+        /// </summary>
+        public double processingHours;    
+        /// <summary>
+        /// Info used by the handbook. Allows you to split grid recipe previews into multiple.
+        /// </summary>
+        public int RecipeGroup;
+        /// <summary>
+        /// Used by the handbook. If false, will not appear in the "Created by" section
+        /// </summary>
+        public bool ShowInCreatedBy = true;
         /// <summary>
         /// If set only players with given trait can use this recipe
         /// </summary>
@@ -55,7 +54,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// The recipes ingredients in any order
         /// </summary>
-        public Dictionary<string, EnchantingRecipeIngredient> Ingredients;
+        public Dictionary<string, CraftingRecipeIngredient> Ingredients;
         /// <summary>
         /// Optional attribute data that you can attach any data to
         /// </summary>
@@ -65,6 +64,11 @@ namespace KRPGLib.Enchantment
         /// If set, it will copy over the itemstack attributes from given ingredient code
         /// </summary>
         public string CopyAttributesFrom = null;
+        /// <summary>
+        /// Enchantments to write to the Output
+        /// </summary>
+        public Dictionary<string, int> Enchantments;
+        //public EnchantingRecipeOutput[] Enchantments;
 
         public EnchantingRecipeIngredient[] resolvedIngredients;
 
@@ -82,7 +86,26 @@ namespace KRPGLib.Enchantment
             ItemStack outStack = inStack.Clone();
 
             // Apply Enchantments
-            for (int i = 0; i < Enchantments.Length; i++)
+            foreach (KeyValuePair<string, int> enchant in Enchantments)
+            {
+                // Overwrite Healing
+                if (enchant.Key == "healing")
+                {
+                    outStack.Attributes.SetInt("flaming", 0);
+                    outStack.Attributes.SetInt("frost", 0);
+                    outStack.Attributes.SetInt("harming", 0);
+                    outStack.Attributes.SetInt("shocking", 0);
+                }
+                // Overwrite Alternate Damage
+                else if (enchant.Key == "flaming" || enchant.Key == "frost" || enchant.Key == "harming"
+                    || enchant.Key == "shocking")
+                    outStack.Attributes.SetInt("healing", 0);
+                // Write Enchant
+                outStack.Attributes.SetInt(enchant.Key, enchant.Value);
+            }
+
+            // Apply Enchantments - DEPRECATED
+            /* for (int i = 0; i < Enchantments.Length; i++)
             {
                 // Overwrite Healing
                 if (Enchantments[i].enchantCode == "healing")
@@ -98,10 +121,11 @@ namespace KRPGLib.Enchantment
                     outStack.Attributes.SetInt("healing", 0);
                 // Write Enchant
                 outStack.Attributes.SetInt(Enchantments[i].enchantCode, Enchantments[i].enchantPower);
-            }
+            }*/
 
             return outStack;
         }
+        /*
         public bool Resolve(IWorldAccessor world, string csourceForErrorLoggingode)
         {
             this.world = world;
@@ -134,7 +158,7 @@ namespace KRPGLib.Enchantment
             }
 
             return true;
-        }
+        }*/
 
         /// <summary>
         /// Turns Ingredients into IItemStacks
@@ -144,32 +168,30 @@ namespace KRPGLib.Enchantment
         public bool ResolveIngredients(IWorldAccessor world)
         {
             this.world = world;
-
             // HARDCODED TO 2 INGREDIENTS CURRENTLY
-            // TODO: FIX THIS BULLSHIT
-            string code = "";
+            string pCode = "";
             resolvedIngredients = new EnchantingRecipeIngredient[2];
             for (int i = 0; i < 2; i++)
             {
                 // IT'S HARDCODED, I KNOW
                 // TODO: UUUUUGHHHHHH
-                if (i == 0) code = "reagent";
-                if (i == 1) code = "target";
+                if (i == 0) pCode = "reagent";
+                if (i == 1) pCode = "target";
 
-                if (!Ingredients.ContainsKey(code))
+                if (!Ingredients.ContainsKey(pCode))
                 {
-                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", code, code);
+                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pCode);
                     return false;
                 }
 
-                if (!Ingredients[code].Resolve(world, "Enchanting recipe"))
+                if (!Ingredients[pCode].Resolve(world, "Enchanting recipe"))
                 {
-                    world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", code, Ingredients[code]);
+                    world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", pCode, Ingredients[pCode]);
                     return false;
                 }
 
-                resolvedIngredients[i] = Ingredients[code].Clone();
-                resolvedIngredients[i].PatternCode = code;
+                resolvedIngredients[i] = Ingredients[pCode].CloneTo<EnchantingRecipeIngredient>();
+                resolvedIngredients[i].PatternCode = pCode;
             }
 
             return true;
@@ -230,6 +252,10 @@ namespace KRPGLib.Enchantment
                 mappings[val.Value.Name] = codes.ToArray();
             }
 
+            foreach (var key in mappings.Keys)
+            {
+                world.Logger.Event("Name {0} mapped to code {1}", key, mappings[key].ToString());
+            }
             return mappings;
         }
         /// <summary>
@@ -251,7 +277,7 @@ namespace KRPGLib.Enchantment
 
                 if (ingredient.IsWildCard || ingredient.IsTool)
                 {
-                    wildcardIngredients.Add(ingredient.Clone());
+                    wildcardIngredients.Add(ingredient.CloneTo<EnchantingRecipeIngredient>());
                     continue;
                 }
 
@@ -267,7 +293,7 @@ namespace KRPGLib.Enchantment
                         break;
                     }
                 }
-                if (!found) exactMatchIngredients.Add(ingredient.Clone());
+                if (!found) exactMatchIngredients.Add(ingredient.CloneTo<EnchantingRecipeIngredient>());
             }
 
             for (int i = 0; i < inputSlots.Length; i++)
@@ -412,45 +438,57 @@ namespace KRPGLib.Enchantment
         /// <param name="writer"></param>
         public void ToBytes(BinaryWriter writer)
         {
+            writer.Write(processingHours);
             for (int i = 0; i < resolvedIngredients.Length; i++)
             {
                 if (resolvedIngredients[i] == null)
                 {
-                    writer.Write(true);
+                    writer.Write(value: true);
                     continue;
                 }
 
-                writer.Write(false);
+                writer.Write(value: false);
                 resolvedIngredients[i].ToBytes(writer);
             }
-            writer.Write(Code);
+
             writer.Write(Name.ToShortString());
             writer.Write(Attributes == null);
             if (Attributes != null)
             {
                 writer.Write(Attributes.Token.ToString());
             }
+
             writer.Write(RequiresTrait != null);
             if (RequiresTrait != null)
             {
                 writer.Write(RequiresTrait);
             }
+
+            writer.Write(RecipeGroup);
             writer.Write(CopyAttributesFrom != null);
             if (CopyAttributesFrom != null)
             {
                 writer.Write(CopyAttributesFrom);
             }
+
+            writer.Write(ShowInCreatedBy);
             writer.Write(Ingredients.Count);
-            foreach (var val in Ingredients)
+            foreach (KeyValuePair<string, CraftingRecipeIngredient> ingredient in Ingredients)
             {
-                writer.Write(val.Key);
-                val.Value.ToBytes(writer);
+                writer.Write(ingredient.Key);
+                ingredient.Value.ToBytes(writer);
             }
-            for (int i = 0; i < Enchantments.Length; i++)
+            writer.Write(Enchantments.Count);
+            foreach(KeyValuePair<string, int> enchant in Enchantments)
+            {
+                writer.Write(enchant.Key);
+                writer.Write((int)enchant.Value);
+            }
+
+            /*for (int i = 0; i < Enchantments.Length; i++)
             {
                 Enchantments[i].ToBytes(writer);
-            }
-            writer.Write(processingHours);
+            }*/
         }
 
         /// <summary>
@@ -460,42 +498,60 @@ namespace KRPGLib.Enchantment
         /// <param name="resolver"></param>
         public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
+            processingHours = reader.ReadDouble();
             resolvedIngredients = new EnchantingRecipeIngredient[2];
             for (int i = 0; i < resolvedIngredients.Length; i++)
             {
-                bool isnull = reader.ReadBoolean();
-                if (isnull) continue;
-
-                resolvedIngredients[i] = new EnchantingRecipeIngredient();
-                resolvedIngredients[i].FromBytes(reader, resolver);
+                if (!reader.ReadBoolean())
+                {
+                    resolvedIngredients[i] = new EnchantingRecipeIngredient();
+                    resolvedIngredients[i].FromBytes(reader, resolver);
+                }
             }
-            Code = reader.ReadString();
+
             Name = new AssetLocation(reader.ReadString());
             if (!reader.ReadBoolean())
             {
                 string json = reader.ReadString();
                 Attributes = new JsonObject(JToken.Parse(json));
             }
+
             if (reader.ReadBoolean())
             {
                 RequiresTrait = reader.ReadString();
             }
-            int cnt = reader.ReadInt32();
-            Ingredients = new Dictionary<string, EnchantingRecipeIngredient>();
-            for (int i = 0; i < cnt; i++)
+
+            RecipeGroup = reader.ReadInt32();
+            if (reader.ReadBoolean())
             {
-                var key = reader.ReadString();
-                var ing = new EnchantingRecipeIngredient();
-                ing.FromBytes(reader, resolver);
-                Ingredients[key] = ing;
+                CopyAttributesFrom = reader.ReadString();
             }
-            Enchantments = new EnchantingRecipeOutput[cnt];
-            for (int i = 0; i < cnt; i++)
+
+            ShowInCreatedBy = reader.ReadBoolean();
+            int num = reader.ReadInt32();
+            Ingredients = new Dictionary<string, CraftingRecipeIngredient>();
+            for (int j = 0; j < num; j++)
+            {
+                string key = reader.ReadString();
+                CraftingRecipeIngredient craftingRecipeIngredient = new CraftingRecipeIngredient();
+                craftingRecipeIngredient.FromBytes(reader, resolver);
+                Ingredients[key] = craftingRecipeIngredient;
+            }
+
+            int ench = reader.ReadInt32();
+            Enchantments = new Dictionary<string, int>();
+            for (int k = 0; k < ench; k++)
+            {
+                string key = reader.ReadString();
+                Enchantments[key] = reader.ReadInt32();
+            }
+
+            /* Enchantments = new EnchantingRecipeOutput[ench];
+            for (int i = 0; i < ench; i++)
             {
                 Enchantments[i] = new EnchantingRecipeOutput();
                 Enchantments[i].FromBytes(reader, resolver);
-            }
-            processingHours = reader.ReadDouble();
+            }*/
         }
 
         /// <summary>
@@ -506,7 +562,7 @@ namespace KRPGLib.Enchantment
         {
             EnchantingRecipe recipe = new EnchantingRecipe();
 
-            recipe.Ingredients = new Dictionary<string, EnchantingRecipeIngredient>();
+            recipe.Ingredients = new Dictionary<string, CraftingRecipeIngredient>();
             if (Ingredients != null)
             {
                 foreach (var val in Ingredients)
@@ -519,17 +575,26 @@ namespace KRPGLib.Enchantment
                 recipe.resolvedIngredients = new EnchantingRecipeIngredient[resolvedIngredients.Length];
                 for (int i = 0; i < resolvedIngredients.Length; i++)
                 {
-                    recipe.resolvedIngredients[i] = resolvedIngredients[i]?.Clone();
+                    recipe.resolvedIngredients[i] = resolvedIngredients[i]?.CloneTo<EnchantingRecipeIngredient>();
                 }
             }
+            recipe.Enchantments = new Dictionary<string, int>();
             if (Enchantments != null)
+            {
+                foreach (var val in Enchantments)
+                {
+                    recipe.Enchantments[val.Key] = (int)val.Value;
+                }
+            }
+
+            /*if (Enchantments != null)
             {
                 recipe.Enchantments = new EnchantingRecipeOutput[Enchantments.Length];
                 for (int i = 0;i < Enchantments.Length;i++)
                 {
                     recipe.Enchantments[i] = Enchantments[i]?.Clone();
                 }
-            }
+            }*/
 
             recipe.Name = Name;
             recipe.Attributes = Attributes?.Clone();
@@ -541,6 +606,7 @@ namespace KRPGLib.Enchantment
     }
     #endregion
     #region Output
+    /*
     public class EnchantingRecipeOutput : IByteSerializable
     {
         public string enchantCode;
@@ -565,8 +631,8 @@ namespace KRPGLib.Enchantment
         /// <param name="resolver"></param>
         public void ToBytes(BinaryWriter writer)
         {
-            writer.Write(enchantCode);
-            writer.Write(enchantName);
+            writer.Write(enchantCode.ToString());
+            writer.Write(enchantName.ToString());
             writer.Write((int)enchantPower);
         }
         /// <summary>
@@ -580,6 +646,6 @@ namespace KRPGLib.Enchantment
             enchantName = reader.ReadString();
             enchantPower = reader.ReadInt32();
         }
-    }
+    }*/
     #endregion
 }

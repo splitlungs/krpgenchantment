@@ -25,7 +25,6 @@ namespace KRPGLib.Enchantment
             return side == EnumAppSide.Server;
         }
 
-
         bool classExclusiveRecipes = true;
 
         public override void AssetsLoaded(ICoreAPI api)
@@ -38,8 +37,7 @@ namespace KRPGLib.Enchantment
             LoadEnchantingRecipes();
         }
 
-        // Load from files
-        void LoadEnchantingRecipes()
+        public void LoadEnchantingRecipes()
         {
             Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table");
             int recipeQuantity = 0;
@@ -100,7 +98,7 @@ namespace KRPGLib.Enchantment
                         if (first) subRecipes.Add(rec = recipe.Clone());
                         else rec = subRecipes[i];
 
-                        foreach (EnchantingRecipeIngredient ingred in rec.Ingredients.Values)
+                        foreach (CraftingRecipeIngredient ingred in rec.Ingredients.Values)
                         {
                             if (ingred.Name == variantCode)
                             {

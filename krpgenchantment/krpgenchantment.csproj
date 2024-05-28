@@ -105,9 +105,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-felling-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-healing-1.json" />
@@ -115,41 +113,18 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-shocking-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-generic-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-shocking-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-chilling-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-flaming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-frost-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-igniting-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-lightning-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-shocking-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-chilling.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-flaming.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-frost.json" />
@@ -162,12 +137,6 @@
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-shocking.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
-
-<ItemGroup>
-  <Content Update="assets\krpgenchantment\recipes\enchanting-table\axe\axe-shocking-1.json">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
 

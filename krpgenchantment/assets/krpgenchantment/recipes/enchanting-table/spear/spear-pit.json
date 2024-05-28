@@ -1,5 +1,4 @@
 {
-  "name": "enchantment-pit-1",
   "processingHours": 1,
   "requiresTrait": null,
   "ingredients": {
@@ -10,8 +9,9 @@
     },
     "target": {
       "type": "item",
-      "code": "game:knife-generic-*",
-      "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+      "code": "game:spear-generic-*",
+      "name": "material",
+      "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
       "quantity": 1
     }
   },
