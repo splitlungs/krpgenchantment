@@ -14,6 +14,8 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
+    // TODO: Deprecate
+    /*
     [HarmonyPatch(typeof(ItemBow))]
     internal class ItemBow_Patch
     {
@@ -138,5 +140,5 @@ namespace KRPGLib.Enchantment
 
             return false;
         }
-    }
+    }*/
 }

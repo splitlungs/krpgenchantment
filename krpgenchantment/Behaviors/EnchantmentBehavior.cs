@@ -235,6 +235,349 @@ namespace KRPGLib.Enchantment
             if (power > 0)
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-pit-" + power) + "</font>"));
         }
+        public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            if (slot.Itemstack.Class.Name() == "ItemBow")
+            {
+                BowAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+            else if (slot.Itemstack.Class.Name() == "ItemSpear")
+            {
+                BowAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+            else if (slot.Itemstack.Class.Name() == "WandItem")
+            {
+                // WandAttack(secondsUsed, slot, byEntity);
+                // handling = EnumHandling.PreventSubsequent;
+                
+                handling = EnumHandling.Handled;
+            }
+            else
+            {
+                handling = EnumHandling.Handled;
+            }
+
+            base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+        }
+        private void BowAttack(float secondsUsed, ItemSlot slot, EntityAgent byEntity)
+        {
+
+            if (byEntity.Attributes.GetInt("aimingCancel") == 1)
+            {
+                return;
+            }
+
+            string aimAnimation = slot.Itemstack.Collectible.Attributes["aimAnimation"].AsString();
+
+            byEntity.Attributes.SetInt("aiming", 0);
+            byEntity.AnimManager.StopAnimation(aimAnimation);
+            if (byEntity.World is IClientWorldAccessor)
+            {
+                slot.Itemstack.TempAttributes.RemoveAttribute("renderVariant");
+            }
+
+            slot.Itemstack.Attributes.SetInt("renderVariant", 0);
+            (byEntity as EntityPlayer)?.Player?.InventoryManager.BroadcastHotbarSlot();
+            if (secondsUsed < 0.65f)
+            {
+                return;
+            }
+
+            ItemSlot nextArrow = GetNextArrow(byEntity);
+
+            if (nextArrow != null)
+            {
+                float num = 0f;
+                float num2 = 0f;
+                if (slot.Itemstack.Collectible.Attributes != null)
+                {
+                    num += slot.Itemstack.Collectible.Attributes["damage"].AsFloat();
+                    num2 = 1f - slot.Itemstack.Collectible.Attributes["accuracyBonus"].AsFloat();
+                }
+
+                if (nextArrow.Itemstack.Collectible.Attributes != null)
+                {
+                    num += nextArrow.Itemstack.Collectible.Attributes["damage"].AsFloat();
+                }
+
+                ItemStack itemStack = nextArrow.TakeOut(1);
+                nextArrow.MarkDirty();
+                IPlayer dualCallByPlayer = null;
+                if (byEntity is EntityPlayer)
+                {
+                    dualCallByPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
+                }
+
+                byEntity.World.PlaySoundAt(new AssetLocation("sounds/bow-release"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
+                float num3 = 0.5f;
+                if (itemStack.ItemAttributes != null)
+                {
+                    num3 = itemStack.ItemAttributes["breakChanceOnImpact"].AsFloat(0.5f);
+                }
+
+                EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("arrow-" + itemStack.Collectible.Variant["material"]));
+                EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
+                entityProjectile.FiredBy = byEntity;
+                entityProjectile.Damage = num;
+                entityProjectile.ProjectileStack = itemStack;
+                entityProjectile.DropOnImpactChance = 1f - num3;
+                float num4 = Math.Max(0.001f, 1f - byEntity.Attributes.GetFloat("aimingAccuracy"));
+                double num5 = byEntity.WatchedAttributes.GetDouble("aimingRandPitch", 1.0) * (double)num4 * (0.75 * (double)num2);
+                double num6 = byEntity.WatchedAttributes.GetDouble("aimingRandYaw", 1.0) * (double)num4 * (0.75 * (double)num2);
+                Vec3d vec3d = byEntity.ServerPos.XYZ.Add(0.0, byEntity.LocalEyePos.Y, 0.0);
+                Vec3d pos = (vec3d.AheadCopy(1.0, (double)byEntity.SidedPos.Pitch + num5, (double)byEntity.SidedPos.Yaw + num6) - vec3d) * byEntity.Stats.GetBlended("bowDrawingStrength");
+                entityProjectile.ServerPos.SetPos(byEntity.SidedPos.BehindCopy(0.21).XYZ.Add(0.0, byEntity.LocalEyePos.Y, 0.0));
+                entityProjectile.ServerPos.Motion.Set(pos);
+                entityProjectile.Pos.SetFrom(entityProjectile.ServerPos);
+                entityProjectile.World = byEntity.World;
+                entityProjectile.SetRotation();
+
+                // Pass Enchantment Attributes to the Projectile
+                int power = 0;
+                power = slot.Itemstack.Attributes.GetInt("chilling", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("chilling", power);
+                power = slot.Itemstack.Attributes.GetInt("flaming", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("flaming", power);
+                power = slot.Itemstack.Attributes.GetInt("frost", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("frost", power);
+                power = slot.Itemstack.Attributes.GetInt("harming", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("harming", power);
+                power = slot.Itemstack.Attributes.GetInt("healing", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("healing", power);
+                power = slot.Itemstack.Attributes.GetInt("igniting", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("igniting", power);
+                power = slot.Itemstack.Attributes.GetInt("knockback", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("knockback", power);
+                power = slot.Itemstack.Attributes.GetInt("lightning", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("lightning", power);
+                power = slot.Itemstack.Attributes.GetInt("shocking", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("shocking", power);
+                power = slot.Itemstack.Attributes.GetInt("pit", 0);
+                if (power > 0) entityProjectile.WatchedAttributes.SetInt("pit", power);
+
+                byEntity.World.SpawnEntity(entityProjectile);
+                slot.Itemstack.Collectible.DamageItem(byEntity.World, byEntity, slot);
+                byEntity.AnimManager.StartAnimation("bowhit");
+            }
+        }
+        protected ItemSlot GetNextArrow(EntityAgent byEntity)
+        {
+            ItemSlot slot = null;
+            byEntity.WalkInventory(delegate (ItemSlot invslot)
+            {
+                if (invslot is ItemSlotCreative)
+                {
+                    return true;
+                }
+
+                if (invslot.Itemstack != null && invslot.Itemstack.Collectible.Code.PathStartsWith("arrow-"))
+                {
+                    slot = invslot;
+                    return false;
+                }
+
+                return true;
+            });
+            return slot;
+        }
+        protected void SpearAttack(float secondsUsed, ItemSlot slot, EntityAgent byEntity)
+        {
+            if (byEntity.Attributes.GetInt("aimingCancel") == 1)
+            {
+                return;
+            }
+
+            byEntity.Attributes.SetInt("aiming", 0);
+            byEntity.StopAnimation("aim");
+            if (secondsUsed < 0.35f)
+            {
+                return;
+            }
+
+            float damage = 1.5f;
+            if (slot.Itemstack.Collectible.Attributes != null)
+            {
+                damage = slot.Itemstack.Collectible.Attributes["damage"].AsFloat();
+            }
+
+            (byEntity.Api as ICoreClientAPI)?.World.AddCameraShake(0.17f);
+            ItemStack projectileStack = slot.TakeOut(1);
+            slot.MarkDirty();
+            IPlayer player = null;
+            if (byEntity is EntityPlayer)
+            {
+                player = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
+            }
+
+            byEntity.World.PlaySoundAt(new AssetLocation("sounds/player/throw"), byEntity, player, randomizePitch: false, 8f);
+            EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation(slot.Itemstack.Collectible.Attributes["spearEntityCode"].AsString()));
+            EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
+            entityProjectile.FiredBy = byEntity;
+            entityProjectile.Damage = damage;
+            entityProjectile.ProjectileStack = projectileStack;
+            entityProjectile.DropOnImpactChance = 1.1f;
+            entityProjectile.DamageStackOnImpact = true;
+            entityProjectile.Weight = 0.3f;
+            float num = 1f - byEntity.Attributes.GetFloat("aimingAccuracy");
+            double num2 = byEntity.WatchedAttributes.GetDouble("aimingRandPitch", 1.0) * (double)num * 0.75;
+            double num3 = byEntity.WatchedAttributes.GetDouble("aimingRandYaw", 1.0) * (double)num * 0.75;
+            Vec3d vec3d = byEntity.ServerPos.XYZ.Add(0.0, byEntity.LocalEyePos.Y - 0.2, 0.0);
+            Vec3d pos = (vec3d.AheadCopy(1.0, (double)byEntity.ServerPos.Pitch + num2, (double)byEntity.ServerPos.Yaw + num3) - vec3d) * 0.65;
+            Vec3d pos2 = byEntity.ServerPos.BehindCopy(0.21).XYZ.Add(byEntity.LocalEyePos.X, byEntity.LocalEyePos.Y - 0.2, byEntity.LocalEyePos.Z);
+            entityProjectile.ServerPos.SetPos(pos2);
+            entityProjectile.ServerPos.Motion.Set(pos);
+            entityProjectile.Pos.SetFrom(entityProjectile.ServerPos);
+            entityProjectile.World = byEntity.World;
+            entityProjectile.SetRotation();
+
+            // Check Attributes
+            if (projectileStack != null)
+            {
+                int power = 0;
+                power = projectileStack.Attributes.GetInt("chilling", 0);
+                if (power > 0) entityProjectile.Attributes.SetInt("chilling", power);
+                power = projectileStack.Attributes.GetInt("igniting", 0);
+                if (power > 0) entityProjectile.Attributes.SetInt("ignite", power);
+                power = projectileStack.Attributes.GetInt("lightning", 0);
+                if (power > 0) entityProjectile.Attributes.SetInt("lightning", power);
+                power = projectileStack.Attributes.GetInt("pit", 0);
+                if (power > 0) entityProjectile.Attributes.SetInt("pit", power);
+            }
+
+            byEntity.World.SpawnEntity(entityProjectile);
+            byEntity.StartAnimation("throw");
+            if (byEntity is EntityPlayer)
+            {
+                RefillSlotIfEmpty(slot, byEntity, (ItemStack itemstack) => itemstack.Collectible is ItemSpear);
+            }
+
+            float pitchModifier = (byEntity as EntityPlayer).talkUtil.pitchModifier;
+            player.Entity.World.PlaySoundAt(new AssetLocation("sounds/player/strike"), player.Entity, player, pitchModifier * 0.9f + (float)byEntity.Api.World.Rand.NextDouble() * 0.2f, 16f, 0.35f);
+
+        }
+        protected void RefillSlotIfEmpty(ItemSlot slot, EntityAgent byEntity, ActionConsumable<ItemStack> matcher)
+        {
+            if (!slot.Empty)
+            {
+                return;
+            }
+
+            byEntity.WalkInventory(delegate (ItemSlot invslot)
+            {
+                if (invslot is ItemSlotCreative)
+                {
+                    return true;
+                }
+
+                InventoryBase inventory = invslot.Inventory;
+                if (!(inventory is InventoryBasePlayer) && !inventory.HasOpened((byEntity as EntityPlayer).Player))
+                {
+                    return true;
+                }
+
+                if (invslot.Itemstack != null && matcher(invslot.Itemstack))
+                {
+                    invslot.TryPutInto(byEntity.World, slot);
+                    invslot.Inventory?.PerformNotifySlot(invslot.Inventory.GetSlotId(invslot));
+                    slot.Inventory?.PerformNotifySlot(slot.Inventory.GetSlotId(slot));
+                    slot.MarkDirty();
+                    invslot.MarkDirty();
+                    return false;
+                }
+
+                return true;
+            });
+        }
+        /*
+        protected void WandAttack(float secondsUsed, ItemSlot slot, EntityAgent byEntity)
+        {
+            if (byEntity.Attributes.GetInt("aimingCancel") == 1) return;
+            byEntity.Attributes.SetInt("aiming", 0);
+            byEntity.AnimManager.StopAnimation("bowaim");
+
+            if (byEntity.World is IClientWorldAccessor)
+            {
+                slot.Itemstack.TempAttributes.RemoveAttribute("renderVariant");
+            }
+
+            slot.Itemstack.Attributes.SetInt("renderVariant", 0);
+            (byEntity as EntityPlayer)?.Player?.InventoryManager.BroadcastHotbarSlot();
+            if (secondsUsed < 0.65f)
+            {
+                return;
+            }
+
+            float damage = 0;
+            float accuracyBonus = 0f;
+
+            // Base Item damage
+            if (slot.Itemstack.Collectible.Attributes != null)
+            {
+                damage += slot.Itemstack.Collectible.Attributes["damage"].AsFloat(0);
+
+                accuracyBonus = 1 - slot.Itemstack.Collectible.Attributes["accuracyBonus"].AsFloat(0);
+            }
+
+            IPlayer byPlayer = null;
+            if (byEntity is EntityPlayer) byPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
+            byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/effect/translocate-breakdimension"), byEntity, byPlayer, false, 8);
+
+
+            // TODO: Make different projectile entities for different wands
+            // EntityProperties type = byEntity.World.GetEntityType(new AssetLocation("krpgwands:magicmissile-" + slot.Itemstack.Collectible.Variant["material"]));
+            EntityProperties type = byEntity.World.GetEntityType(new AssetLocation("krpgwands:magicmissile-" + "temporal"));
+            var entitymagicmissile = byEntity.World.ClassRegistry.CreateEntity(type) as MagicProjectileEntity;
+            entitymagicmissile.FiredBy = byEntity;
+            entitymagicmissile.Damage = damage;
+
+            // Enchantments
+            int power = 0;
+            power = slot.Itemstack.Attributes.GetInt("chilling", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("chilling", power);
+            power = slot.Itemstack.Attributes.GetInt("flaming", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("flaming", power);
+            power = slot.Itemstack.Attributes.GetInt("frost", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("frost", power);
+            power = slot.Itemstack.Attributes.GetInt("harming", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("harming", power);
+            power = slot.Itemstack.Attributes.GetInt("healing", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("healing", power);
+            power = slot.Itemstack.Attributes.GetInt("knockback", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("knockback", power);
+            power = slot.Itemstack.Attributes.GetInt("igniting", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("igniting", power);
+            power = slot.Itemstack.Attributes.GetInt("lightning", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("lightning", power);
+            power = slot.Itemstack.Attributes.GetInt("shocking", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("shocking", power);
+            power = slot.Itemstack.Attributes.GetInt("pit", 0);
+            if (power > 0) entitymagicmissile.WatchedAttributes.SetInt("pit", power);
+
+            float acc = Math.Max(0.001f, (1 - byEntity.Attributes.GetFloat("aimingAccuracy", 0)));
+
+            double rndpitch = byEntity.WatchedAttributes.GetDouble("aimingRandPitch", 1) * acc * (0.75 * accuracyBonus);
+            double rndyaw = byEntity.WatchedAttributes.GetDouble("aimingRandYaw", 1) * acc * (0.75 * accuracyBonus);
+
+            Vec3d pos = byEntity.ServerPos.XYZ.Add(0, byEntity.LocalEyePos.Y, 0);
+            Vec3d aheadPos = pos.AheadCopy(1, byEntity.SidedPos.Pitch + rndpitch, byEntity.SidedPos.Yaw + rndyaw);
+            Vec3d velocity = (aheadPos - pos) * byEntity.Stats.GetBlended("bowDrawingStrength");
+
+
+            entitymagicmissile.ServerPos.SetPos(byEntity.SidedPos.BehindCopy(0.21).XYZ.Add(0, byEntity.LocalEyePos.Y, 0));
+            entitymagicmissile.ServerPos.Motion.Set(velocity);
+            entitymagicmissile.Pos.SetFrom(entitymagicmissile.ServerPos);
+            entitymagicmissile.World = byEntity.World;
+            entitymagicmissile.SetRotation();
+
+            byEntity.World.SpawnEntity(entitymagicmissile);
+
+            slot.Itemstack.Collectible.DamageItem(byEntity.World, byEntity, slot);
+
+            byEntity.AnimManager.StartAnimation("bowhit");
+        }
+        */
         #endregion
         #region Effects
         /// <summary>

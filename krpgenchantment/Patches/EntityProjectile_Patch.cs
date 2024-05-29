@@ -81,6 +81,7 @@ namespace KRPGLib.Enchantment
                         if (__instance.FiredBy != null) dmg *= __instance.FiredBy.Stats.GetBlended("rangedWeaponsDamage");
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
+
                     // Flaming
                     if (flaming > 0)
                     {

@@ -13,6 +13,7 @@ using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {
+    /*
     [HarmonyPatch(typeof(ItemSpear))]
     internal class ItemSpear_Patch
     {
@@ -95,4 +96,5 @@ namespace KRPGLib.Enchantment
             return false;
         }
     }
+    */
 }

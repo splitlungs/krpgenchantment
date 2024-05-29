@@ -19,7 +19,7 @@ namespace KRPGLib.Enchantment
     public class EnchantmentEntityBehavior : EntityBehavior
     {
         public ICoreAPI Api;
-        public ICoreServerAPI sApi;
+        // public ICoreServerAPI sApi;
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public AdvancedParticleProperties[] ParticleProperties;
         public static AdvancedParticleProperties[] FireParticleProps;
@@ -30,13 +30,12 @@ namespace KRPGLib.Enchantment
         public override void OnEntityLoaded()
         {
             base.OnEntityLoaded();
+            Api = entity.Api;
+            // sApi = entity.Api as ICoreServerAPI;
         }
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
             base.Initialize(properties, attributes);
-
-            Api = entity.Api;
-            sApi = entity.Api as ICoreServerAPI;
 
             FireParticleProps = new AdvancedParticleProperties[3];
             FireParticleProps[0] = new AdvancedParticleProperties
@@ -112,11 +111,54 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
+            // if (entity.Api.Side != EnumAppSide.Client)
+            // return;
+            int power = (int)Math.Ceiling(damage);
+
+            if (damageSource.Type == EnumDamageType.Fire)
+            {
+                int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Frost)
+            {
+
+            }
+            if (damageSource.Type == EnumDamageType.Electricity)
+            {
+            }
+            if (damageSource.Type == EnumDamageType.Heal)
+            {
+            }
+            if (damageSource.Type == EnumDamageType.Injury)
+            {
+            }
+            if (damageSource.Type == EnumDamageType.Poison)
+            {
+            }
+
             base.OnEntityReceiveDamage(damageSource, ref damage);
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (mode == EnumInteractMode.Attack)
+            if (mode == EnumInteractMode.Attack && entity.Api.Side == EnumAppSide.Server)
             {
                 int power = 0;
                 // Alternate Damage
@@ -187,11 +229,11 @@ namespace KRPGLib.Enchantment
         }
         public override void OnReceivedServerPacket(int packetid, byte[] data, ref EnumHandling handled)
         {
-            handled = EnumHandling.Handled;
             if (packetid == 9666)
             {
-                SpawnFireHitParticles(10);
+                SpawnFireHitParticles(10, this.Api.World as IClientWorldAccessor);
             }
+            handled = EnumHandling.Handled;
 
             base.OnReceivedServerPacket(packetid, data, ref handled);
         }
@@ -229,8 +271,8 @@ namespace KRPGLib.Enchantment
                             source.DamageTier = power;
                             float dmg = Api.World.Rand.Next(1, 6) + power;
                             entity.ReceiveDamage(source, dmg);
-                            SpawnFireHitParticles((int)Math.Ceiling(dmg));
-                            // sApi.Network.SendEntityPacket(entity.Api as IServerPlayer, entity.EntityId, 9666, null);
+                            // ICoreServerAPI sapi = entity.World.Api as ICoreServerAPI;
+                            // sapi.Network.SendEntityPacket(entity.Api as IServerPlayer, entity.EntityId, 9666);
                         }
                         return;
                     }
@@ -378,30 +420,29 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Particle Effects
-        private void SpawnFireHitParticles(int power)
+        private void SpawnFireHitParticles(int power, IClientWorldAccessor world)
         {
             Api.Logger.Event("Spawning Fire Particles after Damage");
-            if (Api.World.Side == EnumAppSide.Client)
+
+            int num = Math.Min(FireParticleProps.Length - 1, world.Rand.Next(FireParticleProps.Length + 1));
+            AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+            advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+            advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+            advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+            advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+            advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+            advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+            advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+            advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
             {
-                int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
+                1 => 3f,
+                0 => 0.5f,
+                _ => 1.25f,
+            };
+            for (int i = 0; i <= power; i++)
+            {
+                world.SpawnParticles(advancedParticleProperties);
+                Api.Logger.Event("Spawned Fire Particles.");
             }
         }
         #endregion
