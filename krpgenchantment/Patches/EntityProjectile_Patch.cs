@@ -11,17 +11,16 @@ using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
-    [HarmonyPatch(typeof(EntityProjectile))]
-    internal class EntityProjectile_Patch
+    [HarmonyPatch]
+    public class EntityProjectile_Patch
     {
-        [HarmonyPatch("impactOnEntity")]
+        [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
-            if (!entity.Alive) return true;
+            if (!entity.Alive) return false;
 
             if (__instance != null)
             {
@@ -53,22 +52,32 @@ namespace KRPGLib.Enchantment
                 {
                     __instance.World.PlaySoundAt(new AssetLocation("game:sounds/arrow-impact"), __instance, null, false, 24);
 
-                    // Alternate Damage
-                    int flaming = __instance.WatchedAttributes.GetInt("flaming", 0);
-                    int frost = __instance.WatchedAttributes.GetInt("frost", 0);
-                    int harming = __instance.WatchedAttributes.GetInt("harming", 0);
-                    int healing = __instance.WatchedAttributes.GetInt("healing", 0);
-                    int shocking = __instance.WatchedAttributes.GetInt("shocking", 0);
+                    // Get Enchantments
+                    Dictionary<string, int> enchants = new Dictionary<string, int>();
+                    foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                    {
+                        // Item overrides Entity's Enchantment
+                        int ePower = __instance.ProjectileStack.Attributes.GetInt(val.ToString(), 0);
+                        if (ePower > 0) 
+                        { 
+                            enchants.Add(val.ToString(), ePower);
+                        }
+                        else
+                        {
+                            ePower = __instance.WatchedAttributes.GetInt(val.ToString(), 0);
+                            if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+                        }
+                    }
 
                     bool didDamage = false;
                     // Healing
-                    if (healing > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
                     {
                         DamageSource dSource = new DamageSource();
                         dSource.Source = EnumDamageSource.Entity;
                         dSource.SourceEntity = __instance.FiredBy == null ? __instance : __instance.FiredBy;
                         dSource.Type = EnumDamageType.Heal;
-                        float dmg = __instance.World.Rand.Next(1, 6) + healing;
+                        float dmg = __instance.World.Rand.Next(1, 6) + enchants[EnumEnchantments.healing.ToString()];
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
                     // Base
@@ -83,72 +92,69 @@ namespace KRPGLib.Enchantment
                     }
 
                     // Flaming
-                    if (flaming > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.flaming.ToString()))
                     {
                         DamageSource dSource = new DamageSource();
                         dSource.Source = EnumDamageSource.Entity;
                         dSource.SourceEntity = __instance.FiredBy == null ? __instance : __instance.FiredBy;
                         dSource.Type = EnumDamageType.Fire;
-                        float dmg = __instance.World.Rand.Next(1, 6) + flaming;
+                        float dmg = __instance.World.Rand.Next(1, 6) + enchants[EnumEnchantments.flaming.ToString()];
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
                     // Frost
-                    if (frost > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.frost.ToString()))
                     {
                         DamageSource dSource = new DamageSource();
                         dSource.Source = EnumDamageSource.Entity;
                         dSource.SourceEntity = __instance.FiredBy == null ? __instance : __instance.FiredBy;
                         dSource.Type = EnumDamageType.Frost;
-                        float dmg = __instance.World.Rand.Next(1, 6) + frost;
+                        float dmg = __instance.World.Rand.Next(1, 6) + enchants[EnumEnchantments.frost.ToString()];
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
                     // Harming
-                    if (harming > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.harming.ToString()))
                     {
                         DamageSource dSource = new DamageSource();
                         dSource.Source = EnumDamageSource.Entity;
                         dSource.SourceEntity = __instance.FiredBy == null ? __instance : __instance.FiredBy;
                         dSource.Type = EnumDamageType.Injury;
-                        float dmg = __instance.World.Rand.Next(1, 6) + harming;
+                        float dmg = __instance.World.Rand.Next(1, 6) + enchants[EnumEnchantments.harming.ToString()];
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
                     // Shocking
-                    if (shocking > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.shocking.ToString()))
                     {
                         DamageSource dSource = new DamageSource();
                         dSource.Source = EnumDamageSource.Entity;
                         dSource.SourceEntity = __instance.FiredBy == null ? __instance : __instance.FiredBy;
                         dSource.Type = EnumDamageType.Electricity;
-                        float dmg = __instance.World.Rand.Next(1, 6) + shocking;
+                        float dmg = __instance.World.Rand.Next(1, 6) + enchants[EnumEnchantments.shocking.ToString()];
                         didDamage = entity.ReceiveDamage(dSource, dmg);
                     }
                     // Base Knockback
                     float kbresist = entity.Properties.KnockbackResistance;
                     entity.SidedPos.Motion.Add(kbresist * pos.Motion.X * __instance.Weight, kbresist * pos.Motion.Y * __instance.Weight, kbresist * pos.Motion.Z * __instance.Weight);
 
-                    int power = 0;
                     // Chilling
-                    power = __instance.Attributes.GetInt("chilling", 0);
-                    if (power > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.chilling.ToString()))
                     {
                         EntityBehaviorBodyTemperature ebbt = entity.GetBehavior<EntityBehaviorBodyTemperature>();
 
                         // If we encounter something without one, bail
                         if (ebbt == null)
-                            return true;
+                            return false;
 
-                        ebbt.CurBodyTemperature = power * -10f;
+                        ebbt.CurBodyTemperature = enchants[EnumEnchantments.chilling.ToString()] * -10f;
                     }
                     // Igniting
-                    if (__instance.Attributes.GetInt("igniting", 0) > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.igniting.ToString()))
                     {
                         entity.IsOnFire = true;
                     }
                     // Knockback
-                    power = __instance.WatchedAttributes.GetInt("knockback", 0);
-                    if (power > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.knockback.ToString()))
                     {
-                        double weightedPower = __instance.Weight + power * 100;
+                        double weightedPower = __instance.Weight + enchants[EnumEnchantments.knockback.ToString()] * 100;
                         entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
                     }
                     // Lightning
@@ -159,17 +165,16 @@ namespace KRPGLib.Enchantment
                         weatherSystem.SpawnLightningFlash(entity.ServerPos.XYZ);
                     }
                     // Pit
-                    power = __instance.Attributes.GetInt("pit", 0);
-                    if (power > 0)
+                    if (enchants.ContainsKey(EnumEnchantments.pit.ToString()))
                     {
                         BlockPos bpos = entity.ServerPos.AsBlockPos;
                         List<Vec3d> pitArea = new List<Vec3d>();
 
-                        for (int x = 0; x <= power; x++)
+                        for (int x = 0; x <= enchants[EnumEnchantments.pit.ToString()]; x++)
                         {
-                            for (int y = 0; y <= power; y++)
+                            for (int y = 0; y <= enchants[EnumEnchantments.pit.ToString()]; y++)
                             {
-                                for (int z = 0; z <= power; z++)
+                                for (int z = 0; z <= enchants[EnumEnchantments.pit.ToString()]; z++)
                                 {
                                     pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z + z));
                                     pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z - z));
@@ -200,7 +205,8 @@ namespace KRPGLib.Enchantment
                     }
                 }
             }
-            return true;
+
+            return false;
         }
     }
 }

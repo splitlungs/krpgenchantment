@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Client;
@@ -14,17 +16,46 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
-    // TODO: Deprecate
     /*
-    [HarmonyPatch(typeof(ItemBow))]
-    internal class ItemBow_Patch
+    [HarmonyPatch]
+    public class ItemBow_Patch
     {
-        [HarmonyPatch("OnHeldInteractStop")]
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
+        public static void OnHeldInteractStop(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        {
+            // This inner transpiler will be applied to the original and
+            // the result will replace this method
+            //
+            // That will allow this method to have a different signature
+            // than the original and it must match the transpiled result
+            //
+            IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var list = Transpilers.Manipulator(instructions,
+                    item => item.opcode == OpCodes.Ldloc_S,
+                    item => item.opcode = OpCodes.Callvirt
+                ).ToList();
+                var mJoin = SymbolExtensions.GetMethodInfo(() => byEntity.World.SpawnEntity);
+                var idx = list.FindIndex(item => item.opcode == OpCodes.Call && item.operand as MethodInfo == mJoin);
+                list.RemoveRange(idx + 1, list.Count - (idx + 1));
+                return list.AsEnumerable();
+            }
+
+            // make compiler happy
+            _ = Transpiler(null);
+        }
+    }*/
+    // TODO: Deprecate for CollectibleBehavior
+    [HarmonyPatch]
+    public class ItemBow_Patch
+    {
+        [HarmonyPatch(typeof(ItemBow), nameof(ItemBow.OnHeldInteractStop))]
         public static bool Prefix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)
             {
-                return true;
+                return false;
             }
 
             string aimAnimation = Traverse.Create(__instance).Field("aimAnimation").GetValue() as string;
@@ -40,7 +71,7 @@ namespace KRPGLib.Enchantment
             (byEntity as EntityPlayer)?.Player?.InventoryManager.BroadcastHotbarSlot();
             if (secondsUsed < 0.65f)
             {
-                return true;
+                return false;
             }
 
             // We can't reach the protected method here
@@ -78,6 +109,14 @@ namespace KRPGLib.Enchantment
                     num += nextArrow.Itemstack.Collectible.Attributes["damage"].AsFloat();
                 }
 
+                // Get Enchantments
+                Dictionary<string, int> enchants = new Dictionary<string, int>();
+                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                {
+                    int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+                }
+
                 ItemStack itemStack = nextArrow.TakeOut(1);
                 nextArrow.MarkDirty();
                 IPlayer dualCallByPlayer = null;
@@ -86,15 +125,15 @@ namespace KRPGLib.Enchantment
                     dualCallByPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
                 }
 
-                byEntity.World.PlaySoundAt(new AssetLocation("sounds/bow-release"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
+                byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/bow-release"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
                 float num3 = 0.5f;
                 if (itemStack.ItemAttributes != null)
                 {
                     num3 = itemStack.ItemAttributes["breakChanceOnImpact"].AsFloat(0.5f);
                 }
 
-                EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("arrow-" + itemStack.Collectible.Variant["material"]));
-                EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
+                EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("krpgenchantment", "enchanted-arrow-" + itemStack.Collectible.Variant["material"]));
+                EnchantedEntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EnchantedEntityProjectile;
                 entityProjectile.FiredBy = byEntity;
                 entityProjectile.Damage = num;
                 entityProjectile.ProjectileStack = itemStack;
@@ -111,34 +150,16 @@ namespace KRPGLib.Enchantment
                 entityProjectile.SetRotation();
 
                 // Pass Enchantment Attributes to the Projectile
-                int power = 0;
-                power = slot.Itemstack.Attributes.GetInt("chilling", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("chilling", power);
-                power = slot.Itemstack.Attributes.GetInt("flaming", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("flaming", power);
-                power = slot.Itemstack.Attributes.GetInt("frost", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("frost", power);
-                power = slot.Itemstack.Attributes.GetInt("harming", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("harming", power);
-                power = slot.Itemstack.Attributes.GetInt("healing", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("healing", power);
-                power = slot.Itemstack.Attributes.GetInt("igniting", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("igniting", power);
-                power = slot.Itemstack.Attributes.GetInt("knockback", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("knockback", power);
-                power = slot.Itemstack.Attributes.GetInt("lightning", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("lightning", power);
-                power = slot.Itemstack.Attributes.GetInt("shocking", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("shocking", power);
-                power = slot.Itemstack.Attributes.GetInt("pit", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("pit", power);
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    entityProjectile.WatchedAttributes.SetInt(pair.Key, pair.Value);
+                }
 
                 byEntity.World.SpawnEntity(entityProjectile);
                 slot.Itemstack.Collectible.DamageItem(byEntity.World, byEntity, slot);
                 byEntity.AnimManager.StartAnimation("bowhit");
             }
-
             return false;
         }
-    }*/
+    }
 }

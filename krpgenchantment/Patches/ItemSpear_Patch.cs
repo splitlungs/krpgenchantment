@@ -13,24 +13,25 @@ using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {
+    // TODO: Deprecate for CollectibleBehavior
     /*
-    [HarmonyPatch(typeof(ItemSpear))]
-    internal class ItemSpear_Patch
+    [HarmonyPatch]
+    public class ItemSpear_Patch
     {
-
-        [HarmonyPatch("OnHeldInteractStop")]
-        public static bool Prefix(ItemSpear __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(ItemSpear), "OnHeldInteractStop")]
+        public static void OnHeldInteractStop(ItemSpear __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)
             {
-                return true;
+                return;
             }
 
             byEntity.Attributes.SetInt("aiming", 0);
             byEntity.StopAnimation("aim");
             if (secondsUsed < 0.35f)
             {
-                return true;
+                return;
             }
 
             float damage = 1.5f;
@@ -38,6 +39,19 @@ namespace KRPGLib.Enchantment
             {
                 damage = slot.Itemstack.Collectible.Attributes["damage"].AsFloat();
             }
+
+            // Get Enchantments
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                if (ePower > 0) 
+                { 
+                    enchants.Add(val.ToString(), ePower); 
+                    byEntity.Api.Logger.Event("Found {0} on ItemSpear before throw.", val.ToString());
+                }
+            }
+
 
             (byEntity.Api as ICoreClientAPI)?.World.AddCameraShake(0.17f);
             ItemStack projectileStack = slot.TakeOut(1);
@@ -48,9 +62,9 @@ namespace KRPGLib.Enchantment
                 player = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
             }
 
-            byEntity.World.PlaySoundAt(new AssetLocation("sounds/player/throw"), byEntity, player, randomizePitch: false, 8f);
-            EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation(__instance.Attributes["spearEntityCode"].AsString()));
-            EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
+            byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/player/throw"), byEntity, player, randomizePitch: false, 8f);
+            EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("krpgenchantment", "enchanted-" + __instance.Attributes["spearEntityCode"].AsString()));
+            EnchantedEntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EnchantedEntityProjectile;
             entityProjectile.FiredBy = byEntity;
             entityProjectile.Damage = damage;
             entityProjectile.ProjectileStack = projectileStack;
@@ -69,18 +83,11 @@ namespace KRPGLib.Enchantment
             entityProjectile.World = byEntity.World;
             entityProjectile.SetRotation();
 
-            // Check Attributes
-            if (projectileStack != null)
+            // Pass Enchantment Attributes to the Projectile
+            foreach (KeyValuePair<string, int> pair in enchants)
             {
-                int power = 0;
-                power = projectileStack.Attributes.GetInt("chilling", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("chilling", power);
-                power = projectileStack.Attributes.GetInt("igniting", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("ignite", power);
-                power = projectileStack.Attributes.GetInt("lightning", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("lightning", power);
-                power = projectileStack.Attributes.GetInt("pit", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("pit", power);
+                entityProjectile.WatchedAttributes.SetInt(pair.Key, pair.Value);
+                byEntity.Api.Logger.Event("Found {0} on ItemSpear before throw.", pair.Key.ToString());
             }
 
             byEntity.World.SpawnEntity(entityProjectile);
@@ -91,10 +98,7 @@ namespace KRPGLib.Enchantment
             }
 
             float pitchModifier = (byEntity as EntityPlayer).talkUtil.pitchModifier;
-            player.Entity.World.PlaySoundAt(new AssetLocation("sounds/player/strike"), player.Entity, player, pitchModifier * 0.9f + (float)byEntity.Api.World.Rand.NextDouble() * 0.2f, 16f, 0.35f);
-
-            return false;
+            player.Entity.World.PlaySoundAt(new AssetLocation("game:sounds/player/strike"), player.Entity, player, pitchModifier * 0.9f + (float)byEntity.Api.World.Rand.NextDouble() * 0.2f, 16f, 0.35f);
         }
-    }
-    */
+    }*/
 }

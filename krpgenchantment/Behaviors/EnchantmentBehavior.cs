@@ -91,14 +91,16 @@ namespace KRPGLib.Enchantment
 
     public class EnchantmentBehavior : CollectibleBehavior
     {
+        #region Data
         public ICoreAPI Api { get; protected set; }
-        protected AssetLocation strikeSound;
-        public EnumHandInteract strikeSoundHandInteract = EnumHandInteract.HeldItemAttack;
+        private string aimAnimation;
+        // protected AssetLocation strikeSound;
+        // public EnumHandInteract strikeSoundHandInteract = EnumHandInteract.HeldItemAttack;
         /// <summary>
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
         public EnchantmentProperties EnchantProps { get; protected set; }
-        public ITreeAttribute Enchantments { get; protected set; }
+        // public ITreeAttribute Enchantments { get; protected set; }
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
             this.EnchantProps = new EnchantmentProperties();
@@ -107,18 +109,20 @@ namespace KRPGLib.Enchantment
         {
             base.OnLoaded(api);
             Api = api;
-            ICoreServerAPI sApi = api as ICoreServerAPI;
+            aimAnimation = collObj.Attributes["aimAnimation"].AsString();
+            // ICoreServerAPI sApi = api as ICoreServerAPI;
         }
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
         {
             return assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
         }
-        #region Data
         public override void Initialize(JsonObject properties)
         {
             base.Initialize(properties);
             EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
+            
         }
+
         public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot, ref EnumHandling handling)
         {
             handling = EnumHandling.PassThrough;
@@ -197,6 +201,20 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
+            // Get Enchantments
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = inSlot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+            }
+            // Write to Description
+            foreach (KeyValuePair<string, int> pair in enchants)
+            {
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
+            }
+
+            /*
             int power = 0;
             // Check Attributes
             if (inSlot.Itemstack.Attributes.GetBool("enchantable", false) == true)
@@ -234,24 +252,58 @@ namespace KRPGLib.Enchantment
             power = inSlot.Itemstack.Attributes.GetInt("pit", 0);
             if (power > 0)
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-pit-" + power) + "</font>"));
+            */
         }
-        public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
+        #endregion
+        #region Interract
+        /*
+        public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
-            if (slot.Itemstack.Class.Name() == "ItemBow")
+            EnumTool tool = slot.Itemstack.Item.Tool.Value;
+            byEntity.Api.Logger.Event("Tool is being used");
+            if (tool == EnumTool.Bow)
             {
-                BowAttack(secondsUsed, slot, byEntity);
-                handling = EnumHandling.PreventSubsequent;
+                byEntity.Api.Logger.Event("Intercepting a Bow Attack");
+                if (GetNextArrow(byEntity) != null)
+                {
+                    if (byEntity.World is IClientWorldAccessor)
+                    {
+                        slot.Itemstack.TempAttributes.SetInt("renderVariant", 1);
+                    }
+
+                    slot.Itemstack.Attributes.SetInt("renderVariant", 1);
+                    byEntity.Attributes.SetInt("aiming", 1);
+                    byEntity.Attributes.SetInt("aimingCancel", 0);
+                    byEntity.AnimManager.StartAnimation(aimAnimation);
+                    IPlayer dualCallByPlayer = null;
+                    if (byEntity is EntityPlayer)
+                    {
+                        dualCallByPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
+                    }
+
+                    byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/bow-draw"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
+                    handHandling = EnumHandHandling.PreventDefault;
+                    handling = EnumHandling.Handled;
+                }
             }
-            else if (slot.Itemstack.Class.Name() == "ItemSpear")
+            else if (tool == EnumTool.Spear)
             {
-                BowAttack(secondsUsed, slot, byEntity);
-                handling = EnumHandling.PreventSubsequent;
+                byEntity.Api.Logger.Event("Intercepting a Spear Attack");
+                if (handHandling != EnumHandHandling.PreventDefault)
+                {
+                    handHandling = EnumHandHandling.PreventDefault;
+                    byEntity.Attributes.SetInt("aiming", 1);
+                    byEntity.Attributes.SetInt("aimingCancel", 0);
+                    byEntity.StartAnimation("aim");
+                }
+                handling = EnumHandling.Handled;
             }
-            else if (slot.Itemstack.Class.Name() == "WandItem")
+            
+            else if (tool == EnumTool.Wand)
             {
-                // WandAttack(secondsUsed, slot, byEntity);
-                // handling = EnumHandling.PreventSubsequent;
-                
+                WandAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+
                 handling = EnumHandling.Handled;
             }
             else
@@ -259,7 +311,64 @@ namespace KRPGLib.Enchantment
                 handling = EnumHandling.Handled;
             }
 
+            base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
+        }
+        public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            return base.OnHeldInteractStep(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+        }
+        public override bool OnHeldInteractCancel(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason cancelReason, ref EnumHandling handled)
+        {
+            return base.OnHeldInteractCancel(secondsUsed, slot, byEntity, blockSel, entitySel, cancelReason, ref handled);
+        }
+        public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            handling = EnumHandling.PreventDefault;
+
+            EnumTool tool = slot.Itemstack.Item.Tool.Value;
+            byEntity.Api.Logger.Event("Tool is being used");
+            if (tool == EnumTool.Bow)
+            {
+                byEntity.Api.Logger.Event("Intercepting a Bow Attack Stop");
+                BowAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+            else if (tool == EnumTool.Spear)
+            {
+                byEntity.Api.Logger.Event("Intercepting a Spear Attack Stop");
+                SpearAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+
+            else if (tool == EnumTool.Wand)
+            {
+                WandAttack(secondsUsed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+                
+                handling = EnumHandling.Handled;
+            }
+
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+        }
+        public override void OnHeldAttackStop(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            handling = EnumHandling.PreventDefault;
+
+            EnumTool tool = slot.Itemstack.Item.Tool.Value;
+            byEntity.Api.Logger.Event("Tool is being used");
+            if (tool == EnumTool.Bow)
+            {
+                byEntity.Api.Logger.Event("Intercepting a Bow Attack Stop");
+                BowAttack(secondsPassed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+            else if (tool == EnumTool.Spear)
+            {
+                byEntity.Api.Logger.Event("Intercepting a Spear Attack Stop");
+                SpearAttack(secondsPassed, slot, byEntity);
+                handling = EnumHandling.PreventSubsequent;
+            }
+            base.OnHeldAttackStop(secondsPassed, slot, byEntity, blockSelection, entitySel, ref handling);
         }
         private void BowAttack(float secondsUsed, ItemSlot slot, EntityAgent byEntity)
         {
@@ -285,7 +394,22 @@ namespace KRPGLib.Enchantment
                 return;
             }
 
-            ItemSlot nextArrow = GetNextArrow(byEntity);
+            ItemSlot nextArrow = null;
+            byEntity.WalkInventory(delegate (ItemSlot invslot)
+            {
+                if (invslot is ItemSlotCreative)
+                {
+                    return true;
+                }
+
+                if (invslot.Itemstack != null && invslot.Itemstack.Collectible.Code.PathStartsWith("arrow-"))
+                {
+                    nextArrow = invslot;
+                    return false;
+                }
+
+                return true;
+            });
 
             if (nextArrow != null)
             {
@@ -302,6 +426,18 @@ namespace KRPGLib.Enchantment
                     num += nextArrow.Itemstack.Collectible.Attributes["damage"].AsFloat();
                 }
 
+                // Get Enchantments
+                Dictionary<string, int> enchants = new Dictionary<string, int>();
+                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                {
+                    int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                    if (ePower > 0)
+                    {
+                        enchants.Add(val.ToString(), ePower);
+                        byEntity.Api.Logger.Event("Found {0} on {1} before throw.", val.ToString(), collObj.ItemClass.ToString());
+                    }
+                }
+
                 ItemStack itemStack = nextArrow.TakeOut(1);
                 nextArrow.MarkDirty();
                 IPlayer dualCallByPlayer = null;
@@ -310,14 +446,14 @@ namespace KRPGLib.Enchantment
                     dualCallByPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
                 }
 
-                byEntity.World.PlaySoundAt(new AssetLocation("sounds/bow-release"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
+                byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/bow-release"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
                 float num3 = 0.5f;
                 if (itemStack.ItemAttributes != null)
                 {
                     num3 = itemStack.ItemAttributes["breakChanceOnImpact"].AsFloat(0.5f);
                 }
 
-                EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("arrow-" + itemStack.Collectible.Variant["material"]));
+                EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("krpgenchantment", "enchanted-arrow-" + itemStack.Collectible.Variant["material"]));
                 EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
                 entityProjectile.FiredBy = byEntity;
                 entityProjectile.Damage = num;
@@ -335,27 +471,11 @@ namespace KRPGLib.Enchantment
                 entityProjectile.SetRotation();
 
                 // Pass Enchantment Attributes to the Projectile
-                int power = 0;
-                power = slot.Itemstack.Attributes.GetInt("chilling", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("chilling", power);
-                power = slot.Itemstack.Attributes.GetInt("flaming", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("flaming", power);
-                power = slot.Itemstack.Attributes.GetInt("frost", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("frost", power);
-                power = slot.Itemstack.Attributes.GetInt("harming", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("harming", power);
-                power = slot.Itemstack.Attributes.GetInt("healing", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("healing", power);
-                power = slot.Itemstack.Attributes.GetInt("igniting", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("igniting", power);
-                power = slot.Itemstack.Attributes.GetInt("knockback", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("knockback", power);
-                power = slot.Itemstack.Attributes.GetInt("lightning", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("lightning", power);
-                power = slot.Itemstack.Attributes.GetInt("shocking", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("shocking", power);
-                power = slot.Itemstack.Attributes.GetInt("pit", 0);
-                if (power > 0) entityProjectile.WatchedAttributes.SetInt("pit", power);
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    entityProjectile.WatchedAttributes.SetInt(pair.Key, pair.Value);
+                    byEntity.Api.Logger.Event("Found {0} on ItemSpear before throw.", pair.Key.ToString());
+                }
 
                 byEntity.World.SpawnEntity(entityProjectile);
                 slot.Itemstack.Collectible.DamageItem(byEntity.World, byEntity, slot);
@@ -402,6 +522,18 @@ namespace KRPGLib.Enchantment
                 damage = slot.Itemstack.Collectible.Attributes["damage"].AsFloat();
             }
 
+            // Get Enchantments
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                if (ePower > 0)
+                {
+                    enchants.Add(val.ToString(), ePower);
+                    byEntity.Api.Logger.Event("Found {0} on {1} before throw.", val.ToString(), collObj.ItemClass.ToString());
+                }
+            }
+
             (byEntity.Api as ICoreClientAPI)?.World.AddCameraShake(0.17f);
             ItemStack projectileStack = slot.TakeOut(1);
             slot.MarkDirty();
@@ -411,9 +543,9 @@ namespace KRPGLib.Enchantment
                 player = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
             }
 
-            byEntity.World.PlaySoundAt(new AssetLocation("sounds/player/throw"), byEntity, player, randomizePitch: false, 8f);
-            EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation(slot.Itemstack.Collectible.Attributes["spearEntityCode"].AsString()));
-            EntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EntityProjectile;
+            byEntity.World.PlaySoundAt(new AssetLocation("game:sounds/player/throw"), byEntity, player, randomizePitch: false, 8f);
+            EntityProperties entityType = byEntity.World.GetEntityType(new AssetLocation("krpgenchantment", "enchanted-" + slot.Itemstack.Collectible.Attributes["spearEntityCode"].AsString()));
+            EnchantedEntityProjectile entityProjectile = byEntity.World.ClassRegistry.CreateEntity(entityType) as EnchantedEntityProjectile;
             entityProjectile.FiredBy = byEntity;
             entityProjectile.Damage = damage;
             entityProjectile.ProjectileStack = projectileStack;
@@ -432,18 +564,11 @@ namespace KRPGLib.Enchantment
             entityProjectile.World = byEntity.World;
             entityProjectile.SetRotation();
 
-            // Check Attributes
-            if (projectileStack != null)
+            // Pass Enchantment Attributes to the Projectile
+            foreach (KeyValuePair<string, int> pair in enchants)
             {
-                int power = 0;
-                power = projectileStack.Attributes.GetInt("chilling", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("chilling", power);
-                power = projectileStack.Attributes.GetInt("igniting", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("ignite", power);
-                power = projectileStack.Attributes.GetInt("lightning", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("lightning", power);
-                power = projectileStack.Attributes.GetInt("pit", 0);
-                if (power > 0) entityProjectile.Attributes.SetInt("pit", power);
+                entityProjectile.WatchedAttributes.SetInt(pair.Key, pair.Value);
+                byEntity.Api.Logger.Event("Found {0} on ItemSpear before throw.", pair.Key.ToString());
             }
 
             byEntity.World.SpawnEntity(entityProjectile);
@@ -454,7 +579,7 @@ namespace KRPGLib.Enchantment
             }
 
             float pitchModifier = (byEntity as EntityPlayer).talkUtil.pitchModifier;
-            player.Entity.World.PlaySoundAt(new AssetLocation("sounds/player/strike"), player.Entity, player, pitchModifier * 0.9f + (float)byEntity.Api.World.Rand.NextDouble() * 0.2f, 16f, 0.35f);
+            player.Entity.World.PlaySoundAt(new AssetLocation("game:sounds/player/strike"), player.Entity, player, pitchModifier * 0.9f + (float)byEntity.Api.World.Rand.NextDouble() * 0.2f, 16f, 0.35f);
 
         }
         protected void RefillSlotIfEmpty(ItemSlot slot, EntityAgent byEntity, ActionConsumable<ItemStack> matcher)
@@ -490,7 +615,6 @@ namespace KRPGLib.Enchantment
                 return true;
             });
         }
-        /*
         protected void WandAttack(float secondsUsed, ItemSlot slot, EntityAgent byEntity)
         {
             if (byEntity.Attributes.GetInt("aimingCancel") == 1) return;
