@@ -158,7 +158,7 @@ namespace KRPGLib.Enchantment
                         entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
                     }
                     // Lightning
-                    if (enchants.ContainsKey(EnumEnchantments.lightning.ToString()))
+                    if (__instance.Attributes.GetInt("lightning", 0) > 0)
                     {
                         WeatherSystemServer weatherSystem = __instance.World.Api.ModLoader.GetModSystem<WeatherSystemServer>();
                         // It should default to 0f. Stun should stop at 0.5. Absorbtion should start at 1f.

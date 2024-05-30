@@ -260,39 +260,29 @@ namespace KRPGLib.Enchantment
             sidedPos.Motion.Set(0.0, 0.0, 0.0);
             if (flag3 && World.Side == EnumAppSide.Server)
             {
-                World.PlaySoundAt(new AssetLocation("game:sounds/arrow-impact"), this, null, randomizePitch: false, 24f);
+                World.PlaySoundAt(new AssetLocation("sounds/arrow-impact"), this, null, randomizePitch: false, 24f);
                 float num = Damage;
                 if (FiredBy != null)
                 {
                     num *= FiredBy.Stats.GetBlended("rangedWeaponsDamage");
                 }
 
-                // Get Enchantments
-                Dictionary<string, int> enchants = new Dictionary<string, int>();
-                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-                {
-                    // Item overrides Entity's Enchantment
-                    int ePower = ProjectileStack.Attributes.GetInt(val.ToString(), 0);
-                    if (ePower > 0)
-                    {
-                        enchants.Add(val.ToString(), ePower);
-                    }
-                    else
-                    {
-                        ePower = WatchedAttributes.GetInt(val.ToString(), 0);
-                        if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                    }
-                }
+                // Alternate Damage
+                int flaming = this.WatchedAttributes.GetInt("flaming", 0);
+                int frost = this.WatchedAttributes.GetInt("frost", 0);
+                int harming = this.WatchedAttributes.GetInt("harming", 0);
+                int healing = this.WatchedAttributes.GetInt("healing", 0);
+                int shocking = this.WatchedAttributes.GetInt("shocking", 0);
 
                 bool didDamage = false;
                 // Healing
-                if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                if (healing > 0)
                 {
                     DamageSource dSource = new DamageSource();
                     dSource.Source = EnumDamageSource.Entity;
                     dSource.SourceEntity = this.FiredBy == null ? this : this.FiredBy;
                     dSource.Type = EnumDamageType.Heal;
-                    float dmg = this.World.Rand.Next(1, 6) + enchants[EnumEnchantments.healing.ToString()];
+                    float dmg = this.World.Rand.Next(1, 6) + healing;
                     didDamage = entity.ReceiveDamage(dSource, dmg);
                 }
                 // Base
@@ -307,69 +297,66 @@ namespace KRPGLib.Enchantment
                 }
 
                 // Flaming
-                if (enchants.ContainsKey(EnumEnchantments.flaming.ToString()))
+                if (flaming > 0)
                 {
                     DamageSource dSource = new DamageSource();
                     dSource.Source = EnumDamageSource.Entity;
                     dSource.SourceEntity = this.FiredBy == null ? this : this.FiredBy;
                     dSource.Type = EnumDamageType.Fire;
-                    float dmg = this.World.Rand.Next(1, 6) + enchants[EnumEnchantments.flaming.ToString()];
+                    float dmg = this.World.Rand.Next(1, 6) + flaming;
                     didDamage = entity.ReceiveDamage(dSource, dmg);
                 }
                 // Frost
-                if (enchants.ContainsKey(EnumEnchantments.frost.ToString()))
+                if (frost > 0)
                 {
                     DamageSource dSource = new DamageSource();
                     dSource.Source = EnumDamageSource.Entity;
                     dSource.SourceEntity = this.FiredBy == null ? this : this.FiredBy;
                     dSource.Type = EnumDamageType.Frost;
-                    float dmg = this.World.Rand.Next(1, 6) + enchants[EnumEnchantments.frost.ToString()];
+                    float dmg = this.World.Rand.Next(1, 6) + frost;
                     didDamage = entity.ReceiveDamage(dSource, dmg);
                 }
                 // Harming
-                if (enchants.ContainsKey(EnumEnchantments.harming.ToString()))
+                if (harming > 0)
                 {
                     DamageSource dSource = new DamageSource();
                     dSource.Source = EnumDamageSource.Entity;
                     dSource.SourceEntity = this.FiredBy == null ? this : this.FiredBy;
                     dSource.Type = EnumDamageType.Injury;
-                    float dmg = this.World.Rand.Next(1, 6) + enchants[EnumEnchantments.harming.ToString()];
+                    float dmg = this.World.Rand.Next(1, 6) + harming;
                     didDamage = entity.ReceiveDamage(dSource, dmg);
                 }
                 // Shocking
-                if (enchants.ContainsKey(EnumEnchantments.shocking.ToString()))
+                if (shocking > 0)
                 {
                     DamageSource dSource = new DamageSource();
                     dSource.Source = EnumDamageSource.Entity;
                     dSource.SourceEntity = this.FiredBy == null ? this : this.FiredBy;
                     dSource.Type = EnumDamageType.Electricity;
-                    float dmg = this.World.Rand.Next(1, 6) + enchants[EnumEnchantments.shocking.ToString()];
+                    float dmg = this.World.Rand.Next(1, 6) + shocking;
                     didDamage = entity.ReceiveDamage(dSource, dmg);
                 }
 
                 // Base Knockback
                 float knockbackResistance = entity.Properties.KnockbackResistance;
                 entity.SidedPos.Motion.Add((double)knockbackResistance * sidedPos.Motion.X * (double)Weight, (double)knockbackResistance * sidedPos.Motion.Y * (double)Weight, (double)knockbackResistance * sidedPos.Motion.Z * (double)Weight);
+                int power = 0;
                 // Enchantment Knockback
-                if (enchants.ContainsKey(EnumEnchantments.knockback.ToString()))
+                power = this.WatchedAttributes.GetInt("knockback", 0);
+                if (power > 0)
                 {
-                    double weightedPower = this.Weight + enchants[EnumEnchantments.knockback.ToString()] * 100;
+                    double weightedPower = this.Weight + power * 100;
                     entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
                 }
-
                 // Enchantment Effects
-                // Chilling
-                if (enchants.ContainsKey(EnumEnchantments.chilling.ToString()))
-                    ChillEntity(entity, enchants[EnumEnchantments.chilling.ToString()]);
-                // Igniting
-                if (enchants.ContainsKey(EnumEnchantments.igniting.ToString()))
-                    IgniteEntity(entity, enchants[EnumEnchantments.igniting.ToString()]);
-                // Lightning
-                if (enchants.ContainsKey(EnumEnchantments.lightning.ToString()))
-                    CallLightning(entity, enchants[EnumEnchantments.lightning.ToString()]);
-                // Pit
-                if (enchants.ContainsKey(EnumEnchantments.pit.ToString()))
-                    CreatePit(entity, enchants[EnumEnchantments.pit.ToString()]);
+                power = this.WatchedAttributes.GetInt("chilling", 0);
+                if (power > 0) { ChillEntity(power, entity); }
+                power = this.WatchedAttributes.GetInt("igniting", 0);
+                if (power > 0) { IgniteEntity(entity, power); }
+                power = this.WatchedAttributes.GetInt("lightning", 0);
+                if (power > 0) { CallLightning(entity, power); }
+                power = this.WatchedAttributes.GetInt("pit", 0);
+                if (power > 0) { CreatePit(entity, power); }
 
 
 
@@ -387,7 +374,7 @@ namespace KRPGLib.Enchantment
 
                 if (FiredBy is EntityPlayer && didDamage)
                 {
-                    World.PlaySoundFor(new AssetLocation("game:sounds/player/projectilehit"), (FiredBy as EntityPlayer).Player, randomizePitch: false, 24f);
+                    World.PlaySoundFor(new AssetLocation("sounds/player/projectilehit"), (FiredBy as EntityPlayer).Player, randomizePitch: false, 24f);
                 }
             }
         }
@@ -525,7 +512,7 @@ namespace KRPGLib.Enchantment
         /// Reduce the Entity's BodyTemperature to -10, multiplied by Power
         /// </summary>
         /// <param name="power"></param>
-        public void ChillEntity(Entity toEntity, int power)
+        public void ChillEntity(int power, Entity toEntity)
         {
             EntityBehaviorBodyTemperature ebbt = toEntity.GetBehavior<EntityBehaviorBodyTemperature>();
 
