@@ -1,21 +1,12 @@
-﻿using Cairo.Freetype;
-using HarmonyLib;
-using KRPGLib.Enchantment;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
-using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
@@ -84,17 +75,19 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
                 // Overwrite Healing
-                if (enchant.Key == "healing")
+                if (enchant.Key == EnumEnchantments.healing.ToString())
                 {
-                    outStack.Attributes.SetInt("flaming", 0);
-                    outStack.Attributes.SetInt("frost", 0);
-                    outStack.Attributes.SetInt("harming", 0);
-                    outStack.Attributes.SetInt("shocking", 0);
+                    outStack.Attributes.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    outStack.Attributes.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    outStack.Attributes.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    outStack.Attributes.SetInt(EnumEnchantments.shocking.ToString(), 0);
                 }
                 // Overwrite Alternate Damage
-                else if (enchant.Key == "flaming" || enchant.Key == "frost" || enchant.Key == "harming"
-                    || enchant.Key == "shocking")
-                    outStack.Attributes.SetInt("healing", 0);
+                else if (enchant.Key == EnumEnchantments.flaming.ToString() || enchant.Key == EnumEnchantments.frost.ToString() 
+                    || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
+                    )
+                    outStack.Attributes.SetInt(EnumEnchantments.healing.ToString(), 0);
+
                 // Write Enchant
                 outStack.Attributes.SetInt(enchant.Key, enchant.Value);
             }
