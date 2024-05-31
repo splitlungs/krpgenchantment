@@ -1,0 +1,106 @@
+[
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/cavegoblin.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/dragon-flying.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/dragon.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/ent-shepherd.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/lonehuntergoblin.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/ork.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/skeleton-deserter.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/skeleton.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/skeletonblkgrd.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/slime.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/surfacegoblin.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/surfaceskeleton.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "fantasycreatures:entities/land/treant.json"
+  }
+]

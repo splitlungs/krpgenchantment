@@ -99,6 +99,8 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\game-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
@@ -120,6 +122,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
