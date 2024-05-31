@@ -1,5 +1,8 @@
 ﻿namespace KRPGLib.Enchantment
 {
+    /// <summary>
+    /// Authoritative list of available Enchantments.
+    /// </summary>
     public enum EnumEnchantments { chilling, flaming, frost, harming, healing, knockback, igniting, lightning, pit, shocking }
     /// <summary>
     /// Not in use right now.
