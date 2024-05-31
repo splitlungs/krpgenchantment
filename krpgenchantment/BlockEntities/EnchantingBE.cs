@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
         public double inputEnchantTime;
         public double prevInputEnchantTime;
         // Shortened for debugging
-        public double maxEnchantTime = 0.1;
+        // public double maxEnchantTime = 0.1;
         public bool nowEnchanting = false;
         public EnchantingRecipe CurrentRecipe;
         int nowOutputFace;
@@ -190,6 +190,21 @@ namespace KRPGLib.Enchantment
             return null;
         }
         /// <summary>
+        /// Gets the current recipe's processing time in in-game hours.
+        /// </summary>
+        /// <returns></returns>
+        public double MaxEnchantTime
+        {
+            get { return GetMaxEnchantTime(); }
+        }
+        private double GetMaxEnchantTime()
+        {
+            if (CurrentRecipe != null)
+                return CurrentRecipe.processingHours;
+
+            return 0d;
+        }
+        /// <summary>
         /// Gets Name of Matching Enchanting Recipe with Enchanter Prefix
         /// </summary>
         /// <returns></returns>
@@ -291,7 +306,7 @@ namespace KRPGLib.Enchantment
             {
                 hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
-                if (hours >= maxEnchantTime)
+                if (hours >= MaxEnchantTime)
                 {
                     enchantInput();
 
@@ -300,7 +315,7 @@ namespace KRPGLib.Enchantment
             }
             
             if (clientDialog != null)
-                clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
+                clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
 
             MarkDirty();
         }
@@ -329,7 +344,7 @@ namespace KRPGLib.Enchantment
                 // invDialog?.UpdateContents();
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
                 if (clientDialog != null)
-                    clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
+                    clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
 
                 MarkDirty(true);
             }
@@ -338,7 +353,7 @@ namespace KRPGLib.Enchantment
         {
 
             dialogTree.SetDouble("inputEnchantTime", inputEnchantTime);
-            dialogTree.SetDouble("maxEnchantTime", maxEnchantTime);
+            dialogTree.SetDouble("maxEnchantTime", MaxEnchantTime);
             dialogTree.SetBool("nowEnchanting", nowEnchanting);
             dialogTree.SetString("outputText", OutputText);
         }
@@ -367,7 +382,7 @@ namespace KRPGLib.Enchantment
                 string outText = OutputText;
 
                 ICoreClientAPI capi = Api as ICoreClientAPI;
-                clientDialog = new GuiDialogEnchantingBE(DialogTitle, hours, maxEnchantTime, nowEnchanting, outText, Inventory, Pos, Api as ICoreClientAPI);
+                clientDialog = new GuiDialogEnchantingBE(DialogTitle, hours, MaxEnchantTime, nowEnchanting, outText, Inventory, Pos, Api as ICoreClientAPI);
                 clientDialog.OnClosed += () =>
                 {
                     clientDialog = null;
@@ -410,7 +425,7 @@ namespace KRPGLib.Enchantment
                 // clientDialog.SingleComposer.ReCompose();
             }
             
-            clientDialog?.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api);
+            clientDialog?.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
             MarkDirty();
 
             if (clientDialog != null && clientDialog.IsOpened())
@@ -439,7 +454,7 @@ namespace KRPGLib.Enchantment
             if (packetid == (int)EnumBlockEntityPacketId.Open)
             {
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
-                if (clientDialog != null) { clientDialog.Update(hours, maxEnchantTime, nowEnchanting, OutputText, Api); }
+                if (clientDialog != null) { clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api); }
                 
                 MarkDirty();
                 
