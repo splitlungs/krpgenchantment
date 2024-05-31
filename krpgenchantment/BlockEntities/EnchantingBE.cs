@@ -201,8 +201,8 @@ namespace KRPGLib.Enchantment
         {
             if (CurrentRecipe != null)
                 return CurrentRecipe.processingHours;
-
-            return 0d;
+            else
+                return 0d;
         }
         /// <summary>
         /// Gets Name of Matching Enchanting Recipe with Enchanter Prefix
