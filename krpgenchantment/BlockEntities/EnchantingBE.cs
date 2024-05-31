@@ -14,6 +14,7 @@ namespace KRPGLib.Enchantment
         public int msEnchantTick = 3000;
         public double inputEnchantTime;
         public double prevInputEnchantTime;
+        // Shortened for debugging
         public double maxEnchantTime = 0.1;
         public bool nowEnchanting = false;
         public EnchantingRecipe CurrentRecipe;
