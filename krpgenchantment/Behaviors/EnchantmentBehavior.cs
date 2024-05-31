@@ -112,6 +112,8 @@ namespace KRPGLib.Enchantment
 
         public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot, ref EnumHandling handling)
         {
+            return base.GetHeldInteractionHelp(inSlot, ref handling);
+            /*
             handling = EnumHandling.PassThrough;
             return new WorldInteraction[]
             {
@@ -120,7 +122,7 @@ namespace KRPGLib.Enchantment
                     ActionLangCode = "heldhelp-enchantment",
                     MouseButton = EnumMouseButton.Right
                 }
-            };
+            };*/
         }
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
