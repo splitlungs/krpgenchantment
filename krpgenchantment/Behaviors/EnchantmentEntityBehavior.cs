@@ -265,8 +265,6 @@ namespace KRPGLib.Enchantment
                             source.DamageTier = power;
                             float dmg = Api.World.Rand.Next(1, 6) + power;
                             entity.ReceiveDamage(source, dmg);
-                            // ICoreServerAPI sapi = entity.World.Api as ICoreServerAPI;
-                            // sapi.Network.SendEntityPacket(entity.Api as IServerPlayer, entity.EntityId, 9666);
                         }
                         return;
                     }
@@ -320,12 +318,8 @@ namespace KRPGLib.Enchantment
         public void ChillEntity(int power)
         {
             EntityBehaviorBodyTemperature ebbt = entity.GetBehavior<EntityBehaviorBodyTemperature>();
-
-            // If we encounter something without one, bail
-            if (ebbt == null)
-                return;
-
-            ebbt.CurBodyTemperature = power * -10f;
+            if (ebbt != null)
+                ebbt.CurBodyTemperature = power * -10f;
         }
         /// <summary>
         /// Creates a 1x1x1 pit under the target Entity multiplied by Power. Only works only Soil, Sand, or Gravel
@@ -380,8 +374,12 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void IgniteEntity(int power)
         {
+            if (igniteTicksRemaining > 0)
+                return;
+
+            igniteTicksRemaining = power;
+            listenerID = Api.World.RegisterGameTickListener(IgniteTick, 12500);
             entity.IsOnFire = true;
-            listenerID = Api.World.RegisterGameTickListener(IgniteTick, 12000);
         }
         long listenerID;
         int igniteTicksRemaining = 0;

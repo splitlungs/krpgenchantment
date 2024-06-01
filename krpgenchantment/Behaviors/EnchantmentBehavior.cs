@@ -109,21 +109,6 @@ namespace KRPGLib.Enchantment
             EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
             
         }
-
-        public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot, ref EnumHandling handling)
-        {
-            return base.GetHeldInteractionHelp(inSlot, ref handling);
-            /*
-            handling = EnumHandling.PassThrough;
-            return new WorldInteraction[]
-            {
-                new WorldInteraction
-                {
-                    ActionLangCode = "heldhelp-enchantment",
-                    MouseButton = EnumMouseButton.Right
-                }
-            };*/
-        }
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
         /// </summary>
