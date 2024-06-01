@@ -105,8 +105,6 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
-            // if (entity.Api.Side != EnumAppSide.Client)
-            // return;
             int power = (int)Math.Ceiling(damage);
 
             if (damageSource.Type == EnumDamageType.Fire)
@@ -369,7 +367,7 @@ namespace KRPGLib.Enchantment
             Api.Event.TriggerEntityDeath(entity, byEntity);
         }
         /// <summary>
-        /// Attempt to set the target on fire. Power not doing anything currently.
+        /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.
         /// </summary>
         /// <param name="power"></param>
         public void IgniteEntity(int power)
@@ -397,16 +395,20 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
-        /// Create a lightning strike at Pos. Power not doing anything currently
+        /// Create a lightning strike at Pos. Power multiplies the number of lightning strikes.
         /// </summary>
         /// <param name="world"></param>
         /// <param name="pos"></param>
         public void CallLightning(int power)
         {
             WeatherSystemServer weatherSystem = Api.ModLoader.GetModSystem<WeatherSystemServer>();
-            // It should default to 0f. Stun should stop at 0.5. Absorbtion should start at 1f.
             if (weatherSystem != null)
-                weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ);
+            {
+                for (int i = 0; i < power; i++)
+                {
+                    weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ);
+                }
+            }
             else
                 Api.Logger.Debug("Could not find Weather System!");
         }
