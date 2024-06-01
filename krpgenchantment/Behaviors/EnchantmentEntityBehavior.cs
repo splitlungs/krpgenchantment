@@ -12,11 +12,13 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantmentEntityBehavior : EntityBehavior
     {
-        public ICoreAPI Api;
-        // public ICoreServerAPI sApi;
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public AdvancedParticleProperties[] ParticleProperties;
         public static AdvancedParticleProperties[] FireParticleProps;
+        public ICoreAPI Api;
+
+        protected bool resetLightHsv;
+
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             Api = entity.Api as ICoreAPI;
@@ -150,7 +152,7 @@ namespace KRPGLib.Enchantment
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (mode == EnumInteractMode.Attack && entity.Api.Side == EnumAppSide.Server)
+            if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
                 int power = 0;
                 // Alternate Damage
@@ -211,9 +213,9 @@ namespace KRPGLib.Enchantment
                 }
             }
             else
-                handled = EnumHandling.PassThrough;
-
-            base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+            {
+                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+            }
         }
         public override void OnReceivedClientPacket(IServerPlayer player, int packetid, byte[] data, ref EnumHandling handled)
         {
@@ -373,24 +375,31 @@ namespace KRPGLib.Enchantment
         public void IgniteEntity(int power)
         {
             if (igniteTicksRemaining > 0)
-                return;
-
-            igniteTicksRemaining = power;
-            listenerID = Api.World.RegisterGameTickListener(IgniteTick, 12500);
-            entity.IsOnFire = true;
+            {
+                igniteTicksRemaining = power;
+            }
+            else 
+            {
+                if (power > 1)
+                {
+                    igniteTicksRemaining = power;
+                    igniteID = Api.World.RegisterGameTickListener(IgniteTick, 12500);
+                }
+                entity.Ignite();
+            }
         }
-        long listenerID;
+        long igniteID;
         int igniteTicksRemaining = 0;
         private void IgniteTick(float dt)
         {
             if (igniteTicksRemaining > 0)
             {
-                entity.IsOnFire = true;
+                entity.Ignite();
                 igniteTicksRemaining--;
             }
             else
             {
-                Api.World.UnregisterGameTickListener(listenerID);
+                Api.World.UnregisterGameTickListener(igniteID);
             }
 
         }
@@ -411,6 +420,64 @@ namespace KRPGLib.Enchantment
             }
             else
                 Api.Logger.Debug("Could not find Weather System!");
+        }
+        /// <summary>
+        /// Attempt to poison the entity. Power multiplies number of 12s refreshes.
+        /// </summary>
+        /// <param name="power"></param>
+        public void PoisonEntity(int power)
+        {
+            if (poisonTicksRemaining > 0)
+                return;
+
+            poisonTicksRemaining = power;
+            poisonID = Api.World.RegisterGameTickListener(PoisonTick, 6333);
+        }
+        public bool IsPoisoned
+        {
+            get
+            {
+                return entity.WatchedAttributes.GetBool("isPoisoned");
+            }
+            set
+            {
+                entity.WatchedAttributes.SetBool("isPoisoned", value);
+            }
+        }
+        protected void updatePoisoned()
+        {
+            bool isPoisoned = IsPoisoned;
+            if (isPoisoned)
+            {
+                OnPoisonBeginTotalMs = Api.World.ElapsedMilliseconds;
+            }
+
+            if (isPoisoned && entity.LightHsv == null)
+            {
+                entity.LightHsv = new byte[3] { 5, 7, 10 };
+                resetLightHsv = true;
+            }
+
+            if (!isPoisoned && resetLightHsv)
+            {
+                entity.LightHsv = null;
+            }
+        }
+        long poisonID;
+        long OnPoisonBeginTotalMs;
+        int poisonTicksRemaining = 0;
+        private void PoisonTick(float dt)
+        {
+            if (poisonTicksRemaining > 0)
+            {
+                entity.IsOnFire = true;
+                poisonTicksRemaining--;
+            }
+            else
+            {
+                Api.World.UnregisterGameTickListener(poisonID);
+            }
+
         }
         #endregion
         #region Particle Effects
