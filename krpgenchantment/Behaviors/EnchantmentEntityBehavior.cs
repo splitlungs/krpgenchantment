@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Security.Cryptography;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
@@ -13,7 +17,7 @@ namespace KRPGLib.Enchantment
     public class EnchantmentEntityBehavior : EntityBehavior
     {
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
-        public AdvancedParticleProperties[] ParticleProperties;
+        public static AdvancedParticleProperties[] HealParticleProps;
         public static AdvancedParticleProperties[] FireParticleProps;
         public ICoreAPI Api;
 
@@ -104,6 +108,81 @@ namespace KRPGLib.Enchantment
                 ParticleModel = EnumParticleModel.Quad,
                 SelfPropelled = true
             };
+
+            
+            HealParticleProps = new AdvancedParticleProperties[3];
+            HealParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(255f, 20f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            HealParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(255f, 20f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            HealParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(20f, 20f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+
         }
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
@@ -140,6 +219,25 @@ namespace KRPGLib.Enchantment
             }
             if (damageSource.Type == EnumDamageType.Heal)
             {
+                int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
             }
             if (damageSource.Type == EnumDamageType.Injury)
             {
@@ -154,68 +252,119 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                int power = 0;
-                // Alternate Damage
-                power = itemslot.Itemstack.Attributes.GetInt("healing", 0);
-                if (power > 0)
+                bool healing = false;
+                // Get Enchantments
+                Dictionary<string, int> enchants = new Dictionary<string, int>();
+                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
                 {
-                    DamageEntity(byEntity, EnumEnchantments.healing, power);
+                    int ePower = itemslot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                    if (ePower > 0) 
+                    { 
+                        enchants.Add(val.ToString(), ePower);
+
+                        if (val.ToString() == EnumEnchantments.healing.ToString())
+                            healing = true;
+                    }
+                }
+
+                // Try Enchantments
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    TryEnchantment(byEntity, pair.Key, pair.Value);
+                }
+
+                // Set Handling
+                if (healing)
+                    handled = EnumHandling.PreventSubsequent;
+                else
+                    handled = EnumHandling.Handled;
+                /*
+                // Alternate Damage
+                if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                {
+                    DamageEntity(byEntity, EnumEnchantments.healing, enchants[EnumEnchantments.healing.ToString()]);
                     handled = EnumHandling.PreventSubsequent;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("flaming", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.flaming.ToString()))
                 {
-                    DamageEntity(byEntity, EnumEnchantments.flaming, power);
+                    DamageEntity(byEntity, EnumEnchantments.flaming, enchants[EnumEnchantments.flaming.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("frost", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.frost.ToString()))
                 {
-                    DamageEntity(byEntity, EnumEnchantments.frost, power);
+                    DamageEntity(byEntity, EnumEnchantments.frost, enchants[EnumEnchantments.frost.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("harming", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.harming.ToString()))
                 {
-                    DamageEntity(byEntity, EnumEnchantments.harming, power);
+                    DamageEntity(byEntity, EnumEnchantments.harming, enchants[EnumEnchantments.harming.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("shocking", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.shocking.ToString()))
                 {
-                    DamageEntity(byEntity, EnumEnchantments.shocking, power);
+                    DamageEntity(byEntity, EnumEnchantments.shocking, enchants[EnumEnchantments.shocking.ToString()]);
                     handled = EnumHandling.Handled;
                 }
                 // Effects
-                power = itemslot.Itemstack.Attributes.GetInt("chilling", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.chilling.ToString()))
                 {
-                    ChillEntity(power);
+                    ChillEntity(enchants[EnumEnchantments.chilling.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("igniting", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.igniting.ToString()))
                 {
-                    IgniteEntity(power);
+                    IgniteEntity(enchants[EnumEnchantments.igniting.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("lightning", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.lightning.ToString()))
                 {
-                    CallLightning(power);
+                    CallLightning(enchants[EnumEnchantments.lightning.ToString()]);
                     handled = EnumHandling.Handled;
                 }
-                power = itemslot.Itemstack.Attributes.GetInt("pit", 0);
-                if (power > 0)
+                if (enchants.ContainsKey(EnumEnchantments.pit.ToString()))
                 {
-                    CreatePit(byEntity, power);
+                    CreatePit(byEntity, enchants[EnumEnchantments.pit.ToString()]);
                     handled = EnumHandling.Handled;
-                }
+                }*/
             }
             else
             {
                 base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
             }
+        }
+        /// <summary>
+        /// Generic Enchantment processing.
+        /// </summary>
+        /// <param name="byEntity"></param>
+        /// <param name="enchant"></param>
+        /// <param name="power"></param>
+        /// <returns></returns>
+        public bool TryEnchantment(EntityAgent byEntity, string enchant, int power)
+        {
+            // Alt Damage
+            if (enchant == EnumEnchantments.healing.ToString())
+                DamageEntity(byEntity, EnumEnchantments.healing, power);
+            else if (enchant == EnumEnchantments.flaming.ToString())
+                DamageEntity(byEntity, EnumEnchantments.flaming, power);
+            else if (enchant == EnumEnchantments.frost.ToString())
+                DamageEntity(byEntity, EnumEnchantments.frost, power);
+            else if (enchant == EnumEnchantments.harming.ToString())
+                DamageEntity(byEntity, EnumEnchantments.harming, power);
+            else if (enchant == EnumEnchantments.shocking.ToString())
+                DamageEntity(byEntity, EnumEnchantments.shocking, power);
+            // Alt Effects
+            else if (enchant == EnumEnchantments.chilling.ToString())
+                ChillEntity(power);
+            else if (enchant == EnumEnchantments.igniting.ToString())
+                IgniteEntity(power);
+            else if (enchant == EnumEnchantments.knockback.ToString())
+                KnockbackEntity(power);
+            else if (enchant == EnumEnchantments.lightning.ToString())
+                CallLightning(power);
+            else if (enchant == EnumEnchantments.pit.ToString())
+                CreatePit(byEntity, power);
+
+            return true;
         }
         public override void OnReceivedClientPacket(IServerPlayer player, int packetid, byte[] data, ref EnumHandling handled)
         {
@@ -320,6 +469,15 @@ namespace KRPGLib.Enchantment
             EntityBehaviorBodyTemperature ebbt = entity.GetBehavior<EntityBehaviorBodyTemperature>();
             if (ebbt != null)
                 ebbt.CurBodyTemperature = power * -10f;
+        }
+        /// <summary>
+        /// Push the Entity back, multiplied by Power
+        /// </summary>
+        /// <param name="power"></param>
+        public void KnockbackEntity(int power)
+        {
+            double weightedPower = power * 100;
+            entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
         }
         /// <summary>
         /// Creates a 1x1x1 pit under the target Entity multiplied by Power. Only works only Soil, Sand, or Gravel
@@ -504,6 +662,58 @@ namespace KRPGLib.Enchantment
             {
                 world.SpawnParticles(advancedParticleProperties);
                 Api.Logger.Event("Spawned Fire Particles.");
+            }
+        }
+        private void SpawnHitParticles(string pType, int power)
+        {
+            IClientWorldAccessor world = Api.World as IClientWorldAccessor;
+            Api.Logger.Event("Spawning {0} particles after damage.", pType);
+
+            if (pType == "healing")
+            {
+                NatFloat[] hsvaColor = new NatFloat[4]
+                    {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(100f, 80f),
+                NatFloat.createUniform(220f, 50f)
+                    };
+
+                FireParticleProps[2].HsvaColor = hsvaColor;
+            }
+            else if (pType == "fire")
+            {
+                NatFloat[] hsvaColor = new NatFloat[4]
+                    {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(40f, 30f),
+                NatFloat.createUniform(220f, 50f)
+                    };
+
+                FireParticleProps[2].HsvaColor = hsvaColor;
+            }
+
+
+            int num = Math.Min(FireParticleProps.Length - 1, world.Rand.Next(FireParticleProps.Length + 1));
+            AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+            advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+            advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+            advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+            advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+            advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+            advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+            advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+            advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+            {
+                1 => 3f,
+                0 => 0.5f,
+                _ => 1.25f,
+            };
+            for (int i = 0; i <= power; i++)
+            {
+                world.SpawnParticles(advancedParticleProperties);
+                Api.Logger.Event("Spawned {0} particles.", pType);
             }
         }
         #endregion

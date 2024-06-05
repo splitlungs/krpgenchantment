@@ -127,6 +127,31 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-atgeir-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-becdecorbin-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-boarspear-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-halberd-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-naginata-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-pila-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-ranseur-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-voulge-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-warscythe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-bearded-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-daneaxe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-nadziak-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-padded-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-bismuthbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-blackbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-copper-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-lead-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-pernach-tinbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-seax-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-shortsword-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\wands\wand-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-chilling.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-flaming.json" />
@@ -141,6 +166,10 @@
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\" />
 </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@
   "name": "KRPGEnchantment",
   "authors": [ "BloodThunder" ],
   "description": "Adds enchantments for use with KRPG systems.",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "dependencies": {
     "game": ""
   }
