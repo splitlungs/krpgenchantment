@@ -136,6 +136,34 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-ranseur-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-voulge-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\polearms\swordz-warscythe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-gladius-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-khopesh-bismuthbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-khopesh-blackbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-khopesh-copper-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-khopesh-tinbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-kilij-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-kilij-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-kilij-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-longsword-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-longsword-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-longsword-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sabre-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sabre-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sabre-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sord-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sord-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sord-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-sord-tinbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-spatha-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-iron-gold-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-iron-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-iron-silver-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-meteoriciron-gold-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-meteoriciron-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-meteoriciron-silver-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-steel-gold-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-steel-silver-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\swordz-zweihander-steel-steel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-bearded-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-daneaxe-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\swordz\swordz-nadziak-tier-1.json" />
@@ -166,10 +194,6 @@
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-</ItemGroup>
-
-<ItemGroup>
-  <Folder Include="assets\krpgenchantment\recipes\enchanting-table\swordz\swords\" />
 </ItemGroup>
 
 </Project>
