@@ -8,9 +8,16 @@ namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantmentConfig
     {
-        // Config options
+        // Global Options
         public List<string> DisabledEnchants;
         public double EnchantTimeOverride;
+        // Compatibility patches
+        public bool EnableFantasyCreatures;
+        public bool EnableFeverstoneWilds;
+        public bool EnableKRPGWands;
+        public bool EnablePaxel;
+        public bool EnableRustboundMagic;
+        public bool EnableSwordz;
 
         public bool IsDirty;
         public void MarkDirty()
