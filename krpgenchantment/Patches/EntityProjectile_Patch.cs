@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
-            if (!entity.Alive) return false;
+            if (!entity.Alive) return true;
 
             if (__instance != null)
             {

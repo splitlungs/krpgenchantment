@@ -181,9 +181,8 @@ namespace KRPGLib.Enchantment
                 ParticleModel = EnumParticleModel.Quad,
                 SelfPropelled = true
             };
-
-
         }
+
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             int power = (int)Math.Ceiling(damage);

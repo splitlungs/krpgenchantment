@@ -123,11 +123,14 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-generic-tier-1.json" />
+  <None Remove="assets\krpgwands\lang\en.json" />
+  <None Remove="assets\paxel\lang\en.json" />
   <None Remove="assets\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-generic-tier-1.json" />
+  <None Remove="assets\swordz\lang\en.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\polearms\swordz-atgeir-tier-1.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\polearms\swordz-becdecorbin-tier-1.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\polearms\swordz-boarspear-tier-1.json" />
