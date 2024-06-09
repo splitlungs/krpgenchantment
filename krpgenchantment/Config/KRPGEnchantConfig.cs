@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KRPGLib.Enchantment
 {
-    public class KRPGEnchantmentConfig
+    public class KRPGEnchantConfig
     {
         // Global Options
         public List<string> DisabledEnchants;
@@ -28,7 +28,7 @@ namespace KRPGLib.Enchantment
             }
         }
 
-        internal void ReloadConfig(KRPGEnchantmentConfig config)
+        internal void ReloadConfig(KRPGEnchantConfig config)
         {
             if (config != null) 
             {

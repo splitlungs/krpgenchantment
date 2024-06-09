@@ -11,7 +11,7 @@ namespace KRPGLib.Enchantment
     public class KRPGEnchantmentSystem : ModSystem
     {
         public const string ConfigFile = "KRPGEnchantmentConfig.json";
-        public KRPGEnchantmentConfig Config { get; set; }
+        public KRPGEnchantConfig Config { get; set; }
         ICoreAPI Api;
         ICoreServerAPI sApi;
         public override void StartServerSide(ICoreServerAPI api)
@@ -19,10 +19,10 @@ namespace KRPGLib.Enchantment
             sApi = api;
             try
             {
-                Config = sApi.LoadModConfig<KRPGEnchantmentConfig>(ConfigFile);
+                Config = sApi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
                 if (Config == null)
                 {
-                    Config = new KRPGEnchantmentConfig();
+                    Config = new KRPGEnchantConfig();
                     sApi.StoreModConfig(Config, ConfigFile);
 
                     sApi.Logger.Event("Loaded KRPGEnchantmentConfig from file.");

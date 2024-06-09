@@ -14,6 +14,9 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
+        public const string ConfigFile = "KRPGEnchantRecipeConfig.json";
+        public KRPGEnchantRecipeConfig Config { get; set; }
+
         ICoreServerAPI api;
 
         public override double ExecuteOrder()
@@ -33,6 +36,22 @@ namespace KRPGLib.Enchantment
             if (!(api is ICoreServerAPI sapi)) return;
             this.api = sapi;
 
+            try
+            {
+                Config = sapi.LoadModConfig<KRPGEnchantRecipeConfig>(ConfigFile);
+                if (Config == null)
+                {
+                    Config = new KRPGEnchantRecipeConfig();
+                    sapi.StoreModConfig(Config, ConfigFile);
+
+                    sapi.Logger.Event("Loaded KRPGEnchantRecipeConfig from file.");
+                }
+            }
+            catch (Exception e)
+            {
+                sapi.Logger.Error("Error loading KRPGEnchantRecipeConfig: {0}", e);
+                return;
+            }
             classExclusiveRecipes = sapi.World.Config.GetBool("classExclusiveRecipes", true);
             
             LoadEnchantingRecipes();
@@ -42,12 +61,11 @@ namespace KRPGLib.Enchantment
         {
             Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
 
-            KRPGEnchantmentConfig config = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().Config;
-            if (config.EnableKRPGWands)
+            if (Config.EnableKRPGWands)
                 files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgwands"));
-            if (config.EnablePaxel)
+            if (Config.EnablePaxel)
                 files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "paxel"));
-            if (config.EnableSwordz)
+            if (Config.EnableSwordz)
                 files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "swordz"));
 
             int recipeQuantity = 0;
