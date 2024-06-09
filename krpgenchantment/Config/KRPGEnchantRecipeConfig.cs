@@ -8,11 +8,13 @@ namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantRecipeConfig
     {
+        // Global Config
+        public double EnchantTimeOverride = -1d;
         // Compatibility patches
-        public bool EnableKRPGWands;
-        public bool EnablePaxel;
-        public bool EnableRustboundMagic;
-        public bool EnableSwordz;
+        public bool EnableKRPGWands = false;
+        public bool EnablePaxel = false;
+        public bool EnableRustboundMagic = false;
+        public bool EnableSwordz = false;
 
         private  bool IsDirty;
         public void MarkDirty()
@@ -27,6 +29,7 @@ namespace KRPGLib.Enchantment
         {
             if (config != null) 
             {
+                EnchantTimeOverride = config.EnchantTimeOverride;
                 EnableKRPGWands = config.EnableKRPGWands;
                 EnablePaxel = config.EnablePaxel;
                 EnableRustboundMagic = config.EnableRustboundMagic;

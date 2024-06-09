@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -192,7 +193,7 @@ namespace KRPGLib.Enchantment
             }
             catch (Exception e)
             {
-                sApi.Logger.Error("Error reloading Th3Config: ", e.ToString());
+                sApi.Logger.Error("Error reloading KRPGEnchantment Recipe Config: ", e.ToString());
                 return false;
             }
 

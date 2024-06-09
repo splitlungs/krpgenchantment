@@ -10,7 +10,6 @@ namespace KRPGLib.Enchantment
     {
         // Global Options
         public List<string> DisabledEnchants;
-        public double EnchantTimeOverride;
         // Compatibility patches
         public bool EnableFantasyCreatures;
         public bool EnableFeverstoneWilds;
@@ -30,7 +29,6 @@ namespace KRPGLib.Enchantment
             {
                 DisabledEnchants = new List<string>();
                 DisabledEnchants = config.DisabledEnchants;
-                EnchantTimeOverride = config.EnchantTimeOverride;
                 EnableFantasyCreatures = config.EnableFantasyCreatures;
                 EnableFeverstoneWilds = config.EnableFeverstoneWilds;
             }

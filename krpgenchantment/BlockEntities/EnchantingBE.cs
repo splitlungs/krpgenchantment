@@ -199,7 +199,11 @@ namespace KRPGLib.Enchantment
         }
         private double GetMaxEnchantTime()
         {
-            if (CurrentRecipe != null)
+            KRPGEnchantRecipeConfig config = Api.ModLoader.GetModSystem<EnchantingRecipeLoader>().Config;
+
+            if (config.EnchantTimeOverride >= 0)
+                return config.EnchantTimeOverride;
+            else if (CurrentRecipe != null)
                 return CurrentRecipe.processingHours;
             else
                 return 0d;
