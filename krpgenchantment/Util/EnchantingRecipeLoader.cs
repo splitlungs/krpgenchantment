@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
@@ -39,7 +40,16 @@ namespace KRPGLib.Enchantment
 
         public void LoadEnchantingRecipes()
         {
-            Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table");
+            Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
+
+            KRPGEnchantmentConfig config = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().Config;
+            if (config.EnableKRPGWands)
+                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgwands"));
+            if (config.EnablePaxel)
+                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "paxel"));
+            if (config.EnableSwordz)
+                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "swordz"));
+
             int recipeQuantity = 0;
 
             foreach (var val in files)

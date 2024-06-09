@@ -1,13 +1,39 @@
-using Vintagestory.API.Common;
+using System;
 using HarmonyLib;
+using System.IO;
 using System.Reflection;
+using Vintagestory.API.Config;
+using Vintagestory.API.Common;
+using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantmentSystem : ModSystem
     {
+        public const string ConfigFile = "KRPGEnchantmentConfig.json";
+        public KRPGEnchantmentConfig Config { get; set; }
         ICoreAPI Api;
-        
+        ICoreServerAPI sApi;
+        public override void StartServerSide(ICoreServerAPI api)
+        {
+            sApi = api;
+            try
+            {
+                Config = sApi.LoadModConfig<KRPGEnchantmentConfig>(ConfigFile);
+                if (Config == null)
+                {
+                    Config = new KRPGEnchantmentConfig();
+                    sApi.StoreModConfig(Config, ConfigFile);
+
+                    sApi.Logger.Event("Loaded KRPGEnchantmentConfig from file.");
+                }
+            }
+            catch (Exception e)
+            {
+                sApi.Logger.Error("Error loading KRPGEnchantmentConfig: {0}", e);
+                return;
+            }
+        }
         public override void Start(ICoreAPI api)
         {
             base.Start(api);

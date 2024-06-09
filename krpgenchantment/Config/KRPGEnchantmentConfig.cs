@@ -19,7 +19,7 @@ namespace KRPGLib.Enchantment
         public bool EnableRustboundMagic;
         public bool EnableSwordz;
 
-        public bool IsDirty;
+        private  bool IsDirty;
         public void MarkDirty()
         {
             if (!IsDirty)
@@ -28,5 +28,20 @@ namespace KRPGLib.Enchantment
             }
         }
 
+        internal void ReloadConfig(KRPGEnchantmentConfig config)
+        {
+            if (config != null) 
+            {
+                DisabledEnchants = new List<string>();
+                DisabledEnchants = config.DisabledEnchants;
+                EnchantTimeOverride = config.EnchantTimeOverride;
+                EnableFantasyCreatures = config.EnableFantasyCreatures;
+                EnableFeverstoneWilds = config.EnableFeverstoneWilds;
+                EnableKRPGWands = config.EnableKRPGWands;
+                EnablePaxel = config.EnablePaxel;
+                EnableRustboundMagic = config.EnableRustboundMagic;
+                EnableSwordz = config.EnableSwordz;
+            }
+        }
     }
 }
