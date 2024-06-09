@@ -1,0 +1,677 @@
+[
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/axes/beardedaxe.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/axes/daneaxe.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/clubs/nadziak.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/clubs/padded.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/clubs/pernach.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/clubs/warhammer.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/knives/seax.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/knives/shortsword.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/knives/stiletto.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/atgeir.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/becdecorbin.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/boarspear.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/halberd.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/naginata.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/pila.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/pollaxe.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/ranseur.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/voulge.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/polearms/warscythe.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/armingsword.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/gladius.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/khopesh.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/khilij.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/longsword.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/sabre.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/spatha.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/swords/zweihander.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true,
+          "chilling": 0,
+          "flaming": 0,
+          "frost": 0,
+          "harming": 0,
+          "healint": 0,
+          "igniting": 0,
+          "knockback": 0,
+          "light": 0,
+          "lightning": 0,
+          "pit": 0,
+          "shocking": 0
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

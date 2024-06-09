@@ -104,6 +104,7 @@
   <None Remove="assets\krpgenchantment\patches\game-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-knockback-1.json" />
