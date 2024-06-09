@@ -14,10 +14,6 @@ namespace KRPGLib.Enchantment
         // Compatibility patches
         public bool EnableFantasyCreatures;
         public bool EnableFeverstoneWilds;
-        public bool EnableKRPGWands;
-        public bool EnablePaxel;
-        public bool EnableRustboundMagic;
-        public bool EnableSwordz;
 
         private  bool IsDirty;
         public void MarkDirty()
@@ -37,10 +33,6 @@ namespace KRPGLib.Enchantment
                 EnchantTimeOverride = config.EnchantTimeOverride;
                 EnableFantasyCreatures = config.EnableFantasyCreatures;
                 EnableFeverstoneWilds = config.EnableFeverstoneWilds;
-                EnableKRPGWands = config.EnableKRPGWands;
-                EnablePaxel = config.EnablePaxel;
-                EnableRustboundMagic = config.EnableRustboundMagic;
-                EnableSwordz = config.EnableSwordz;
             }
         }
     }

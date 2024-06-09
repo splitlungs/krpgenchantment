@@ -23,7 +23,7 @@ namespace KRPGLib.Enchantment
             }
         }
 
-        internal void ReloadConfig(KRPGEnchantConfig config)
+        internal void ReloadConfig(KRPGEnchantRecipeConfig config)
         {
             if (config != null) 
             {
