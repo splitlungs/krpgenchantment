@@ -14,10 +14,10 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
-        public const string ConfigFile = "KRPGEnchantRecipeConfig.json";
+        public const string ConfigFile = "KRPGEnchantment_Recipe_Config.json";
         public KRPGEnchantRecipeConfig Config { get; set; }
 
-        ICoreServerAPI api;
+        ICoreServerAPI sApi;
 
         public override double ExecuteOrder()
         {
@@ -34,7 +34,7 @@ namespace KRPGLib.Enchantment
         public override void AssetsLoaded(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
-            this.api = sapi;
+            this.sApi = sapi;
 
             try
             {
@@ -59,14 +59,14 @@ namespace KRPGLib.Enchantment
 
         public void LoadEnchantingRecipes()
         {
-            Dictionary<AssetLocation, JToken> files = api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
+            Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
 
             if (Config.EnableKRPGWands)
-                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "krpgwands"));
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgwands"));
             if (Config.EnablePaxel)
-                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "paxel"));
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "paxel"));
             if (Config.EnableSwordz)
-                files.AddRange(api.Assets.GetMany<JToken>(api.Server.Logger, "recipes/enchanting-table", "swordz"));
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "swordz"));
 
             int recipeQuantity = 0;
 
@@ -87,8 +87,8 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            api.World.Logger.Event("{0} enchanting recipes loaded from {1} files", recipeQuantity, files.Count);
-            api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
+            sApi.World.Logger.Event("{0} enchanting recipes loaded from {1} files", recipeQuantity, files.Count);
+            sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
         }
 
         public void LoadRecipe(AssetLocation loc, EnchantingRecipe recipe)
@@ -98,7 +98,7 @@ namespace KRPGLib.Enchantment
 
             if (recipe.Name == null) recipe.Name = loc;
 
-            Dictionary<string, string[]> nameToCodeMapping = recipe.GetNameToCodeMapping(api.World);
+            Dictionary<string, string[]> nameToCodeMapping = recipe.GetNameToCodeMapping(sApi.World);
 
             if (nameToCodeMapping.Count > 0)
             {
@@ -145,16 +145,59 @@ namespace KRPGLib.Enchantment
 
                 foreach (EnchantingRecipe subRecipe in subRecipes)
                 {
-                    if (!subRecipe.ResolveIngredients(api.World)) continue;
-                    api.RegisterEnchantingRecipe(subRecipe);
+                    if (!subRecipe.ResolveIngredients(sApi.World)) continue;
+                    sApi.RegisterEnchantingRecipe(subRecipe);
                 }
 
             }
             else
             {
-                if (!recipe.ResolveIngredients(api.World)) return;
-                api.RegisterEnchantingRecipe(recipe);
+                if (!recipe.ResolveIngredients(sApi.World)) return;
+                sApi.RegisterEnchantingRecipe(recipe);
             }
         }
+
+        public override void StartServerSide(ICoreServerAPI api)
+        {
+            ICoreServerAPI sApi = api as ICoreServerAPI;
+
+            sApi.ChatCommands.GetOrCreate("krpg")
+            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
+            .RequiresPrivilege(Privilege.controlserver)
+            .BeginSubCommand("enchantment")
+            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
+            .RequiresPrivilege(Privilege.controlserver)
+            .BeginSubCommand("reload")
+            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
+            .RequiresPrivilege(Privilege.controlserver)
+            .HandleWith(_ =>
+            {
+                if (ReloadConfig())
+                {
+                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
+            })
+            .EndSubCommand()
+            .EndSubCommand()
+            .Validate();
+        }
+        private bool ReloadConfig()
+        {
+            try
+            {
+                var configTemp = sApi.LoadModConfig<KRPGEnchantRecipeConfig>(ConfigFile);
+                Config.Reload(configTemp);
+            }
+            catch (Exception e)
+            {
+                sApi.Logger.Error("Error reloading Th3Config: ", e.ToString());
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

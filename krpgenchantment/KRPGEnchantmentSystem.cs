@@ -10,7 +10,7 @@ namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantmentSystem : ModSystem
     {
-        public const string ConfigFile = "KRPGEnchantmentConfig.json";
+        public const string ConfigFile = "KRPGEnchantment_Config.json";
         public KRPGEnchantConfig Config { get; set; }
         ICoreAPI Api;
         ICoreServerAPI sApi;

@@ -47,5 +47,11 @@
   "krpg-magicdamage-arcane": "Arcane Damage",
 
   "craftinginfo-enchanting-title": "Enchanting",
-  "craftinginfo-enchanting-text": "To begin enchanting, you will need an Enchanting Table. Reagents must be consumed to enchant an item. Only certain items may be enchanted. Typically, low quality or stone tools cannot hold an enchantment."
+  "craftinginfo-enchanting-text": "To begin enchanting, you will need an Enchanting Table. Reagents must be consumed to enchant an item. Only certain items may be enchanted. Typically, low quality or stone tools cannot hold an enchantment.",
+
+  "dsc-cmd-krpg": "Manage all KRPG mods.",
+  "dsc-cmd-enchantment": "Manage the KRPG Enchantment mod.",
+  "dsc-reload-config": "Reloads the config from file.",
+  "cmd-reloadcfg-msg": "Config reloaded.",
+  "cmd-reloadcfg-fail": "Config reload failed."
 }
