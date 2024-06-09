@@ -15,6 +15,8 @@ namespace KRPGLib.Enchantment
         public bool EnablePaxel = false;
         public bool EnableRustboundMagic = false;
         public bool EnableSwordz = false;
+        // Version
+        public double Version;
 
         private  bool IsDirty;
         public void MarkDirty()

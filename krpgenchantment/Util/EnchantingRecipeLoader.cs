@@ -15,8 +15,9 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
+        private const double ConfigVersion = 0.1d;
         public const string ConfigFile = "KRPGEnchantment_Recipe_Config.json";
-        public KRPGEnchantRecipeConfig Config { get; set; }
+        public static KRPGEnchantRecipeConfig Config { get; set; }
 
         ICoreServerAPI sApi;
 
@@ -45,6 +46,19 @@ namespace KRPGLib.Enchantment
                     Config = new KRPGEnchantRecipeConfig();
                     sapi.StoreModConfig(Config, ConfigFile);
 
+                    sapi.Logger.Event("Loaded KRPGEnchantRecipeConfig from file.");
+                }
+                else if (Config.Version < ConfigVersion)
+                {
+                    KRPGEnchantRecipeConfig tempConfig = Config;
+                    Config = new KRPGEnchantRecipeConfig();
+                    if (tempConfig.EnableKRPGWands) Config.EnableKRPGWands = true;
+                    if (tempConfig.EnablePaxel) Config.EnablePaxel = true;
+                    if (tempConfig.EnableRustboundMagic) Config.EnableRustboundMagic = true;
+                    if (tempConfig.EnableSwordz) Config.EnableSwordz = true;
+                    if (tempConfig.EnchantTimeOverride >= 0) Config.EnchantTimeOverride = tempConfig.EnchantTimeOverride;
+                    Config.Version = ConfigVersion;
+                    sapi.StoreModConfig(Config, ConfigFile);
                     sapi.Logger.Event("Loaded KRPGEnchantRecipeConfig from file.");
                 }
             }

@@ -3,6 +3,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
@@ -199,10 +200,8 @@ namespace KRPGLib.Enchantment
         }
         private double GetMaxEnchantTime()
         {
-            KRPGEnchantRecipeConfig config = Api.ModLoader.GetModSystem<EnchantingRecipeLoader>().Config;
-
-            if (config.EnchantTimeOverride >= 0)
-                return config.EnchantTimeOverride;
+            if (EnchantingRecipeLoader.Config.EnchantTimeOverride >= 0)
+                return EnchantingRecipeLoader.Config.EnchantTimeOverride;
             else if (CurrentRecipe != null)
                 return CurrentRecipe.processingHours;
             else

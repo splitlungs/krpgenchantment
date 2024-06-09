@@ -13,6 +13,8 @@ namespace KRPGLib.Enchantment
         // Compatibility patches
         public bool EnableFantasyCreatures;
         public bool EnableFeverstoneWilds;
+        // Version
+        public double Version;
 
         private  bool IsDirty;
         public void MarkDirty()
