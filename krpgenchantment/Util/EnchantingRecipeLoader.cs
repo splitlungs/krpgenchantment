@@ -44,21 +44,23 @@ namespace KRPGLib.Enchantment
                 if (Config == null)
                 {
                     Config = new KRPGEnchantRecipeConfig();
+                    Config.Version = ConfigVersion;
                     sapi.StoreModConfig(Config, ConfigFile);
 
                     sapi.Logger.Event("Loaded KRPGEnchantRecipeConfig from file.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
-                    KRPGEnchantRecipeConfig tempConfig = Config;
-                    Config = new KRPGEnchantRecipeConfig();
-                    if (tempConfig.EnableKRPGWands) Config.EnableKRPGWands = true;
-                    if (tempConfig.EnablePaxel) Config.EnablePaxel = true;
-                    if (tempConfig.EnableRustboundMagic) Config.EnableRustboundMagic = true;
-                    if (tempConfig.EnableSwordz) Config.EnableSwordz = true;
-                    if (tempConfig.EnchantTimeOverride >= 0) Config.EnchantTimeOverride = tempConfig.EnchantTimeOverride;
-                    Config.Version = ConfigVersion;
+                    KRPGEnchantRecipeConfig tempConfig = new KRPGEnchantRecipeConfig();
+                    if (Config.EnableKRPGWands) tempConfig.EnableKRPGWands = true;
+                    if (Config.EnablePaxel) tempConfig.EnablePaxel = true;
+                    if (Config.EnableRustboundMagic) tempConfig.EnableRustboundMagic = true;
+                    if (Config.EnableSwordz) tempConfig.EnableSwordz = true;
+                    if (Config.EnchantTimeOverride >= 0) Config.EnchantTimeOverride = tempConfig.EnchantTimeOverride;
+                    tempConfig.Version = ConfigVersion;
+                    Config = tempConfig;
                     sapi.StoreModConfig(Config, ConfigFile);
+
                     sapi.Logger.Event("Loaded KRPGEnchantRecipeConfig from file.");
                 }
             }
