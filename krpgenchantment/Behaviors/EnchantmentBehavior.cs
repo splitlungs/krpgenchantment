@@ -156,7 +156,7 @@ namespace KRPGLib.Enchantment
         public void GetAttributes(ItemStack itemStack)
         {
             var attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-
+            
             EnchantProps.EnchantableVal = itemStack.Attributes.GetBool(EnchantProps.Enchantable, false);
             EnchantProps.ChillingVal = itemStack.Attributes.GetInt(EnchantProps.ChillingID, 0);
             EnchantProps.FlamingVal = itemStack.Attributes.GetInt(EnchantProps.FlamingID, 0);

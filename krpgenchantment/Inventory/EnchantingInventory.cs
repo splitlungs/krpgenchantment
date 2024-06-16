@@ -73,7 +73,7 @@ namespace KRPGLib.Enchantment
 
         public ItemSlotEnchantInput(InventoryBase inventory, EnchantingBE enchantingTable, int itemNumber) : base(inventory)
         {
-            MaxSlotStackSize = 1;
+            // MaxSlotStackSize = 1;
             enchanter = enchantingTable;
             stackNum = itemNumber;
         }

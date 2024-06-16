@@ -39,7 +39,6 @@ namespace KRPGLib.Enchantment
             base.Start(api);
             Api = api;
 
-            api.RegisterEntity("EnchantedEntityProjectile", typeof(EnchantedEntityProjectile));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));
@@ -51,14 +50,21 @@ namespace KRPGLib.Enchantment
         public override void AssetsFinalize(ICoreAPI api)
         {
             base.AssetsFinalize(api);
-
         }
         private static void DoHarmonyPatch(ICoreAPI api)
         {
             if (KRPGEnchantmentSystem.harmony == null)
             {
                 KRPGEnchantmentSystem.harmony = new Harmony("KRPGEnchantmentPatch");
-                KRPGEnchantmentSystem.harmony.PatchAll(Assembly.GetExecutingAssembly());
+                try
+                {
+                    harmony.PatchAll(Assembly.GetExecutingAssembly());
+                    Console.WriteLine("KRPG Enchantment Harmony patches applied successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception during patching: {ex}");
+                }
             }
         }
 

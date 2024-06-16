@@ -31,7 +31,6 @@ namespace KRPGLib.Enchantment
         {
             base.OnEntityLoaded();
             Api = entity.Api;
-            // sApi = entity.Api as ICoreServerAPI;
         }
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
@@ -251,19 +250,13 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                bool healing = false;
                 // Get Enchantments
                 Dictionary<string, int> enchants = new Dictionary<string, int>();
                 foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
                 {
                     int ePower = itemslot.Itemstack.Attributes.GetInt(val.ToString(), 0);
                     if (ePower > 0) 
-                    { 
                         enchants.Add(val.ToString(), ePower);
-
-                        if (val.ToString() == EnumEnchantments.healing.ToString())
-                            healing = true;
-                    }
                 }
 
                 // Try Enchantments
@@ -272,64 +265,26 @@ namespace KRPGLib.Enchantment
                     TryEnchantment(byEntity, pair.Key, pair.Value);
                 }
 
+                // Should avoid default during healing
+                bool healing = false;
+                if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                    healing = true;
+
                 // Set Handling
                 if (healing)
                     handled = EnumHandling.PreventSubsequent;
                 else
                     handled = EnumHandling.Handled;
-                /*
-                // Alternate Damage
-                if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
-                {
-                    DamageEntity(byEntity, EnumEnchantments.healing, enchants[EnumEnchantments.healing.ToString()]);
-                    handled = EnumHandling.PreventSubsequent;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.flaming.ToString()))
-                {
-                    DamageEntity(byEntity, EnumEnchantments.flaming, enchants[EnumEnchantments.flaming.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.frost.ToString()))
-                {
-                    DamageEntity(byEntity, EnumEnchantments.frost, enchants[EnumEnchantments.frost.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.harming.ToString()))
-                {
-                    DamageEntity(byEntity, EnumEnchantments.harming, enchants[EnumEnchantments.harming.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.shocking.ToString()))
-                {
-                    DamageEntity(byEntity, EnumEnchantments.shocking, enchants[EnumEnchantments.shocking.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                // Effects
-                if (enchants.ContainsKey(EnumEnchantments.chilling.ToString()))
-                {
-                    ChillEntity(enchants[EnumEnchantments.chilling.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.igniting.ToString()))
-                {
-                    IgniteEntity(enchants[EnumEnchantments.igniting.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.lightning.ToString()))
-                {
-                    CallLightning(enchants[EnumEnchantments.lightning.ToString()]);
-                    handled = EnumHandling.Handled;
-                }
-                if (enchants.ContainsKey(EnumEnchantments.pit.ToString()))
-                {
-                    CreatePit(byEntity, enchants[EnumEnchantments.pit.ToString()]);
-                    handled = EnumHandling.Handled;
-                }*/
             }
             else
             {
                 base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
             }
+        }
+        public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
+        {
+            foreach (KeyValuePair<string, int> pair in enchants)
+                TryEnchantment(byEntity, pair.Key, pair.Value);
         }
         /// <summary>
         /// Generic Enchantment processing.

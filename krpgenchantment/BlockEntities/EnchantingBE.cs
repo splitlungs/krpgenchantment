@@ -172,14 +172,15 @@ namespace KRPGLib.Enchantment
         /// Returns Matching EnchantingRecipe or null if not found.
         /// </summary>
         /// <returns></returns>
-        public EnchantingRecipe GetMatchingEnchantingRecipe(ItemSlot inSlot, ItemSlot rSlot)
+        //public EnchantingRecipe GetMatchingEnchantingRecipe(ItemSlot inSlot, ItemSlot rSlot)
+        public EnchantingRecipe GetMatchingEnchantingRecipe()
         {
             var enchantingRecipes = Api.GetEnchantingRecipes();
             if (enchantingRecipes != null)
             {
                 for (int i = 0; i < enchantingRecipes.Count; i++)
                 {
-                    if (enchantingRecipes[i].Matches(inSlot, rSlot))
+                    if (enchantingRecipes[i].Matches(InputSlot, ReagentSlot))
                     {
                         return enchantingRecipes[i].Clone();
                     }
@@ -301,7 +302,7 @@ namespace KRPGLib.Enchantment
         private void TickEnchanting(float dt)
         {
             if (clientDialog != null)
-                CurrentRecipe = GetMatchingEnchantingRecipe(InputSlot, ReagentSlot);
+                CurrentRecipe = GetMatchingEnchantingRecipe();
             
             double hours = 0d;
 
@@ -338,7 +339,7 @@ namespace KRPGLib.Enchantment
 
             if (Api != null)
             {
-                CurrentRecipe = GetMatchingEnchantingRecipe(InputSlot, ReagentSlot);
+                CurrentRecipe = GetMatchingEnchantingRecipe();
             }
             if (Api?.Side == EnumAppSide.Client)
             {
@@ -412,7 +413,7 @@ namespace KRPGLib.Enchantment
             // Stop Enchanting
             nowEnchanting = false;
 
-            CurrentRecipe = GetMatchingEnchantingRecipe(InputSlot, ReagentSlot);
+            CurrentRecipe = GetMatchingEnchantingRecipe();
 
             double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
@@ -440,7 +441,7 @@ namespace KRPGLib.Enchantment
         {
             if (blockSel.SelectionBoxIndex == 1) return false;
             
-            CurrentRecipe = GetMatchingEnchantingRecipe(InputSlot, ReagentSlot);
+            CurrentRecipe = GetMatchingEnchantingRecipe();
 
             if (Api.Side == EnumAppSide.Client)
             {

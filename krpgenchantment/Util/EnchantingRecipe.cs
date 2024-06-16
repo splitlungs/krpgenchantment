@@ -71,6 +71,9 @@ namespace KRPGLib.Enchantment
 
             ItemStack outStack = inStack.Clone();
 
+            // Set Qty
+            outStack.StackSize = resolvedIngredients[1].Quantity;
+
             // Apply Enchantments
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
@@ -190,9 +193,9 @@ namespace KRPGLib.Enchantment
         /// Puts the crafted itemstack into the output slot and 
         /// consumes the required items from the input slots
         /// </summary>
-        /// <param name="inputSlots"></param>
         /// <param name="byPlayer"></param>
-        /// <param name="gridWidth"></param>
+        /// <param name="inputSlots"></param>
+        /// <returns></returns>
         public bool ConsumeInput(IPlayer byPlayer, ItemSlot[] inputSlots)
         {
             List<EnchantingRecipeIngredient> exactMatchIngredients = new List<EnchantingRecipeIngredient>();
@@ -285,9 +288,8 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Check if this recipe matches given ingredients
         /// </summary>
-        /// <param name="forPlayer">The player for trait testing. Can be null.</param>
-        /// <param name="ingredients"></param>
-        /// <param name="gridWidth"></param>
+        /// <param name="inputSlot"></param>
+        /// <param name="reagentSlot"></param>
         /// <returns></returns>
         public bool Matches(ItemSlot inputSlot, ItemSlot reagentSlot)
         {
@@ -302,14 +304,14 @@ namespace KRPGLib.Enchantment
                     bool foundw = false;
                     foundw =
                             resolvedIngredients[0].Type == reagentSlot.Itemstack.Class &&
-                            WildcardUtil.Match(resolvedIngredients[0].Code, reagentSlot.Itemstack.Collectible.Code, resolvedIngredients[0].AllowedVariants) &&
-                            reagentSlot.Itemstack.StackSize >= resolvedIngredients[0].Quantity
+                            WildcardUtil.Match(resolvedIngredients[0].Code, reagentSlot.Itemstack.Collectible.Code, resolvedIngredients[0].AllowedVariants)
                         ;
                     if (!foundw) return false;
                 }
                 else if (!resolvedIngredients[0].ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) return false;
-            }
 
+                if (reagentSlot.Itemstack.StackSize < resolvedIngredients[0].Quantity) return false;
+            }
             // Check Input/Target
             if (inputSlot?.Itemstack != null)
             {
@@ -320,12 +322,13 @@ namespace KRPGLib.Enchantment
                     bool foundw = false;
                     foundw =
                             resolvedIngredients[1].Type == inputSlot.Itemstack.Class &&
-                            WildcardUtil.Match(resolvedIngredients[1].Code, inputSlot.Itemstack.Collectible.Code, resolvedIngredients[1].AllowedVariants) &&
-                            inputSlot.Itemstack.StackSize >= resolvedIngredients[1].Quantity
+                            WildcardUtil.Match(resolvedIngredients[1].Code, inputSlot.Itemstack.Collectible.Code, resolvedIngredients[1].AllowedVariants)
                         ;
                     if (!foundw) return false;
                 }
                 else if (!resolvedIngredients[1].ResolvedItemstack.Satisfies(inputSlot.Itemstack)) return false;
+                
+                if (inputSlot.Itemstack.StackSize < resolvedIngredients[1].Quantity) return false;
             }
             
             return true;
