@@ -23,6 +23,7 @@ namespace KRPGLib.Enchantment
         public static AdvancedParticleProperties[] InjuryParticleProps;
         public static AdvancedParticleProperties[] ElectricParticleProps;
         public static AdvancedParticleProperties[] PoisonParticleProps;
+        public bool shouldParticle;
         public ICoreAPI Api;
 
         protected bool resetLightHsv;
@@ -476,142 +477,145 @@ namespace KRPGLib.Enchantment
 
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
+            if (shouldParticle)
+            {
+                int power = (int)Math.Ceiling(damage);
 
-            int power = (int)Math.Ceiling(damage);
+                if (damageSource.Type == EnumDamageType.Fire)
+                {
+                    int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
+                else if (damageSource.Type == EnumDamageType.Frost)
+                {
+                    int num = Math.Min(FrostParticleProps.Length - 1, Api.World.Rand.Next(FrostParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
+                else if (damageSource.Type == EnumDamageType.Electricity)
+                {
+                    int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
+                else if (damageSource.Type == EnumDamageType.Heal)
+                {
+                    int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
+                else if (damageSource.Type == EnumDamageType.Injury)
+                {
+                    int num = Math.Min(InjuryParticleProps.Length - 1, Api.World.Rand.Next(InjuryParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
+                else if (damageSource.Type == EnumDamageType.Poison)
+                {
+                    int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
+                    AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
+                    advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                    advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                    advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                    advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                    advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                    advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                    advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                    advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                    {
+                        1 => 3f,
+                        0 => 0.5f,
+                        _ => 1.25f,
+                    };
+                    for (int i = 0; i <= power; i++)
+                    {
+                        Api.World.SpawnParticles(advancedParticleProperties);
+                    }
+                }
 
-            if (damageSource.Type == EnumDamageType.Fire)
-            {
-                int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
+                shouldParticle = false;
             }
-            if (damageSource.Type == EnumDamageType.Frost)
-            {
-                int num = Math.Min(FrostParticleProps.Length - 1, Api.World.Rand.Next(FrostParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageSource.Type == EnumDamageType.Electricity)
-            {
-                int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageSource.Type == EnumDamageType.Heal)
-            {
-                int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageSource.Type == EnumDamageType.Injury)
-            {
-                int num = Math.Min(InjuryParticleProps.Length - 1, Api.World.Rand.Next(InjuryParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageSource.Type == EnumDamageType.Poison)
-            {
-                int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-
             base.OnEntityReceiveDamage(damageSource, ref damage);
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
@@ -717,6 +721,7 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power)
         {
+            shouldParticle = true;
             switch (enchant)
             {
                 case EnumEnchantments.healing:
