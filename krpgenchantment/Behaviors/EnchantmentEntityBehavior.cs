@@ -476,6 +476,7 @@ namespace KRPGLib.Enchantment
 
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
+
             int power = (int)Math.Ceiling(damage);
 
             if (damageSource.Type == EnumDamageType.Fire)
