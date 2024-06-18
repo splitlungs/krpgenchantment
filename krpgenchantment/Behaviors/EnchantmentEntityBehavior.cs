@@ -17,15 +17,15 @@ namespace KRPGLib.Enchantment
     public class EnchantmentEntityBehavior : EntityBehavior
     {
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
-        public static AdvancedParticleProperties[] HealParticleProps;
-        public static AdvancedParticleProperties[] FireParticleProps;
-        public static AdvancedParticleProperties[] FrostParticleProps;
-        public static AdvancedParticleProperties[] InjuryParticleProps;
-        public static AdvancedParticleProperties[] ElectricParticleProps;
-        public static AdvancedParticleProperties[] PoisonParticleProps;
-        public bool shouldParticle;
         public ICoreAPI Api;
 
+        protected static AdvancedParticleProperties[] HealParticleProps;
+        protected static AdvancedParticleProperties[] FireParticleProps;
+        protected static AdvancedParticleProperties[] FrostParticleProps;
+        protected static AdvancedParticleProperties[] InjuryParticleProps;
+        protected static AdvancedParticleProperties[] ElectricParticleProps;
+        protected static AdvancedParticleProperties[] PoisonParticleProps;
+        protected bool shouldParticle;
         protected bool resetLightHsv;
 
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
@@ -42,439 +42,8 @@ namespace KRPGLib.Enchantment
         {
             base.Initialize(properties, attributes);
 
-            FireParticleProps = new AdvancedParticleProperties[3];
-            FireParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            FireParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            FireParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-            
-            HealParticleProps = new AdvancedParticleProperties[3];
-            HealParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(255f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            HealParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(255f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            HealParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(39f, 0f),
-                NatFloat.createUniform(255f, 00f),
-                NatFloat.createUniform(255f, 20f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            FrostParticleProps = new AdvancedParticleProperties[3];
-            FrostParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            FrostParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            FrostParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            ElectricParticleProps = new AdvancedParticleProperties[3];
-            ElectricParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ElectricParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ElectricParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            InjuryParticleProps = new AdvancedParticleProperties[3];
-            InjuryParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            InjuryParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            InjuryParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            PoisonParticleProps = new AdvancedParticleProperties[3];
-            PoisonParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            PoisonParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            PoisonParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
+            ConfigParticles();
         }
-
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             if (shouldParticle)
@@ -638,12 +207,7 @@ namespace KRPGLib.Enchantment
                 }
 
                 // Should avoid default during healing
-                bool healing = false;
                 if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
-                    healing = true;
-
-                // Set Handling
-                if (healing)
                     handled = EnumHandling.PreventSubsequent;
                 else
                     handled = EnumHandling.Handled;
@@ -972,6 +536,440 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Particle Effects
+        private void ConfigParticles()
+        {
+            FireParticleProps = new AdvancedParticleProperties[3];
+            FireParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(30f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            FireParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(30f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            FireParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(40f, 30f),
+                NatFloat.createUniform(220f, 50f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+            HealParticleProps = new AdvancedParticleProperties[3];
+            HealParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(36f, 0f),
+                NatFloat.createUniform(255f, 10f),
+                NatFloat.createUniform(200f, 20f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            HealParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(36f, 0f),
+                NatFloat.createUniform(255f, 10f),
+                NatFloat.createUniform(200f, 20f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            HealParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(36f, 0f),
+                NatFloat.createUniform(255f, 00f),
+                NatFloat.createUniform(255f, 20f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+            FrostParticleProps = new AdvancedParticleProperties[3];
+            FrostParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            FrostParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            FrostParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+            ElectricParticleProps = new AdvancedParticleProperties[3];
+            ElectricParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(45f, 0f),
+                NatFloat.createUniform(0f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.5f, 0.05f),
+                NatFloat.createUniform(0.75f, 0.1f),
+                NatFloat.createUniform(0.5f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            ElectricParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(45f, 0f),
+                NatFloat.createUniform(0f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            ElectricParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(45f, 0f),
+                NatFloat.createUniform(0f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.3f),
+                NatFloat.createUniform(0.2f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+            InjuryParticleProps = new AdvancedParticleProperties[3];
+            InjuryParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            InjuryParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            InjuryParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+
+            PoisonParticleProps = new AdvancedParticleProperties[3];
+            PoisonParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(188f, 0f),
+                NatFloat.createUniform(255f, 0f),
+                NatFloat.createUniform(200f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            PoisonParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(188f, 0f),
+                NatFloat.createUniform(255f, 0f),
+                NatFloat.createUniform(200f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            PoisonParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(188f, 0f),
+                NatFloat.createUniform(255f, 0f),
+                NatFloat.createUniform(200f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+        }
         private void SpawnFireHitParticles(int power, IClientWorldAccessor world)
         {
             Api.Logger.Event("Spawning Fire Particles after Damage");
