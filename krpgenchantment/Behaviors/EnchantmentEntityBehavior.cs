@@ -18,30 +18,115 @@ namespace KRPGLib.Enchantment
     {
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public ICoreAPI Api;
+        public ICoreClientAPI cApi;
+        public ICoreServerAPI sApi;
+        public string PlayerUID;
 
-        protected static AdvancedParticleProperties[] HealParticleProps;
-        protected static AdvancedParticleProperties[] FireParticleProps;
-        protected static AdvancedParticleProperties[] FrostParticleProps;
-        protected static AdvancedParticleProperties[] InjuryParticleProps;
-        protected static AdvancedParticleProperties[] ElectricParticleProps;
-        protected static AdvancedParticleProperties[] PoisonParticleProps;
-        protected bool shouldParticle;
-        protected bool resetLightHsv;
+        public StatModifiers StatModifers;
+        public ProtectionModifiers ProtectionModifiers;
+        private EntityAgent agent;
+        
 
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
-            Api = entity.Api as ICoreAPI;
+            agent = entity as EntityAgent;
         }
         #region Events
-        public override void OnEntityLoaded()
+        public override void AfterInitialized(bool onFirstSpawn)
         {
-            base.OnEntityLoaded();
-            Api = entity.Api;
+            // base.AfterInitialized(onFirstSpawn);
+
+            /*
+            cApi = entity.Api as ICoreClientAPI;
+            bool isSelf = cApi.World.Player.Entity.EntityId == entity.EntityId;
+            if (!isSelf) return;
+
+            if (entity.World.Side == EnumAppSide.Server)
+            {
+                IServerPlayer player = entity.World.PlayerByUid(((EntityPlayer)entity).PlayerUID) as IServerPlayer;
+                if (player != null && player.ConnectionState != EnumClientState.Playing) return;
+
+                player.InventoryManager.GetOwnInventory("character").SlotModified += OnGearModified;
+            }
+            */
+        }
+        private void ContainmentMethod()
+        { 
+            if (agent != null)
+            {
+                IInventory gear = agent.GearInventory;
+
+                if (!gear.Empty)
+                {
+                    gear.SlotModified += (int slotId) => OnGearModified(slotId);
+
+                    foreach (ItemSlot item in gear)
+                    {
+                        // gear[13] ArmorBody
+                        if (item.Empty)
+                            return;
+
+                        int power = item.Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
+                        if (power > 0)
+                        {
+                            power = 99;
+                            // agent.Stats.Set("protectionModifiers", "enchantprotection", eb.Enchantments[EnumEnchantments.protection.ToString()]);
+                            ItemWearable wearableItem = item.Itemstack?.Collectible as ItemWearable;
+                            wearableItem.ProtectionModifiers.FlatDamageReduction += power;
+
+                            // ProtectionModifiers protMod = item.Itemstack.Collectible.Attributes?["protectionModifiers"].AsObject<ProtectionModifiers>();
+                            // item.Itemstack.Attributes.GetOrAddTreeAttribute("protectionModifiers");
+                            // item.Itemstack.Attributes.GetTreeAttribute("protectionModifiers").SetFloat("flatDamageReduction", protMod.FlatDamageReduction + power);
+                            Api.Logger.Event("Added Protection modifier to item. New Value: {0}", wearableItem.ProtectionModifiers.FlatDamageReduction);
+                        }
+                    }
+                }
+                else
+                    Api.Logger.Event("Gear inventory is empty!");
+            }
+            else
+                Api.Logger.Event("Entity Agent is null!");
+        }
+        public void OnGearModified(int slotId)
+        {
+            // entity.Stats["myStat"].GetBlended();
+            // agent.GearInventory[0].Itemstack.Attributes.GetAsInt("flaming");
+            Api.Logger.Event("Entity {0} modified slot {1}", entity.EntityId, slotId);
+            
+            IPlayer player = (entity as EntityPlayer)?.Player;
+            if (player != null)
+            {
+                IInventory ownInventory = player.InventoryManager.GetOwnInventory("character");
+                if (ownInventory != null)
+                {
+                    int power = 0;
+
+                    if (ownInventory[slotId].Empty)
+                        Api.Logger.Event("Modified slot {0} was empty!", slotId);
+                    else
+                    {
+                        power = ownInventory[slotId].Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
+                        Api.Logger.Event("Modified slot {0} as Protection {1}", slotId, power);
+                        ItemWearable wearable = ownInventory[slotId].Itemstack.Item as ItemWearable;
+                        float fPower = wearable.ProtectionModifiers.FlatDamageReduction + (float)power;
+                        Api.Logger.Event("FlataDamageReduction {0} increased: {1}", wearable.ProtectionModifiers.FlatDamageReduction, fPower);
+                    }
+                    
+                }
+            }
+
+            
+            
+            // gear[slotId].Itemstack.Attributes.GetTreeAttribute("protectionModifiers").SetFloat("flatDamageReduction", power);
+
         }
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
-            base.Initialize(properties, attributes);
-
+            // base.Initialize(properties, attributes);
+            
+            Api = entity.Api as ICoreAPI;
+            sApi = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().sApi;
+            
             ConfigParticles();
         }
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
@@ -536,6 +621,15 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Particle Effects
+        protected static AdvancedParticleProperties[] HealParticleProps;
+        protected static AdvancedParticleProperties[] FireParticleProps;
+        protected static AdvancedParticleProperties[] FrostParticleProps;
+        protected static AdvancedParticleProperties[] InjuryParticleProps;
+        protected static AdvancedParticleProperties[] ElectricParticleProps;
+        protected static AdvancedParticleProperties[] PoisonParticleProps;
+        protected bool shouldParticle;
+        protected bool resetLightHsv;
+
         private void ConfigParticles()
         {
             FireParticleProps = new AdvancedParticleProperties[3];

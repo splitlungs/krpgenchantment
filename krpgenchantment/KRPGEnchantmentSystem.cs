@@ -4,7 +4,9 @@ using System.IO;
 using System.Reflection;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
@@ -12,8 +14,10 @@ namespace KRPGLib.Enchantment
     {
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public KRPGEnchantConfig Config { get; set; }
-        ICoreAPI Api;
-        ICoreServerAPI sApi;
+        public ICoreAPI Api;
+        public ICoreServerAPI sApi;
+        
+
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
@@ -33,6 +37,19 @@ namespace KRPGLib.Enchantment
                 sApi.Logger.Error("Error loading KRPGEnchantmentConfig: {0}", e);
                 return;
             }
+            sApi.Event.PlayerNowPlaying += OnPlayerNowPlaying;
+        }
+        public void OnPlayerNowPlaying(IServerPlayer byPlayer)
+        {
+            EnchantmentEntityBehavior eb = byPlayer.Entity.GetBehavior<EnchantmentEntityBehavior>();
+            if (eb != null)
+            {
+                sApi.Logger.Event("Player {0} has EEBehavior", byPlayer.PlayerUID);
+                eb.PlayerUID = byPlayer.PlayerUID;
+                byPlayer.Entity.GearInventory.SlotModified += eb.OnGearModified;
+            }
+            else
+                sApi.Logger.Event("No EEBehavior found on Player {0}", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {
@@ -44,12 +61,9 @@ namespace KRPGLib.Enchantment
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));
             api.RegisterBlockEntityClass("EnchantingBE", typeof(EnchantingBE));
             api.RegisterItemClass("ReagentItem", typeof(ReagentItem));
+
             DoHarmonyPatch(api);
             Api.Logger.Event("KRPG Enchantment loaded.");
-        }
-        public override void AssetsFinalize(ICoreAPI api)
-        {
-            base.AssetsFinalize(api);
         }
         private static void DoHarmonyPatch(ICoreAPI api)
         {

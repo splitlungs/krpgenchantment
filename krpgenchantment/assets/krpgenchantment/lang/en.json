@@ -14,6 +14,7 @@
   "item-reagent-lightning": "Lightning Reagent",
   "item-reagent-shocking": "Shocking Reagent",
   "item-reagent-pit": "Pit Reagent",
+  "item-reagent-protection": "Protection Reagent",
   "item-krpg-sword-earth-admin": "Sword of Earth",
   "item-krpg-sword-fire-admin": "Sword of Fire",
   "item-krpg-sword-frost-admin": "Sword of Frost",
@@ -43,6 +44,7 @@
   "enchantment-lightning-2": "Call Lightning II",
   "enchantment-shocking-1": "Shocking I",
   "enchantment-pit-1": "Pit I",
+  "enchantment-protection-1": "Protection I",
 
   "krpg-magicdamage-arcane": "Arcane Damage",
 

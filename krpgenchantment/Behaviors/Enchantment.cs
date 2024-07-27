@@ -3,7 +3,8 @@
     /// <summary>
     /// Authoritative list of available Enchantments.
     /// </summary>
-    public enum EnumEnchantments { chilling, flaming, frost, harming, healing, knockback, igniting, lightning, pit, shocking }
+    public enum EnumEnchantments { aiming, chilling, fast, flaming, frost, harming, healing, knockback, igniting, lightning, pit, protection,
+        resistelectric, resistfire, resistfrost, resistheal, resistinjury, resistpoison, running, shocking }
     /// <summary>
     /// Not in use right now.
     /// </summary>

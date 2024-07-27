@@ -1,7 +1,7 @@
 [
   {
     "op": "add",
-    "path": "/server/behaviors-",
+    "path": "/server/behaviors/-",
     "value": {
       "code": "EnchantmentEntityBehavior"
     },

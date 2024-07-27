@@ -10,39 +10,20 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using System.Reflection;
+using HarmonyLib;
+// using System.Text.Json.Nodes;
+using System.Xml.Linq;
 
 namespace KRPGLib.Enchantment
 {
     /// <summary>
-    /// Holds all Enchantment data at runtime.
+    /// Holds all Enchantment data from JSON
     /// </summary>
     public class EnchantmentProperties
     {
-        public string Enchantable = "enchantable";
-        public string ChillingID = "chilling";
-        public string FlamingID = "flaming";
-        public string FrostID = "frost";
-        public string HarmingID = "harming";
-        public string HealingID = "healing";
-        public string IgnitingID = "igniting";
-        public string KnockbackID = "knockback";
-        public string LightID = "light";
-        public string LightningID = "lightning";
-        public string PitID = "pit";
-        public string ShockingID = "shocking";
+        public Dictionary<string, int> Enchants;
 
-        public bool EnchantableVal = false;
-        public int ChillingVal = 0;
-        public int FlamingVal = 0;
-        public int FrostVal = 0;
-        public int HarmingVal = 0;
-        public int HealingVal = 0;
-        public int IgnitingVal = 0;
-        public int KnockbackVal = 0;
-        public int LightVal = 0;
-        public int LightningVal = 0;
-        public int PitVal = 0;
-        public int ShockingVal = 0;
+        public bool Enchantable = false;
 
         /// <summary>
         /// Returns a copy.
@@ -52,31 +33,8 @@ namespace KRPGLib.Enchantment
         {
             return new EnchantmentProperties()
             {
-                Enchantable = Enchantable,
-                ChillingID = ChillingID,
-                FlamingID = FlamingID,
-                FrostID = FrostID,
-                HarmingID = HarmingID,
-                HealingID = HealingID,
-                IgnitingID = IgnitingID,
-                KnockbackID = KnockbackID,
-                LightID = LightID,
-                LightningID = LightningID,
-                PitID = PitID,
-                ShockingID = ShockingID,
-
-                EnchantableVal = EnchantableVal,
-                ChillingVal = ChillingVal,
-                FlamingVal = FlamingVal,
-                FrostVal = FrostVal,
-                HarmingVal = HarmingVal,
-                HealingVal = HealingVal,
-                IgnitingVal = IgnitingVal,
-                KnockbackVal = KnockbackVal,
-                LightVal = LightVal,
-                LightningVal = LightningVal,
-                PitVal = PitVal,
-                ShockingVal = ShockingVal
+                Enchants = Enchants,
+                Enchantable = Enchantable
             };
         }
     }
@@ -89,15 +47,214 @@ namespace KRPGLib.Enchantment
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
         public EnchantmentProperties EnchantProps { get; protected set; }
-        // public ITreeAttribute Enchantments { get; protected set; }
+        public Dictionary<string, int> Enchantments = new Dictionary<string, int>();
+        public bool Enchantable = false;
+
+        public AssetLocation[] FootStepSounds;
+        public StatModifiers StatModifers;
+        public ProtectionModifiers ProtectionModifiers;
+
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
             this.EnchantProps = new EnchantmentProperties();
         }
+        
         public override void OnLoaded(ICoreAPI api)
         {
             base.OnLoaded(api);
             Api = api;
+
+            // Particles - Not Working Yet
+            /*
+            collObj.LightHsv = new byte[3] { 4, 4, 14 };
+            collObj.ParticleProperties = new AdvancedParticleProperties[3];
+            collObj.ParticleProperties[0] = new AdvancedParticleProperties
+            {
+                PosOffset = new NatFloat[3]
+                {
+                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(0f, 0f),
+                    NatFloat.createUniform(0f, 0f)
+                },
+                HsvaColor = new NatFloat[4]
+                {
+                    NatFloat.createUniform(30f, 20f),
+                    NatFloat.createUniform(255f, 50f),
+                    NatFloat.createUniform(255f, 50f),
+                    NatFloat.createUniform(255f, 0f)
+                },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                    NatFloat.createUniform(0.2f, 0.05f),
+                    NatFloat.createUniform(0.5f, 0.1f),
+                    NatFloat.createUniform(0.2f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.1f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.25f),
+                SelfPropelled = true,
+                DieInLiquid = true
+            };
+            collObj.ParticleProperties[1] = new AdvancedParticleProperties
+            {
+                PosOffset = new NatFloat[3]
+                {
+                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(0f, 0f),
+                    NatFloat.createUniform(0f, 0f)
+                },
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(30f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.12f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 0.3f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                DieInLiquid = true
+            };
+            collObj.ParticleProperties[2] = new AdvancedParticleProperties
+            {
+                PosOffset = new NatFloat[3]
+                {
+                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(0f, 0f),
+                    NatFloat.createUniform(0f, 0f)
+                },
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(0f, 0f),
+                NatFloat.createUniform(40f, 30f),
+                NatFloat.createUniform(220f, 50f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.12f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 0.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true,
+                DieInLiquid = true
+            };
+            */
+            // Can't pull ItemStack attributes here
+            /*
+            // Get Enchantments
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = collObj.Attributes[val.ToString()].AsInt(0);
+                if (ePower > 0)
+                    enchants.Add(val.ToString(), ePower);
+            }
+
+            // Try Enchantments
+            foreach (KeyValuePair<string, int> pair in enchants)
+            {
+                // TryEnchantment(byEntity, pair.Key, pair.Value);
+            }
+
+            string value = collObj.Attributes["clothescategory"].AsString();
+            EnumCharacterDressType result = EnumCharacterDressType.Unknown;
+            Enum.TryParse<EnumCharacterDressType>(value, ignoreCase: true, out result);
+            EnumCharacterDressType DressType = result;
+            JsonObject jsonObject = collObj.Attributes?["footStepSound"];
+            if (jsonObject != null && jsonObject.Exists)
+            {
+                string text = jsonObject.AsString();
+                if (text != null)
+                {
+                    AssetLocation assetLocation = AssetLocation.Create(text, collObj.Code.Domain).WithPathPrefixOnce("sounds/");
+                    if (text.EndsWith('*'))
+                    {
+                        assetLocation.Path = assetLocation.Path.TrimEnd('*');
+                        FootStepSounds = api.Assets.GetLocations(assetLocation.Path, assetLocation.Domain).ToArray();
+                    }
+                    else
+                    {
+                        FootStepSounds = new AssetLocation[1] { assetLocation };
+                    }
+                }
+            }
+
+            jsonObject = collObj.Attributes?["statModifiers"];
+            if (jsonObject != null && jsonObject.Exists)
+            {
+                try
+                {
+                    StatModifers = jsonObject.AsObject<StatModifiers>();
+                }
+                catch (Exception e)
+                {
+                    api.World.Logger.Error("Failed loading statModifiers for item/block {0}. Will ignore.", collObj.Code);
+                    api.World.Logger.Error(e);
+                    StatModifers = null;
+                }
+            }
+
+            ProtectionModifiers protectionModifiers = null;
+            jsonObject = collObj.Attributes?["defaultProtLoss"];
+            if (jsonObject != null && jsonObject.Exists)
+            {
+                try
+                {
+                    protectionModifiers = jsonObject.AsObject<ProtectionModifiers>();
+                }
+                catch (Exception e2)
+                {
+                    api.World.Logger.Error("Failed loading defaultProtLoss for item/block {0}. Will ignore.", collObj.Code);
+                    api.World.Logger.Error(e2);
+                }
+            }
+
+            jsonObject = collObj.Attributes?["protectionModifiers"];
+            if (jsonObject != null && jsonObject.Exists)
+            {
+                try
+                {
+                    ProtectionModifiers = jsonObject.AsObject<ProtectionModifiers>();
+                }
+                catch (Exception e3)
+                {
+                    api.World.Logger.Error("Failed loading protectionModifiers for item/block {0}. Will ignore.", collObj.Code);
+                    api.World.Logger.Error(e3);
+                    ProtectionModifiers = null;
+                }
+            }
+
+            if (ProtectionModifiers != null && ProtectionModifiers.PerTierFlatDamageReductionLoss == null)
+            {
+                ProtectionModifiers.PerTierFlatDamageReductionLoss = protectionModifiers?.PerTierFlatDamageReductionLoss;
+            }
+
+            if (ProtectionModifiers != null && ProtectionModifiers.PerTierRelativeProtectionLoss == null)
+            {
+                ProtectionModifiers.PerTierRelativeProtectionLoss = protectionModifiers?.PerTierRelativeProtectionLoss;
+            }
+            */
         }
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
         {
@@ -108,24 +265,16 @@ namespace KRPGLib.Enchantment
             base.Initialize(properties);
             EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
         }
+        
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
         /// </summary>
         /// <param name="properties"></param>
         public virtual void GetProperties(JsonObject properties)
         {
-            EnchantProps.EnchantableVal = properties["enchantable"].AsBool(false);
-            EnchantProps.ChillingVal = properties["chilling"].AsInt(0);
-            EnchantProps.FlamingVal = properties["flaming"].AsInt(0);
-            EnchantProps.FrostVal = properties["frost"].AsInt(0);
-            EnchantProps.HarmingVal = properties["harming"].AsInt(0);
-            EnchantProps.HealingVal = properties["healing"].AsInt(0);
-            EnchantProps.IgnitingVal = properties["igniting"].AsInt(0);
-            EnchantProps.KnockbackVal = properties["knockback"].AsInt(0);
-            EnchantProps.LightVal = properties["light"].AsInt(0);
-            EnchantProps.LightningVal = properties["lightning"].AsInt(0);
-            EnchantProps.PitVal = properties["pit"].AsInt(0);
-            EnchantProps.ShockingVal = properties["shocking"].AsInt(0);
+            EnchantProps.Enchantable = properties["enchantable"].AsBool(false);
+            foreach (var eType in Enum.GetNames<EnumEnchantments>())
+                properties[eType].AsInt(0);
         }
         /// <summary>
         /// Save all EnchantProps to ItemStack's Attributes.
@@ -133,20 +282,10 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void SetAttributesFromProps(ItemStack itemStack)
         {
-            itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-
-            itemStack.Attributes.SetBool(EnchantProps.Enchantable, EnchantProps.EnchantableVal);
-            itemStack.Attributes.SetInt(EnchantProps.ChillingID, EnchantProps.ChillingVal);
-            itemStack.Attributes.SetInt(EnchantProps.FlamingID, EnchantProps.FlamingVal);
-            itemStack.Attributes.SetInt(EnchantProps.FrostID, EnchantProps.FrostVal);
-            itemStack.Attributes.SetInt(EnchantProps.HarmingID, EnchantProps.HarmingVal);
-            itemStack.Attributes.SetInt(EnchantProps.HealingID, EnchantProps.HealingVal);
-            itemStack.Attributes.SetInt(EnchantProps.IgnitingID, EnchantProps.IgnitingVal);
-            itemStack.Attributes.SetInt(EnchantProps.KnockbackID, EnchantProps.KnockbackVal);
-            itemStack.Attributes.SetInt(EnchantProps.LightID, EnchantProps.LightVal);
-            itemStack.Attributes.SetInt(EnchantProps.LightningID, EnchantProps.LightningVal);
-            itemStack.Attributes.SetInt(EnchantProps.PitID, EnchantProps.PitVal);
-            itemStack.Attributes.SetInt(EnchantProps.ShockingID, EnchantProps.ShockingVal);
+            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            attr.SetBool("enchantable", EnchantProps.Enchantable);
+            foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
+                attr.SetInt(keyValuePair.Key, keyValuePair.Value);
         }
         /// <summary>
         /// Gets Enchantment attributes from the ItemStack and writes to Enchant Properties
@@ -154,20 +293,21 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void GetAttributes(ItemStack itemStack)
         {
-            var attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            
-            EnchantProps.EnchantableVal = itemStack.Attributes.GetBool(EnchantProps.Enchantable, false);
-            EnchantProps.ChillingVal = itemStack.Attributes.GetInt(EnchantProps.ChillingID, 0);
-            EnchantProps.FlamingVal = itemStack.Attributes.GetInt(EnchantProps.FlamingID, 0);
-            EnchantProps.FrostVal = itemStack.Attributes.GetInt(EnchantProps.FrostID, 0);
-            EnchantProps.HarmingVal = itemStack.Attributes.GetInt(EnchantProps.HarmingID, 0);
-            EnchantProps.HealingVal = itemStack.Attributes.GetInt(EnchantProps.HealingID, 0);
-            EnchantProps.IgnitingVal = itemStack.Attributes.GetInt(EnchantProps.IgnitingID, 0);
-            EnchantProps.KnockbackVal = itemStack.Attributes.GetInt(EnchantProps.KnockbackID, 0);
-            EnchantProps.LightVal = itemStack.Attributes.GetInt(EnchantProps.LightID, 0);
-            EnchantProps.LightningVal = itemStack.Attributes.GetInt(EnchantProps.LightningID, 0);
-            EnchantProps.PitVal = itemStack.Attributes.GetInt(EnchantProps.PitID, 0);
-            EnchantProps.ShockingVal = itemStack.Attributes.GetInt(EnchantProps.ShockingID, 0);
+            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            Enchantable = attr.GetBool("enchantable", false);
+            foreach (var val in Enum.GetNames<EnumEnchantments>())
+                Enchantments.Add(val, attr.GetInt(val, 0));
+        }
+        /// <summary>
+        /// Sets all Enchantment data to ItemStack's Attributes
+        /// </summary>
+        /// <param name="itemStack"></param>
+        public void SetAttributes(ItemStack itemStack)
+        {
+            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            attr.SetBool("enchantable", Enchantable);
+            foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
+                attr.SetInt(keyValuePair.Key, keyValuePair.Value);
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
@@ -186,6 +326,53 @@ namespace KRPGLib.Enchantment
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
             }
         }
+
+        /*
+        public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+        {
+            if (renderinfo != null)
+            {
+                if (target == EnumItemRenderTarget.HandFp || target == EnumItemRenderTarget.HandTp || target == EnumItemRenderTarget.HandTpOff)
+                {
+                    // Get Enchantments
+                    Dictionary<string, int> enchants = new Dictionary<string, int>();
+                    foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                    {
+                        int ePower = itemstack.Attributes.GetInt(val.ToString(), 0);
+                        if (ePower > 0)
+                            enchants.Add(val.ToString(), ePower);
+                    }
+                }
+            }
+
+            Vec3d pos = byEntity.Pos.AheadCopy(0.4000000059604645).XYZ;
+            pos.X += byEntity.LocalEyePos.X;
+            pos.Y += byEntity.LocalEyePos.Y - 0.4000000059604645;
+            pos.Z += byEntity.LocalEyePos.Z;
+            if (secondsUsed > 0.5f && (int)(30f * secondsUsed) % 7 == 1)
+            {
+                byEntity.World.SpawnCubeParticles(pos, spawnParticleStack ?? slot.Itemstack, 0.3f, 4, 0.5f, (byEntity as EntityPlayer)?.Player);
+            }
+            if (byEntity.World is IClientWorldAccessor)
+            {
+                ModelTransform tf = new ModelTransform();
+                tf.EnsureDefaultValues();
+                tf.Origin.Set(0f, 0f, 0f);
+                if (secondsUsed > 0.5f)
+                {
+                    tf.Translation.Y = Math.Min(0.02f, GameMath.Sin(20f * secondsUsed) / 10f);
+                }
+                tf.Translation.X -= Math.Min(1f, secondsUsed * 4f * 1.57f);
+                tf.Translation.Y -= Math.Min(0.05f, secondsUsed * 2f);
+                tf.Rotation.X += Math.Min(30f, secondsUsed * 350f);
+                tf.Rotation.Y += Math.Min(80f, secondsUsed * 350f);
+                byEntity.Controls.UsingHeldItemTransformAfter = tf;
+                return secondsUsed <= 1f;
+            }
+
+            base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+        }
+        */
         #endregion
     }
 }

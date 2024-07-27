@@ -2,7 +2,7 @@
 	"code": "reagent",
 	"class": "ReagentItem",
 	"variantgroups": [
-		{ "code": "material", "states": [ "temporal", "chilling", "flaming", "frost", "harming", "healing", "igniting", "knockback", "lightning", "shocking", "pit" ] }
+		{ "code": "material", "states": [ "temporal", "chilling", "flaming", "frost", "harming", "healing", "igniting", "knockback", "lightning", "shocking", "pit", "protection" ] }
 	],
 	"maxstacksize": 64,
 	"storageFlags": 513,

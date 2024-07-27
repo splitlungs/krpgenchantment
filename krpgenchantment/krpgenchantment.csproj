@@ -101,10 +101,12 @@
   </Content>
   <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\game-item-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\game-armor-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\game-weapon-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\armor-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\arrow\arrow-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
@@ -124,6 +126,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-protection.json" />
   <None Remove="assets\krpgwands\lang\en.json" />
   <None Remove="assets\paxel\lang\en.json" />
   <None Remove="assets\paxel\paxel-tier-1.json" />
