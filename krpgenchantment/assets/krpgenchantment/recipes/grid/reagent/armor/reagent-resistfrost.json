@@ -1,0 +1,30 @@
+{
+  "ingredientPattern": "MLM,SGS,MLM",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "L": {
+      "type": "item",
+      "code": "game:hide-pelt-large",
+      "quantity": 4
+    },
+    "M": {
+      "type": "item",
+      "code": "game:hide-pelt-medium",
+      "quantity": 3
+    },
+    "S": {
+      "type": "item",
+      "code": "game:metalplate-steel",
+      "quantity": 3
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-resistfrost"
+  }
+}

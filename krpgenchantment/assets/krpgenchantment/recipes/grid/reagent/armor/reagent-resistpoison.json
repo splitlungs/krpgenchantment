@@ -1,5 +1,5 @@
 {
-  "ingredientPattern": "SSS,SGS,SSS",
+  "ingredientPattern": "HSH,SGS,HSH",
   "width": 3,
   "height": 3,
   "ingredients": {
@@ -7,15 +7,19 @@
       "type": "item",
       "code": "game:gear-temporal"
     },
+    "H": {
+      "type": "item",
+      "code": "game:honeyportion",
+      "quantity": 8
+    },
     "S": {
       "type": "item",
-      "code": "game:plate-*",
-      "allowedVariants": [ "steel" ],
+      "code": "game:metalplate-steel",
       "quantity": 3
     }
   },
   "output": {
     "type": "item",
-    "code": "krpgenchantment:reagent-pit"
+    "code": "krpgenchantment:reagent-resistpoison"
   }
 }

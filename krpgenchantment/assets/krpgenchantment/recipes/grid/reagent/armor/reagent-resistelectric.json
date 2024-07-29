@@ -1,0 +1,29 @@
+{
+  "ingredientPattern": "SRS,IGI,SRS",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "I": {
+      "type": "block",
+      "code": "game:lightningrod"
+    },
+    "R": {
+      "type": "item",
+      "code": "game:resin",
+      "quantity": 9
+    },
+    "S": {
+      "type": "item",
+      "code": "game:metalplate-steel",
+      "quantity": 3
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-resistelectric"
+  }
+}
