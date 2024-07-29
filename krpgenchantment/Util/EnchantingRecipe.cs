@@ -93,17 +93,8 @@ namespace KRPGLib.Enchantment
                     )
                     outStack.Attributes.SetInt(EnumEnchantments.healing.ToString(), 0);
 
-                
-                if (enchant.Key == "protection")
-                {
-                    int power = 99;
-                    ProtectionModifiers protMod = outStack.Collectible.Attributes?["protectionModifiers"].AsObject<ProtectionModifiers>();
-                    outStack.Attributes.GetOrAddTreeAttribute("protectionModifiers");
-                    outStack.Attributes.GetTreeAttribute("protectionModifiers").SetFloat("flatDamageReduction", protMod.FlatDamageReduction + power);
-                }
                 // Write Enchant
                 outStack.Attributes.SetInt(enchant.Key, enchant.Value);
-                
             }
 
             return outStack;

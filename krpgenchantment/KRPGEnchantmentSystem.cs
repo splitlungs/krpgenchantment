@@ -37,19 +37,15 @@ namespace KRPGLib.Enchantment
                 sApi.Logger.Error("Error loading KRPGEnchantmentConfig: {0}", e);
                 return;
             }
-            sApi.Event.PlayerNowPlaying += OnPlayerNowPlaying;
+            sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
-        public void OnPlayerNowPlaying(IServerPlayer byPlayer)
+        public void RegisterPlayerEEB(IServerPlayer byPlayer)
         {
             EnchantmentEntityBehavior eb = byPlayer.Entity.GetBehavior<EnchantmentEntityBehavior>();
             if (eb != null)
-            {
-                sApi.Logger.Event("Player {0} has EEBehavior", byPlayer.PlayerUID);
-                eb.PlayerUID = byPlayer.PlayerUID;
-                byPlayer.Entity.GearInventory.SlotModified += eb.OnGearModified;
-            }
+                eb.RegisterPlayer(byPlayer);
             else
-                sApi.Logger.Event("No EEBehavior found on Player {0}", byPlayer.PlayerUID);
+                sApi.Logger.Warning("No EnchantmentEntityBehavior found on Player {0}", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {

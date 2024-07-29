@@ -50,15 +50,10 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, int> Enchantments = new Dictionary<string, int>();
         public bool Enchantable = false;
 
-        public AssetLocation[] FootStepSounds;
-        public StatModifiers StatModifers;
-        public ProtectionModifiers ProtectionModifiers;
-
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
             this.EnchantProps = new EnchantmentProperties();
         }
-        
         public override void OnLoaded(ICoreAPI api)
         {
             base.OnLoaded(api);
@@ -160,101 +155,6 @@ namespace KRPGLib.Enchantment
                 DieInLiquid = true
             };
             */
-            // Can't pull ItemStack attributes here
-            /*
-            // Get Enchantments
-            Dictionary<string, int> enchants = new Dictionary<string, int>();
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int ePower = collObj.Attributes[val.ToString()].AsInt(0);
-                if (ePower > 0)
-                    enchants.Add(val.ToString(), ePower);
-            }
-
-            // Try Enchantments
-            foreach (KeyValuePair<string, int> pair in enchants)
-            {
-                // TryEnchantment(byEntity, pair.Key, pair.Value);
-            }
-
-            string value = collObj.Attributes["clothescategory"].AsString();
-            EnumCharacterDressType result = EnumCharacterDressType.Unknown;
-            Enum.TryParse<EnumCharacterDressType>(value, ignoreCase: true, out result);
-            EnumCharacterDressType DressType = result;
-            JsonObject jsonObject = collObj.Attributes?["footStepSound"];
-            if (jsonObject != null && jsonObject.Exists)
-            {
-                string text = jsonObject.AsString();
-                if (text != null)
-                {
-                    AssetLocation assetLocation = AssetLocation.Create(text, collObj.Code.Domain).WithPathPrefixOnce("sounds/");
-                    if (text.EndsWith('*'))
-                    {
-                        assetLocation.Path = assetLocation.Path.TrimEnd('*');
-                        FootStepSounds = api.Assets.GetLocations(assetLocation.Path, assetLocation.Domain).ToArray();
-                    }
-                    else
-                    {
-                        FootStepSounds = new AssetLocation[1] { assetLocation };
-                    }
-                }
-            }
-
-            jsonObject = collObj.Attributes?["statModifiers"];
-            if (jsonObject != null && jsonObject.Exists)
-            {
-                try
-                {
-                    StatModifers = jsonObject.AsObject<StatModifiers>();
-                }
-                catch (Exception e)
-                {
-                    api.World.Logger.Error("Failed loading statModifiers for item/block {0}. Will ignore.", collObj.Code);
-                    api.World.Logger.Error(e);
-                    StatModifers = null;
-                }
-            }
-
-            ProtectionModifiers protectionModifiers = null;
-            jsonObject = collObj.Attributes?["defaultProtLoss"];
-            if (jsonObject != null && jsonObject.Exists)
-            {
-                try
-                {
-                    protectionModifiers = jsonObject.AsObject<ProtectionModifiers>();
-                }
-                catch (Exception e2)
-                {
-                    api.World.Logger.Error("Failed loading defaultProtLoss for item/block {0}. Will ignore.", collObj.Code);
-                    api.World.Logger.Error(e2);
-                }
-            }
-
-            jsonObject = collObj.Attributes?["protectionModifiers"];
-            if (jsonObject != null && jsonObject.Exists)
-            {
-                try
-                {
-                    ProtectionModifiers = jsonObject.AsObject<ProtectionModifiers>();
-                }
-                catch (Exception e3)
-                {
-                    api.World.Logger.Error("Failed loading protectionModifiers for item/block {0}. Will ignore.", collObj.Code);
-                    api.World.Logger.Error(e3);
-                    ProtectionModifiers = null;
-                }
-            }
-
-            if (ProtectionModifiers != null && ProtectionModifiers.PerTierFlatDamageReductionLoss == null)
-            {
-                ProtectionModifiers.PerTierFlatDamageReductionLoss = protectionModifiers?.PerTierFlatDamageReductionLoss;
-            }
-
-            if (ProtectionModifiers != null && ProtectionModifiers.PerTierRelativeProtectionLoss == null)
-            {
-                ProtectionModifiers.PerTierRelativeProtectionLoss = protectionModifiers?.PerTierRelativeProtectionLoss;
-            }
-            */
         }
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
         {
@@ -265,7 +165,6 @@ namespace KRPGLib.Enchantment
             base.Initialize(properties);
             EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
         }
-        
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
         /// </summary>
@@ -326,7 +225,6 @@ namespace KRPGLib.Enchantment
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
             }
         }
-
         /*
         public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
         {

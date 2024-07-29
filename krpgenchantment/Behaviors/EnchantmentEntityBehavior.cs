@@ -20,109 +20,44 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreClientAPI cApi;
         public ICoreServerAPI sApi;
-        public string PlayerUID;
 
-        public StatModifiers StatModifers;
-        public ProtectionModifiers ProtectionModifiers;
         private EntityAgent agent;
-        
+        private IServerPlayer player = null;
+
+        public bool IsPlayer { get { if (player != null) return true; return false; } }
 
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             agent = entity as EntityAgent;
         }
         #region Events
-        public override void AfterInitialized(bool onFirstSpawn)
+        public void RegisterPlayer(IServerPlayer byPlayer)
         {
-            // base.AfterInitialized(onFirstSpawn);
-
-            /*
-            cApi = entity.Api as ICoreClientAPI;
-            bool isSelf = cApi.World.Player.Entity.EntityId == entity.EntityId;
-            if (!isSelf) return;
-
-            if (entity.World.Side == EnumAppSide.Server)
-            {
-                IServerPlayer player = entity.World.PlayerByUid(((EntityPlayer)entity).PlayerUID) as IServerPlayer;
-                if (player != null && player.ConnectionState != EnumClientState.Playing) return;
-
-                player.InventoryManager.GetOwnInventory("character").SlotModified += OnGearModified;
-            }
-            */
-        }
-        private void ContainmentMethod()
-        { 
-            if (agent != null)
-            {
-                IInventory gear = agent.GearInventory;
-
-                if (!gear.Empty)
-                {
-                    gear.SlotModified += (int slotId) => OnGearModified(slotId);
-
-                    foreach (ItemSlot item in gear)
-                    {
-                        // gear[13] ArmorBody
-                        if (item.Empty)
-                            return;
-
-                        int power = item.Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
-                        if (power > 0)
-                        {
-                            power = 99;
-                            // agent.Stats.Set("protectionModifiers", "enchantprotection", eb.Enchantments[EnumEnchantments.protection.ToString()]);
-                            ItemWearable wearableItem = item.Itemstack?.Collectible as ItemWearable;
-                            wearableItem.ProtectionModifiers.FlatDamageReduction += power;
-
-                            // ProtectionModifiers protMod = item.Itemstack.Collectible.Attributes?["protectionModifiers"].AsObject<ProtectionModifiers>();
-                            // item.Itemstack.Attributes.GetOrAddTreeAttribute("protectionModifiers");
-                            // item.Itemstack.Attributes.GetTreeAttribute("protectionModifiers").SetFloat("flatDamageReduction", protMod.FlatDamageReduction + power);
-                            Api.Logger.Event("Added Protection modifier to item. New Value: {0}", wearableItem.ProtectionModifiers.FlatDamageReduction);
-                        }
-                    }
-                }
-                else
-                    Api.Logger.Event("Gear inventory is empty!");
-            }
-            else
-                Api.Logger.Event("Entity Agent is null!");
+            player = byPlayer;
+            // We'll probably use this later
+            // player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName).SlotModified += OnGearModified;
         }
         public void OnGearModified(int slotId)
         {
-            // entity.Stats["myStat"].GetBlended();
-            // agent.GearInventory[0].Itemstack.Attributes.GetAsInt("flaming");
-            Api.Logger.Event("Entity {0} modified slot {1}", entity.EntityId, slotId);
-            
-            IPlayer player = (entity as EntityPlayer)?.Player;
-            if (player != null)
+            if (!IsPlayer)
             {
-                IInventory ownInventory = player.InventoryManager.GetOwnInventory("character");
+                Api.Logger.Event("Player {0} modified slot {1}", player.PlayerUID, slotId);
+                IInventory ownInventory = player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName);
                 if (ownInventory != null)
                 {
-                    int power = 0;
-
                     if (ownInventory[slotId].Empty)
                         Api.Logger.Event("Modified slot {0} was empty!", slotId);
                     else
                     {
-                        power = ownInventory[slotId].Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
+                        int power = ownInventory[slotId].Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
                         Api.Logger.Event("Modified slot {0} as Protection {1}", slotId, power);
-                        ItemWearable wearable = ownInventory[slotId].Itemstack.Item as ItemWearable;
-                        float fPower = wearable.ProtectionModifiers.FlatDamageReduction + (float)power;
-                        Api.Logger.Event("FlataDamageReduction {0} increased: {1}", wearable.ProtectionModifiers.FlatDamageReduction, fPower);
                     }
-                    
                 }
             }
-
-            
-            
-            // gear[slotId].Itemstack.Attributes.GetTreeAttribute("protectionModifiers").SetFloat("flatDamageReduction", power);
-
         }
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
-            // base.Initialize(properties, attributes);
+            base.Initialize(properties, attributes);
             
             Api = entity.Api as ICoreAPI;
             sApi = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().sApi;
@@ -345,20 +280,6 @@ namespace KRPGLib.Enchantment
                 CreatePit(byEntity, power);
 
             return true;
-        }
-        public override void OnReceivedClientPacket(IServerPlayer player, int packetid, byte[] data, ref EnumHandling handled)
-        {
-            base.OnReceivedClientPacket(player, packetid, data, ref handled);
-        }
-        public override void OnReceivedServerPacket(int packetid, byte[] data, ref EnumHandling handled)
-        {
-            if (packetid == 9666)
-            {
-                SpawnFireHitParticles(10, this.Api.World as IClientWorldAccessor);
-            }
-            handled = EnumHandling.Handled;
-
-            base.OnReceivedServerPacket(packetid, data, ref handled);
         }
         #endregion
         #region Alt Damage
@@ -1063,83 +984,6 @@ namespace KRPGLib.Enchantment
                 ParticleModel = EnumParticleModel.Quad,
                 SelfPropelled = true
             };
-        }
-        private void SpawnFireHitParticles(int power, IClientWorldAccessor world)
-        {
-            Api.Logger.Event("Spawning Fire Particles after Damage");
-
-            int num = Math.Min(FireParticleProps.Length - 1, world.Rand.Next(FireParticleProps.Length + 1));
-            AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
-            advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-            advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-            advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-            advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-            advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-            advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-            advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-            advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-            {
-                1 => 3f,
-                0 => 0.5f,
-                _ => 1.25f,
-            };
-            for (int i = 0; i <= power; i++)
-            {
-                world.SpawnParticles(advancedParticleProperties);
-                Api.Logger.Event("Spawned Fire Particles.");
-            }
-        }
-        private void SpawnHitParticles(string pType, int power)
-        {
-            IClientWorldAccessor world = Api.World as IClientWorldAccessor;
-            Api.Logger.Event("Spawning {0} particles after damage.", pType);
-
-            if (pType == "healing")
-            {
-                NatFloat[] hsvaColor = new NatFloat[4]
-                    {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(100f, 80f),
-                NatFloat.createUniform(220f, 50f)
-                    };
-
-                FireParticleProps[2].HsvaColor = hsvaColor;
-            }
-            else if (pType == "fire")
-            {
-                NatFloat[] hsvaColor = new NatFloat[4]
-                    {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                    };
-
-                FireParticleProps[2].HsvaColor = hsvaColor;
-            }
-
-
-            int num = Math.Min(FireParticleProps.Length - 1, world.Rand.Next(FireParticleProps.Length + 1));
-            AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
-            advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-            advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-            advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-            advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-            advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-            advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-            advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-            advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-            {
-                1 => 3f,
-                0 => 0.5f,
-                _ => 1.25f,
-            };
-            for (int i = 0; i <= power; i++)
-            {
-                world.SpawnParticles(advancedParticleProperties);
-                Api.Logger.Event("Spawned {0} particles.", pType);
-            }
         }
         #endregion
     }
