@@ -1,7 +1,7 @@
 [
   {
     "op": "addmerge",
-    "file": "rustboundmagic:itemtypes/tool/toolspellcasting.json",
+    "file": "rustboundmagic:itemtypes/tools/toolspellcasting.json",
     "path": "/behaviors",
     "value": [
       {
