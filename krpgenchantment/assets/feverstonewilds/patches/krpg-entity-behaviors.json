@@ -1,0 +1,195 @@
+[
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/bison-calf.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/bison.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/cockatrice.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/cockatrice-chick.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/direwolf.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/direwolf-pup.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/faunling.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/foal.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/geodencrab.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/giraffe.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/golem.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/hellboar.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/hellboar-piglet.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/horse.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/ostrich.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/ostrich-chick.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/scorpion.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/spider.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/tame-cockatrice.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/tame-cockatrice-chick.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/tame-direwolf.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/tame-direwolf-pup.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/tame-ostrich.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "feverstonewilds:entities/land/toad.json"
+  }
+
+]

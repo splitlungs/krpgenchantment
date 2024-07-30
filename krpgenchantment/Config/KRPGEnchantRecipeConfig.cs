@@ -15,6 +15,8 @@ namespace KRPGLib.Enchantment
         public bool EnablePaxel = false;
         public bool EnableRustboundMagic = false;
         public bool EnableSwordz = false;
+        // Custom patch list
+        public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>();
         // Version
         public double Version;
 
@@ -36,6 +38,7 @@ namespace KRPGLib.Enchantment
                 EnablePaxel = config.EnablePaxel;
                 EnableRustboundMagic = config.EnableRustboundMagic;
                 EnableSwordz = config.EnableSwordz;
+                CustomPatches = config.CustomPatches;
             }
         }
     }

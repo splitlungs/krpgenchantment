@@ -1,0 +1,16 @@
+[
+  {
+    "op": "addmerge",
+    "file": "rustboundmagic:itemtypes/tool/toolspellcasting.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

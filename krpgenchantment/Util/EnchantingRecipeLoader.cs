@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
-        private const double ConfigVersion = 0.1d;
+        private const double ConfigVersion = 0.2d;
         public const string ConfigFile = "KRPGEnchantment_Recipe_Config.json";
         public static KRPGEnchantRecipeConfig Config { get; set; }
 
@@ -56,7 +56,9 @@ namespace KRPGLib.Enchantment
                     if (Config.EnablePaxel) tempConfig.EnablePaxel = true;
                     if (Config.EnableRustboundMagic) tempConfig.EnableRustboundMagic = true;
                     if (Config.EnableSwordz) tempConfig.EnableSwordz = true;
+                    if (Config.CustomPatches.Count > 0) Config.CustomPatches = tempConfig.CustomPatches;
                     if (Config.EnchantTimeOverride >= 0) Config.EnchantTimeOverride = tempConfig.EnchantTimeOverride;
+                    
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;
                     sapi.StoreModConfig(Config, ConfigFile);
@@ -78,12 +80,22 @@ namespace KRPGLib.Enchantment
         {
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
 
-            if (Config.EnableKRPGWands)
+            if (Config.EnableKRPGWands == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgwands"));
-            if (Config.EnablePaxel)
+            if (Config.EnablePaxel == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "paxel"));
-            if (Config.EnableSwordz)
+            if (Config.EnableRustboundMagic == true)
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "rustboundmagic"));
+            if (Config.EnableSwordz == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "swordz"));
+            if (Config.CustomPatches.Count > 0)
+            {
+                foreach (KeyValuePair<string, bool> keyValuePair in Config.CustomPatches)
+                {
+                    if (keyValuePair.Value == true)
+                        files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", keyValuePair.Key));
+                }
+            }
 
             int recipeQuantity = 0;
 

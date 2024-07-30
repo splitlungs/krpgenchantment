@@ -1,7 +1,7 @@
 [
   {
     "op": "addmerge",
-    "file": "game:itemtypes/tool/arrow.json",
+    "file": "rustboundmagic:itemtypes/wearable/armorarm.json",
     "path": "/behaviors",
     "value": [
       {
@@ -15,7 +15,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/tool/axe-metal.json",
+    "file": "rustboundmagic:itemtypes/wearable/armorbody.json",
     "path": "/behaviors",
     "value": [
       {
@@ -29,13 +29,14 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/tool/blade.json",
+    "file": "rustboundmagic:itemtypes/wearable/armorhead.json",
     "path": "/behaviors",
     "value": [
       {
         "name": "EnchantmentBehavior",
         "properties": {
-          "enchantable": true
+          "enchantable": true,
+          "protection": 0
         }
       }
     ],
@@ -43,35 +44,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/tool/bow.json",
-    "path": "/behaviors",
-    "value": [
-      {
-        "name": "EnchantmentBehavior",
-        "properties": {
-          "enchantable": true
-        }
-      }
-    ],
-    "side": "server"
-  },
-  {
-    "op": "addmerge",
-    "file": "game:itemtypes/tool/knife.json",
-    "path": "/behaviors",
-    "value": [
-      {
-        "name": "EnchantmentBehavior",
-        "properties": {
-          "enchantable": true
-        }
-      }
-    ],
-    "side": "server"
-  },
-  {
-    "op": "addmerge",
-    "file": "game:itemtypes/tool/spear.json",
+    "file": "rustboundmagic:itemtypes/wearable/armorlegs.json",
     "path": "/behaviors",
     "value": [
       {
