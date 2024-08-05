@@ -67,7 +67,7 @@ namespace KRPGLib.Enchantment
             {
                 PosOffset = new NatFloat[3]
                 {
-                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(-0.2f, 0f),
                     NatFloat.createUniform(0f, 0f),
                     NatFloat.createUniform(0f, 0f)
                 },
@@ -96,7 +96,7 @@ namespace KRPGLib.Enchantment
             {
                 PosOffset = new NatFloat[3]
                 {
-                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(-0.2f, 0f),
                     NatFloat.createUniform(0f, 0f),
                     NatFloat.createUniform(0f, 0f)
                 },
@@ -127,7 +127,7 @@ namespace KRPGLib.Enchantment
             {
                 PosOffset = new NatFloat[3]
                 {
-                    NatFloat.createUniform(2f, 0f),
+                    NatFloat.createUniform(-0.2f, 0f),
                     NatFloat.createUniform(0f, 0f),
                     NatFloat.createUniform(0f, 0f)
                 },
@@ -208,22 +208,13 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
                 attr.SetInt(keyValuePair.Key, keyValuePair.Value);
         }
+        
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-
-            // Get Enchantments
-            Dictionary<string, int> enchants = new Dictionary<string, int>();
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int ePower = inSlot.Itemstack.Attributes.GetInt(val.ToString(), 0);
-                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-            }
-            // Write to Description
+            Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
             foreach (KeyValuePair<string, int> pair in enchants)
-            {
-                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
-            }
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + ((EnchantTiers)pair.Value).ToString() + "</font>"));
         }
         /*
         public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)

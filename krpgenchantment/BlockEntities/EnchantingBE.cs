@@ -1,4 +1,6 @@
-﻿using Vintagestory.API.Client;
+﻿using System.Collections.Generic;
+using System;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
@@ -145,16 +147,17 @@ namespace KRPGLib.Enchantment
         {
             if (slot.Itemstack == null) return false;
 
-            int power = 0;
-            power += slot.Itemstack.Attributes.GetInt("chilling", 0);
-            power += slot.Itemstack.Attributes.GetInt("harming", 0);
-            power += slot.Itemstack.Attributes.GetInt("healing", 0);
-            power += slot.Itemstack.Attributes.GetInt("igniting", 0);
-            power += slot.Itemstack.Attributes.GetInt("knockback", 0);
-            power += slot.Itemstack.Attributes.GetInt("lightning", 0);
-            power += slot.Itemstack.Attributes.GetInt("pit", 0);
+            Dictionary<string, int> enchants = Api.GetEnchantments(slot);
 
-            if (power > 0) return true;
+            // Get Enchantments
+            // Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+            }
+
+            if (enchants.Count > 0) return true;
 
             return false;
         }

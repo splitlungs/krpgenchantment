@@ -7,6 +7,7 @@
 			"states": [
 				"temporal",
 				"chilling",
+				"durable",
 				"flaming",
 				"frost",
 				"harming",

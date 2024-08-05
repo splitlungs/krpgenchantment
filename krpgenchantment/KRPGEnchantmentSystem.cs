@@ -7,6 +7,8 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using System.Collections.Generic;
+using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {
@@ -16,7 +18,6 @@ namespace KRPGLib.Enchantment
         public KRPGEnchantConfig Config { get; set; }
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
-        
 
         public override void StartServerSide(ICoreServerAPI api)
         {

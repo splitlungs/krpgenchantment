@@ -154,15 +154,13 @@
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistinjury.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistpoison.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-protection.json" />
-  <None Remove="assets\krpgwands\lang\en.json" />
-  <None Remove="assets\paxel\lang\en.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\reagent\universal\reagent-durable.json" />
   <None Remove="assets\paxel\patches\krpg-tool-behaviors.json" />
   <None Remove="assets\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-generic-tier-1.json" />
-  <None Remove="assets\rustboundmagic\lang\en.json" />
   <None Remove="assets\rustboundmagic\patches\krpg-armor-behaviors.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t2-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t3-tier-1.json" />
@@ -203,7 +201,6 @@
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\tool\magician\toolspellcasting-staffreaper-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\tool\magician\toolspellcasting-staffscholar-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\tool\toolspellcasting-magician-staffconjuror-tier-1.json" />
-  <None Remove="assets\swordz\lang\en.json" />
   <None Remove="assets\swordz\patches\krpg-armor-behaviors.json" />
   <None Remove="assets\swordz\patches\krpg-weapon-behaviors.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\armor\body\brigandine-tier-1.json" />

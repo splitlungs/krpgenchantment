@@ -7,18 +7,7 @@
       {
         "name": "EnchantmentBehavior",
         "properties": {
-          "enchantable": true,
-          "chilling": 0,
-          "flaming": 0,
-          "frost": 0,
-          "harming": 0,
-          "healint": 0,
-          "igniting": 0,
-          "knockback": 0,
-          "light": 0,
-          "lightning": 0,
-          "pit": 0,
-          "shocking": 0
+          "enchantable": true
         }
       }
     ],

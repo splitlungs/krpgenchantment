@@ -12,6 +12,13 @@ namespace KRPGLib.Enchantment
     [HarmonyPatch]
     public class EntityProjectile_Patch
     {
+        // For Returning, probably
+        // [HarmonyPatch(typeof(EntityProjectile), "OnGameTick")]
+        // public static void Postfix(EntityProjectile __instance, float dt)
+        // {
+        // 
+        // }
+
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
