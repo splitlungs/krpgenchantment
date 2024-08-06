@@ -10,14 +10,35 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
     "enchantments": {
       "chilling": 1
+    }
+  },
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:knife-generic-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
     }
   },
   {
@@ -31,9 +52,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -52,9 +73,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -73,9 +94,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -94,9 +115,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -115,9 +136,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -136,9 +157,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -157,9 +178,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -178,9 +199,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -199,9 +220,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:spear-generic-*",
+        "code": "game:knife-generic-*",
         "name": "material",
-        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "ornategold", "ornatesilver" ],
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -209,4 +230,5 @@
       "shocking": 1
     }
   }
+
 ]

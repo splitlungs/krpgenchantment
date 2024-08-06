@@ -1,5 +1,26 @@
 [
   {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-arcane-body-tier3",
+        "name": "color",
+        "allowedVariants": [ "orange", "black", "red", "blue", "purple", "pink", "white", "yellow", "gray", "green", "teal" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
     "name": "enchantment-protection-1",
     "processingHours": 1,
     "ingredients": {

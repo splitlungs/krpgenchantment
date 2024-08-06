@@ -10,14 +10,35 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
     "enchantments": {
       "chilling": 1
+    }
+  },
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
     }
   },
   {
@@ -31,9 +52,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -52,9 +73,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -63,7 +84,7 @@
     }
   },
   {
-    "name": "enchantment-harming-1",
+    "Name": "enchantment-harming-1",
     "processingHours": 1,
     "ingredients": {
       "reagent": {
@@ -73,9 +94,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -94,9 +115,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -115,9 +136,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -136,9 +157,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -157,9 +178,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -178,9 +199,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },
@@ -199,9 +220,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:bow-*",
-        "name": "type",
-        "allowedVariants": [ "simple", "crude", "long", "recurve" ],
+        "code": "game:axe-felling-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
     },

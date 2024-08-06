@@ -190,12 +190,10 @@ namespace KRPGLib.Enchantment
         /// Gets Enchantment attributes from the ItemStack and writes to Enchant Properties
         /// </summary>
         /// <param name="itemStack"></param>
-        public void GetAttributes(ItemStack itemStack)
+        public void GetAttributes(ItemSlot inSlot)
         {
-            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            Enchantable = attr.GetBool("enchantable", false);
-            foreach (var val in Enum.GetNames<EnumEnchantments>())
-                Enchantments.Add(val, attr.GetInt(val, 0));
+            Enchantments = Api.GetEnchantments(inSlot);
+            Enchantable = Api.IsEnchantable(inSlot);
         }
         /// <summary>
         /// Sets all Enchantment data to ItemStack's Attributes
@@ -203,15 +201,15 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void SetAttributes(ItemStack itemStack)
         {
-            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            attr.SetBool("enchantable", Enchantable);
+            itemStack.Attributes.SetBool("enchantable", Enchantable);
             foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
-                attr.SetInt(keyValuePair.Key, keyValuePair.Value);
+                itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
         }
         
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
+
             Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
             foreach (KeyValuePair<string, int> pair in enchants)
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + ((EnchantTiers)pair.Value).ToString() + "</font>"));

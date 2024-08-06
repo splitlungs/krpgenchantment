@@ -1,0 +1,23 @@
+[
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:shears-*",
+        "name": "metal",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  }
+]

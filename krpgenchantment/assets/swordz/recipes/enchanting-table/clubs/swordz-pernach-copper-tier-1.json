@@ -21,6 +21,27 @@
     }
   },
   {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "swordz:pernach-copper-*",
+        "name": "haft",
+        "allowedVariants": [ "copper", "bismuthbronze", "tinbronze", "blackbronze", "iron", "meteoriciron", "steel" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
     "name": "enchantment-flaming-1",
     "processingHours": 1,
     "ingredients": {

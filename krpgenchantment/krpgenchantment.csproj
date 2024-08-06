@@ -128,11 +128,19 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\scale-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\sewn-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\tailored-linen-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\arrow\arrow-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\hammer\hammer-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\hoe\hoe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\pick\pickaxe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\pick\prospectingpick-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\scythe\scythe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shears\shears-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shovel - Copy (2)\shovel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shovel\shovel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\arrow\arrow-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe\axe-felling-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\axe\axe-felling-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-healing-1.json" />
@@ -140,13 +148,15 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade\blade-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\bow\bow-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\blade\blade-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\bow\bow-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\chisel\chisel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\cleaver\cleaver-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife\knife-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\knife\knife-generic-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistelectric.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistfire.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistfrost.json" />
@@ -160,7 +170,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear\spear-generic-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\spear\spear-generic-tier-1.json" />
   <None Remove="assets\rustboundmagic\patches\krpg-armor-behaviors.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t2-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t3-tier-1.json" />
@@ -285,6 +295,10 @@
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="assets\krpgenchantment\recipes\enchanting-table\weapons\shield\" />
 </ItemGroup>
 
 </Project>

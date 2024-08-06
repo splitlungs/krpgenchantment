@@ -149,14 +149,6 @@ namespace KRPGLib.Enchantment
 
             Dictionary<string, int> enchants = Api.GetEnchantments(slot);
 
-            // Get Enchantments
-            // Dictionary<string, int> enchants = new Dictionary<string, int>();
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
-                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-            }
-
             if (enchants.Count > 0) return true;
 
             return false;

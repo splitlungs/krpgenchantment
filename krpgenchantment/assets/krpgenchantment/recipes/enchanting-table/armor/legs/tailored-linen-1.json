@@ -1,5 +1,26 @@
 [
   {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-tailored-*-linen",
+        "name": "construction",
+        "allowedVariants": [ "blue", "brown", "gray", "black", "green", "orange", "pink", "plain", "purple", "red", "white", "yellow" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
     "name": "enchantment-protection-1",
     "processingHours": 1,
     "ingredients": {

@@ -12,12 +12,33 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
     "enchantments": {
       "chilling": 1
+    }
+  },
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "swordz:atgeir-*",
+        "name": "metal",
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
     }
   },
   {
@@ -33,13 +54,13 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
     "enchantments": {
       "flaming": 1
-    } 
+    }
   },
   {
     "name": "enchantment-frost-1",
@@ -54,7 +75,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -75,7 +96,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -96,7 +117,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -117,7 +138,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -138,7 +159,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -159,7 +180,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -180,7 +201,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },
@@ -201,7 +222,7 @@
         "type": "item",
         "code": "swordz:atgeir-*",
         "name": "metal",
-        "allowedVariants": [ "iron","meteoriciron","steel" ],
+        "allowedVariants": [ "iron", "meteoriciron", "steel" ],
         "quantity": 1
       }
     },

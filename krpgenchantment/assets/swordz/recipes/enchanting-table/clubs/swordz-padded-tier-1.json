@@ -19,6 +19,25 @@
     }
   },
   {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "swordz:padded",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
     "name": "enchantment-flaming-1",
     "processingHours": 1,
     "ingredients": {
