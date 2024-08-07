@@ -20,7 +20,7 @@ namespace KRPGLib.Enchantment
         // Version
         public double Version;
 
-        private  bool IsDirty;
+        private bool IsDirty;
         public void MarkDirty()
         {
             if (!IsDirty)

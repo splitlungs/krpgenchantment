@@ -1,0 +1,23 @@
+[
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "swordz:tunneler-aithril-*",
+        "name": "haft",
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum", "aithril" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  }
+]

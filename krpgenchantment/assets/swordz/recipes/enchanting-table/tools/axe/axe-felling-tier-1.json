@@ -10,9 +10,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -31,9 +31,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -52,9 +52,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -73,9 +73,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -84,7 +84,7 @@
     }
   },
   {
-    "name": "enchantment-harming-1",
+    "Name": "enchantment-harming-1",
     "processingHours": 1,
     "ingredients": {
       "reagent": {
@@ -94,9 +94,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -115,9 +115,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -136,9 +136,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -157,9 +157,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -178,9 +178,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -199,9 +199,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },
@@ -220,9 +220,9 @@
       },
       "target": {
         "type": "item",
-        "code": "game:blade-*",
+        "code": "swordz:axe-felling-*",
         "name": "material",
-        "allowedVariants": [ "blackguard-iron", "falx-copper", "falx-tinbronze", "falx-bismuthbronze", "falx-blackbronze", "falx-iron", "falx-meteoriciron", "falx-steel", "falx-gold", "falx-silver", "forlorn-iron" ],
+        "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum","aithril" ],
         "quantity": 1
       }
     },

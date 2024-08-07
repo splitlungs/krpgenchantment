@@ -12,6 +12,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingBE : BlockEntityOpenableContainer
     {
+        ICoreServerAPI sApi;
         GuiDialogEnchantingBE clientDialog;
         EnchantingInventory inventory;
         public int msEnchantTick = 3000;
@@ -196,12 +197,19 @@ namespace KRPGLib.Enchantment
         }
         private double GetMaxEnchantTime()
         {
-            if (EnchantingRecipeLoader.Config.EnchantTimeOverride >= 0)
-                return EnchantingRecipeLoader.Config.EnchantTimeOverride;
-            else if (CurrentRecipe != null)
-                return CurrentRecipe.processingHours;
-            else
-                return 0d;
+            double eto = -0.1d;
+            // Return override first
+            if (EnchantingRecipeLoader.Config?.EnchantTimeOverride != null)
+                eto = EnchantingRecipeLoader.Config.EnchantTimeOverride;
+            if (eto >= 0d)
+                return eto;
+            // Then current recipe
+            if (CurrentRecipe != null)
+                eto = CurrentRecipe.processingHours;
+            if (eto >= 0d)
+                return eto;
+            // Fall back to 1 hour
+            return 1d;
         }
         /// <summary>
         /// Gets Name of Matching Enchanting Recipe with Enchanter Prefix
@@ -216,7 +224,11 @@ namespace KRPGLib.Enchantment
             string outText = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
 
             if (CurrentRecipe != null)
-                return outText + Lang.Get(CurrentRecipe.Name.ToShortString());
+            {
+                string eName = CurrentRecipe.Name.ToShortString();
+                eName = eName.Replace(CurrentRecipe.Name.Domain, "krpgenchantment");
+                return outText + Lang.Get(eName);
+            }
             else
                 return outText;
         }
@@ -226,6 +238,7 @@ namespace KRPGLib.Enchantment
         {
             base.Initialize(api);
             Api = api;
+            sApi = api as ICoreServerAPI;
 
             inventory.LateInitialize(Block.FirstCodePart() + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
             
@@ -381,7 +394,7 @@ namespace KRPGLib.Enchantment
                 string outText = OutputText;
 
                 ICoreClientAPI capi = Api as ICoreClientAPI;
-                clientDialog = new GuiDialogEnchantingBE(DialogTitle, hours, MaxEnchantTime, nowEnchanting, outText, Inventory, Pos, Api as ICoreClientAPI);
+                clientDialog = new GuiDialogEnchantingBE(DialogTitle, hours, MaxEnchantTime, nowEnchanting, outText, Inventory, Pos, capi);
                 clientDialog.OnClosed += () =>
                 {
                     clientDialog = null;

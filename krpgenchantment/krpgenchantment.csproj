@@ -102,6 +102,7 @@
   <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\game-armor-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\game-tool-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\game-weapon-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
@@ -136,6 +137,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shears\shears-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shovel - Copy (2)\shovel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\shovel\shovel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\wrench\wrench-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\arrow\arrow-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
@@ -212,6 +214,7 @@
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\tool\magician\toolspellcasting-staffscholar-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\tool\toolspellcasting-magician-staffconjuror-tier-1.json" />
   <None Remove="assets\swordz\patches\krpg-armor-behaviors.json" />
+  <None Remove="assets\swordz\patches\krpg-tool-behaviors.json" />
   <None Remove="assets\swordz\patches\krpg-weapon-behaviors.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\armor\body\brigandine-tier-1.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\armor\body\chain-tier-1.json" />
@@ -265,6 +268,23 @@
   <None Remove="assets\swordz\recipes\enchanting-table\swords\swordz-zweihander-steel-gold-tier-1.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\swords\swordz-zweihander-steel-silver-tier-1.json" />
   <None Remove="assets\swordz\recipes\enchanting-table\swords\swordz-zweihander-steel-steel-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\axe\axe-felling-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\chisel\chisel-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\excavator\excavator-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\hoe\hoe-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\pick\pickaxe-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\pick\prospectingpick-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\scythe\scythe-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\shears\shears-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\shovel\shovel-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\sledgehammer\sledgehammer-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-adamant-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-aithril-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-mithril-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-orichalcum-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-stainlesssteel-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\tunneler\tunneler-titanium-tier-1.json" />
+  <None Remove="assets\swordz\recipes\enchanting-table\tools\wrench\wrench-tier-1.json" />
   <None Remove="assets\swordz\swordz-bearded-tier-1.json" />
   <None Remove="assets\swordz\swordz-daneaxe-tier-1.json" />
   <None Remove="assets\swordz\swordz-nadziak-tier-1.json" />
@@ -295,10 +315,6 @@
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-</ItemGroup>
-
-<ItemGroup>
-  <Folder Include="assets\krpgenchantment\recipes\enchanting-table\weapons\shield\" />
 </ItemGroup>
 
 </Project>

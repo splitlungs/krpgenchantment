@@ -57,20 +57,6 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/tool/knife.json",
-    "path": "/behaviors",
-    "value": [
-      {
-        "name": "EnchantmentBehavior",
-        "properties": {
-          "enchantable": true
-        }
-      }
-    ],
-    "side": "server"
-  },
-  {
-    "op": "addmerge",
     "file": "game:itemtypes/tool/spear.json",
     "path": "/behaviors",
     "value": [
