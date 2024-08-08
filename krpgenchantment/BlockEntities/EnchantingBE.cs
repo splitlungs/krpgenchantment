@@ -168,7 +168,6 @@ namespace KRPGLib.Enchantment
         /// Returns Matching EnchantingRecipe or null if not found.
         /// </summary>
         /// <returns></returns>
-        //public EnchantingRecipe GetMatchingEnchantingRecipe(ItemSlot inSlot, ItemSlot rSlot)
         public EnchantingRecipe GetMatchingEnchantingRecipe()
         {
             var enchantingRecipes = Api.GetEnchantingRecipes();
