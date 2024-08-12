@@ -18,7 +18,7 @@ namespace KRPGLib.Enchantment
     public class CollectibleObject_Patch
     {
         [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
-        public static bool Prefix(CollectibleObject __instance,IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
+        public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
         {
             int durable = itemslot.Itemstack.Attributes.GetInt("durable", 0);
 
