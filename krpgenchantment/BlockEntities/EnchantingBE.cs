@@ -242,7 +242,7 @@ namespace KRPGLib.Enchantment
             inventory.LateInitialize(Block.FirstCodePart() + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
             
             if (api.Side == EnumAppSide.Server)
-                RegisterGameTickListener(TickEnchanting, 3000);
+                RegisterGameTickListener(TickEnchanting, 1000);
         }
         public override void CreateBehaviors(Block block, IWorldAccessor worldForResolve)
         {
@@ -310,12 +310,10 @@ namespace KRPGLib.Enchantment
         {
             if (clientDialog != null)
                 CurrentRecipe = GetMatchingEnchantingRecipe();
-            
-            double hours = 0d;
 
             if (CanEnchant && nowEnchanting)
             {
-                hours = Api.World.Calendar.TotalHours - inputEnchantTime;
+                double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
                 if (hours >= MaxEnchantTime)
                 {
@@ -323,10 +321,10 @@ namespace KRPGLib.Enchantment
 
                     nowEnchanting = false;
                 }
+
+                if (clientDialog != null && CurrentRecipe != null)
+                    clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
             }
-            
-            if (clientDialog != null)
-                clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
 
             MarkDirty();
         }
@@ -495,8 +493,9 @@ namespace KRPGLib.Enchantment
         {
             base.OnBlockBroken(byPlayer);
 
-            // invDialog?.TryClose();
-            // invDialog = null;
+            clientDialog?.TryClose();
+            clientDialog?.Dispose();
+            clientDialog = null;
         }
         #endregion
     }

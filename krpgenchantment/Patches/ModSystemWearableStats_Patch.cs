@@ -19,11 +19,9 @@ namespace KRPGLib.Enchantment
         public static void Postfix(ModSystemWearableStats __instance, ref float __result, IPlayer player, float damage, DamageSource dmgSource)
         {
             IInventory inv = player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName);
-            IInventory ownInventory = player.InventoryManager.GetOwnInventory("character");
 
             int power = 0;
-            float fPower = 0f;
-            string eType = "";
+            string eType;
 
             if (dmgSource.Type == EnumDamageType.BluntAttack)
             {
@@ -118,7 +116,7 @@ namespace KRPGLib.Enchantment
 
             if (power > 0)
             {
-                fPower = power * 0.1f;
+                float fPower = power * 0.1f;
                 __result -= fPower;
             }
         }

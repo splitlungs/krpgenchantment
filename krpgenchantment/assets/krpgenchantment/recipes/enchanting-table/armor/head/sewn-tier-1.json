@@ -17,7 +17,7 @@
       }
     },
     "enchantments": {
-      "protection": 1
+      "durable": 1
     }
   },
   {

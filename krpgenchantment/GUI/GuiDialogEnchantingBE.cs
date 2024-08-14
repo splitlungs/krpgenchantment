@@ -111,13 +111,14 @@ namespace KRPGLib.Enchantment
             this.maxEnchantTime = maxProcessTime;
             this.nowEnchanting = isEnchanting;
             
-            // if (!IsOpened()) return;
+            if (!IsOpened()) return;
+
             SingleComposer.GetDynamicText("outputText").SetNewText(outputText, true, true);
             SingleComposer.GetToggleButton("enchantToggle").SetValue(isEnchanting);
 
             if (!isEnchanting) return;
 
-            if (capi.ElapsedMilliseconds - lastRedrawMs > 3000)
+            if (capi.ElapsedMilliseconds - lastRedrawMs > 1000)
             {
                 if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
                 lastRedrawMs = capi.ElapsedMilliseconds;
