@@ -129,6 +129,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\scale-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\sewn-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\armor\legs\tailored-linen-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\axe\axe-felling-tier-2.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\hammer\hammer-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\hoe\hoe-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\pick\pickaxe-tier-1.json" />
