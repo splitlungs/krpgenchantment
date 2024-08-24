@@ -150,6 +150,7 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\arrow\arrow-tier-2.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\blade\blade-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\bow\bow-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\tools\chisel\chisel-tier-1.json" />
@@ -314,6 +315,12 @@
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-shocking.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Content Update="assets\krpgenchantment\recipes\enchanting-table\weapons\arrow\arrow-tier-2.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
 
