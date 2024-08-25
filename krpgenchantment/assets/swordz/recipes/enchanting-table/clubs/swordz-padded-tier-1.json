@@ -76,7 +76,7 @@
     }
   },
   {
-    "Name": "enchantment-harming-1",
+    "name": "enchantment-harming-1",
     "processingHours": 1,
     "ingredients": {
       "reagent": {

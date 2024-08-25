@@ -1,0 +1,365 @@
+[
+    {
+        "name": "enchantment-chilling-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-chilling",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "chilling": 4
+        }
+    },
+    {
+        "name": "enchantment-durable-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-durable",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "durable": 4
+        }
+    },
+    {
+        "name": "enchantment-flaming-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-flaming",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "flaming": 4
+        }
+    },
+    {
+        "name": "enchantment-frost-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-frost",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "frost": 4
+        }
+    },
+    {
+        "name": "enchantment-harming-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-harming",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "harming": 4
+        }
+    },
+    {
+        "name": "enchantment-healing-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-healing",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "healing": 4
+        }
+    },
+    {
+        "name": "enchantment-igniting-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-igniting",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "igniting": 4
+        }
+    },
+    {
+        "name": "enchantment-knockback-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-knockback",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "knockback": 4
+        }
+    },
+    {
+        "name": "enchantment-lightning-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-lightning",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "lightning": 4
+        }
+    },
+    {
+        "name": "enchantment-pit-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-pit",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "pit": 4
+        }
+    },
+    {
+        "name": "enchantment-shocking-4",
+        "processingHours": 64,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-shocking",
+                "quantity": 64
+            },
+            "target": {
+                "type": "item",
+                "code": "rustboundmagic:toolspellcasting-archmage-staffnebula-*",
+                "name": "color",
+                "allowedvariants": [
+                    "orange",
+                    "black",
+                    "red",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "white",
+                    "yellow",
+                    "gray",
+                    "green",
+                    "teal"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "shocking": 4
+        }
+    }
+]

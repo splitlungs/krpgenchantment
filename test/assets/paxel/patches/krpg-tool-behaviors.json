@@ -1,0 +1,16 @@
+[
+  {
+    "op": "addmerge",
+    "file": "paxel:itemtypes/tool/paxel-metal.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

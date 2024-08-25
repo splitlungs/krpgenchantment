@@ -1,0 +1,30 @@
+[
+    {
+        "name": "enchantment-durable-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-durable",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:tunneler-adamant-*",
+                "name": "haft",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "durable": 2
+        }
+    }
+]

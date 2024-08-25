@@ -1,0 +1,189 @@
+[
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-antique-*",
+        "name": "material",
+        "allowedVariants": [ "blackguard-pristine", "forlorn-pristine" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-antique-*",
+        "name": "material",
+        "allowedVariants": [ "blackguard-pristine", "forlorn-pristine" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-chain-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-jerkin-leather",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-lamellar-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-plate-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-sewn-*",
+        "name": "material",
+        "allowedVariants": [ "linen", "leather" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-legs-tailored-*-linen",
+        "name": "construction",
+        "allowedVariants": [ "blue", "brown", "gray", "black", "green", "orange", "pink", "plain", "purple", "red", "white", "yellow" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  }
+]

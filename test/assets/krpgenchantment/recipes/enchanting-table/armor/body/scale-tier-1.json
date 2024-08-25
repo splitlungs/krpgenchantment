@@ -1,0 +1,170 @@
+[
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
+    "name": "enchantment-protection-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-protection",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 1
+    }
+  },
+  {
+    "name": "enchantment-resistelectric-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistelectric",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistelectric": 1
+    }
+  },
+  {
+    "name": "enchantment-resistfire-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistfire",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistfire": 1
+    }
+  },
+  {
+    "name": "enchantment-resistfrost-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistfrost",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistfrost": 1
+    }
+  },
+  {
+    "name": "enchantment-resistheal-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistheal",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistheal": 1
+    }
+  },
+  {
+    "name": "enchantment-resistinjury-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistinjury",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistinjury": 1
+    }
+  },
+  {
+    "name": "enchantment-resistpoison-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-resistpoison",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "game:armor-body-scale-*",
+        "name": "material",
+        "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistpoison": 1
+    }
+  }
+]

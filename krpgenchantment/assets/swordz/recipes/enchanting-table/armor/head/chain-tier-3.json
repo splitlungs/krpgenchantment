@@ -1,0 +1,226 @@
+[
+    {
+        "name": "enchantment-durable-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-durable",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "durable": 3
+        }
+    },
+    {
+        "name": "enchantment-protection-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-protection",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "protection": 3
+        }
+    },
+    {
+        "name": "enchantment-resistelectric-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistelectric",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistelectric": 3
+        }
+    },
+    {
+        "name": "enchantment-resistfire-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistfire",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistfire": 3
+        }
+    },
+    {
+        "name": "enchantment-resistfrost-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistfrost",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistfrost": 3
+        }
+    },
+    {
+        "name": "enchantment-resistheal-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistheal",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistheal": 3
+        }
+    },
+    {
+        "name": "enchantment-resistinjury-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistinjury",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistinjury": 3
+        }
+    },
+    {
+        "name": "enchantment-resistpoison-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-resistpoison",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:armor-head-chain-*",
+                "name": "material",
+                "allowedVariants": [
+                    "stainlesssteel",
+                    "titanium",
+                    "mithril",
+                    "adamant",
+                    "orichalcum",
+                    "aithril"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "resistpoison": 3
+        }
+    }
+]

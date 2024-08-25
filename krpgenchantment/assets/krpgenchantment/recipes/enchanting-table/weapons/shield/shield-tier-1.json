@@ -10,7 +10,7 @@
 //       },
 //       "target": {
 //         "type": "item",
-//         "code": "game:shield-*",
+//         "code": "game:shield-woodmetal-*",
 //         "name": "material",
 //         "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ],
 //         "quantity": 1

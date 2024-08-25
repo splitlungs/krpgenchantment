@@ -1,0 +1,288 @@
+[
+    {
+        "name": "enchantment-chilling-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-chilling",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "chilling": 3
+        }
+    },
+    {
+        "name": "enchantment-durable-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-durable",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "durable": 3
+        }
+    },
+    {
+        "name": "enchantment-flaming-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-flaming",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "flaming": 3
+        }
+    },
+    {
+        "name": "enchantment-frost-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-frost",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "frost": 3
+        }
+    },
+    {
+        "name": "enchantment-harming-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-harming",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "harming": 3
+        }
+    },
+    {
+        "name": "enchantment-healing-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-healing",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "healing": 3
+        }
+    },
+    {
+        "name": "enchantment-igniting-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-igniting",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "igniting": 3
+        }
+    },
+    {
+        "name": "enchantment-knockback-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-knockback",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "knockback": 3
+        }
+    },
+    {
+        "name": "enchantment-lightning-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-lightning",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "lightning": 3
+        }
+    },
+    {
+        "name": "enchantment-pit-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-pit",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "pit": 3
+        }
+    },
+    {
+        "name": "enchantment-shocking-3",
+        "processingHours": 16,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-shocking",
+                "quantity": 16
+            },
+            "target": {
+                "type": "item",
+                "code": "swordz:khopesh-copper-*",
+                "name": "sharpness",
+                "allowedVariants": [
+                    "blunt",
+                    "dull",
+                    "sharp",
+                    "honed"
+                ],
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "shocking": 3
+        }
+    }
+]

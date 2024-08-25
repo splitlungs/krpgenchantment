@@ -99,6 +99,9 @@
         "allowedVariants": [ "orange", "black", "red", "blue", "purple", "pink", "white", "yellow", "gray", "green", "teal" ],
         "quantity": 1
       }
+    },
+    "enchantments": {
+      "resistfrost": 1
     }
   },
   {

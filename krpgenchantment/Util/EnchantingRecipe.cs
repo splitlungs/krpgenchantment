@@ -312,7 +312,7 @@ namespace KRPGLib.Enchantment
                 }
                 else if (!resolvedIngredients[0].ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) return false;
 
-                if (reagentSlot.Itemstack.StackSize < resolvedIngredients[0].Quantity) return false;
+                if (reagentSlot.Itemstack.StackSize != resolvedIngredients[0].Quantity) return false;
             }
             // Check Input/Target
             if (inputSlot?.Itemstack != null)

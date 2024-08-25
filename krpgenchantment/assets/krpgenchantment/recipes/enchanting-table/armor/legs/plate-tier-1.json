@@ -99,6 +99,9 @@
         "allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel", "gold", "silver" ],
         "quantity": 1
       }
+    },
+    "enchantments": {
+      "resistfrost": 1
     }
   },
   {

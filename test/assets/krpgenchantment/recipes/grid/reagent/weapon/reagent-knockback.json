@@ -1,0 +1,29 @@
+{
+  "ingredientPattern": "AFA,LGL,AFA",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "G": {
+      "type": "item",
+      "code": "game:gear-temporal"
+    },
+    "F": {
+      "type": "item",
+      "code": "game:feather",
+      "quantity": 32
+    },
+    "A": {
+      "type": "item",
+      "code": "game:antler-*"
+    },
+    "L": {
+      "type": "item",
+      "code": "game:ingot-lead",
+      "quantity": 8
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "krpgenchantment:reagent-knockback"
+  }
+}

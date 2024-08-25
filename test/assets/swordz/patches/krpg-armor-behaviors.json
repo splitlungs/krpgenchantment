@@ -1,0 +1,16 @@
+[
+  {
+    "op": "addmerge",
+    "file": "swordz:itemtypes/wearable/armor.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

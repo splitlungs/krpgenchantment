@@ -99,6 +99,9 @@
         "allowedVariants": [ "stainlesssteel", "titanium", "mithril", "adamant", "orichalcum", "aithril" ],
         "quantity": 1
       }
+    },
+    "enchantments": {
+      "resistfrost": 1
     }
   },
   {
