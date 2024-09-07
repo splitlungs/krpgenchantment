@@ -214,6 +214,17 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<string, int> pair in enchants)
                 dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
         }
+        public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            if (byEntity.Attributes.GetInt("aimSelf") == 1)
+            {
+                Dictionary<string, int> enchants = Api.GetEnchantments(slot);
+                byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, enchants);
+            }
+
+            handling = EnumHandling.Handled;
+            base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+        }
         /*
         public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
         {

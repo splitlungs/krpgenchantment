@@ -5,7 +5,7 @@
 		{
 			"code": "material",
 			"states": [
-				"temporal",
+				// "temporal",
 				"chilling",
 				"durable",
 				"flaming",

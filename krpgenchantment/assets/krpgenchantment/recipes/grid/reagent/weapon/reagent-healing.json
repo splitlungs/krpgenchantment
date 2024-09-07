@@ -9,17 +9,18 @@
     },
     "P": {
       "type": "item",
-      "code": "game:poultice-linen-honey-sulfur"
+      "code": "game:poultice-linen-honey-sulfur",
+      "quantity": 4
     },
     "H": {
-      "type": "item",
-      "code": "game:honeyportion",
-      "quantity": 8
+      "type": "block",
+      "code": "flower-horsetail-free",
+      "quantity": 4
     },
     "S": {
       "type": "item",
       "code": "game:powderedsulfur",
-      "quantity": 3
+      "quantity": 8
     }
   },
   "output": {
