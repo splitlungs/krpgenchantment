@@ -85,7 +85,7 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
-    "file": "fantasycreatures:entities/land/surfacegoblin.json"
+    "file": "fantasycreatures:entities/land/surface_skeleton.json"
   },
   {
     "op": "add",
@@ -93,7 +93,7 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
-    "file": "fantasycreatures:entities/land/surfaceskeleton.json"
+    "file": "fantasycreatures:entities/land/surfacegoblin.json"
   },
   {
     "op": "add",
