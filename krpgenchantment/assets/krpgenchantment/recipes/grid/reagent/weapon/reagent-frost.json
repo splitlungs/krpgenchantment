@@ -1,5 +1,5 @@
 {
-  "ingredientPattern": "III,IGI,III",
+  "ingredientPattern": "III,RGR,III",
   "width": 3,
   "height": 3,
   "ingredients": {
@@ -10,7 +10,12 @@
     "I": {
       "type": "block",
       "code": "game:glacierice",
-      "quantity": 2
+      "quantity": 4
+    },
+    "R": {
+      "type": "item",
+      "code": "game:rot",
+      "quantity": 32
     }
   },
   "output": {

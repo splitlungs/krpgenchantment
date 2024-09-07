@@ -9,7 +9,8 @@
     },
     "I": {
       "type": "block",
-      "code": "game:glacierice"
+      "code": "game:glacierice",
+      "quantity": 4
     }
   },
   "output": {
