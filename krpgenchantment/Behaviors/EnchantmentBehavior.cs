@@ -216,13 +216,15 @@ namespace KRPGLib.Enchantment
         }
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
-            if (byEntity.Attributes.GetInt("aimSelf") == 1)
+            handling = EnumHandling.Handled;
+
+            if (byEntity.WatchedAttributes.GetInt("aimSelf") == 1)
             {
+                Api.World.Logger.Event("Aiming Self!");
                 Dictionary<string, int> enchants = Api.GetEnchantments(slot);
                 byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, enchants);
             }
 
-            handling = EnumHandling.Handled;
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
         }
         /*

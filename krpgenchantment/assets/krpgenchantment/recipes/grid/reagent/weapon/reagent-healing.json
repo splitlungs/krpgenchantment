@@ -14,7 +14,7 @@
     },
     "H": {
       "type": "block",
-      "code": "flower-horsetail-free",
+      "code": "game:flower-horsetail-*",
       "quantity": 4
     },
     "S": {

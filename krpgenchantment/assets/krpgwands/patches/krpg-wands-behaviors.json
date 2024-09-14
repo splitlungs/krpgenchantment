@@ -12,5 +12,33 @@
       }
     ],
     "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "krpgwands:itemtypes/wands/wand-metal.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "krpgwands:itemtypes/wands/wand-wood.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
   }
 ]

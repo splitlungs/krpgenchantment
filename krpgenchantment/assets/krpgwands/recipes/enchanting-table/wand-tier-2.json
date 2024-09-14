@@ -10,22 +10,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -44,22 +29,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -78,22 +48,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -112,22 +67,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -146,22 +86,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -180,22 +105,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -214,22 +124,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -248,22 +143,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -282,22 +162,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -316,22 +181,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },
@@ -350,22 +200,7 @@
             },
             "target": {
                 "type": "item",
-                "code": "krpgwands:krpg-wand-*",
-                "name": "material",
-                "allowedVariants": [
-                    "bismuthbronze",
-                    "blackbronze",
-                    "brass",
-                    "copper",
-                    "gold",
-                    "iron",
-                    "lead",
-                    "obsidian",
-                    "silver",
-                    "steel",
-                    "tinbronze",
-                    "wood"
-                ],
+                "code": "krpgwands:wand-*-*",
                 "quantity": 1
             }
         },

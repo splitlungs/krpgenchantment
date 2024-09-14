@@ -169,6 +169,10 @@
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistpoison.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-protection.json" />
   <None Remove="assets\krpgenchantment\recipes\grid\reagent\universal\reagent-durable.json" />
+  <None Remove="assets\krpgwands\recipes\enchanting-table\krpg-wand-tier-2.json" />
+  <None Remove="assets\krpgwands\recipes\enchanting-table\krpg-wand-tier-3.json" />
+  <None Remove="assets\krpgwands\recipes\enchanting-table\krpg-wand-tier-4.json" />
+  <None Remove="assets\krpgwands\recipes\enchanting-table\wand-tier-1.json" />
   <None Remove="assets\paxel\patches\krpg-tool-behaviors.json" />
   <None Remove="assets\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
