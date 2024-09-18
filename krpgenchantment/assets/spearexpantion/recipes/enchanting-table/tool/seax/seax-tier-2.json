@@ -1,0 +1,211 @@
+[
+    {
+        "name": "enchantment-durable-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-durable",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "durable": 2
+        }
+    },
+    {
+        "name": "enchantment-chilling-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-chilling",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "chilling": 2
+        }
+    },
+    {
+        "name": "enchantment-flaming-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-flaming",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "flaming": 2
+        }
+    },
+    {
+        "name": "enchantment-frost-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-frost",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "frost": 2
+        }
+    },
+    {
+        "name": "enchantment-harming-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-harming",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "harming": 2
+        }
+    },
+    {
+        "name": "enchantment-healing-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-healing",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "healing": 2
+        }
+    },
+    {
+        "name": "enchantment-igniting-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-igniting",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "igniting": 2
+        }
+    },
+    {
+        "name": "enchantment-knockback-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-knockback",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "knockback": 2
+        }
+    },
+    {
+        "name": "enchantment-lightning-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-lightning",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "lightning": 2
+        }
+    },
+    {
+        "name": "enchantment-pit-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-pit",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "pit": 2
+        }
+    },
+    {
+        "name": "enchantment-shocking-2",
+        "processingHours": 4,
+        "ingredients": {
+            "reagent": {
+                "type": "item",
+                "code": "krpgenchantment:reagent-shocking",
+                "quantity": 4
+            },
+            "target": {
+                "type": "item",
+                "code": "spearexpantion:seax-*",
+                "quantity": 1
+            }
+        },
+        "enchantments": {
+            "shocking": 2
+        }
+    }
+]

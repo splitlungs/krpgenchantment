@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
-        private const double ConfigVersion = 0.2d;
+        private const double ConfigVersion = 0.3d;
         public const string ConfigFile = "KRPGEnchantment_Recipe_Config.json";
         public static KRPGEnchantRecipeConfig Config { get; set; } = null!;
 
@@ -52,9 +52,11 @@ namespace KRPGLib.Enchantment
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantRecipeConfig tempConfig = new KRPGEnchantRecipeConfig();
+                    if (Config.EnableAncientArmory) tempConfig.EnableAncientArmory = true;
                     if (Config.EnableKRPGWands) tempConfig.EnableKRPGWands = true;
                     if (Config.EnablePaxel) tempConfig.EnablePaxel = true;
                     if (Config.EnableRustboundMagic) tempConfig.EnableRustboundMagic = true;
+                    if (Config.EnableSpearExpantion) tempConfig.EnableSpearExpantion = true;
                     if (Config.EnableSwordz) tempConfig.EnableSwordz = true;
                     if (Config.CustomPatches.Count > 0) Config.CustomPatches = tempConfig.CustomPatches;
                     if (Config.EnchantTimeOverride >= 0) Config.EnchantTimeOverride = tempConfig.EnchantTimeOverride;
@@ -82,12 +84,16 @@ namespace KRPGLib.Enchantment
         {
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
 
+            if (Config.EnableAncientArmory == true)
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "ancientarmory"));
             if (Config.EnableKRPGWands == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgwands"));
             if (Config.EnablePaxel == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "paxel"));
             if (Config.EnableRustboundMagic == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "rustboundmagic"));
+            if (Config.EnableSpearExpantion == true)
+                files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "spearexpantion"));
             if (Config.EnableSwordz == true)
                 files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "swordz"));
             if (Config.CustomPatches.Count > 0)

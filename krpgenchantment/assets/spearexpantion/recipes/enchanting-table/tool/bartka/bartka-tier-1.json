@@ -1,0 +1,211 @@
+[
+  {
+    "name": "enchantment-durable-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-durable",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 1
+    }
+  },
+  {
+    "name": "enchantment-chilling-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-chilling",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "chilling": 1
+    }
+  },
+  {
+    "name": "enchantment-flaming-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-flaming",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "flaming": 1
+    }
+  },
+  {
+    "name": "enchantment-frost-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-frost",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "frost": 1
+    }
+  },
+  {
+    "name": "enchantment-harming-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-harming",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "harming": 1
+    }
+  },
+  {
+    "name": "enchantment-healing-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-healing",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "healing": 1
+    }
+  },
+  {
+    "name": "enchantment-igniting-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-igniting",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "igniting": 1
+    }
+  },
+  {
+    "name": "enchantment-knockback-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-knockback",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "knockback": 1
+    }
+  },
+  {
+    "name": "enchantment-lightning-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-lightning",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "lightning": 1
+    }
+  },
+  {
+    "name": "enchantment-pit-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-pit",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "pit": 1
+    }
+  },
+  {
+    "name": "enchantment-shocking-1",
+    "processingHours": 1,
+    "ingredients": {
+      "reagent": {
+        "type": "item",
+        "code": "krpgenchantment:reagent-shocking",
+        "quantity": 1
+      },
+      "target": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "shocking": 1
+    }
+  }
+]

@@ -6,6 +6,7 @@
     public enum EnumEnchantments { aiming, chilling, fast, durable, flaming, frost, harming, healing, knockback, igniting, lightning, pit, protection,
         resistelectric, resistfire, resistfrost, resistheal, resistinjury, resistpoison, running, shocking }
     public enum EnchantTiers { O = 0, I = 1, II = 2, III = 3, IV = 4 }
+    public enum EnchantColors { white = 0, cyan = 1, green = 2, purple = 3, red = 4, yellow = 5}
     /// <summary>
     /// Not in use right now.
     /// </summary>

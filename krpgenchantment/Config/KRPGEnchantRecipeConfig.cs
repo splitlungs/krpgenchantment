@@ -11,9 +11,11 @@ namespace KRPGLib.Enchantment
         // Global Config
         public double EnchantTimeOverride = -1d;
         // Compatibility patches
+        public bool EnableAncientArmory = false;
         public bool EnableKRPGWands = false;
         public bool EnablePaxel = false;
         public bool EnableRustboundMagic = false;
+        public bool EnableSpearExpantion = false;
         public bool EnableSwordz = false;
         // Custom patch list
         public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>();

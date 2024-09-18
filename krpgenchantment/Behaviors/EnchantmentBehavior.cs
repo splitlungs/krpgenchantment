@@ -13,6 +13,7 @@ using System.Reflection;
 using HarmonyLib;
 // using System.Text.Json.Nodes;
 using System.Xml.Linq;
+using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment
 {
@@ -42,7 +43,7 @@ namespace KRPGLib.Enchantment
     public class EnchantmentBehavior : CollectibleBehavior
     {
         #region Data
-        public ICoreAPI Api { get; protected set; }
+        public ICoreAPI Api;
         /// <summary>
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
@@ -205,23 +206,31 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
                 itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
         }
-        
+
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
             Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
             foreach (KeyValuePair<string, int> pair in enchants)
-                dsc.AppendLine(string.Format("<font color=\"cyan\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
+                dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
         }
+        
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
             handling = EnumHandling.Handled;
 
-            if (byEntity.WatchedAttributes.GetInt("aimSelf") == 1)
+            int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
+            if (aimSelf == 1)
             {
-                Api.World.Logger.Event("Aiming Self!");
-                Dictionary<string, int> enchants = Api.GetEnchantments(slot);
+                // Get Enchantments
+                Dictionary<string, int> enchants = new Dictionary<string, int>();
+                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                {
+                    int ePower = slot.Itemstack.Attributes.GetInt(val.ToString(), 0);
+                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+                }
+
                 byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, enchants);
             }
 
