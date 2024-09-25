@@ -1,0 +1,66 @@
+[
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/air/parasitic-flies.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rotten/miasma.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rotten/rotbeast.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rotten/rotpillar.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rotten/rotwalker.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rust/golem.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rust/itinerant.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rustandrot:entities/land/rust/roamer.json"
+  }
+]

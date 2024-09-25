@@ -332,7 +332,7 @@ namespace KRPGLib.Enchantment
                 
                 if (inputSlot.Itemstack.StackSize < resolvedIngredients[1].Quantity) return false;
             }
-            
+
             return true;
         }
 

@@ -1,0 +1,98 @@
+[
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/bandit-axe.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/bandit-knife.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/bandit-spear.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/deserter-archer.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/deserter-bannerman.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/deserter-footman.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/hound-feral.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/hound-hunting.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/looter.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/poacher-archer.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/poacher-spear.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/mobs/yeoman-archer.json"
+  }
+]

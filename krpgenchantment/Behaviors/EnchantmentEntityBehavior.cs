@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KRPGLib.Enchantment;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,6 +12,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
@@ -35,6 +37,7 @@ namespace KRPGLib.Enchantment
         {
             player = byPlayer;
             // We'll probably use this later
+            // Edit: We won't in 1.20
             // player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName).SlotModified += OnGearModified;
         }
         public void OnGearModified(int slotId)
@@ -64,6 +67,7 @@ namespace KRPGLib.Enchantment
             
             ConfigParticles();
         }
+        /*
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             if (shouldParticle)
@@ -92,7 +96,7 @@ namespace KRPGLib.Enchantment
                         Api.World.SpawnParticles(advancedParticleProperties);
                     }
                 }
-                else if (damageSource.Type == EnumDamageType.Frost)
+                if (damageSource.Type == EnumDamageType.Frost)
                 {
                     int num = Math.Min(FrostParticleProps.Length - 1, Api.World.Rand.Next(FrostParticleProps.Length + 1));
                     AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
@@ -114,7 +118,7 @@ namespace KRPGLib.Enchantment
                         Api.World.SpawnParticles(advancedParticleProperties);
                     }
                 }
-                else if (damageSource.Type == EnumDamageType.Electricity)
+                if (damageSource.Type == EnumDamageType.Electricity)
                 {
                     int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
                     AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
@@ -136,7 +140,7 @@ namespace KRPGLib.Enchantment
                         Api.World.SpawnParticles(advancedParticleProperties);
                     }
                 }
-                else if (damageSource.Type == EnumDamageType.Heal)
+                if (damageSource.Type == EnumDamageType.Heal)
                 {
                     int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
                     AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
@@ -158,7 +162,7 @@ namespace KRPGLib.Enchantment
                         Api.World.SpawnParticles(advancedParticleProperties);
                     }
                 }
-                else if (damageSource.Type == EnumDamageType.Injury)
+                if (damageSource.Type == EnumDamageType.Injury)
                 {
                     int num = Math.Min(InjuryParticleProps.Length - 1, Api.World.Rand.Next(InjuryParticleProps.Length + 1));
                     AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
@@ -180,7 +184,7 @@ namespace KRPGLib.Enchantment
                         Api.World.SpawnParticles(advancedParticleProperties);
                     }
                 }
-                else if (damageSource.Type == EnumDamageType.Poison)
+                if (damageSource.Type == EnumDamageType.Poison)
                 {
                     int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
                     AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
@@ -203,10 +207,11 @@ namespace KRPGLib.Enchantment
                     }
                 }
 
-                shouldParticle = false;
+                // shouldParticle = false;
             }
             base.OnEntityReceiveDamage(damageSource, ref damage);
         }
+        */
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
@@ -216,36 +221,32 @@ namespace KRPGLib.Enchantment
                 foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
                 {
                     int ePower = itemslot.Itemstack.Attributes.GetInt(val.ToString(), 0);
-                    if (ePower > 0) 
-                        enchants.Add(val.ToString(), ePower);
-                }
-
-                // Try Enchantments
-                foreach (KeyValuePair<string, int> pair in enchants)
-                {
-                    TryEnchantment(byEntity, pair.Key, pair.Value);
+                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
                 }
 
                 // Should avoid default during healing
                 if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
-                    handled = EnumHandling.PreventSubsequent;
+                    handled = EnumHandling.PreventDefault;
                 else
                     handled = EnumHandling.Handled;
+
+                TryEnchantments(byEntity, itemslot.Itemstack, enchants);
             }
             else
             {
                 base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
             }
+            base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }
         /// <summary>
         /// Generic Enchantment processing.
         /// </summary>
         /// <param name="byEntity"></param>
         /// <param name="enchants"></param>
-        public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
+        public void TryEnchantments(EntityAgent byEntity, ItemStack stack, Dictionary<string, int> enchants)
         {
             foreach (KeyValuePair<string, int> pair in enchants)
-                TryEnchantment(byEntity, pair.Key, pair.Value);
+                TryEnchantment(byEntity, stack, pair.Key, pair.Value);
         }
         /// <summary>
         /// Generic Enchantment processing.
@@ -254,19 +255,19 @@ namespace KRPGLib.Enchantment
         /// <param name="enchant"></param>
         /// <param name="power"></param>
         /// <returns></returns>
-        public bool TryEnchantment(EntityAgent byEntity, string enchant, int power)
+        public void TryEnchantment(EntityAgent byEntity, ItemStack stack, string enchant, int power)
         {
             // Alt Damage
             if (enchant == EnumEnchantments.healing.ToString())
-                DamageEntity(byEntity, EnumEnchantments.healing, power);
+                DamageEntity(byEntity, stack, EnumEnchantments.healing, power);
             else if (enchant == EnumEnchantments.flaming.ToString())
-                DamageEntity(byEntity, EnumEnchantments.flaming, power);
+                DamageEntity(byEntity, stack, EnumEnchantments.flaming, power);
             else if (enchant == EnumEnchantments.frost.ToString())
-                DamageEntity(byEntity, EnumEnchantments.frost, power);
+                DamageEntity(byEntity, stack, EnumEnchantments.frost, power);
             else if (enchant == EnumEnchantments.harming.ToString())
-                DamageEntity(byEntity, EnumEnchantments.harming, power);
+                DamageEntity(byEntity, stack, EnumEnchantments.harming, power);
             else if (enchant == EnumEnchantments.shocking.ToString())
-                DamageEntity(byEntity, EnumEnchantments.shocking, power);
+                DamageEntity(byEntity, stack, EnumEnchantments.shocking, power);
             // Alt Effects
             else if (enchant == EnumEnchantments.chilling.ToString())
                 ChillEntity(power);
@@ -278,8 +279,6 @@ namespace KRPGLib.Enchantment
                 CallLightning(power);
             else if (enchant == EnumEnchantments.pit.ToString())
                 CreatePit(byEntity, power);
-
-            return true;
         }
         #endregion
         #region Alt Damage
@@ -289,76 +288,73 @@ namespace KRPGLib.Enchantment
         /// <param name="byEntity"></param>
         /// <param name="enchant"></param>
         /// <param name="power"></param>
-        public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power)
+        public void DamageEntity(Entity byEntity, ItemStack stack, EnumEnchantments enchant, int power)
         {
-            shouldParticle = true;
-            switch (enchant)
+            // Configure Damage
+            EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
+            DamageSource source = new DamageSource();
+            source.SourceEntity = byEntity;
+            source.DamageTier = stack.Collectible.ToolTier;
+            
+            float dmg = 0;
+
+            for (int i = 1; i <= power; i++)
             {
-                case EnumEnchantments.healing:
+                dmg += Api.World.Rand.Next(1, 4);
+                dmg += Api.World.Rand.NextSingle();
+                dmg += power * 0.1f;
+            }
+
+            if (enchant == EnumEnchantments.healing)
+                source.Type = EnumDamageType.Heal;
+            else if (enchant == EnumEnchantments.flaming)
+                source.Type = EnumDamageType.Fire;
+            else if (enchant == EnumEnchantments.frost)
+                source.Type = EnumDamageType.Frost;
+            else if (enchant == EnumEnchantments.harming)
+                source.Type = EnumDamageType.Injury;
+            else if (enchant == EnumEnchantments.shocking)
+                source.Type = EnumDamageType.Electricity;
+
+            // Apply Defenses
+            if (IsPlayer)
+            {
+                IInventory inv = agent?.GearInventory;
+                float resist = 0f;
+                int[] wearableSlots = new int[3] { 12, 13, 14 };
+
+                foreach (int i in wearableSlots)
+                {
+                    if (!inv[i].Empty)
                     {
-                        if (power > 0)
-                        {
-                            DamageSource source = new DamageSource();
-                            source.SourceEntity = byEntity;
-                            source.Type = EnumDamageType.Heal;
-                            source.DamageTier = power;
-                            float dmg = Api.World.Rand.Next(1, 6) + power;
-                            entity.ReceiveDamage(source, dmg);
-                        }
-                        return;
+                        int rPower = 0;
+                        if (source.Type == EnumDamageType.Electricity)
+                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistelectric.ToString(), 0);
+                        else if (source.Type == EnumDamageType.Fire)
+                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistfire.ToString(), 0);
+                        else if (source.Type == EnumDamageType.Frost)
+                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistfrost.ToString(), 0);
+                        else if (source.Type == EnumDamageType.Heal)
+                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistheal.ToString(), 0);
+                        else if (source.Type == EnumDamageType.Injury)
+                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistinjury.ToString(), 0);
+                        resist += rPower * 0.1f;
                     }
-                case EnumEnchantments.flaming:
-                    {
-                        if (power > 0)
-                        {
-                            DamageSource source = new DamageSource();
-                            source.SourceEntity = byEntity;
-                            source.Type = EnumDamageType.Fire;
-                            source.DamageTier = power;
-                            float dmg = Api.World.Rand.Next(1, 6) + power;
-                            entity.ReceiveDamage(source, dmg);
-                        }
-                        return;
-                    }
-                case EnumEnchantments.frost:
-                    {
-                        if (power > 0)
-                        {
-                            DamageSource source = new DamageSource();
-                            source.SourceEntity = byEntity;
-                            source.Type = EnumDamageType.Frost;
-                            source.DamageTier = power;
-                            float dmg = Api.World.Rand.Next(1, 6) + power;
-                            entity.ReceiveDamage(source, dmg);
-                        }
-                        return;
-                    }
-                case EnumEnchantments.harming:
-                    {
-                        if (power > 0)
-                        {
-                            DamageSource source = new DamageSource();
-                            source.SourceEntity = byEntity;
-                            source.Type = EnumDamageType.Injury;
-                            source.DamageTier = power;
-                            float dmg = Api.World.Rand.Next(1, 6) + power;
-                            entity.ReceiveDamage(source, dmg);
-                        }
-                        return;
-                    }
-                case EnumEnchantments.shocking:
-                    {
-                        if (power > 0)
-                        {
-                            DamageSource source = new DamageSource();
-                            source.SourceEntity = byEntity;
-                            source.Type = EnumDamageType.Electricity;
-                            source.DamageTier = power;
-                            float dmg = Api.World.Rand.Next(1, 6) + power;
-                            entity.ReceiveDamage(source, dmg);
-                        }
-                        return;
-                    }
+                }
+                resist = 1 - resist;
+                dmg = Math.Max(0f, dmg * resist);
+            }
+
+            // Apply Damage
+            if (entity.ShouldReceiveDamage(source, dmg))
+            {
+                // Disabled because there is something stopping this from happening in rapid succession.
+                // Some kind of timer is locking damage, and must be calculated manually here, instead.
+                //
+                // entity.ReceiveDamage(source, dmg);
+                Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
+                hp.OnEntityReceiveDamage(source, ref dmg);
+                GenerateParticles(source, dmg);
             }
         }
         #endregion
@@ -548,7 +544,6 @@ namespace KRPGLib.Enchantment
         protected static AdvancedParticleProperties[] InjuryParticleProps;
         protected static AdvancedParticleProperties[] ElectricParticleProps;
         protected static AdvancedParticleProperties[] PoisonParticleProps;
-        protected bool shouldParticle;
         protected bool resetLightHsv;
 
         private void ConfigParticles()
@@ -984,6 +979,143 @@ namespace KRPGLib.Enchantment
                 ParticleModel = EnumParticleModel.Quad,
                 SelfPropelled = true
             };
+        }
+        private void GenerateParticles(DamageSource damageSource, float damage)
+        {
+            int power = (int)Math.Ceiling(damage);
+
+            if (damageSource.Type == EnumDamageType.Fire)
+            {
+                int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Frost)
+            {
+                int num = Math.Min(FrostParticleProps.Length - 1, Api.World.Rand.Next(FrostParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Electricity)
+            {
+                int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Heal)
+            {
+                int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Injury)
+            {
+                int num = Math.Min(InjuryParticleProps.Length - 1, Api.World.Rand.Next(InjuryParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+            if (damageSource.Type == EnumDamageType.Poison)
+            {
+                int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
+                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
         }
         #endregion
     }

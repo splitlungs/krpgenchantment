@@ -194,12 +194,14 @@
   <None Remove="assets\krpgwands\recipes\enchanting-table\krpg-wand-tier-3.json" />
   <None Remove="assets\krpgwands\recipes\enchanting-table\krpg-wand-tier-4.json" />
   <None Remove="assets\krpgwands\recipes\enchanting-table\wand-tier-1.json" />
+  <None Remove="assets\outlaws\patches\outlaws-entity-behaviors.json" />
   <None Remove="assets\paxel\patches\krpg-tool-behaviors.json" />
   <None Remove="assets\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\weapons\spear\spear-generic-tier-1.json" />
+  <None Remove="assets\rustandrot\patches\rustandrot-entity-behaviors.json" />
   <None Remove="assets\rustboundmagic\patches\krpg-armor-behaviors.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t2-tier-1.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\armor\body\armorbody-t3-tier-1.json" />

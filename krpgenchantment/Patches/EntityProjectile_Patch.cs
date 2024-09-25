@@ -53,7 +53,7 @@ namespace KRPGLib.Enchantment
                     }
                 }
                 // Process the Enchantments
-                eeb.TryEnchantments(__instance.FiredBy as EntityAgent, enchants);
+                eeb.TryEnchantments(__instance.FiredBy as EntityAgent, __instance.ProjectileStack, enchants);
             }
         }
     }

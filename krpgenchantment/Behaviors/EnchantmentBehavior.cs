@@ -231,7 +231,7 @@ namespace KRPGLib.Enchantment
                     if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
                 }
 
-                byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, enchants);
+                byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack, enchants);
             }
 
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
