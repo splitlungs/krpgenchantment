@@ -14,10 +14,59 @@ namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantmentSystem : ModSystem
     {
+        private const double ConfigVersion = 0.1d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
-        public KRPGEnchantConfig Config { get; set; }
+        public static KRPGEnchantConfig Config { get; set; } = null!;
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
+
+        public override void AssetsLoaded(ICoreAPI api)
+        {
+            if (!(api is ICoreServerAPI sapi)) return;
+            this.sApi = sapi;
+
+            try
+            {
+                Config = sapi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
+                if (Config == null)
+                {
+                    Config = new KRPGEnchantConfig();
+                    Config.Version = ConfigVersion;
+                    sapi.StoreModConfig(Config, ConfigFile);
+
+                    sapi.Logger.Event("KRPGEnchantRecipeConfig file not found. A new one has been created.");
+                }
+                else if (Config.Version < ConfigVersion)
+                {
+                    KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
+                    if (Config.DisabledEnchants.Count > 0) Config.DisabledEnchants = tempConfig.DisabledEnchants ;
+                    if (Config.AmmoEnchants.Count > 0) Config.AmmoEnchants = tempConfig.AmmoEnchants;
+                    if (Config.ArmorEnchants.Count > 0) Config.ArmorEnchants = tempConfig.ArmorEnchants;
+                    if (Config.MeleeEnchants.Count > 0) Config.MeleeEnchants = tempConfig.MeleeEnchants;
+                    if (Config.RangedEnchants.Count > 0) Config.RangedEnchants = tempConfig.RangedEnchants;
+                    if (Config.ToolEnchants.Count > 0) Config.ToolEnchants = tempConfig.ToolEnchants;
+                    if (Config.UniversalEnchants.Count > 0) Config.UniversalEnchants = tempConfig.UniversalEnchants;
+                    if (Config.WandEnchants.Count > 0) Config.WandEnchants = tempConfig.WandEnchants;
+                    if (Config.EnableFantasyCreatures) tempConfig.EnableFantasyCreatures = true;
+                    if (Config.EnableFeverstoneWilds) tempConfig.EnableFeverstoneWilds = true;
+                    if (Config.EnableOutlaws) tempConfig.EnableOutlaws = true;
+                    if (Config.EnableRustAndRot) tempConfig.EnableRustAndRot = true;
+
+                    tempConfig.Version = ConfigVersion;
+                    Config = tempConfig;
+                    sapi.StoreModConfig(Config, ConfigFile);
+
+                    sapi.Logger.Event("KRPGEnchantConfig file is outdated. It has been updated to version {0}.", ConfigVersion);
+                }
+                else
+                    sapi.Logger.Event("KRPGEnchantConfig file found. Loaded successfully.");
+            }
+            catch (Exception e)
+            {
+                sapi.Logger.Error("Error loading KRPGEnchantConfig: {0}", e);
+                return;
+            }
+        }
 
         public override void StartServerSide(ICoreServerAPI api)
         {

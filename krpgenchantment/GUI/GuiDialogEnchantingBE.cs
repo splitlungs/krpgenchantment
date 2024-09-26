@@ -171,6 +171,7 @@ namespace KRPGLib.Enchantment
         {
             base.OnGuiOpened();
             Inventory.SlotModified += OnInventorySlotModified;
+            Update(inputEnchantTime, maxEnchantTime, nowEnchanting, outputText, capi);
         }
 
         public override void OnGuiClosed()
