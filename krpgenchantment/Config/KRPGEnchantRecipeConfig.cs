@@ -10,6 +10,8 @@ namespace KRPGLib.Enchantment
     {
         // Global Config
         public double EnchantTimeOverride = -1d;
+        public double EnchantResetOverride = -1d;
+        public string[] ReagentItemOverride = new string[] { "game:gem-emerald", "game:gem-diamond", "game:olivine_peridot" };
         // Compatibility patches
         public bool EnableAncientArmory = false;
         public bool EnableKRPGWands = false;
@@ -17,8 +19,16 @@ namespace KRPGLib.Enchantment
         public bool EnableRustboundMagic = false;
         public bool EnableSpearExpantion = false;
         public bool EnableSwordz = false;
-        // Custom patch list
-        public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>();
+        // Compatibility patch list
+        public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>() 
+        { 
+            { "AncientArmory", false }, 
+            { "KRPGWands", false }, 
+            { "Paxel", false }, 
+            { "RustbowndMagic", false }, 
+            { "SpearExpantion", false }, 
+            { "Swordz", false }
+        };
         // Version
         public double Version;
 
@@ -36,10 +46,8 @@ namespace KRPGLib.Enchantment
             if (config != null) 
             {
                 EnchantTimeOverride = config.EnchantTimeOverride;
-                EnableKRPGWands = config.EnableKRPGWands;
-                EnablePaxel = config.EnablePaxel;
-                EnableRustboundMagic = config.EnableRustboundMagic;
-                EnableSwordz = config.EnableSwordz;
+                EnchantResetOverride = config.EnchantResetOverride;
+                ReagentItemOverride = config.ReagentItemOverride;
                 CustomPatches = config.CustomPatches;
             }
         }

@@ -18,9 +18,11 @@ namespace KRPGLib.Enchantment
         public int msEnchantTick = 3000;
         public double inputEnchantTime;
         public double prevInputEnchantTime;
+        private double latentResetTime;
         // Shortened for debugging
         // public double maxEnchantTime = 0.1;
         public bool nowEnchanting = false;
+        public List<EnchantingRecipe> ValidRecipes = new List<EnchantingRecipe>();
         public EnchantingRecipe CurrentRecipe;
         int nowOutputFace;
         #region Candles
@@ -154,6 +156,16 @@ namespace KRPGLib.Enchantment
 
             return false;
         }
+        private bool CanEnchantByType
+        {
+            get
+            {
+                if (CurrentRecipe == null) return false;
+                if (!CurrentRecipe.Matches(InputSlot, ReagentSlot)) return false;
+
+                return true;
+            }
+        }
         private bool CanEnchant
         {
             get
@@ -185,6 +197,61 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("No Matching Enchanting Recipe Registry found!");
 
             return null;
+        }
+        /// <summary>
+        /// Returns Matching EnchantingRecipe or null if not found.
+        /// </summary>
+        /// <returns></returns>
+        public void GetMatchingEnchantingRecipes()
+        {
+            var enchantingRecipes = Api.GetEnchantingRecipes();
+            if (enchantingRecipes != null)
+            {
+                ValidRecipes.Clear();
+                for (int i = 0; i < enchantingRecipes.Count; i++)
+                {
+                    if (enchantingRecipes[i].Matches(InputSlot, ReagentSlot))
+                         ValidRecipes.Add(enchantingRecipes[i].Clone());
+                }
+            }
+            else
+                Api.Logger.Event("No Matching Enchanting Recipe Registry found!");
+        }
+
+        public double LatentResetTime() 
+        {
+            double ero = -0.1d;
+            // Return override first
+            if (EnchantingRecipeLoader.Config?.EnchantResetOverride != null)
+                    ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
+                if (ero >= 0d)
+                    return ero;
+                // Then current recipe
+                if (CurrentRecipe != null)
+                    ero = CurrentRecipe.processingHours;
+                if (ero >= 0d)
+                    return ero;
+                // Fall back to 7 days
+                return 7d;
+        }
+        /// <summary>
+        /// Find a valid Enchantment for the item and write a Latent Enchantment to Attributes
+        /// </summary>
+        public void AssessItem()
+        {
+            if (ValidRecipes.Count < 1 || InputSlot.Empty) return;
+
+            double timeStamp = Api.World.Calendar.ElapsedDays;
+            double latentStamp = InputSlot.Itemstack.Attributes.GetDouble("latentEnchantTime", 0);
+            if (Api.World.Calendar.ElapsedDays < latentStamp + 1)
+                return;
+
+            foreach (var rec in ValidRecipes)
+            {
+                double rNum2 = Api.World.Rand.NextDouble();
+                InputSlot.Itemstack.Attributes.SetString("latentEnchant", rec.Name.ToShortString());
+                InputSlot.Itemstack.Attributes.SetDouble("latentEnchantTime", timeStamp);
+            }
         }
         /// <summary>
         /// Gets the current recipe's processing time in in-game hours.

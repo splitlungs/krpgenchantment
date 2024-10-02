@@ -9,6 +9,8 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using System.Collections.Generic;
 using Vintagestory.API.Datastructures;
+using Newtonsoft.Json.Linq;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -16,6 +18,7 @@ namespace KRPGLib.Enchantment
     {
         private const double ConfigVersion = 0.1d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
+
         public static KRPGEnchantConfig Config { get; set; } = null!;
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
@@ -34,19 +37,12 @@ namespace KRPGLib.Enchantment
                     Config.Version = ConfigVersion;
                     sapi.StoreModConfig(Config, ConfigFile);
 
-                    sapi.Logger.Event("KRPGEnchantRecipeConfig file not found. A new one has been created.");
+                    sapi.Logger.Event("KRPGEnchantConfig file not found. A new one has been created.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
-                    if (Config.DisabledEnchants.Count > 0) Config.DisabledEnchants = tempConfig.DisabledEnchants ;
-                    if (Config.AmmoEnchants.Count > 0) Config.AmmoEnchants = tempConfig.AmmoEnchants;
-                    if (Config.ArmorEnchants.Count > 0) Config.ArmorEnchants = tempConfig.ArmorEnchants;
-                    if (Config.MeleeEnchants.Count > 0) Config.MeleeEnchants = tempConfig.MeleeEnchants;
-                    if (Config.RangedEnchants.Count > 0) Config.RangedEnchants = tempConfig.RangedEnchants;
-                    if (Config.ToolEnchants.Count > 0) Config.ToolEnchants = tempConfig.ToolEnchants;
-                    if (Config.UniversalEnchants.Count > 0) Config.UniversalEnchants = tempConfig.UniversalEnchants;
-                    if (Config.WandEnchants.Count > 0) Config.WandEnchants = tempConfig.WandEnchants;
+                    if (Config.DisabledEnchants?.Count > 0) Config.DisabledEnchants = tempConfig.DisabledEnchants;
                     if (Config.EnableFantasyCreatures) tempConfig.EnableFantasyCreatures = true;
                     if (Config.EnableFeverstoneWilds) tempConfig.EnableFeverstoneWilds = true;
                     if (Config.EnableOutlaws) tempConfig.EnableOutlaws = true;

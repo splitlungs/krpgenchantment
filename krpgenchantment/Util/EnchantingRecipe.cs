@@ -58,7 +58,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         public Dictionary<string, int> Enchantments;
 
-        public EnchantingRecipeIngredient[] resolvedIngredients;
+        public List<EnchantingRecipeIngredient> resolvedIngredients;
 
         IWorldAccessor world;
 
@@ -108,29 +108,48 @@ namespace KRPGLib.Enchantment
         public bool ResolveIngredients(IWorldAccessor world)
         {
             this.world = world;
-            // HARDCODED TO 2 INGREDIENTS CURRENTLY
-            string pCode = "";
-            resolvedIngredients = new EnchantingRecipeIngredient[2];
-            for (int i = 0; i < 2; i++)
+            int eIndex = 0;
+            resolvedIngredients = new List<EnchantingRecipeIngredient>();
+            foreach (KeyValuePair<string, CraftingRecipeIngredient> pair in Ingredients)
             {
-                if (i == 0) pCode = "reagent";
-                if (i == 1) pCode = "target";
-
-                if (!Ingredients.ContainsKey(pCode))
+                if (!Ingredients.ContainsKey(pair.Key))
                 {
-                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pCode);
+                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pair.Key);
+                    return false;
+                }
+                if (!Ingredients[pair.Key].Resolve(world, "Enchanting recipe"))
+                {
+                    world.Logger.Error("Enchanting Recipe: {0} contains an ingredient that cannot be resolved: {1}", pair.Key, Ingredients[pair.Key]);
                     return false;
                 }
 
-                if (!Ingredients[pCode].Resolve(world, "Enchanting recipe"))
-                {
-                    world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", pCode, Ingredients[pCode]);
-                    return false;
-                }
-
-                resolvedIngredients[i] = Ingredients[pCode].CloneTo<EnchantingRecipeIngredient>();
-                resolvedIngredients[i].PatternCode = pCode;
+                resolvedIngredients.Add(Ingredients[pair.Key].CloneTo<EnchantingRecipeIngredient>());
+                resolvedIngredients[eIndex].PatternCode = pair.Key;
+                eIndex++;
             }
+
+            // DEPRECATED 2 INGREDIENT SYSTEM
+            // string pCode = "";
+            // for (int i = 0; i < 2; i++)
+            // {
+            //     if (i == 0) pCode = "reagent";
+            //     if (i == 1) pCode = "target";
+            // 
+            //     if (!Ingredients.ContainsKey(pCode))
+            //     {
+            //         world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pCode);
+            //         return false;
+            //     }
+            // 
+            //     if (!Ingredients[pCode].Resolve(world, "Enchanting recipe"))
+            //     {
+            //         world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", pCode, Ingredients[pCode]);
+            //         return false;
+            //     }
+            // 
+            //     resolvedIngredients[i] = Ingredients[pCode].CloneTo<EnchantingRecipeIngredient>();
+            //     resolvedIngredients[i].PatternCode = pCode;
+            // }
 
             return true;
         }
@@ -203,7 +222,7 @@ namespace KRPGLib.Enchantment
             List<EnchantingRecipeIngredient> exactMatchIngredients = new List<EnchantingRecipeIngredient>();
             List<EnchantingRecipeIngredient> wildcardIngredients = new List<EnchantingRecipeIngredient>();
 
-            for (int i = 0; i < resolvedIngredients.Length; i++)
+            for (int i = 0; i < resolvedIngredients.Count; i++)
             {
                 EnchantingRecipeIngredient ingredient = resolvedIngredients[i];
                 if (ingredient == null) continue;
@@ -298,6 +317,45 @@ namespace KRPGLib.Enchantment
             // Null Check
             if (inputSlot?.Itemstack == null || reagentSlot?.Itemstack == null) return false;
 
+            // Check Targets
+            if (inputSlot?.Itemstack != null)
+            {
+                foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+                {
+                    if (ing.IsWildCard)
+                    {
+                        inputSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
+
+                        bool foundw = false;
+                        foundw =
+                                ing.Type == inputSlot.Itemstack.Class &&
+                                WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                            ;
+                        if (!foundw) return false;
+                    }
+                    else if (!ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) return false;
+
+                    if (inputSlot.Itemstack.StackSize < ing.Quantity) return false;
+                }
+            }
+            else
+                return false;
+
+            // Check Reagents
+            if (reagentSlot != null)
+            {
+                string code = reagentSlot.Itemstack.Collectible.Code.ToShortString();
+                if (EnchantingRecipeLoader.Config.ReagentItemOverride != null)
+                {
+                    foreach (string reagent in EnchantingRecipeLoader.Config.ReagentItemOverride)
+                        if (code == reagent) return true;
+                }
+                else return false;
+            }
+            else
+                return false;
+
+            /*
             // Check Reagent
             if (reagentSlot?.Itemstack != null)
             {
@@ -332,6 +390,7 @@ namespace KRPGLib.Enchantment
                 
                 if (inputSlot.Itemstack.StackSize < resolvedIngredients[1].Quantity) return false;
             }
+            */
 
             return true;
         }
@@ -372,7 +431,9 @@ namespace KRPGLib.Enchantment
         public void ToBytes(BinaryWriter writer)
         {
             writer.Write(processingHours);
-            for (int i = 0; i < resolvedIngredients.Length; i++)
+
+            writer.Write(resolvedIngredients.Count);
+            for (int i = 0; i < resolvedIngredients.Count; i++)
             {
                 if (resolvedIngredients[i] == null)
                 {
@@ -412,7 +473,7 @@ namespace KRPGLib.Enchantment
                 ingredient.Value.ToBytes(writer);
             }
             writer.Write(Enchantments.Count);
-            foreach(KeyValuePair<string, int> enchant in Enchantments)
+            foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
                 writer.Write(enchant.Key);
                 writer.Write((int)enchant.Value);
@@ -427,13 +488,16 @@ namespace KRPGLib.Enchantment
         public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
             processingHours = reader.ReadDouble();
-            resolvedIngredients = new EnchantingRecipeIngredient[2];
-            for (int i = 0; i < resolvedIngredients.Length; i++)
+
+            int num = reader.ReadInt32();
+            resolvedIngredients = new List<EnchantingRecipeIngredient>();
+            for (int i = 0; i < num; i++)
             {
                 if (!reader.ReadBoolean())
                 {
-                    resolvedIngredients[i] = new EnchantingRecipeIngredient();
-                    resolvedIngredients[i].FromBytes(reader, resolver);
+                    EnchantingRecipeIngredient ing = new EnchantingRecipeIngredient();
+                    ing.FromBytes(reader, resolver);
+                    resolvedIngredients.Add(ing.CloneTo<EnchantingRecipeIngredient>());
                 }
             }
 
@@ -456,9 +520,9 @@ namespace KRPGLib.Enchantment
             }
 
             ShowInCreatedBy = reader.ReadBoolean();
-            int num = reader.ReadInt32();
+            int num2 = reader.ReadInt32();
             Ingredients = new Dictionary<string, CraftingRecipeIngredient>();
-            for (int j = 0; j < num; j++)
+            for (int j = 0; j < num2; j++)
             {
                 string key = reader.ReadString();
                 CraftingRecipeIngredient craftingRecipeIngredient = new CraftingRecipeIngredient();
@@ -466,9 +530,9 @@ namespace KRPGLib.Enchantment
                 Ingredients[key] = craftingRecipeIngredient;
             }
 
-            int ench = reader.ReadInt32();
+            int num3 = reader.ReadInt32();
             Enchantments = new Dictionary<string, int>();
-            for (int k = 0; k < ench; k++)
+            for (int k = 0; k < num3; k++)
             {
                 string key = reader.ReadString();
                 Enchantments[key] = reader.ReadInt32();
@@ -493,11 +557,9 @@ namespace KRPGLib.Enchantment
             }
             if (resolvedIngredients != null)
             {
-                recipe.resolvedIngredients = new EnchantingRecipeIngredient[resolvedIngredients.Length];
-                for (int i = 0; i < resolvedIngredients.Length; i++)
-                {
-                    recipe.resolvedIngredients[i] = resolvedIngredients[i]?.CloneTo<EnchantingRecipeIngredient>();
-                }
+                recipe.resolvedIngredients = new List<EnchantingRecipeIngredient>();
+                foreach(EnchantingRecipeIngredient ing in resolvedIngredients)
+                    recipe.resolvedIngredients.Add(ing.CloneTo<EnchantingRecipeIngredient>());
             }
             recipe.Enchantments = new Dictionary<string, int>();
             if (Enchantments != null)
@@ -511,6 +573,7 @@ namespace KRPGLib.Enchantment
             recipe.Name = Name;
             recipe.Attributes = Attributes?.Clone();
             recipe.RequiresTrait = RequiresTrait;
+            recipe.RecipeGroup = RecipeGroup;
             recipe.CopyAttributesFrom = CopyAttributesFrom;
             recipe.processingHours = processingHours;
             return recipe;
