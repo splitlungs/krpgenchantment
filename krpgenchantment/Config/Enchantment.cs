@@ -3,7 +3,7 @@
 namespace KRPGLib.Enchantment
 {
     /// <summary>
-    /// Not in use right now.
+    /// Not in use right now. Something of a dumping ground for lost features.
     /// </summary>
     public class Enchantment
     {

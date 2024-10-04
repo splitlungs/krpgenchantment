@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -237,7 +238,10 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanHold(ItemSlot slot)
         {
-            return slot?.Itemstack?.Collectible is ReagentItem && base.CanHold(slot);
+            bool isValid = false;
+            foreach (var val in EnchantingRecipeLoader.Config.ValidReagents)
+                if (val.Equals(slot.Itemstack?.Collectible.Code.ToString())) isValid = true;
+            return isValid && base.CanHold(slot);
         }
         public override bool CanTake()
         {

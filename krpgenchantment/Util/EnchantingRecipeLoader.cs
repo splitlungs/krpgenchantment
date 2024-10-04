@@ -54,7 +54,7 @@ namespace KRPGLib.Enchantment
                     KRPGEnchantRecipeConfig tempConfig = new KRPGEnchantRecipeConfig();
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.EnchantResetOverride >= 0) tempConfig.EnchantResetOverride = Config.EnchantResetOverride;
-                    if (Config.ReagentItemOverride.Length > 0) tempConfig.ReagentItemOverride = Config.ReagentItemOverride;
+                    if (Config.ValidReagents.Length > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     // These will be deprecated in favor of CustomPatches at next release
                     if (Config.EnableAncientArmory) tempConfig.CustomPatches["AncientArmory"] = true;
                     else tempConfig.CustomPatches["AncientArmory"] = false;

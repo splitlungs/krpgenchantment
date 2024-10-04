@@ -320,6 +320,7 @@ namespace KRPGLib.Enchantment
             // Check Targets
             if (inputSlot?.Itemstack != null)
             {
+                bool foundt = false;
                 foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
                 {
                     if (ing.IsWildCard)
@@ -331,12 +332,13 @@ namespace KRPGLib.Enchantment
                                 ing.Type == inputSlot.Itemstack.Class &&
                                 WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
                             ;
-                        if (!foundw) return false;
+                        if (foundw == true) return true;
                     }
-                    else if (!ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) return false;
+                    else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
 
-                    if (inputSlot.Itemstack.StackSize < ing.Quantity) return false;
+                    if (inputSlot.Itemstack.StackSize == ing.Quantity) foundt = true;
                 }
+                if (!foundt) return false;
             }
             else
                 return false;
@@ -344,16 +346,43 @@ namespace KRPGLib.Enchantment
             // Check Reagents
             if (reagentSlot != null)
             {
-                string code = reagentSlot.Itemstack.Collectible.Code.ToShortString();
-                if (EnchantingRecipeLoader.Config.ReagentItemOverride != null)
+                bool foundr = false;
+                // Override from recipe first
+                foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
                 {
-                    foreach (string reagent in EnchantingRecipeLoader.Config.ReagentItemOverride)
-                        if (code == reagent) return true;
+                    if (ing.PatternCode == "reagent")
+                    {
+                        if (ing.IsWildCard)
+                        {
+                            bool foundw = false;
+                            foundw =
+                                    ing.Type == reagentSlot.Itemstack.Class &&
+                                    WildcardUtil.Match(ing.Code, reagentSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                                ;
+                            if (foundw == true) foundr = true;
+                        }
+                        else if (!ing.ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) foundr =  false;
+
+                        if (reagentSlot.Itemstack.StackSize == ing.Quantity) foundr = true;
+                    }
                 }
-                else return false;
+                
+                if (EnchantingRecipeLoader.Config.ValidReagents != null)
+                {
+                    ItemStack rStack = new ItemStack();
+                    foreach (string reagent in EnchantingRecipeLoader.Config.ValidReagents)
+                    {
+                        AssetLocation rAsset = new AssetLocation(reagent);
+                        rStack = new ItemStack(world.GetItem(rAsset));
+                        if (rStack.Satisfies(reagentSlot.Itemstack)) foundr =  true;
+                    }
+                }
+                if (!foundr) return false;
             }
             else
                 return false;
+
+            return true;
 
             /*
             // Check Reagent
@@ -391,8 +420,6 @@ namespace KRPGLib.Enchantment
                 if (inputSlot.Itemstack.StackSize < resolvedIngredients[1].Quantity) return false;
             }
             */
-
-            return true;
         }
 
         /// <summary>

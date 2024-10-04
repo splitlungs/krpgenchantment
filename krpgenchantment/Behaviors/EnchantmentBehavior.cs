@@ -214,6 +214,11 @@ namespace KRPGLib.Enchantment
             Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
             foreach (KeyValuePair<string, int> pair in enchants)
                 dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
+
+            ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            string lEnchant = tree.GetString("latentEnchant");
+            if (lEnchant != null)
+                dsc.AppendLine(string.Format("<font color=\"cyan\">" + "Latent: " + Lang.Get(lEnchant) + "</font>"));
         }
         
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)

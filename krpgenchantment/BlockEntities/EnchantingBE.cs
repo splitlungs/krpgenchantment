@@ -18,11 +18,10 @@ namespace KRPGLib.Enchantment
         public int msEnchantTick = 3000;
         public double inputEnchantTime;
         public double prevInputEnchantTime;
-        private double latentResetTime;
         // Shortened for debugging
         // public double maxEnchantTime = 0.1;
         public bool nowEnchanting = false;
-        public List<EnchantingRecipe> ValidRecipes = new List<EnchantingRecipe>();
+
         public EnchantingRecipe CurrentRecipe;
         int nowOutputFace;
         #region Candles
@@ -188,9 +187,7 @@ namespace KRPGLib.Enchantment
                 for (int i = 0; i < enchantingRecipes.Count; i++)
                 {
                     if (enchantingRecipes[i].Matches(InputSlot, ReagentSlot))
-                    {
                         return enchantingRecipes[i].Clone();
-                    }
                 }
             }
             else
@@ -199,59 +196,71 @@ namespace KRPGLib.Enchantment
             return null;
         }
         /// <summary>
-        /// Returns Matching EnchantingRecipe or null if not found.
+        /// Gets valid Enchanting Recipes based on current InputSlot and ReagentSlot and stores them in ValidRecipes. Returns null if none found.
         /// </summary>
         /// <returns></returns>
-        public void GetMatchingEnchantingRecipes()
+        public List<EnchantingRecipe> ValidRecipes = new List<EnchantingRecipe>();
+        private void GetValidRecipes()
         {
+            ValidRecipes = new List<EnchantingRecipe>();
             var enchantingRecipes = Api.GetEnchantingRecipes();
             if (enchantingRecipes != null)
             {
-                ValidRecipes.Clear();
-                for (int i = 0; i < enchantingRecipes.Count; i++)
-                {
-                    if (enchantingRecipes[i].Matches(InputSlot, ReagentSlot))
-                         ValidRecipes.Add(enchantingRecipes[i].Clone());
-                }
+                Api.World.Logger.Event("{0} Enchanting Recipes found.");
+                foreach (EnchantingRecipe rec in enchantingRecipes)
+                    if (rec.Matches(InputSlot, ReagentSlot))
+                         ValidRecipes.Add(rec.Clone());
             }
             else
                 Api.Logger.Event("No Matching Enchanting Recipe Registry found!");
         }
-
-        public double LatentResetTime() 
+        /// <summary>
+        /// Can be overriden from EnchantingRecipeConfig. Default 7 days.
+        /// </summary>
+        /// <returns></returns>
+        public double LatentEnchantResetTime
+        { 
+            get { return GetLatentEnchantResetTime(); } 
+        }
+        private double GetLatentEnchantResetTime()
         {
-            double ero = -0.1d;
+            double ero = -1.0d;
             // Return override first
             if (EnchantingRecipeLoader.Config?.EnchantResetOverride != null)
-                    ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
-                if (ero >= 0d)
-                    return ero;
-                // Then current recipe
-                if (CurrentRecipe != null)
-                    ero = CurrentRecipe.processingHours;
-                if (ero >= 0d)
-                    return ero;
-                // Fall back to 7 days
-                return 7d;
+                ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
+            if (ero >= 0d)
+                return ero;
+            // Fall back to 7 days
+            return 7.0d;
         }
         /// <summary>
         /// Find a valid Enchantment for the item and write a Latent Enchantment to Attributes
         /// </summary>
         public void AssessItem()
         {
-            if (ValidRecipes.Count < 1 || InputSlot.Empty) return;
+            if (InputSlot.Empty || ReagentSlot.Empty || ValidRecipes.Count < 1 || Api.Side != EnumAppSide.Server) return;
+            Api.World.Logger.Event("Item is being assessed.");
 
+            ITreeAttribute tree = InputSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = Api.World.Calendar.ElapsedDays;
-            double latentStamp = InputSlot.Itemstack.Attributes.GetDouble("latentEnchantTime", 0);
-            if (Api.World.Calendar.ElapsedDays < latentStamp + 1)
+            Api.World.Logger.Event("Latent Stamp {0}. Time Stamp {1}", latentStamp, timeStamp);
+            if (latentStamp != 0 && timeStamp < latentStamp + LatentEnchantResetTime)
                 return;
 
-            foreach (var rec in ValidRecipes)
+            int rNum = Api.World.Rand.Next(ValidRecipes.Count);
+            EnchantingRecipe er = ValidRecipes[rNum];
+
+            Api.World.Logger.Event("{0} was assigned as a Latent Enchantment at {1}", er.Name, timeStamp);
+            if (er != null)
             {
-                double rNum2 = Api.World.Rand.NextDouble();
-                InputSlot.Itemstack.Attributes.SetString("latentEnchant", rec.Name.ToShortString());
-                InputSlot.Itemstack.Attributes.SetDouble("latentEnchantTime", timeStamp);
+                tree.SetString("latentEnchant", er.Name.ToShortString());
+                tree.SetDouble("latentEnchantTime", timeStamp);
+                InputSlot.Itemstack.Attributes.MergeTree(tree);
+                InputSlot.MarkDirty();
             }
+            else
+                Api.World.Logger.Event("CurrentRecipe was null. Could not assign Latent Enchantment.");
         }
         /// <summary>
         /// Gets the current recipe's processing time in in-game hours.
@@ -375,8 +384,8 @@ namespace KRPGLib.Enchantment
         }
         private void TickEnchanting(float dt)
         {
-            if (clientDialog != null)
-                CurrentRecipe = GetMatchingEnchantingRecipe();
+            // if (clientDialog != null)
+            //     CurrentRecipe = GetMatchingEnchantingRecipe();
 
             if (CanEnchant && nowEnchanting)
             {
@@ -411,7 +420,7 @@ namespace KRPGLib.Enchantment
 
             if (Api != null)
             {
-                CurrentRecipe = GetMatchingEnchantingRecipe();
+                // CurrentRecipe = GetMatchingEnchantingRecipe();
             }
             if (Api?.Side == EnumAppSide.Client)
             {
@@ -485,7 +494,9 @@ namespace KRPGLib.Enchantment
             // Stop Enchanting
             nowEnchanting = false;
 
-            CurrentRecipe = GetMatchingEnchantingRecipe();
+            // CurrentRecipe = GetMatchingEnchantingRecipe();
+            GetValidRecipes();
+            AssessItem();
 
             double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
 
@@ -513,7 +524,7 @@ namespace KRPGLib.Enchantment
         {
             if (blockSel.SelectionBoxIndex == 1) return false;
             
-            CurrentRecipe = GetMatchingEnchantingRecipe();
+            // CurrentRecipe = GetMatchingEnchantingRecipe();
 
             if (Api.Side == EnumAppSide.Client)
             {
