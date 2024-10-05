@@ -11,8 +11,10 @@ namespace KRPGLib.Enchantment
         // Global Config
         public double EnchantTimeOverride = -1d;
         public double EnchantResetOverride = -1d;
+        public int MaxLatentEnchants = 3;
         public string[] ValidReagents = new string[] { "game:gem-emerald-rough", "game:gem-diamond-rough", "game:olivine_peridot-rough" };
         // Compatibility patches
+        // Will be removed in 0.6.x
         public bool EnableAncientArmory = false;
         public bool EnableKRPGWands = false;
         public bool EnablePaxel = false;
@@ -47,6 +49,7 @@ namespace KRPGLib.Enchantment
             {
                 EnchantTimeOverride = config.EnchantTimeOverride;
                 EnchantResetOverride = config.EnchantResetOverride;
+                MaxLatentEnchants = config.MaxLatentEnchants;
                 ValidReagents = config.ValidReagents;
                 CustomPatches = config.CustomPatches;
             }

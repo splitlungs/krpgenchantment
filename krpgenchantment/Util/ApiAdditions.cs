@@ -10,18 +10,41 @@ namespace Vintagestory.GameContent
     public static class ApiAdditions
     {
         /// <summary>
-        /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided.
+        /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
         /// </summary>
         /// <param name="inSlot"></param>
         /// <returns></returns>
         public static Dictionary<string, int> GetEnchantments(this ICoreAPI api, ItemSlot inSlot)
         {
-            // Get Enchantments
+            ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             Dictionary<string, int> enchants = new Dictionary<string, int>();
+
+            // Get Enchantments for Migration
+            // Will be removed in 0.6.x
             foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
             {
                 int ePower = inSlot.Itemstack.Attributes.GetInt(val.ToString(), 0);
                 if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+            }
+
+            // Migrate old Enchantments if needed
+            // Will be removed in 0.6.x
+            if (enchants.Count > 0)
+            {
+                foreach (KeyValuePair<string, int> keyValuePair in enchants)
+                {
+                    tree.SetInt(keyValuePair.Key, keyValuePair.Value);
+                    inSlot.Itemstack.Attributes.RemoveAttribute(keyValuePair.Key);
+                }
+            }
+            else
+            {
+                // Get Enchantments
+                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                {
+                    int ePower = tree.GetInt(val.ToString(), 0);
+                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+                }
             }
 
             return enchants;

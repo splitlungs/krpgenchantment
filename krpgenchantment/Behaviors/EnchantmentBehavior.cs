@@ -182,10 +182,11 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void SetAttributesFromProps(ItemStack itemStack)
         {
-            ITreeAttribute attr = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            attr.SetBool("enchantable", EnchantProps.Enchantable);
+            ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            tree.SetBool("enchantable", EnchantProps.Enchantable);
             foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
-                attr.SetInt(keyValuePair.Key, keyValuePair.Value);
+                tree.SetInt(keyValuePair.Key, keyValuePair.Value);
+            itemStack.Attributes.MergeTree(tree);
         }
         /// <summary>
         /// Gets Enchantment attributes from the ItemStack and writes to Enchant Properties
@@ -202,9 +203,11 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void SetAttributes(ItemStack itemStack)
         {
-            itemStack.Attributes.SetBool("enchantable", Enchantable);
+            ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            tree.SetBool("enchantable", Enchantable);
             foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
                 itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
+            itemStack.Attributes.MergeTree(tree);
         }
 
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
@@ -215,10 +218,17 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<string, int> pair in enchants)
                 dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
 
+            // Temporary for debugging Latent Enchants
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
-            string lEnchant = tree.GetString("latentEnchant");
+            string lEnchant = tree.GetString("latentEnchants");
+            string[] lEnchants = null;
             if (lEnchant != null)
-                dsc.AppendLine(string.Format("<font color=\"cyan\">" + "Latent: " + Lang.Get(lEnchant) + "</font>"));
+                 lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+            if (lEnchants != null)
+            {
+                foreach (string str in lEnchants)
+                    dsc.AppendLine(string.Format("<font color=\"cyan\">" + "Latent: " + Lang.Get(str) + "</font>"));
+            }
         }
         
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)

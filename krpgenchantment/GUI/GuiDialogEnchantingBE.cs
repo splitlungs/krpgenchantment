@@ -55,7 +55,7 @@ namespace KRPGLib.Enchantment
             ElementBounds outputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 153, top, 1, 1);
 
             ElementBounds enchantButton = ElementBounds.Fixed(145, 90, 64, 24);
-
+            
             // 2. Around all that is 10 pixel padding
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
