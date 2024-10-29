@@ -12,7 +12,18 @@ namespace KRPGLib.Enchantment
         public double EnchantTimeOverride = -1d;
         public double EnchantResetOverride = -1d;
         public int MaxLatentEnchants = 3;
-        public string[] ValidReagents = new string[] { "game:gem-emerald-rough", "game:gem-diamond-rough", "game:olivine_peridot-rough" };
+        public Dictionary<string, int> ValidReagents = new Dictionary<string, int>() 
+        {
+            { "game:gem-emerald-rough", 8 },
+            { "game:gem-diamond-rough", 4 }, 
+            { "game:olivine_peridot-rough", 8 } 
+        };
+        public Dictionary<string, int> ReagentPotentialTiers = new Dictionary<string, int>()
+        {
+            { "low", 2 }, 
+            { "medium", 3 }, 
+            { "high", 5 }
+        };
         // Compatibility patches
         // Will be removed in 0.6.x
         public bool EnableAncientArmory = false;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -238,10 +239,17 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanHold(ItemSlot slot)
         {
+            return base.CanHold(slot);
+            /*
             bool isValid = false;
-            foreach (var val in EnchantingRecipeLoader.Config.ValidReagents)
-                if (val.Equals(slot.Itemstack?.Collectible.Code.ToString())) isValid = true;
-            return isValid && base.CanHold(slot);
+            foreach (KeyValuePair<string, int> keyValuePair in EnchantingRecipeLoader.Config?.ValidReagents)
+            {
+                AssetLocation asset = new AssetLocation(keyValuePair.Key);
+                if (asset.Equals(slot.Itemstack?.Collectible.Code)) isValid = true;
+            }
+            isValid = base.CanHold(slot);
+            return isValid;
+            */
         }
         public override bool CanTake()
         {
@@ -293,12 +301,16 @@ namespace KRPGLib.Enchantment
 
         protected override void ActivateSlotRightClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {
+            base.ActivateSlotRightClick(sourceSlot, ref op);
+
+            /*
+            base.ActivateSlotRightClick(sourceSlot, ref op);
+
             if (sourceSlot.Empty)
             {
                 base.ActivateSlotRightClick(sourceSlot, ref op);
                 return;
             }
-
             IWorldAccessor world = inventory.Api.World;
 
             if (itemstack != null && sourceSlot.Itemstack.ItemAttributes["contentItem2BlockCodes"].Exists == true)
@@ -332,6 +344,7 @@ namespace KRPGLib.Enchantment
             if (sourceSlot.Itemstack?.ItemAttributes?["contentItem2BlockCodes"].Exists == true || sourceSlot.Itemstack?.ItemAttributes?["contentItemCode"].AsString() != null) return;
 
             base.ActivateSlotRightClick(sourceSlot, ref op);
+            */
         }
     }
     #endregion

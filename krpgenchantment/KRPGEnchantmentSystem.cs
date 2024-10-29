@@ -1,16 +1,10 @@
 using System;
 using HarmonyLib;
-using System.IO;
 using System.Reflection;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using System.Collections.Generic;
-using Vintagestory.API.Datastructures;
-using Newtonsoft.Json.Linq;
-using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {

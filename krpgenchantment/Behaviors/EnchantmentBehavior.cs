@@ -14,6 +14,7 @@ using HarmonyLib;
 // using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Vintagestory.API.Server;
+using Cairo;
 
 namespace KRPGLib.Enchantment
 {

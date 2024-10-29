@@ -23,6 +23,10 @@
       <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\protobuf-net.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SkiaSharp">
+      <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\SkiaSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="VintagestoryAPI">
       <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
       <Private>false</Private>
@@ -120,6 +124,7 @@
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-3.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-4.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\blades-tier-1.json" />
+  <None Remove="assets\krpgenchantment\fonts\dragon_alphabet.ttf" />
   <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\game-armor-behaviors.json" />

@@ -14,6 +14,7 @@ namespace KRPGLib.Enchantment
     {
         ICoreServerAPI sApi;
         GuiDialogEnchantingBE clientDialog;
+        EnchantingTableGui testDialog;
         EnchantingInventory inventory;
         public int msEnchantTick = 3000;
         public double inputEnchantTime;
@@ -535,14 +536,49 @@ namespace KRPGLib.Enchantment
         {
             if (blockSel.SelectionBoxIndex == 1) return false;
             
+
             // CurrentRecipe = GetMatchingEnchantingRecipe();
+
+            // if (Api.Side == EnumAppSide.Client)
+            // {
+            //     toggleInventoryDialogClient(byPlayer);
+            // }
 
             if (Api.Side == EnumAppSide.Client)
             {
-                toggleInventoryDialogClient(byPlayer);
+                toggleTestDialogClient(byPlayer);
             }
 
             return true;
+        }
+
+        protected void toggleTestDialogClient(IPlayer byPlayer)
+        {
+            if (testDialog == null)
+            {
+                // double hours = 0d;
+                // if (CurrentRecipe != null && nowEnchanting)
+                //     hours = Api.World.Calendar.TotalHours - inputEnchantTime;
+                // string outText = OutputText;
+
+                ICoreClientAPI capi = Api as ICoreClientAPI;
+                testDialog = new EnchantingTableGui(DialogTitle, 0d, MaxEnchantTime, nowEnchanting, "Test Enchant", Inventory, Pos, capi);
+                testDialog.OnClosed += () =>
+                {
+                    testDialog = null;
+                    capi.Network.SendBlockEntityPacket(Pos.X, Pos.Y, Pos.Z, (int)EnumBlockEntityPacketId.Close, null);
+                    capi.Network.SendPacketClient(Inventory.Close(byPlayer));
+                };
+                
+                testDialog.TryOpen();
+                capi.Network.SendPacketClient(Inventory.Open(byPlayer));
+                capi.Network.SendBlockEntityPacket(Pos.X, Pos.Y, Pos.Z, (int)EnumBlockEntityPacketId.Open, null);
+                MarkDirty();
+            }
+            else
+            {
+                testDialog.TryClose();
+            }
         }
 
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
@@ -555,9 +591,10 @@ namespace KRPGLib.Enchantment
                 if (clientDialog != null) { clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api); }
                 
                 MarkDirty();
-                
-                player.InventoryManager?.OpenInventory(Inventory);
+
+                // player.InventoryManager?.OpenInventory(Inventory);
                 // toggleInventoryDialogClient(player);
+                toggleTestDialogClient(player);
             }
 
             if (packetid == 1337)
@@ -570,21 +607,33 @@ namespace KRPGLib.Enchantment
         {
             base.OnReceivedServerPacket(packetid, data);
 
+            // if (packetid == (int)EnumBlockEntityPacketId.Close)
+            // {
+            //     (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
+            //     clientDialog?.TryClose();
+            //     clientDialog?.Dispose();
+            //     clientDialog = null;
+            // }
+
             if (packetid == (int)EnumBlockEntityPacketId.Close)
             {
-                (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
-                clientDialog?.TryClose();
-                clientDialog?.Dispose();
-                clientDialog = null;
+                // (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
+                testDialog?.TryClose();
+                testDialog?.Dispose();
+                testDialog = null;
             }
         }
         public override void OnBlockBroken(IPlayer byPlayer = null)
         {
             base.OnBlockBroken(byPlayer);
 
-            clientDialog?.TryClose();
-            clientDialog?.Dispose();
-            clientDialog = null;
+            // clientDialog?.TryClose();
+            // clientDialog?.Dispose();
+            // clientDialog = null;
+
+            testDialog?.TryClose();
+            testDialog?.Dispose();
+            testDialog = null;
         }
         #endregion
     }

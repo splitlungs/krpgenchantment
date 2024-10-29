@@ -332,12 +332,13 @@ namespace KRPGLib.Enchantment
                                 ing.Type == inputSlot.Itemstack.Class &&
                                 WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
                             ;
-                        if (foundw == true) return true;
+                        if (!foundw) return false;
                     }
                     else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
 
                     if (inputSlot.Itemstack.StackSize == ing.Quantity) foundt = true;
                 }
+                // Cancel if no Target
                 if (!foundt) return false;
             }
             else
@@ -359,24 +360,25 @@ namespace KRPGLib.Enchantment
                                     ing.Type == reagentSlot.Itemstack.Class &&
                                     WildcardUtil.Match(ing.Code, reagentSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
                                 ;
-                            if (foundw == true) foundr = true;
+                            if (!foundw) return false;
                         }
-                        else if (!ing.ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) foundr =  false;
+                        else if (ing.ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) foundr = true;
 
-                        if (reagentSlot.Itemstack.StackSize == ing.Quantity) foundr = true;
+                        if (reagentSlot.Itemstack.StackSize < ing.Quantity) foundr = false;
                     }
                 }
-                
-                if (EnchantingRecipeLoader.Config.ValidReagents != null)
+                // Then check against the Config file
+                if (!foundr && EnchantingRecipeLoader.Config.ValidReagents != null)
                 {
-                    ItemStack rStack = new ItemStack();
-                    foreach (string reagent in EnchantingRecipeLoader.Config.ValidReagents)
+                    foreach (KeyValuePair<string, int> reagent in EnchantingRecipeLoader.Config.ValidReagents)
                     {
-                        AssetLocation rAsset = new AssetLocation(reagent);
-                        rStack = new ItemStack(world.GetItem(rAsset));
-                        if (rStack.Satisfies(reagentSlot.Itemstack)) foundr =  true;
+                        AssetLocation rAsset = new AssetLocation(reagent.Key);
+                        ItemStack rStack = new ItemStack(world.GetItem(rAsset));
+                        // Last chance to prove True, so we check qty simultaneously
+                        if (rStack.Satisfies(reagentSlot.Itemstack) && reagentSlot.StackSize >= reagent.Value) foundr = true;
                     }
                 }
+                // Cancel if no Rreagent is found
                 if (!foundr) return false;
             }
             else
