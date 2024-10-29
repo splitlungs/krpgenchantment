@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -113,10 +114,27 @@ namespace Vintagestory.GameContent
             // Path to the font file in the ModData folder
             string fontPath = System.IO.Path.Combine(api.GetOrCreateDataPath(System.IO.Path.Combine("ModData", "krpgenchantment", "fonts")), fName);
 
-            // Check if the font file exists
+            // Download the file to the client's ModData if it doesn't exist
             if (!File.Exists(fontPath))
             {
-                api.World.Logger.Error("Font file not found at path: " + fontPath);
+                api.World.Logger.Error("Font file not found at path: {0}.", fontPath);
+                api.World.Logger.Event("Copying font file to path: {0}.", fontPath);
+
+                using (var client = new HttpClient())
+                {
+                    using (var s = client.GetStreamAsync("http://kronos-gaming.net/downloads/files/" + fName))
+                    {
+                        using (var fs = new FileStream(fontPath, FileMode.OpenOrCreate))
+                        {
+                            s.Result.CopyTo(fs);
+                        }
+                    }
+                }
+            }
+            // Check if the font file was created and bail if not
+            if (!File.Exists(fontPath))
+            {
+                api.World.Logger.Error("Font file not found at path: {0}.", fontPath);
                 return null;
             }
 
@@ -143,115 +161,6 @@ namespace Vintagestory.GameContent
                 api.World.Logger.Error("Failed to load custom font: " + ex.Message);
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Converts Skia Text to a Cairo ImageSurface.
-        /// </summary>
-        /// <param name="api"></param>
-        /// <param name="text"></param>
-        /// <param name="font"></param>
-        /// <param name="Bounds"></param>
-        /// <returns></returns>
-        public static ImageSurface SkiaTextToImageSurface(this ICoreClientAPI api, string text, SKTypeface font, ElementBounds Bounds) 
-        {
-            // Initialize Skia Paint
-            SKPaint textPaint = new SKPaint
-            {
-                Color = SKColors.RoyalBlue,
-                TextSize = 32,
-                IsAntialias = true,
-                Typeface = font
-            };
-
-            // Create a SkiaSharp surface and canvas from the current Cairo context
-            int width = (int)Bounds.InnerWidth;
-            int height = (int)Bounds.InnerHeight;
-            SKImageInfo info = new SKImageInfo(width, height);
-
-            using (var skiaSurface = SKSurface.Create(info))
-            {
-                SKCanvas canvas = skiaSurface.Canvas;
-
-                // Clear canvas
-                canvas.Clear(SKColors.Transparent);
-
-                // Use the Bounds.fixedX and Bounds.fixedY to adjust the position of each GuiElementSkiaText
-                float xOffset = (float)Bounds.fixedX;
-                float yOffset = (float)Bounds.fixedY;
-
-                // Draw text
-                canvas.DrawText(text, xOffset, yOffset, textPaint);
-
-                // Flush canvas to ensure rendering is complete
-                canvas.Flush();
-
-                // Now we need to transfer Skia's drawing back into Cairo for display
-                using (var skImage = skiaSurface.Snapshot())
-                using (var pixmap = skImage.PeekPixels())
-                {
-                    IntPtr dataPtr = pixmap.GetPixels();
-                    ImageSurface surface = new ImageSurface(dataPtr, Format.Argb32, info.Width, info.Height, pixmap.RowBytes);
-                    canvas.Dispose();
-                    return surface;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Converts Skia text into a Cairo ImageSurface
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
-        public static ImageSurface RenderTextToCairoImage(this ICoreClientAPI api, SKTypeface customTypeface, string text, int width, int height)
-        {
-            // Create a SkiaSharp bitmap to render the text
-            var info = new SKImageInfo(width, height);
-            var bitmap = new SKBitmap(info);
-
-            using (var canvas = new SKCanvas(bitmap))
-            {
-                canvas.Clear(SKColors.Transparent);
-
-                // Create a paint object with the custom typeface
-                var paint = new SKPaint
-                {
-                    Typeface = customTypeface,
-                    TextSize = 32,
-                    IsAntialias = true,
-                    Color = SKColors.Blue,
-                    TextAlign = SKTextAlign.Center
-                };
-
-                // Render the text
-                canvas.DrawText(text, width / 2, height / 2 + paint.TextSize / 2, paint);
-                canvas.Flush();
-            }
-
-            // Convert the SKBitmap to a Cairo ImageSurface
-            ImageSurface cairoImage = new ImageSurface(Format.Argb32, width, height);
-            using (var cairoCtx = new Context(cairoImage))
-            {
-                // Lock the Skia bitmap for access to its pixel data
-                using (var pixmap = bitmap.PeekPixels())
-                {
-                    // Copy pixel data from Skia bitmap to Cairo surface
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            var color = pixmap.GetPixelColor(x, y);
-                            cairoCtx.SetSourceRGBA(color.Red / 255.0, color.Green / 255.0, color.Blue / 255.0, color.Alpha / 255.0);
-                            cairoCtx.Rectangle(x, y, 1, 1);
-                            cairoCtx.Fill();
-                        }
-                    }
-                }
-            }
-
-            return cairoImage;
         }
     }
 }

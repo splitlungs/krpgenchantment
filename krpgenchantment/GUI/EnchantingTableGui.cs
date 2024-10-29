@@ -91,7 +91,7 @@ namespace KRPGLib.Enchantment
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
 
             // Bounds of the main Dialog
-            ElementBounds inputBounds = ElementBounds.Fixed(10, GuiStyle.TitleBarHeight -15, inputWidth, inputHeight);
+            ElementBounds inputBounds = ElementBounds.Fixed(10, GuiStyle.TitleBarHeight -20, inputWidth, inputHeight);
 
             // Bounds of main inset for scrolling content in the GUI
             ElementBounds enchantListBounds = ElementBounds.Fixed(inputWidth - insetWidth, GuiStyle.TitleBarHeight, insetWidth, insetHeight);
@@ -116,13 +116,12 @@ namespace KRPGLib.Enchantment
             // 4. Create GUI with fixed bounds for each element
             SingleComposer = capi.Gui.CreateCompo("enchantingtablegui", dialogBounds)
                 .AddShadedDialogBG(bgBounds)
-                .AddDialogTitleBar("Enchantments", OnTitleBarCloseClicked)
+                .AddDialogTitleBar(DialogTitle, OnTitleBarCloseClicked)
                 // 4a. Create GUI for Input
                 .BeginChildElements(inputBounds)
-                    // .AddInset(inputBounds)
                     .AddToggleButton(Lang.Get("krpgenchantment:krpg-enchant"), CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), onEnchantToggle, enchantButton, "enchantToggle")
                     .AddDynamicCustomDraw(arrowBounds, OnBgDraw, "symbolDrawer")
-                    .AddDynamicText(ot, CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), ElementBounds.Fixed(0, 30, 210, 45), "outputText")
+                    .AddDynamicText(ot, CairoFont.WhiteSmallishText().WithOrientation(EnumTextOrientation.Left), ElementBounds.Fixed(0, 30, 210, 45), "outputText")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 0 }, inputSlotBounds, "inputSlot")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 2 }, reagentSlotBounds, "reagentSlot")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 1 }, outputSlotBounds, "outputSlot")
@@ -164,6 +163,28 @@ namespace KRPGLib.Enchantment
             float scrollTotalHeight = rowHeight * rowCount;
             SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
+        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, ICoreAPI api)
+        {
+            this.outputText = outputText;
+            this.inputEnchantTime = inputProcessTime;
+            this.maxEnchantTime = maxProcessTime;
+            this.nowEnchanting = isEnchanting;
+
+            if (!IsOpened()) return;
+
+            SingleComposer.GetDynamicText("outputText").SetNewText(outputText, true, true);
+            SingleComposer.GetToggleButton("enchantToggle").SetValue(isEnchanting);
+
+            if (!isEnchanting) return;
+
+            if (capi.ElapsedMilliseconds - lastRedrawMs > 1000)
+            {
+                if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
+                lastRedrawMs = capi.ElapsedMilliseconds;
+            }
+
+        }
+        #region Events
         private void OnNewScrollbarValue(float value)
         {
             ElementBounds bounds = SingleComposer.GetContainer("scroll-content").Bounds;
@@ -197,27 +218,6 @@ namespace KRPGLib.Enchantment
         {
             EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
             capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337);
-        }
-        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, ICoreAPI api)
-        {
-            this.outputText = outputText;
-            this.inputEnchantTime = inputProcessTime;
-            this.maxEnchantTime = maxProcessTime;
-            this.nowEnchanting = isEnchanting;
-
-            if (!IsOpened()) return;
-
-            SingleComposer.GetDynamicText("outputText").SetNewText(outputText, true, true);
-            SingleComposer.GetToggleButton("enchantToggle").SetValue(isEnchanting);
-
-            if (!isEnchanting) return;
-
-            if (capi.ElapsedMilliseconds - lastRedrawMs > 1000)
-            {
-                if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-                lastRedrawMs = capi.ElapsedMilliseconds;
-            }
-
         }
         private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
         {
@@ -278,5 +278,6 @@ namespace KRPGLib.Enchantment
             customTypeface.Dispose();
             base.Dispose();
         }
+        #endregion
     }
 }
