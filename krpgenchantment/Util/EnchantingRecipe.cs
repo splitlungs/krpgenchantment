@@ -128,29 +128,6 @@ namespace KRPGLib.Enchantment
                 eIndex++;
             }
 
-            // DEPRECATED 2 INGREDIENT SYSTEM
-            // string pCode = "";
-            // for (int i = 0; i < 2; i++)
-            // {
-            //     if (i == 0) pCode = "reagent";
-            //     if (i == 1) pCode = "target";
-            // 
-            //     if (!Ingredients.ContainsKey(pCode))
-            //     {
-            //         world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pCode);
-            //         return false;
-            //     }
-            // 
-            //     if (!Ingredients[pCode].Resolve(world, "Enchanting recipe"))
-            //     {
-            //         world.Logger.Error("Enchanting {0} contains an ingredient that cannot be resolved: {1}", pCode, Ingredients[pCode]);
-            //         return false;
-            //     }
-            // 
-            //     resolvedIngredients[i] = Ingredients[pCode].CloneTo<EnchantingRecipeIngredient>();
-            //     resolvedIngredients[i].PatternCode = pCode;
-            // }
-
             return true;
         }
 
@@ -312,116 +289,68 @@ namespace KRPGLib.Enchantment
         /// <param name="inputSlot"></param>
         /// <param name="reagentSlot"></param>
         /// <returns></returns>
-        public bool Matches(ItemSlot inputSlot, ItemSlot reagentSlot)
+        public bool Matches(ICoreAPI api, ItemSlot inputSlot, ItemSlot reagentSlot)
         {
             // Null Check
-            if (inputSlot?.Itemstack == null || reagentSlot?.Itemstack == null) return false;
+            if (inputSlot.Empty || reagentSlot.Empty) return false;
 
             // Check Targets
-            if (inputSlot?.Itemstack != null)
+            bool foundt = false;
+            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
             {
-                bool foundt = false;
-                foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+                if (ing.IsWildCard)
+                {
+                    inputSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
+
+                    bool foundw = false;
+                    foundw =
+                            ing.Type == inputSlot.Itemstack.Class &&
+                            WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                        ;
+                    if (foundw == true) foundt = true;
+                }
+                else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
+
+                if (inputSlot.Itemstack.StackSize < ing.Quantity) foundt = false;
+            }
+            // Cancel if no Target
+            if (!foundt) return false;
+
+            // Check Reagents
+            bool foundr = false;
+            // Override from recipe first
+            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+            {
+                if (ing.PatternCode == "reagent")
                 {
                     if (ing.IsWildCard)
                     {
-                        inputSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
-
                         bool foundw = false;
                         foundw =
-                                ing.Type == inputSlot.Itemstack.Class &&
-                                WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                                ing.Type == reagentSlot.Itemstack.Class &&
+                                WildcardUtil.Match(ing.Code, reagentSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
                             ;
-                        if (!foundw) return false;
+                        if (foundw) foundr = true;
                     }
-                    else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
+                    else if (ing.ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) foundr = true;
 
-                    if (inputSlot.Itemstack.StackSize == ing.Quantity) foundt = true;
+                    if (reagentSlot.Itemstack.StackSize < ing.Quantity) foundr = false;
                 }
-                // Cancel if no Target
-                if (!foundt) return false;
             }
-            else
-                return false;
-
-            // Check Reagents
-            if (reagentSlot != null)
+            // Then check against the Config file
+            if (!foundr && EnchantingRecipeLoader.Config.ValidReagents != null)
             {
-                bool foundr = false;
-                // Override from recipe first
-                foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+                foreach (KeyValuePair<string, int> reagent in EnchantingRecipeLoader.Config.ValidReagents)
                 {
-                    if (ing.PatternCode == "reagent")
-                    {
-                        if (ing.IsWildCard)
-                        {
-                            bool foundw = false;
-                            foundw =
-                                    ing.Type == reagentSlot.Itemstack.Class &&
-                                    WildcardUtil.Match(ing.Code, reagentSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
-                                ;
-                            if (!foundw) return false;
-                        }
-                        else if (ing.ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) foundr = true;
-
-                        if (reagentSlot.Itemstack.StackSize < ing.Quantity) foundr = false;
-                    }
+                    // Last chance to prove True, so we check qty simultaneously
+                    if (reagentSlot.Itemstack.Collectible.Code.ToString() == reagent.Key && reagentSlot.Itemstack.StackSize >= reagent.Value)
+                        foundr = true;
                 }
-                // Then check against the Config file
-                if (!foundr && EnchantingRecipeLoader.Config.ValidReagents != null)
-                {
-                    foreach (KeyValuePair<string, int> reagent in EnchantingRecipeLoader.Config.ValidReagents)
-                    {
-                        AssetLocation rAsset = new AssetLocation(reagent.Key);
-                        ItemStack rStack = new ItemStack(world.GetItem(rAsset));
-                        // Last chance to prove True, so we check qty simultaneously
-                        if (rStack.Satisfies(reagentSlot.Itemstack) && reagentSlot.StackSize >= reagent.Value) foundr = true;
-                    }
-                }
-                // Cancel if no Rreagent is found
-                if (!foundr) return false;
             }
-            else
-                return false;
+            // Cancel if no Rreagent is found
+            if (!foundr) return false;
 
             return true;
-
-            /*
-            // Check Reagent
-            if (reagentSlot?.Itemstack != null)
-            {
-                if (resolvedIngredients[0].IsWildCard)
-                {
-                    bool foundw = false;
-                    foundw =
-                            resolvedIngredients[0].Type == reagentSlot.Itemstack.Class &&
-                            WildcardUtil.Match(resolvedIngredients[0].Code, reagentSlot.Itemstack.Collectible.Code, resolvedIngredients[0].AllowedVariants)
-                        ;
-                    if (!foundw) return false;
-                }
-                else if (!resolvedIngredients[0].ResolvedItemstack.Satisfies(reagentSlot.Itemstack)) return false;
-
-                if (reagentSlot.Itemstack.StackSize != resolvedIngredients[0].Quantity) return false;
-            }
-            // Check Input/Target
-            if (inputSlot?.Itemstack != null)
-            {
-                if (resolvedIngredients[1].IsWildCard)
-                {
-                    inputSlot.Itemstack.Collectible.WildCardMatch(resolvedIngredients[1].Code);
-
-                    bool foundw = false;
-                    foundw =
-                            resolvedIngredients[1].Type == inputSlot.Itemstack.Class &&
-                            WildcardUtil.Match(resolvedIngredients[1].Code, inputSlot.Itemstack.Collectible.Code, resolvedIngredients[1].AllowedVariants)
-                        ;
-                    if (!foundw) return false;
-                }
-                else if (!resolvedIngredients[1].ResolvedItemstack.Satisfies(inputSlot.Itemstack)) return false;
-                
-                if (inputSlot.Itemstack.StackSize < resolvedIngredients[1].Quantity) return false;
-            }
-            */
         }
 
         /// <summary>

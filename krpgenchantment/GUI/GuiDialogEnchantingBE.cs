@@ -59,23 +59,6 @@ namespace KRPGLib.Enchantment
 
             ElementBounds enchantButton = ElementBounds.Fixed(145, 90, 64, 24);
 
-            // int insetWidth = 900;
-            // int insetHeight = 300;
-            // int insetDepth = 3;
-            // int rowHeight = 35;
-            // int rowCount = 40;
-            // // Bounds of new Enchant Select
-            // ElementBounds enchantSelectBounds = ElementBounds.Fixed(155, top, 200, 200);
-            // ElementBounds enchantClipBounds = ElementBounds.Fixed(EnumDialogArea.None, top, 0, 180, 60);
-            // // Bounds of main inset for scrolling content in the GUI
-            // ElementBounds insetBounds = ElementBounds.Fixed(0, GuiStyle.TitleBarHeight, insetWidth, insetHeight);
-            // ElementBounds scrollbarBounds = insetBounds.RightCopy().WithFixedWidth(20);
-            //  
-            // // Create child elements bounds for within the inset
-            // ElementBounds clipBounds = insetBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
-            // ElementBounds containerBounds = insetBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
-            // ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
-
             // 2. Around all that is 10 pixel padding
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
@@ -102,14 +85,6 @@ namespace KRPGLib.Enchantment
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 0 }, inputSlotBounds, "inputSlot")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 2 }, reagentSlotBounds, "reagentSlot")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 1 }, outputSlotBounds, "outputSlot")
-                    //ddGrayBG(enchantSelectBounds)
-                    //eginChildElements()
-                    //  .AddInset(enchantSelectBounds, 3)
-                    //  .BeginClip(enchantClipBounds)
-                    //      .AddContainer(containerBounds, "scroll-content")
-                    //  .EndClip()
-                    //  .AddVerticalScrollbar(OnNewScrollbarValue, scrollbarBounds, "scrollbar")
-                    //.EndChildElements()
                 .EndChildElements()
                 .Compose()
             ;

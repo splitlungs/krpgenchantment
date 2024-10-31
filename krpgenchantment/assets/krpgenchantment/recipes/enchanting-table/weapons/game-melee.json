@@ -5,7 +5,7 @@
     "ingredients": {
       "axe": {
         "type": "item",
-        "code": "game:axe-*-*"
+        "code": "game:axe-felling-*"
       },
       "blade": {
         "type": "item",

@@ -8,8 +8,10 @@ using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using static System.Net.Mime.MediaTypeNames;
@@ -60,8 +62,127 @@ namespace Vintagestory.GameContent
         }
 
         /// <summary>
+        /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        public static List<string> GetLatentEnchants(this ICoreAPI api, ItemSlot inSlot)
+        {
+            List<string> enchants = new List<string>();
+
+            if (!inSlot.Empty)
+            {
+                ITreeAttribute tree = inSlot.Itemstack?.Attributes.GetOrAddTreeAttribute("enchantments");
+                if (tree != null)
+                {
+                    string lEnchant = tree.GetString("latentEnchants");
+                    string[] lEnchants = null;
+                    if (lEnchant != null)
+                        lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    if (lEnchants != null)
+                    {
+                        foreach (string str in lEnchants)
+                            enchants.Add(str);
+                    }
+                    return enchants;
+                }
+                else
+                {
+                    api.Logger.Error("Error when attempting to get Latent Enchants. Attribute tree not found.");
+                    return null;
+                }
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        public static bool AssessItem(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        {
+            // Sanity check
+            if (inSlot.Empty || rSlot.Empty) return false;
+
+            ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            double latentStamp = tree.GetDouble("latentEnchantTime", 0);
+            double timeStamp = api.World.Calendar.ElapsedDays;
+
+            // Check if it's a valid Timestamp
+            double ero = 7d;
+            if (EnchantingRecipeLoader.Config?.EnchantResetOverride != ero)
+                ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
+            if (latentStamp != 0 && timeStamp < latentStamp + ero)
+                return false;
+
+            // Check for override
+            int mle = 3;
+            if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != mle)
+                mle = EnchantingRecipeLoader.Config.MaxLatentEnchants;
+
+            // Get the Valid Recipes
+            List<EnchantingRecipe> recipes = api.GetValidRecipes(inSlot, rSlot);
+            if (recipes == null) return false;
+
+            // Create a string with a random selection of EnchantingRecipes
+            string str = null;
+            for (int i = 0; i < mle; i++)
+            {
+                int rNum = api.World.Rand.Next(recipes.Count);
+                var er = recipes[rNum].Clone();
+                if (er != null)
+                    str += er.Name.ToShortString() + ";";
+                else
+                    api.World.Logger.Event("ValidRecipe element was null. Could not assign Latent Enchantment.");
+            }
+
+            // Write the assessment to attributes
+            if (str != null)
+            {
+                tree.SetString("latentEnchants", str);
+                tree.SetDouble("latentEnchantTime", timeStamp);
+                inSlot.Itemstack.Attributes.MergeTree(tree);
+                inSlot.MarkDirty();
+            }
+            else
+                return false;
+
+            return true;
+        }
+        /// <summary>
+        /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
+        /// <returns></returns>
+        public static List<EnchantingRecipe> GetValidRecipes(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        {
+            if (inSlot.Empty || rSlot.Empty) return null;
+
+            List<EnchantingRecipe> recipes = new List<EnchantingRecipe>();
+            var enchantingRecipes = api.GetEnchantingRecipes();
+            if (enchantingRecipes != null)
+            {
+                foreach (EnchantingRecipe rec in enchantingRecipes)
+                    if (rec.Matches(api, inSlot, rSlot))
+                        recipes.Add(rec.Clone());
+                if (recipes.Count > 0)
+                    return recipes;
+                else
+                    return null;
+            }
+            else
+                api.Logger.Error("EnchantingRecipe Registry could not be found! Please report error to author.");
+            return null;
+        }
+        /// <summary>
         /// Returns if the ItemStack is Enchantable or not.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
         public static bool IsEnchantable(this ICoreAPI api, ItemSlot inSlot)
@@ -104,7 +225,7 @@ namespace Vintagestory.GameContent
         }
 
         /// <summary>
-        /// Returns a font from ModData/krpgenchantment/fonts or null if it doesn't exist
+        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
         /// </summary>
         /// <param name="api"></param>
         /// <param name="fName"></param>
@@ -120,15 +241,23 @@ namespace Vintagestory.GameContent
                 api.World.Logger.Error("Font file not found at path: {0}.", fontPath);
                 api.World.Logger.Event("Copying font file to path: {0}.", fontPath);
 
-                using (var client = new HttpClient())
+                try
                 {
-                    using (var s = client.GetStreamAsync("http://kronos-gaming.net/downloads/files/" + fName))
+                    using (var client = new HttpClient())
                     {
-                        using (var fs = new FileStream(fontPath, FileMode.OpenOrCreate))
+                        using (var s = client.GetStreamAsync("http://kronos-gaming.net/downloads/files/" + fName))
                         {
-                            s.Result.CopyTo(fs);
+                            using (var fs = new FileStream(fontPath, FileMode.OpenOrCreate))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    api.World.Logger.Error("Failed to download custom font: {0}", e.Message);
+                    return null;
                 }
             }
             // Check if the font file was created and bail if not
@@ -146,7 +275,7 @@ namespace Vintagestory.GameContent
                     SKTypeface customTypeface = SKTypeface.FromStream(fontStream);
                     if (customTypeface != null)
                     {
-                        api.World.Logger.Notification("Custom font successfully loaded from: " + fontPath);
+                        // api.World.Logger.Notification("Custom font successfully loaded from: " + fontPath);
                         return customTypeface;
                     }
                     else
@@ -156,9 +285,9 @@ namespace Vintagestory.GameContent
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                api.World.Logger.Error("Failed to load custom font: " + ex.Message);
+                api.World.Logger.Error("Failed to load custom font: " + e.Message);
                 return null;
             }
         }

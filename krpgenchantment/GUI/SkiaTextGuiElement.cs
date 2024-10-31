@@ -2,15 +2,15 @@
 using SkiaSharp;
 using System;
 using Vintagestory.API.Client;
+using Vintagestory.API.Common;
 
 namespace KRPGLib.Enchantment
 {
     public class SkiaTextGuiElement : GuiElement
     {
         public LoadedTexture textTexture;
-
-        private SKPaint textPaint;
-        private string textToRender;
+        public SKPaint textPaint;
+        public string textToRender;
 
         private int xOffset = 8;
         private int yOffset = 32;
@@ -33,7 +33,6 @@ namespace KRPGLib.Enchantment
         {
             GenerateTextTexture();
         }
-
         /// <summary>
         /// Converts the text in Skia to a LoadedTexture for Rendering
         /// </summary>
