@@ -77,7 +77,7 @@ namespace KRPGLib.Enchantment
             context.SetSourceRGBA(1.0, 1.0, 1.0, 0.1);
             context.Fill();
             EmbossRoundRectangleElement(context, 0.0, 0.0, Bounds.OuterWidth, Bounds.OuterHeight, inverse: false, (int)num);
-            //  double multilineTextHeight = GetMultilineTextHeight();
+            // double multilineTextHeight = GetMultilineTextHeight();
             // nonPressedYOffset = (Bounds.InnerHeight - multilineTextHeight) / 2.0 - 1.0;
             // DrawMultilineTextAt(context, Bounds.absPaddingX, Bounds.absPaddingY + nonPressedYOffset, EnumTextOrientation.Center);
             if (icon != null && icon.Length > 0)

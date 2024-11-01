@@ -65,6 +65,8 @@ namespace KRPGLib.Enchantment
                 context.SetSourceSurface(imageSurface, (int)Bounds.absFixedX, (int)Bounds.absFixedY);
                 // Then save it as a texture
                 generateTexture(imageSurface, ref textTexture);
+                context.Dispose();
+                imageSurface.Dispose();
             };
         }
         /// <summary>

@@ -8,6 +8,7 @@ using Vintagestory.API.MathTools;
 using Cairo;
 using Vintagestory.API.Config;
 using System.ComponentModel;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -18,7 +19,8 @@ namespace KRPGLib.Enchantment
         public string customFont = "dragon_alphabet.ttf";
         public SKTypeface customTypeface;
 
-        public List<string> enchantNames = new List<string>();
+        public List<int> enchantButtons;
+        public List<string> enchantNames;
         public int selectedEnchant = -1;
 
         long lastRedrawMs;
@@ -53,7 +55,7 @@ namespace KRPGLib.Enchantment
             SetupDialog();
         }
 
-        void SetupDialog()
+        public void SetupDialog()
         {
             // 1. Setup Enchanting Input/Output
             ItemSlot hoveredSlot = capi.World.Player.InventoryManager.CurrentHoveredSlot;
@@ -73,10 +75,13 @@ namespace KRPGLib.Enchantment
             // Setup Font for Encrypted Enchantments
             if (customTypeface == null)
                 customTypeface = capi.LoadCustomFont(customFont);
+            // Create a new List of Latent Enchants if none found
+            if (enchantNames == null)
+                enchantNames = new List<string>(3) { "", "", "" };
             // Setup the Enchants to be listed - OVERRIDE FOR TESTING
             // if (enchantNames == null)
             //     enchantNames = new List<string>() { "chilling", "flaming", "shocking", "frost", "harming" };
-            
+
             // Auto-sized dialog at the center of the screen
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
             // Bounds of the main Dialog
@@ -128,9 +133,7 @@ namespace KRPGLib.Enchantment
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
             for (int i = 0; i < rowCount; i++)
             {
-                if (enchantNames.Count <= i)
-                    enchantNames.Add("");
-                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "enchant", enchantNames[i], customTypeface, OnSelectEnchant, containerRowBounds, false));
+                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "enchant", Lang.Get(enchantNames[i]), customTypeface, OnSelectEnchant, containerRowBounds, true));
                 containerRowBounds = containerRowBounds.BelowCopy();
             }
 
@@ -154,31 +157,35 @@ namespace KRPGLib.Enchantment
             float scrollTotalHeight = rowHeight * rowCount;
             SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
+        /// <summary>
+        /// Updates the SkiaToggleButtons. Be sure to ReCompose separately.
+        /// </summary>
+        /// <param name="enchants"></param>
         public void UpdateEnchantList(List<string> enchants)
         {
-            this.enchantNames = new List<string>();
-
             if (enchants != null)
-            {
-                foreach (string s in enchants)
-                    enchantNames.Add(s);
-            }
+                this.enchantNames = enchants;
             else
-                capi.Logger.Warning("Failed to update Enchant List. Provided Latent Enchant list was null.");
-            if (enchantNames.Count > 0)
+                this.enchantNames = null;
+            
+            // Clean and Refill the Container
+            GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
+            for (int i = 0; i < rowCount; i++)
             {
-                // Clean and Refill the Container
-                GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-                for (int i = 0; i < rowCount; i++)
+                SkiaToggleButtonGuiElement element = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
+                if (enchantNames != null)
                 {
-                    SkiaToggleButtonGuiElement element = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
-                    if (enchantNames == null)
-                        element.textToRender = "";
-                    else
-                        element.textToRender = enchantNames[i];
+                    element.textToRender = Lang.Get(enchants[i]);
+                    element.Toggleable = true;
+                    element.SetValue(false);
+                }
+                else
+                {
+                    element.textToRender = "";
+                    element.Toggleable = false;
+                    element.SetValue(false);
                 }
             }
-            
         }
         public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, ICoreAPI api)
         {

@@ -379,25 +379,25 @@ namespace KRPGLib.Enchantment
             inputEnchantTime = tree.GetDouble("inputEnchantTime");
             prevInputEnchantTime = tree.GetDouble("prevInputEnchantTime");
 
-            // if (Api != null)
-            // {
-            //     // CurrentRecipe = GetMatchingEnchantingRecipe();
-            // }
-            // if (Api?.Side == EnumAppSide.Client)
-            // {
-            //     // currentMesh = GenMesh();
-            // 
-            //     // invDialog?.UpdateContents();
-            //     double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
-            //     if (clientDialog != null)
-            //     {
-            //         var lEnchants = Api.GetLatentEnchants(InputSlot);
-            //         clientDialog.UpdateEnchantList(lEnchants);
-            //         clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
-            // 
-            //         MarkDirty(true);
-            //     }
-            // }
+            if (Api != null)
+            {
+                // CurrentRecipe = GetMatchingEnchantingRecipe();
+            }
+            if (Api?.Side == EnumAppSide.Client)
+            {
+                // currentMesh = GenMesh();
+            
+                // invDialog?.UpdateContents();
+                double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
+                if (clientDialog != null)
+                {
+                    var lEnchants = Api.GetLatentEnchants(InputSlot);
+                    clientDialog.UpdateEnchantList(lEnchants);
+                    clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
+            
+                    MarkDirty(true);
+                }
+            }
         }
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
@@ -465,37 +465,22 @@ namespace KRPGLib.Enchantment
             // Stop Enchanting
             nowEnchanting = false;
 
-            // CurrentRecipe = GetMatchingEnchantingRecipe();
-            // GetValidRecipes();
-
-            // We only asses from the server side?
-            bool assed = Api.AssessItem(InputSlot, ReagentSlot);
-            if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
-            // AssessItem();
-
+            // Reset the progress to 0 if any of the input is changed.
             double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
-
             if (slotid == 0 || slotid > 1)
             {
-                inputEnchantTime = 0.0d; //reset the progress to 0 if any of the input is changed.
+                inputEnchantTime = 0.0d; 
                 hours = 0d;
+                bool assed = Api.AssessItem(InputSlot, ReagentSlot);
+                // if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
             }
-
-            if (slotid == 1)
-            {
-                hours = 0d;
-                // clientDialog.SingleComposer.ReCompose();
-            }
-
-            List<string> lEnchants = Api.GetLatentEnchants(InputSlot);
-            clientDialog?.UpdateEnchantList(lEnchants);
+            
+            clientDialog?.UpdateEnchantList(LatentEnchants);
             clientDialog?.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
             MarkDirty();
 
             if (clientDialog != null && clientDialog.IsOpened())
-            {
-                clientDialog.SingleComposer.ReCompose();
-            }
+                clientDialog?.SingleComposer.ReCompose();
         }
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
@@ -520,13 +505,11 @@ namespace KRPGLib.Enchantment
                 double hours = Api.World.Calendar.TotalHours - inputEnchantTime;
                 if (clientDialog != null)
                 {
-                    List<string> lEnchants = Api.GetLatentEnchants(InputSlot);
-                    clientDialog.UpdateEnchantList(lEnchants);
-                    clientDialog.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
+                    clientDialog?.UpdateEnchantList(LatentEnchants);
+                    clientDialog?.Update(hours, MaxEnchantTime, nowEnchanting, OutputText, Api);
                 }
-
                 MarkDirty();
-
+                
                 player.InventoryManager?.OpenInventory(Inventory);
                 toggleInventoryDialogClient(player);
             }
