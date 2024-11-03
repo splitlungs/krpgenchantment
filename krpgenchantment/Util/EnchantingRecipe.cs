@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
@@ -67,36 +69,54 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="inStack"></param>
         /// <returns></returns>
-        public ItemStack OutStack(ItemStack inStack)
+        public ItemStack OutStack(ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
-            if (!(inStack != null)) return null;
+            if (inSlot.Empty || rSlot.Empty) return null;
 
-            ItemStack outStack = inStack.Clone();
-
-            // Set Qty
+            // Setup a new ItemStack
+            ItemStack outStack = inSlot.Itemstack.Clone();
             outStack.StackSize = resolvedIngredients[1].Quantity;
-
+            // Prep the Power
+            bool rOverride = false;
+            foreach (KeyValuePair<string, CraftingRecipeIngredient> keyValuePair in Ingredients)
+            {
+                if (keyValuePair.Key.ToLower() == "reagent") rOverride = true;
+            }
+            int power = 0;
+            if (!rOverride)
+            {
+                string pot = inSlot.Itemstack.Attributes?.GetString("potential", "low");
+                int maxPot = EnchantingRecipeLoader.Config.ReagentPotentialTiers[pot];
+                power = api.World.Rand.Next(1, maxPot + 1);
+            }
+            // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
+            ITreeAttribute tree = outStack.Attributes?.GetTreeAttribute("enchantments");
             // Apply Enchantments
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
                 // Overwrite Healing
                 if (enchant.Key == EnumEnchantments.healing.ToString())
                 {
-                    outStack.Attributes.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    outStack.Attributes.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    outStack.Attributes.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    outStack.Attributes.SetInt(EnumEnchantments.shocking.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
                 }
                 // Overwrite Alternate Damage
                 else if (enchant.Key == EnumEnchantments.flaming.ToString() || enchant.Key == EnumEnchantments.frost.ToString() 
                     || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
                     )
-                    outStack.Attributes.SetInt(EnumEnchantments.healing.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.healing.ToString(), 0);
 
+                // Re-roll if the recipe limits max power
+                if (rOverride)
+                    power = enchant.Value;
                 // Write Enchant
-                outStack.Attributes.SetInt(enchant.Key, enchant.Value);
+                tree.SetInt(enchant.Key, power);
             }
-
+            tree.RemoveAttribute("latentEnchantTime");
+            tree.RemoveAttribute("latentEnchants");
+            outStack.Attributes.MergeTree(tree);
             return outStack;
         }
 
@@ -375,13 +395,13 @@ namespace KRPGLib.Enchantment
             return null;
         }
         // We probably don't need this
-        public bool TryCraftNow(ICoreAPI api, double nowProcessedHours, ItemSlot[] inputslots)
-        {
-            if (nowProcessedHours < processingHours) return false;
-
-            inputslots[1].Itemstack = OutStack(inputslots[0].Itemstack).Clone();
-            return true;
-        }
+        // public bool TryCraftNow(ICoreAPI api, double nowProcessedHours, ItemSlot[] inputslots)
+        // {
+        //     if (nowProcessedHours < processingHours) return false;
+        // 
+        //     inputslots[1].Itemstack = OutStack(inputslots[0].Itemstack).Clone();
+        //     return true;
+        // }
         /// <summary>
         /// Serialized the recipe
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using Cairo;
+﻿/*
+using Cairo;
 using SkiaSharp;
 using System;
 using System.IO;
@@ -196,3 +197,4 @@ namespace KRPGLib.Enchantment
         }
     }
 }
+*/

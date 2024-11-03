@@ -69,10 +69,9 @@ namespace Vintagestory.GameContent
         /// <returns></returns>
         public static List<string> GetLatentEnchants(this ICoreAPI api, ItemSlot inSlot)
         {
-            List<string> enchants = new List<string>();
-
             if (!inSlot.Empty)
             {
+                List<string> enchants = new List<string>();
                 ITreeAttribute tree = inSlot.Itemstack?.Attributes.GetOrAddTreeAttribute("enchantments");
                 if (tree != null)
                 {
@@ -81,10 +80,10 @@ namespace Vintagestory.GameContent
                     if (lEnchant != null)
                         lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
                     if (lEnchants != null)
-                    {
                         foreach (string str in lEnchants)
                             enchants.Add(str);
-                    }
+                    while (enchants.Count < EnchantingRecipeLoader.Config.MaxLatentEnchants)
+                        enchants.Add("");
                     return enchants;
                 }
                 else
@@ -124,14 +123,14 @@ namespace Vintagestory.GameContent
                 mle = EnchantingRecipeLoader.Config.MaxLatentEnchants;
 
             // Get the Valid Recipes
-            List<EnchantingRecipe> recipes = api.GetValidRecipes(inSlot, rSlot);
+            List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
             for (int i = 0; i < mle; i++)
             {
-                int rNum = api.World.Rand.Next(recipes.Count);
+                int rNum = api.World.Rand.Next(recipes.Count -1);
                 var er = recipes[rNum].Clone();
                 if (er != null)
                     str += er.Name.ToShortString() + ";";
@@ -159,7 +158,7 @@ namespace Vintagestory.GameContent
         /// <param name="inSlot"></param>
         /// <param name="rSlot"></param>
         /// <returns></returns>
-        public static List<EnchantingRecipe> GetValidRecipes(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        public static List<EnchantingRecipe> GetValidEnchantingRecipes(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
             if (inSlot.Empty || rSlot.Empty) return null;
 
@@ -171,9 +170,15 @@ namespace Vintagestory.GameContent
                     if (rec.Matches(api, inSlot, rSlot))
                         recipes.Add(rec.Clone());
                 if (recipes.Count > 0)
+                {
+                    // api.Logger.Event("Successfully GotValidEnchantingRecipes during Assessment.");
                     return recipes;
+                }
                 else
+                {
+                    // api.Logger.Warning("Could not Assess any valid enchantments!");
                     return null;
+                }
             }
             else
                 api.Logger.Error("EnchantingRecipe Registry could not be found! Please report error to author.");

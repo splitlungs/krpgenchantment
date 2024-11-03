@@ -217,7 +217,7 @@ namespace KRPGLib.Enchantment
 
             Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
             foreach (KeyValuePair<string, int> pair in enchants)
-                dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key + "-" + pair.Value) + "</font>"));
+                dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key.ToString()) + " " + Lang.Get("" + pair.Value) + "</font>"));
         }
         
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)

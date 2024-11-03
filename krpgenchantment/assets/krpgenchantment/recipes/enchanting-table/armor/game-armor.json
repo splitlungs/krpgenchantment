@@ -1,0 +1,15 @@
+[
+  {
+    "name": "enchantment-protection",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "game:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "protection": 5
+    }
+  }
+]

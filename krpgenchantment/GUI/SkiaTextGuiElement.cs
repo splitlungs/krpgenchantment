@@ -24,7 +24,7 @@ namespace KRPGLib.Enchantment
             textPaint = new SKPaint
             {
                 Color = SKColors.RoyalBlue,
-                TextSize = 28,
+                TextSize = 24,
                 IsAntialias = true,
                 Typeface = typeface
             };
@@ -42,6 +42,10 @@ namespace KRPGLib.Enchantment
             int width = (int)Bounds.InnerWidth;
             int height = (int)Bounds.InnerHeight;
             SKImageInfo info = new SKImageInfo(width, height);
+            // Cleanup text. Currently hardcoded to remove "krpgenchantment:enchantment-"
+            string text = "";
+            if (textToRender != "")
+                text = textToRender.Replace("krpgenchantment:enchantment-", "");
 
             using (var skiaSurface = SKSurface.Create(info))
             {
@@ -49,7 +53,7 @@ namespace KRPGLib.Enchantment
                 canvas.Clear(SKColors.Transparent);
 
                 // Draw text on the Skia canvas with offset positioning
-                canvas.DrawText(textToRender, xOffset, yOffset, textPaint);
+                canvas.DrawText(text, xOffset, yOffset, textPaint);
                 canvas.Flush();
 
                 // Now we need to transfer Skia's drawing back into Cairo for display
