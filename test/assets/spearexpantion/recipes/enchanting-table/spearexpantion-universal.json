@@ -1,0 +1,26 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "spearexpantion:armor-*-*-*",
+        "quantity": 1
+      },
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "tvision": {
+        "type": "item",
+        "code": "game:temporalitvisiondevice-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

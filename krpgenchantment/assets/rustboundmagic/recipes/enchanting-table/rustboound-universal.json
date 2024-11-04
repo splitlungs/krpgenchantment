@@ -1,0 +1,31 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      },
+      "toolspellcasting": {
+        "type": "item",
+        "code": "rustboundmagic:toolspellcasting-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

@@ -1,0 +1,792 @@
+[
+  {
+    "name": "enchantment-chilling",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "chilling": 5
+    }
+  },
+  {
+    "name": "enchantment-flaming",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "flaming": 5
+    }
+  },
+  {
+    "name": "enchantment-frost",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "frost": 5
+    }
+  },
+  {
+    "name": "enchantment-harming",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "harming": 5
+    }
+  },
+  {
+    "name": "enchantment-healing",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "healing": 5
+    }
+  },
+  {
+    "name": "enchantment-igniting",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "igniting": 5
+    }
+  },
+  {
+    "name": "enchantment-knockback",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "knockback": 5
+    }
+  },
+  {
+    "name": "enchantment-lightning",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "lightning": 5
+    }
+  },
+  {
+    "name": "enchantment-pit",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "pit": 5
+    }
+  },
+  {
+    "name": "enchantment-shocking",
+    "processingHours": 1,
+    "ingredients": {
+      "bartka": {
+        "type": "item",
+        "code": "spearexpantion:bartka-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "game:blade-temporalit",
+        "quantity": 1
+      },
+      "claymore": {
+        "type": "item",
+        "code": "spearexpantion:claymore-*",
+        "quantity": 1
+      },
+      "expandedbow": {
+        "type": "item",
+        "code": "spearexpantion:expandedbow-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "spearexpantion:halberd-*",
+        "quantity": 1
+      },
+      "hornybows": {
+        "type": "item",
+        "code": "spearexpantion:hornybows-*-*",
+        "quantity": 1
+      },
+      "ironspear": {
+        "type": "item",
+        "code": "spearexpantion:ironspear-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "spearexpantion:khopesh-*",
+        "quantity": 1
+      },
+      "mace": {
+        "type": "item",
+        "code": "spearexpantion:mace-*-*",
+        "quantity": 1
+      },
+      "odachi": {
+        "type": "item",
+        "code": "spearexpantion:odachi-*",
+        "quantity": 1
+      },
+      "pike": {
+        "type": "item",
+        "code": "spearexpantion:pike-*",
+        "quantity": 1
+      },
+      "pitchfork": {
+        "type": "item",
+        "code": "spearexpantion:pitchfork-*",
+        "quantity": 1
+      },
+      "scythespear": {
+        "type": "item",
+        "code": "spearexpantion:scythespear-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "spearexpantion:seax-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "shocking": 5
+    }
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/temporal/temporalit-nighthelmet.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "spearexpantion:itemtypes/wearable/armorkast.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "spearexpantion:itemtypes/wearable/armorlamellar.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

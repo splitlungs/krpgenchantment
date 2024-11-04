@@ -20,8 +20,8 @@ namespace KRPGLib.Enchantment
         #region Setup
         public override string ToggleKeyCombinationCode => "enchantingtablegui";
 
-        SKTypeface customTypeface;
-        EnchantingGuiConfig Config;
+        public SKTypeface customTypeface;
+        public EnchantingGuiConfig Config;
 
         long lastRedrawMs;
 
@@ -265,9 +265,11 @@ namespace KRPGLib.Enchantment
             // Click
             capi.Gui.PlaySound("toggleswitch");
             // Notify the table which one we clicked
-            byte[] packet = BitConverter.GetBytes(Config.selectedEnchant);
+            // byte[] packet = BitConverter.GetBytes(Config.selectedEnchant);
+            EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
+            byte[] data = SerializerUtil.Serialize(packet);
             EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
-            capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337, packet);
+            capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337, data);
         }
         private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
         {
@@ -298,9 +300,12 @@ namespace KRPGLib.Enchantment
             // Direct call can cause InvalidOperationException
             // capi.Event.EnqueueMainThreadTask(SetupDialog, "setupenchanterdlg");
             // Notify the table which one we clicked
-            byte[] packet = BitConverter.GetBytes(-1);
+            // byte[] packet = BitConverter.GetBytes(-1);
+            Config.selectedEnchant = -1;
+            EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
+            byte[] data = SerializerUtil.Serialize(packet);
             EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
-            capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337, packet);
+            capi.Network.SendBlockEntityPacket(enchanter.Pos, 1337, data);
         }
         private void SendInvPacket(object packet)
         {

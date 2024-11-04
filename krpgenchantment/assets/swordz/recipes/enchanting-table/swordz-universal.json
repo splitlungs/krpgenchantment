@@ -1,0 +1,206 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "swordz:armor-*-*-*",
+        "quantity": 1
+      },
+      "atgeir": {
+        "type": "item",
+        "code": "swordz:atgeir-*",
+        "quantity": 1
+      },
+      "bearded": {
+        "type": "item",
+        "code": "swordz:bearded-*",
+        "quantity": 1
+      },
+      "becdecorbin": {
+        "type": "item",
+        "code": "swordz:becdecorbin-*",
+        "quantity": 1
+      },
+      "boarspear": {
+        "type": "item",
+        "code": "swordz:boarspear-*",
+        "quantity": 1
+      },
+      "daneaxe": {
+        "type": "item",
+        "code": "swordz:daneaxe-*",
+        "quantity": 1
+      },
+      "gladius": {
+        "type": "item",
+        "code": "swordz:gladius-*-*",
+        "quantity": 1
+      },
+      "halberd": {
+        "type": "item",
+        "code": "swordz:halberd-*",
+        "quantity": 1
+      },
+      "khopesh": {
+        "type": "item",
+        "code": "swordz:khopesh-*-*",
+        "quantity": 1
+      },
+      "kilij": {
+        "type": "item",
+        "code": "swordz:kilij-*-*",
+        "quantity": 1
+      },
+      "longsword": {
+        "type": "item",
+        "code": "swordz:longsword-*-*",
+        "quantity": 1
+      },
+      "nadziak": {
+        "type": "item",
+        "code": "swordz:nadziak-*",
+        "quantity": 1
+      },
+      "naginata": {
+        "type": "item",
+        "code": "swordz:naginata-*",
+        "quantity": 1
+      },
+      "padded": {
+        "type": "item",
+        "code": "swordz:padded",
+        "quantity": 1
+      },
+      "pernach": {
+        "type": "item",
+        "code": "swordz:pernach-*-*",
+        "quantity": 1
+      },
+      "pila": {
+        "type": "item",
+        "code": "swordz:pila-*",
+        "quantity": 1
+      },
+      "ranseur": {
+        "type": "item",
+        "code": "swordz:ranseur-*",
+        "quantity": 1
+      },
+      "sabre": {
+        "type": "item",
+        "code": "swordz:sabre-*-*",
+        "quantity": 1
+      },
+      "seax": {
+        "type": "item",
+        "code": "swordz:seax-*",
+        "quantity": 1
+      },
+      "sordz": {
+        "type": "item",
+        "code": "swordz:sordz-*-*",
+        "quantity": 1
+      },
+      "spatha": {
+        "type": "item",
+        "code": "swordz:spatha-*-*",
+        "quantity": 1
+      },
+      "stiletto": {
+        "type": "item",
+        "code": "swordz:stiletto-*",
+        "quantity": 1
+      },
+      "swordzshort": {
+        "type": "item",
+        "code": "swordz:swordzshort-*",
+        "quantity": 1
+      },
+      "voulge": {
+        "type": "item",
+        "code": "swordz:voulge-*",
+        "quantity": 1
+      },
+      "warhammer": {
+        "type": "item",
+        "code": "swordz:warhammer-*",
+        "quantity": 1
+      },
+      "warscythe": {
+        "type": "item",
+        "code": "swordz:warscythe-*",
+        "quantity": 1
+      },
+      "zweihander": {
+        "type": "item",
+        "code": "swordz:zweihander-*-*-*",
+        "quantity": 1
+      },
+      "axe": {
+        "type": "item",
+        "code": "swordz:axe-*-*",
+        "quantity": 1
+      },
+      "chisel": {
+        "type": "item",
+        "code": "swordz:chisel-*",
+        "quantity": 1
+      },
+      "excavator": {
+        "type": "item",
+        "code": "swordz:excavator-*",
+        "quantity": 1
+      },
+      "hoe": {
+        "type": "item",
+        "code": "swordz:hoe-*",
+        "quantity": 1
+      },
+      "pickaxe": {
+        "type": "item",
+        "code": "swordz:pickaxe-*",
+        "quantity": 1
+      },
+      "prospectingpick": {
+        "type": "item",
+        "code": "swordz:prospectingpick-*",
+        "quantity": 1
+      },
+      "scythe": {
+        "type": "item",
+        "code": "swordz:scythe-*",
+        "quantity": 1
+      },
+      "shears": {
+        "type": "item",
+        "code": "swordz:shears-*",
+        "quantity": 1
+      },
+      "shovel": {
+        "type": "item",
+        "code": "swordz:shovel-*",
+        "quantity": 1
+      },
+      "sledgehammer": {
+        "type": "item",
+        "code": "swordz:sledgehammer-*",
+        "quantity": 1
+      },
+      "tunneler": {
+        "type": "item",
+        "code": "swordz:tunneler-*-*",
+        "quantity": 1
+      },
+      "wrench": {
+        "type": "item",
+        "code": "swordz:wrench-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

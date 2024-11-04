@@ -1,0 +1,170 @@
+[
+  {
+    "name": "enchantment-protection",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "protection": 5
+    }
+  },
+  {
+    "name": "enchantment-resistelectric",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistelectric": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfire",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistfire": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfrost",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistfrost": 5
+    }
+  },
+  {
+    "name": "enchantment-resistheal",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistheal": 5
+    }
+  },
+  {
+    "name": "enchantment-resistinjury",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistinjury": 5
+    }
+  },
+  {
+    "name": "enchantment-resistpoison",
+    "processingHours": 1,
+    "ingredients": {
+      "armorbody": {
+        "type": "item",
+        "code": "rustboundmagic:armorbody-*-*-*-*",
+        "quantity": 1
+      },
+      "armorhead": {
+        "type": "item",
+        "code": "rustboundmagic:armorhead-*-*-*-*",
+        "quantity": 1
+      },
+      "armorlegs": {
+        "type": "item",
+        "code": "rustboundmagic:armorlegs-*-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "resistpoison": 5
+    }
+  }
+]

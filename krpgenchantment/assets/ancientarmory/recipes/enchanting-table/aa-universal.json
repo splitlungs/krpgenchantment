@@ -1,0 +1,36 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "axe": {
+        "type": "item",
+        "code": "ancientarmory:aa-axe-*-*",
+        "quantity": 1
+      },
+      "blade": {
+        "type": "item",
+        "code": "ancientarmory:aa-blade-*-*",
+        "quantity": 1
+      },
+      "club": {
+        "type": "item",
+        "code": "ancientarmory:aa-club-*-*",
+        "quantity": 1
+      },
+      "knife": {
+        "type": "item",
+        "code": "ancientarmory:aa-knife-*-*",
+        "quantity": 1
+      },
+      "spear": {
+        "type": "item",
+        "code": "ancientarmory:aa-spear-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

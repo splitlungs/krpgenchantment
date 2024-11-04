@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using ProtoBuf;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace KRPGLib.Enchantment
     {
         public string customFont = "dragon_alphabet.ttf";
         public List<string> enchantNames = new List<string>(3) { "", "", ""};
+        [ProtoMember(1)]
         public int selectedEnchant = -1;
         public string outputText = "Enchantment: ";
         public double inputEnchantTime = 0;

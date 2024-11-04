@@ -9,6 +9,8 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -298,8 +300,10 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            int rQty = CurrentRecipe.resolvedIngredients[0].Quantity;
-            int iQty = CurrentRecipe.resolvedIngredients[1].Quantity;
+            // int rQty = CurrentRecipe.resolvedIngredients[0].Quantity;
+            int rQty = CurrentRecipe.IngredientQuantity(ReagentSlot);
+            // int iQty = CurrentRecipe.resolvedIngredients[1].Quantity;
+            int iQty = CurrentRecipe.IngredientQuantity(InputSlot);
             ReagentSlot.TakeOut(rQty);
             InputSlot.TakeOut(iQty);
             ReagentSlot.MarkDirty();
@@ -350,11 +354,10 @@ namespace KRPGLib.Enchantment
                 {
                     enchantInput();
 
-                    InputEnchantTime = 0;
-                    PrevInputEnchantTime = 0;
                     CurrentRecipe = null;
                     SelectedEnchant = -1;
-                    NowEnchanting = false;
+                    UpdateEnchantingState();
+                    PrevInputEnchantTime = 0;
                     hours = 0;
                 }
 
@@ -524,9 +527,10 @@ namespace KRPGLib.Enchantment
             if (packetid == 1337)
             {
                 // Api.World.Logger.Event("Received packet 1337");
-                int selected = BitConverter.ToInt32(data);
+                // int selected = BitConverter.ToInt32(data);
+                EnchantingGuiPacket packet = SerializerUtil.Deserialize<EnchantingGuiPacket>(data);
                 // Api.World.Logger.Event("Selected enchant is {0}", SelectedEnchant);
-                if (selected == -1)
+                if (packet.SelectedEnchant < 0)
                 {
                     // Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
                     CurrentRecipe = null;
@@ -539,10 +543,10 @@ namespace KRPGLib.Enchantment
                     {
                         foreach (EnchantingRecipe e in recipes)
                         {
-                            if (e.Name.ToShortString() == LatentEnchants[selected])
+                            if (e.Name.ToShortString() == LatentEnchants[packet.SelectedEnchant])
                             {
                                 CurrentRecipe = e.Clone();
-                                SelectedEnchant = selected;
+                                SelectedEnchant = packet.SelectedEnchant;
                                 // Api.World.Logger.Event("Found selected enchant in the registry. Setting as CurrentRecipe.");
                             }
                         }

@@ -33,13 +33,13 @@
         }
     },
     {
-        "name": "enchantment-durable-1",
-        "processingHours": 1,
+        "name": "enchantment-durable-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-durable",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -62,17 +62,17 @@
             }
         },
         "enchantments": {
-            "durable": 1
+            "durable": 4
         }
     },
     {
-        "name": "enchantment-flaming-1",
-        "processingHours": 1,
+        "name": "enchantment-flaming-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-flaming",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -95,17 +95,17 @@
             }
         },
         "enchantments": {
-            "flaming": 1
+            "flaming": 4
         }
     },
     {
-        "name": "enchantment-frost-1",
-        "processingHours": 1,
+        "name": "enchantment-frost-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-frost",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -128,17 +128,17 @@
             }
         },
         "enchantments": {
-            "frost": 1
+            "frost": 4
         }
     },
     {
-        "Name": "enchantment-harming-1",
-        "processingHours": 1,
+        "name": "enchantment-harming-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-harming",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -161,17 +161,17 @@
             }
         },
         "enchantments": {
-            "harming": 1
+            "harming": 4
         }
     },
     {
-        "name": "enchantment-healing-1",
-        "processingHours": 1,
+        "name": "enchantment-healing-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-healing",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -194,17 +194,17 @@
             }
         },
         "enchantments": {
-            "healing": 1
+            "healing": 4
         }
     },
     {
-        "name": "enchantment-igniting-1",
-        "processingHours": 1,
+        "name": "enchantment-igniting-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-igniting",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -227,17 +227,17 @@
             }
         },
         "enchantments": {
-            "igniting": 1
+            "igniting": 4
         }
     },
     {
-        "name": "enchantment-knockback-1",
-        "processingHours": 1,
+        "name": "enchantment-knockback-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-knockback",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -260,17 +260,17 @@
             }
         },
         "enchantments": {
-            "knockback": 1
+            "knockback": 4
         }
     },
     {
-        "name": "enchantment-lightning-1",
-        "processingHours": 1,
+        "name": "enchantment-lightning-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-lightning",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -293,17 +293,17 @@
             }
         },
         "enchantments": {
-            "lightning": 1
+            "lightning": 4
         }
     },
     {
-        "name": "enchantment-pit-1",
-        "processingHours": 1,
+        "name": "enchantment-pit-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-pit",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -326,17 +326,17 @@
             }
         },
         "enchantments": {
-            "pit": 1
+            "pit": 4
         }
     },
     {
-        "name": "enchantment-shocking-1",
-        "processingHours": 1,
+        "name": "enchantment-shocking-4",
+        "processingHours": 64,
         "ingredients": {
             "reagent": {
                 "type": "item",
                 "code": "krpgenchantment:reagent-shocking",
-                "quantity": 1
+                "quantity": 64
             },
             "target": {
                 "type": "item",
@@ -359,7 +359,7 @@
             }
         },
         "enchantments": {
-            "shocking": 1
+            "shocking": 4
         }
     }
 ]

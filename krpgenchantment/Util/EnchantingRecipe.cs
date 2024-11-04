@@ -64,6 +64,29 @@ namespace KRPGLib.Enchantment
 
         IWorldAccessor world;
 
+        public int IngredientQuantity(ItemSlot inSlot)
+        {
+            int qty = 1;
+            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+            {
+                bool foundt = false;
+                if (ing.IsWildCard)
+                {
+                    inSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
+
+                    bool foundw = false;
+                    foundw =
+                            ing.Type == inSlot.Itemstack.Class &&
+                            WildcardUtil.Match(ing.Code, inSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                        ;
+                    if (foundw == true) foundt = true;
+                }
+                else if (ing.ResolvedItemstack.Satisfies(inSlot.Itemstack)) foundt = true;
+
+                if (foundt == true) qty = ing.Quantity;
+            }
+            return qty;
+        }
         /// <summary>
         /// Returns an Enchanted ItemStack
         /// </summary>
@@ -75,13 +98,15 @@ namespace KRPGLib.Enchantment
 
             // Setup a new ItemStack
             ItemStack outStack = inSlot.Itemstack.Clone();
-            outStack.StackSize = resolvedIngredients[1].Quantity;
-            // Prep the Power
+            // Setup Quantity
+            outStack.StackSize = IngredientQuantity(inSlot);
+            // Setup Reagent Override
             bool rOverride = false;
             foreach (KeyValuePair<string, CraftingRecipeIngredient> keyValuePair in Ingredients)
             {
                 if (keyValuePair.Key.ToLower() == "reagent") rOverride = true;
             }
+            // Setup Enchant Power
             int power = 0;
             if (!rOverride)
             {
