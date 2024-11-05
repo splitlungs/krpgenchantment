@@ -67,23 +67,38 @@ namespace Vintagestory.GameContent
         /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
-        public static List<string> GetLatentEnchants(this ICoreAPI api, ItemSlot inSlot)
+        public static List<string> GetLatentEnchants(this ICoreAPI api, ItemSlot inSlot, bool encrypt)
         {
             if (!inSlot.Empty)
             {
                 List<string> enchants = new List<string>();
                 ITreeAttribute tree = inSlot.Itemstack?.Attributes.GetOrAddTreeAttribute("enchantments");
-                if (tree != null)
+                if (tree != null && !encrypt)
                 {
                     string lEnchant = tree.GetString("latentEnchants");
                     string[] lEnchants = null;
-                    if (lEnchant != null)
-                        lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
                     if (lEnchants != null)
+                    {
                         foreach (string str in lEnchants)
                             enchants.Add(str);
-                    while (enchants.Count < EnchantingRecipeLoader.Config.MaxLatentEnchants)
-                        enchants.Add("");
+                    }
+                    if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                        enchants = null;
+                    return enchants;
+                }
+                else if (tree != null && encrypt == true)
+                {
+                    string lEnchant = tree.GetString("latentEnchantsEncrypted");
+                    string[] lEnchants = null;
+                    if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    if (lEnchants != null)
+                    {
+                        foreach (string str in lEnchants)
+                            enchants.Add(str);
+                    }
+                    if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                        enchants = null;
                     return enchants;
                 }
                 else
@@ -104,27 +119,34 @@ namespace Vintagestory.GameContent
         public static bool AssessItem(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
             // Sanity check
-            if (inSlot.Empty || rSlot.Empty) return false;
+            if (api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
+            api.World.Logger.Event("Attempting to Asses {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = api.World.Calendar.ElapsedDays;
+            api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
-            // Check if it's a valid Timestamp
+            // Check the timestamp
+            // 0 or less means re-assess every time
+            // Config default is 7 days
             double ero = 7d;
-            if (EnchantingRecipeLoader.Config?.EnchantResetOverride != ero)
-                ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
+            if (EnchantingRecipeLoader.Config?.LatentEnchantResetDays != null)
+                ero = EnchantingRecipeLoader.Config.LatentEnchantResetDays;
             if (latentStamp != 0 && timeStamp < latentStamp + ero)
                 return false;
+            api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
             if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != mle)
                 mle = EnchantingRecipeLoader.Config.MaxLatentEnchants;
+            api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
+            api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
@@ -141,10 +163,23 @@ namespace Vintagestory.GameContent
             // Write the assessment to attributes
             if (str != null)
             {
+                string strEnc = "";
+                for (int i = 0; i < mle; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        // ASCII characters 65 - 90
+                        int k = api.World.Rand.Next(65, 90 + 1);
+                        strEnc += ((char)k).ToString();
+                    }
+                    strEnc += ";";
+                }
+
+                api.World.Logger.Event("LatentEnchants string is {0}", str);
                 tree.SetString("latentEnchants", str);
+                tree.SetString("latentEnchantsEncrypted", strEnc);
                 tree.SetDouble("latentEnchantTime", timeStamp);
                 inSlot.Itemstack.Attributes.MergeTree(tree);
-                inSlot.MarkDirty();
             }
             else
                 return false;
@@ -170,15 +205,9 @@ namespace Vintagestory.GameContent
                     if (rec.Matches(api, inSlot, rSlot))
                         recipes.Add(rec.Clone());
                 if (recipes.Count > 0)
-                {
-                    // api.Logger.Event("Successfully GotValidEnchantingRecipes during Assessment.");
                     return recipes;
-                }
                 else
-                {
-                    // api.Logger.Warning("Could not Assess any valid enchantments!");
                     return null;
-                }
             }
             else
                 api.Logger.Error("EnchantingRecipe Registry could not be found! Please report error to author.");

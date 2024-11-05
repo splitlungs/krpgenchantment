@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Client;
+﻿/*
+using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 using SkiaSharp;
 using System;
@@ -129,3 +130,4 @@ namespace KRPGLib.Enchantment
         }
     }
 }
+*/

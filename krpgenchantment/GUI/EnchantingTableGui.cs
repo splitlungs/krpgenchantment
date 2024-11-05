@@ -41,9 +41,6 @@ namespace KRPGLib.Enchantment
         int insetHeight = 180;
         int insetDepth = 3;
         int rowHeight = 48;
-        int rowCount
-        { get { if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != null) return EnchantingRecipeLoader.Config.MaxLatentEnchants; else return 3; } }
-
 
         public EnchantingTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi, EnchantingGuiConfig config) 
             : base(DialogTitle, Inventory, BlockEntityPosition, capi)
@@ -60,12 +57,32 @@ namespace KRPGLib.Enchantment
 
         public void SetupDialog()
         {
-            // 1. Setup Enchanting Input/Output
+            // 1. Setup hover event
             ItemSlot hoveredSlot = capi.World.Player.InventoryManager.CurrentHoveredSlot;
             if (hoveredSlot != null && hoveredSlot.Inventory == Inventory)
                 capi.Input.TriggerOnMouseLeaveSlot(hoveredSlot);
             else
                 hoveredSlot = null;
+
+            // 2. Sanitize data
+            // Get our font. Internet required if first time
+            if (customTypeface == null)
+                customTypeface = capi.LoadCustomFont(Config.customFont);
+            // Create a new List of Latent Enchants if none found or malformed
+            if (Config.enchantNames == null)
+            {
+                Config.enchantNames = new List<string>();
+                for (int i = 0; i < Config.rowCount; i++)
+                    Config.enchantNames.Add("");
+            }
+            else if (Config.enchantNames.Count != Config.rowCount)
+            {
+                Config.enchantNames = new List<string>();
+                for (int i = 0; i < Config.rowCount; i++)
+                    Config.enchantNames.Add("");
+            }
+
+            // 3. Set bounds
             ElementBounds reagentSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, 30 + 45, 6, 1);
             reagentSlotBounds.fixedHeight += 10;
             double top = reagentSlotBounds.fixedHeight + reagentSlotBounds.fixedY;
@@ -73,22 +90,6 @@ namespace KRPGLib.Enchantment
             ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, top, 1, 1);
             ElementBounds outputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 153, top, 1, 1);
             // ElementBounds enchantButton = ElementBounds.Fixed(145, 90, 64, 24);
-
-            // 2. Setup Enchant Selector
-            // Setup Font for Encrypted Enchantments
-            if (customTypeface == null)
-                customTypeface = capi.LoadCustomFont(Config.customFont);
-            // Create a new List of Latent Enchants if none found
-            if (Config.enchantNames == null)
-            {
-                // capi.Logger.Warning("Building a new enchantNames list because it was null");
-                Config.enchantNames = new List<string>(3) { "", "", "" };
-            }
-
-            // Setup the Enchants to be listed - OVERRIDE FOR TESTING
-            // if (enchantNames == null)
-            //     enchantNames = new List<string>() { "chilling", "flaming", "shocking", "frost", "harming" };
-
             // Auto-sized dialog at the center of the screen
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
             // Bounds of the main Dialog
@@ -101,24 +102,23 @@ namespace KRPGLib.Enchantment
             ElementBounds containerBounds = enchantListBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
             ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
 
-            // 3. Enchanting Recipe Data
-            string ot = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
-            if (Config.outputText != null)
-            { ot = Config.outputText; }
-
             // Dialog background bounds
             ElementBounds bgBounds = ElementBounds.Fill
                 .WithFixedPadding(GuiStyle.ElementToDialogPadding)
                 .WithSizing(ElementSizing.FitToChildren)
                 .WithChildren(inputBounds, enchantListBounds, scrollbarBounds);
 
-            ClearComposers();
+            // 4. Enchanting Recipe Data
+            string ot = Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
+            if (Config.outputText != null)
+            { ot = Config.outputText; }
 
-            // 4. Create GUI with fixed bounds for each element
+            // 5. Create GUI with fixed bounds for each element
+            ClearComposers();
             SingleComposer = capi.Gui.CreateCompo("enchantingtablebe" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(DialogTitle, OnTitleBarCloseClicked)
-                // 4a. Create GUI for Input
+                // 5a. Create GUI for Input
                 .BeginChildElements(inputBounds)
                     // .AddToggleButton(Lang.Get("krpgenchantment:krpg-enchant"), CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), onEnchantToggle, enchantButton, "enchantToggle")
                     .AddDynamicCustomDraw(arrowBounds, OnBgDraw, "symbolDrawer")
@@ -127,7 +127,7 @@ namespace KRPGLib.Enchantment
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 2 }, reagentSlotBounds, "reagentSlot")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 1 }, outputSlotBounds, "outputSlot")
                 .EndChildElements()
-                // 4b. Create GUI for Enchant List
+                // 5b. Create GUI for Enchant List
                 .BeginChildElements()
                     .AddInset(enchantListBounds, insetDepth)
                     .BeginClip(clipBounds)
@@ -136,9 +136,9 @@ namespace KRPGLib.Enchantment
                     .AddVerticalScrollbar(OnNewScrollbarValue, scrollbarBounds, "scrollbar")
                 .EndChildElements();
 
-            // 5. Fill the container
+            // 6. Fill the container
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-            for (int i = 0; i < rowCount; i++)
+            for (int i = 0; i < Config.rowCount; i++)
             {
                 scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNames[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
                 if (Config.selectedEnchant != -1 && i == Config.selectedEnchant && Config.enchantNames[i] != "")
@@ -150,10 +150,10 @@ namespace KRPGLib.Enchantment
                 containerRowBounds = containerRowBounds.BelowCopy();
             }
 
-            // 6. Compose
+            // 7. Compose
             SingleComposer.Compose();
 
-            // 7. Update Dynamics
+            // 8. After composing dialog, update dynamic elements
             SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText);
             SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             lastRedrawMs = capi.ElapsedMilliseconds;
@@ -163,9 +163,9 @@ namespace KRPGLib.Enchantment
                 SingleComposer.OnMouseMove(new MouseEvent(capi.Input.MouseX, capi.Input.MouseY));
             }
 
-            // 8. After composing dialog, need to set the scrolling area heights to enable scroll behavior
+            // 9. After composing dialog, need to set the scrolling area heights to enable scroll behavior
             float scrollVisibleHeight = (float)clipBounds.fixedHeight;
-            float scrollTotalHeight = rowHeight * rowCount;
+            float scrollTotalHeight = rowHeight * Config.rowCount;
             SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
         /// <summary>
@@ -176,23 +176,29 @@ namespace KRPGLib.Enchantment
         {
             // Don't change while we're enchanting. Be sure to set this first, or else it will fail to update
             if (Config.nowEnchanting == true) return;
-            // Make a new list of enchantNames if provided null.
-            // We also can't select a null value, so reset that, too.
+            // Create a new List of Latent Enchants if none found or malformed
             if (enchants == null)
             {
-                // capi.Logger.Event("EnchantNames was null! UpdateEnchantList will attempt to write empty strings.");
-                Config.enchantNames = new List<string>(3) { "", "", "" };
-                Config.selectedEnchant = -1;
+                Config.enchantNames = new List<string>();
+                for (int i = 0; i < Config.rowCount; i++)
+                    Config.enchantNames.Add("");
+            }
+            else if (enchants.Count != Config.rowCount)
+            {
+                Config.enchantNames = new List<string>();
+                for (int i = 0; i < Config.rowCount; i++)
+                    Config.enchantNames.Add("");
             }
             else
                 Config.enchantNames = enchants;
 
             // Clean and Refill the Container
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-            for (int i = 0; i < rowCount; i++)
+            for (int i = 0; i < Config.rowCount; i++)
             {
+                var element = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
                 // Make new buttons if needed, or config with existing values
-                if (scrollArea.Elements.Count < i)
+                if (element == null)
                 {
                     ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
                     for (int j = 0; j < i; i++)
@@ -201,7 +207,6 @@ namespace KRPGLib.Enchantment
                 }
                 else
                 {
-                    var element = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
                     element.textToRender = Config.enchantNames[i];
                     element.Toggleable = true;
                     if (Config.selectedEnchant == i)
@@ -265,7 +270,6 @@ namespace KRPGLib.Enchantment
             // Click
             capi.Gui.PlaySound("toggleswitch");
             // Notify the table which one we clicked
-            // byte[] packet = BitConverter.GetBytes(Config.selectedEnchant);
             EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
             byte[] data = SerializerUtil.Serialize(packet);
             EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
@@ -300,7 +304,6 @@ namespace KRPGLib.Enchantment
             // Direct call can cause InvalidOperationException
             // capi.Event.EnqueueMainThreadTask(SetupDialog, "setupenchanterdlg");
             // Notify the table which one we clicked
-            // byte[] packet = BitConverter.GetBytes(-1);
             Config.selectedEnchant = -1;
             EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
             byte[] data = SerializerUtil.Serialize(packet);
@@ -338,6 +341,7 @@ namespace KRPGLib.Enchantment
         {
             customTypeface.Dispose();
             base.Dispose();
+            TryClose();
         }
         #endregion
     }

@@ -198,21 +198,36 @@ namespace KRPGLib.Enchantment
         }
         private double GetLatentEnchantResetTime()
         {
-            double ero = -1.0d;
             // Return override first
-            if (EnchantingRecipeLoader.Config?.EnchantResetOverride != null)
-                ero = EnchantingRecipeLoader.Config.EnchantResetOverride;
-            if (ero >= 0d)
-                return ero;
+            if (EnchantingRecipeLoader.Config?.LatentEnchantResetDays != null)
+                return EnchantingRecipeLoader.Config.LatentEnchantResetDays;
             // Fall back to 7 days
             return 7.0d;
         }
         /// <summary>
-        /// Returns a list of LatentEnchants, or generates them if needed.
+        /// Returns a list of LatentEnchants, unencrypted, with domain
         /// </summary>
         public List<string> LatentEnchants
         {
-            get { return Api.GetLatentEnchants(InputSlot); }
+            get { return Api.GetLatentEnchants(InputSlot, false); }
+        }
+        /// <summary>
+        /// Returns a list of LatentEnchants, encrypted, 8 characters
+        /// </summary>
+        public List<string> LatentEnchantsEncrypted
+        {
+            get { return Api.GetLatentEnchants(InputSlot, true); }
+        }
+        /// <summary>
+        /// Returns default 3 if not set in the config file
+        /// </summary>
+        public int EnchantRowCount
+        {
+            get
+            {
+                if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != null) return EnchantingRecipeLoader.Config.MaxLatentEnchants;
+                else return 3;
+            }
         }
         /// <summary>
         /// Gets the current recipe's processing time in in-game hours.
@@ -316,20 +331,13 @@ namespace KRPGLib.Enchantment
         public void UpdateEnchantingState()
         {
             if (Api.World == null) return;
-            // Api.World.Logger.Event("Attempting to UpdateEnchantingState.");
 
             if (Api.Side == EnumAppSide.Server)
             {
                 if (!NowEnchanting && CanEnchant)
-                {
-                    // Api.World.Logger.Event("Setting nowEnchanting to true.");
                     NowEnchanting = true;
-                }
                 else
-                {
-                    // Api.World.Logger.Event("Setting nowEnchanting to false.");
                     NowEnchanting = false;
-                }
             }
 
             if (NowEnchanting == true)
@@ -428,7 +436,7 @@ namespace KRPGLib.Enchantment
                 ICoreClientAPI capi = Api as ICoreClientAPI;
                 EnchantingGuiConfig config = new EnchantingGuiConfig()
                 { maxEnchantTime = MaxEnchantTime, outputText = OutputText, inputEnchantTime = hours, nowEnchanting = NowEnchanting, 
-                    selectedEnchant = SelectedEnchant, enchantNames = LatentEnchants };
+                    selectedEnchant = SelectedEnchant, enchantNames = LatentEnchantsEncrypted, rowCount = EnchantRowCount };
                 clientDialog = new EnchantingTableGui(DialogTitle, Inventory, Pos, capi, config);
                 clientDialog.OnClosed += () =>
                 {
@@ -471,29 +479,26 @@ namespace KRPGLib.Enchantment
                     PrevInputEnchantTime = 0d;
                     hours = 0d;
                     bool assed = Api.AssessItem(InputSlot, ReagentSlot);
-                    // if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
+                    if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
                 }
-                if (slotid == 1 && InputSlot.Empty) 
+                if (slotid == 1 && InputSlot.Empty)
                 {
                     SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
                     PrevInputEnchantTime = 0d;
                     hours = 0d;
                 }
-                MarkDirty();
                 UpdateEnchantingState();
+                MarkDirty();
             }
-
             if (Api.Side == EnumAppSide.Client && clientDialog != null)
             {
-                if (clientDialog.IsOpened())
-                {
-                    clientDialog?.UpdateEnchantList(LatentEnchants);
-                    clientDialog?.Update(hours, MaxEnchantTime, NowEnchanting, OutputText, SelectedEnchant, (ICoreClientAPI)Api);
-                    clientDialog?.SingleComposer.ReCompose();
-                }
-            }
+                clientDialog?.UpdateEnchantList(LatentEnchantsEncrypted);
+                clientDialog?.Update(hours, MaxEnchantTime, NowEnchanting, OutputText, SelectedEnchant, (ICoreClientAPI)Api);
 
+                if (clientDialog.IsOpened())
+                    clientDialog?.SingleComposer.ReCompose();
+            }
         }
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
@@ -530,13 +535,9 @@ namespace KRPGLib.Enchantment
                 // int selected = BitConverter.ToInt32(data);
                 EnchantingGuiPacket packet = SerializerUtil.Deserialize<EnchantingGuiPacket>(data);
                 // Api.World.Logger.Event("Selected enchant is {0}", SelectedEnchant);
-                if (packet.SelectedEnchant < 0)
-                {
-                    // Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
-                    CurrentRecipe = null;
-                    SelectedEnchant = -1;
-                }
-                else
+
+                // Set the selected latent enchant if it's valid, or un-set them if not
+                if (packet.SelectedEnchant >= 0 && LatentEnchants != null)
                 {
                     List<EnchantingRecipe> recipes = Api.GetEnchantingRecipes();
                     if (recipes != null)
@@ -553,6 +554,12 @@ namespace KRPGLib.Enchantment
                     }
                     else
                         Api.World.Logger.Error("Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
+                }
+                else
+                {
+                    // Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
+                    CurrentRecipe = null;
+                    SelectedEnchant = -1;
                 }
                 UpdateEnchantingState();
             }

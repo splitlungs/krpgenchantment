@@ -53,7 +53,7 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantRecipeConfig tempConfig = new KRPGEnchantRecipeConfig();
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
-                    if (Config.EnchantResetOverride >= 0) tempConfig.EnchantResetOverride = Config.EnchantResetOverride;
+                    if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     // These will be deprecated in favor of CustomPatches at next release

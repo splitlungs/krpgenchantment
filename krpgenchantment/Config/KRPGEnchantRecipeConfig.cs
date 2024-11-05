@@ -10,7 +10,7 @@ namespace KRPGLib.Enchantment
     {
         // Global Config
         public double EnchantTimeOverride = -1d;
-        public double EnchantResetOverride = -1d;
+        public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>() 
         {
@@ -59,7 +59,7 @@ namespace KRPGLib.Enchantment
             if (config != null) 
             {
                 EnchantTimeOverride = config.EnchantTimeOverride;
-                EnchantResetOverride = config.EnchantResetOverride;
+                LatentEnchantResetDays = config.LatentEnchantResetDays;
                 MaxLatentEnchants = config.MaxLatentEnchants;
                 ValidReagents = config.ValidReagents;
                 CustomPatches = config.CustomPatches;

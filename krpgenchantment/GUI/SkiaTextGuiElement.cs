@@ -24,7 +24,7 @@ namespace KRPGLib.Enchantment
             textPaint = new SKPaint
             {
                 Color = SKColors.RoyalBlue,
-                TextSize = 24,
+                TextSize = 28,
                 IsAntialias = true,
                 Typeface = typeface
             };
@@ -42,10 +42,9 @@ namespace KRPGLib.Enchantment
             int width = (int)Bounds.InnerWidth;
             int height = (int)Bounds.InnerHeight;
             SKImageInfo info = new SKImageInfo(width, height);
-            // Cleanup text. Currently hardcoded to remove "krpgenchantment:enchantment-"
+            // Null check to prevent crash
             string text = "";
-            if (textToRender != "")
-                text = textToRender.Replace("krpgenchantment:enchantment-", "");
+            if (textToRender != null) text = textToRender;
 
             using (var skiaSurface = SKSurface.Create(info))
             {
