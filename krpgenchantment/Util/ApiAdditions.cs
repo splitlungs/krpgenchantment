@@ -120,12 +120,12 @@ namespace Vintagestory.GameContent
         {
             // Sanity check
             if (api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
-            api.World.Logger.Event("Attempting to Asses {0}", inSlot.GetStackName());
+            // api.World.Logger.Event("Attempting to Asses {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = api.World.Calendar.ElapsedDays;
-            api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+            // api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -135,18 +135,18 @@ namespace Vintagestory.GameContent
                 ero = EnchantingRecipeLoader.Config.LatentEnchantResetDays;
             if (latentStamp != 0 && timeStamp < latentStamp + ero)
                 return false;
-            api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
+            // api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
             if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != mle)
                 mle = EnchantingRecipeLoader.Config.MaxLatentEnchants;
-            api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
+            // api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
-            api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
+            // api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
@@ -157,7 +157,7 @@ namespace Vintagestory.GameContent
                 if (er != null)
                     str += er.Name.ToShortString() + ";";
                 else
-                    api.World.Logger.Event("ValidRecipe element was null. Could not assign Latent Enchantment.");
+                    api.World.Logger.Warning("ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
             }
 
             // Write the assessment to attributes
@@ -175,7 +175,7 @@ namespace Vintagestory.GameContent
                     strEnc += ";";
                 }
 
-                api.World.Logger.Event("LatentEnchants string is {0}", str);
+                // api.World.Logger.Event("LatentEnchants string is {0}", str);
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
                 tree.SetDouble("latentEnchantTime", timeStamp);

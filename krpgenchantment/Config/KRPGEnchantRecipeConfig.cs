@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>() 
         {
             { "game:gem-emerald-rough", 8 },
-            { "game:gem-diamond-rough", 4 }, 
+            { "game:gem-diamond-rough", 1 }, 
             { "game:olivine_peridot-rough", 8 } 
         };
         public Dictionary<string, int> ReagentPotentialTiers = new Dictionary<string, int>()

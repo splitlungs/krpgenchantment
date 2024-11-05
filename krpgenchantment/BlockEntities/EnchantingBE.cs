@@ -479,7 +479,7 @@ namespace KRPGLib.Enchantment
                     PrevInputEnchantTime = 0d;
                     hours = 0d;
                     bool assed = Api.AssessItem(InputSlot, ReagentSlot);
-                    if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
+                    // if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
                 }
                 if (slotid == 1 && InputSlot.Empty)
                 {
@@ -531,10 +531,7 @@ namespace KRPGLib.Enchantment
             // Player clicked the Enchant toggle button
             if (packetid == 1337)
             {
-                // Api.World.Logger.Event("Received packet 1337");
-                // int selected = BitConverter.ToInt32(data);
                 EnchantingGuiPacket packet = SerializerUtil.Deserialize<EnchantingGuiPacket>(data);
-                // Api.World.Logger.Event("Selected enchant is {0}", SelectedEnchant);
 
                 // Set the selected latent enchant if it's valid, or un-set them if not
                 if (packet.SelectedEnchant >= 0 && LatentEnchants != null)
