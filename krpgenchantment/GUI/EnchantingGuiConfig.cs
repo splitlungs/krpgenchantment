@@ -21,6 +21,7 @@ namespace KRPGLib.Enchantment
         public double inputEnchantTime = 0;
         public double maxEnchantTime = 1;
         public bool nowEnchanting = false;
+        public bool canRead = false;
 
         // Probably not going to convert this to JSON, but idk it's here JIC
         public EnchantingGuiConfig Clone()

@@ -69,46 +69,89 @@ namespace Vintagestory.GameContent
         /// <returns></returns>
         public static List<string> GetLatentEnchants(this ICoreAPI api, ItemSlot inSlot, bool encrypt)
         {
-            if (!inSlot.Empty)
-            {
-                List<string> enchants = new List<string>();
-                ITreeAttribute tree = inSlot.Itemstack?.Attributes.GetOrAddTreeAttribute("enchantments");
-                if (tree != null && !encrypt)
-                {
-                    string lEnchant = tree.GetString("latentEnchants");
-                    string[] lEnchants = null;
-                    if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                    if (lEnchants != null)
-                    {
-                        foreach (string str in lEnchants)
-                            enchants.Add(str);
-                    }
-                    if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
-                        enchants = null;
-                    return enchants;
-                }
-                else if (tree != null && encrypt == true)
-                {
-                    string lEnchant = tree.GetString("latentEnchantsEncrypted");
-                    string[] lEnchants = null;
-                    if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                    if (lEnchants != null)
-                    {
-                        foreach (string str in lEnchants)
-                            enchants.Add(str);
-                    }
-                    if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
-                        enchants = null;
-                    return enchants;
-                }
-                else
-                {
-                    api.Logger.Error("Error when attempting to get Latent Enchants. Attribute tree not found.");
-                    return null;
-                }
-            }
+            if (inSlot.Empty == true) return null;
 
-            return null;
+            List<string> enchants = new List<string>();
+            ITreeAttribute tree = inSlot.Itemstack?.Attributes.GetOrAddTreeAttribute("enchantments");
+            if (tree != null && !encrypt)
+            {
+                string lEnchant = tree.GetString("latentEnchants");
+                string[] lEnchants = null;
+                if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                if (lEnchants != null)
+                {
+                    foreach (string str in lEnchants)
+                        enchants.Add(str);
+                }
+                if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                    enchants = null;
+                return enchants;
+            }
+            else if (tree != null && encrypt == true)
+            {
+                string lEnchant = tree.GetString("latentEnchantsEncrypted");
+                string[] lEnchants = null;
+                if (lEnchant != null) lEnchants = lEnchant.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                if (lEnchants != null)
+                {
+                    foreach (string str in lEnchants)
+                        enchants.Add(str);
+                }
+                if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                    enchants = null;
+                return enchants;
+            }
+            else
+            {
+                api.Logger.Error("Error when attempting to get Latent Enchants. Attribute tree not found.");
+                return null;
+            }
+        }
+        /// <summary>
+        /// Returns true if the given player can decrypt the enchant.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="byPlayer"></param>
+        /// <param name="recipe"></param>
+        /// <returns></returns>
+        public static bool CanReadEnchant(this ICoreAPI api, string player, EnchantingRecipe recipe)
+        {
+            if (player != null && recipe != null)
+            {
+                string enchant = recipe.Name.ToShortString();
+                string[] text = enchant.Split(":");
+                api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchant);
+                ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
+                if (journal == null)
+                    api.Logger.Warning("Could not find ModJournal!");
+                bool canRead = journal.DidDiscoverLore(player, "lore-" + text[1], 0);
+                api.Logger.Event("Can {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
+                return canRead;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="byPlayer"></param>
+        /// <param name="enchantName"></param>
+        /// <returns></returns>
+        public static bool CanReadEnchant(this ICoreAPI api, string player, string enchantName)
+        {
+            if (player != null && enchantName != null)
+            {
+                api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchantName);
+                string[] text = enchantName.Split(":");
+                ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
+                if (journal == null)
+                    api.Logger.Warning("Could not find ModJournal!");
+                bool canRead = journal.DidDiscoverLore(player, "lore-" + text[1], 0);
+                api.Logger.Event("Can the {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, text[1], canRead);
+                return canRead;
+            }
+            api.Logger.Warning("Could not determine byPlayer or enchantName for CanReadEnchant api call.");
+            return false;
         }
         /// <summary>
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.

@@ -12,6 +12,8 @@ using Vintagestory.API.Util;
 using System.Text;
 using System.IO;
 using System.Collections;
+using Vintagestory.API.Server;
+using System.Net.Sockets;
 
 namespace KRPGLib.Enchantment
 {
@@ -22,17 +24,6 @@ namespace KRPGLib.Enchantment
 
         public SKTypeface customTypeface;
         public EnchantingGuiConfig Config;
-
-        long lastRedrawMs;
-
-        // List<int> enchantButtons;
-        // string customFont = "dragon_alphabet.ttf";
-        // List<string> enchantNames;
-        // string selectedEnchant = "";
-        // string outputText;
-        // double inputEnchantTime;
-        // double maxEnchantTime;
-        // bool nowEnchanting;
 
         // Set GUI Element Bounds sizing
         int inputWidth = 480;
@@ -69,17 +60,17 @@ namespace KRPGLib.Enchantment
             if (customTypeface == null)
                 customTypeface = capi.LoadCustomFont(Config.customFont);
             // Create a new List of Latent Enchants if none found or malformed
-            if (Config.enchantNames == null)
+            if (Config.enchantNamesEncrypted == null)
             {
-                Config.enchantNames = new List<string>();
+                Config.enchantNamesEncrypted = new List<string>();
                 for (int i = 0; i < Config.rowCount; i++)
-                    Config.enchantNames.Add("");
+                    Config.enchantNamesEncrypted.Add("");
             }
-            else if (Config.enchantNames.Count != Config.rowCount)
+            else if (Config.enchantNamesEncrypted.Count != Config.rowCount)
             {
-                Config.enchantNames = new List<string>();
+                Config.enchantNamesEncrypted = new List<string>();
                 for (int i = 0; i < Config.rowCount; i++)
-                    Config.enchantNames.Add("");
+                    Config.enchantNamesEncrypted.Add("");
             }
 
             // 3. Set bounds
@@ -140,13 +131,14 @@ namespace KRPGLib.Enchantment
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
             for (int i = 0; i < Config.rowCount; i++)
             {
-                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNames[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
-                if (Config.selectedEnchant != -1 && i == Config.selectedEnchant && Config.enchantNames[i] != "")
+                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
+                if (Config.selectedEnchant != -1 && i == Config.selectedEnchant && Config.enchantNamesEncrypted[i] != "")
                 {
                     // capi.Logger.Warning("Found matching SkiaToggleButton. Attempting to set as the selectedEnchant.");
                     SkiaToggleButtonGuiElement button = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
                     button.SetValue(true);
                 }
+                // SingleComposer.AddAutoSizeHoverText("TEST", CairoFont.WhiteMediumText(), 1, containerRowBounds, "enchant" + i);
                 containerRowBounds = containerRowBounds.BelowCopy();
             }
 
@@ -154,9 +146,11 @@ namespace KRPGLib.Enchantment
             SingleComposer.Compose();
 
             // 8. After composing dialog, update dynamic elements
+            if (Config.canRead == true && Config.nowEnchanting == true)
+                Config.outputText += Lang.Get(Config.enchantNames[Config.selectedEnchant]);
             SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText);
-            SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            lastRedrawMs = capi.ElapsedMilliseconds;
+            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
+            // lastRedrawMs = capi.ElapsedMilliseconds;
 
             if (hoveredSlot != null)
             {
@@ -172,25 +166,36 @@ namespace KRPGLib.Enchantment
         /// Updates the SkiaToggleButtons only if Config.nowEnchanting is false. Be sure to ReCompose separately. 
         /// </summary>
         /// <param name="enchants"></param>
-        public void UpdateEnchantList(List<string> enchants)
+        public void UpdateEnchantList(List<string> enchants, List<string> enchantsEncrypted)
         {
             // Don't change while we're enchanting. Be sure to set this first, or else it will fail to update
             if (Config.nowEnchanting == true) return;
             // Create a new List of Latent Enchants if none found or malformed
-            if (enchants == null)
+            if (enchants == null || enchantsEncrypted == null)
             {
                 Config.enchantNames = new List<string>();
+                Config.enchantNamesEncrypted = new List<string>();
                 for (int i = 0; i < Config.rowCount; i++)
+                {
                     Config.enchantNames.Add("");
+                    Config.enchantNamesEncrypted.Add("");
+                }
             }
-            else if (enchants.Count != Config.rowCount)
+            else if (enchants.Count != Config.rowCount || enchantsEncrypted.Count != Config.rowCount)
             {
                 Config.enchantNames = new List<string>();
+                Config.enchantNamesEncrypted = new List<string>();
                 for (int i = 0; i < Config.rowCount; i++)
+                {
                     Config.enchantNames.Add("");
+                    Config.enchantNamesEncrypted.Add("");
+                }
             }
             else
+            {
                 Config.enchantNames = enchants;
+                Config.enchantNamesEncrypted = enchantsEncrypted;
+            }
 
             // Clean and Refill the Container
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
@@ -203,48 +208,40 @@ namespace KRPGLib.Enchantment
                     ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
                     for (int j = 0; j < i; i++)
                         containerRowBounds = containerRowBounds.BelowCopy();
-                    scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNames[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
+                    scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
                 }
                 else
                 {
-                    element.textToRender = Config.enchantNames[i];
+                    element.textToRender = Config.enchantNamesEncrypted[i];
                     element.Toggleable = true;
-                    if (Config.selectedEnchant == i)
-                        element.SetValue(true);
-                    else
-                        element.SetValue(false);
+                    
                 }
+                // Set toggle if it should be selected
+                if (Config.selectedEnchant == i)
+                    element.SetValue(true);
+                else
+                    element.SetValue(false);
             }
+            SingleComposer.ReCompose();
         }
-        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, ICoreAPI api)
+        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, bool canRead)
         {
             this.Config.outputText = outputText;
             this.Config.inputEnchantTime = inputProcessTime;
             this.Config.maxEnchantTime = maxProcessTime;
             this.Config.nowEnchanting = isEnchanting;
             this.Config.selectedEnchant = selected;
+            this.Config.canRead = canRead;
 
             if (!IsOpened()) return;
 
-            SingleComposer.GetDynamicText("outputText").SetNewText(outputText, true, true);
+            if (canRead == true)
+                Config.outputText = outputText + Lang.Get(Config.enchantNames[selected]);
 
-            // for (int i = 0; i < rowCount; i++) 
-            // {
-            //     if (enchantNames[i].Equals(selected))
-            //     {
-            //         api.Logger.Warning("Updating EnchantingTableGui and we found a selected button for {0}", selected);
-            //         SkiaToggleButtonGuiElement button = SingleComposer.GetContainer("scroll-content").Elements[i] as SkiaToggleButtonGuiElement;
-            //         button.SetValue(true);
-            //     }
-            // }
-
-            if (!isEnchanting) return;
-
-            if (capi.ElapsedMilliseconds - lastRedrawMs > 1000)
-            {
-                if (SingleComposer != null) SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-                lastRedrawMs = capi.ElapsedMilliseconds;
-            }
+            capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
+            SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
+            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
+            SingleComposer.ReCompose();
         }
         #endregion
         #region Events
@@ -260,13 +257,21 @@ namespace KRPGLib.Enchantment
             for (int i = 0; i < scrollArea.Elements.Count; i++)
             {
                 SkiaToggleButtonGuiElement skiaButton = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
+                if (skiaButton.ButtonID != index)
+                    skiaButton.SetValue(false);
                 // Button is the one clicked AND is NOT depressed
-                if (skiaButton.ButtonID == index && state == false) Config.selectedEnchant = -1;
-                // Button is the one clicked AND IS depressed
-                else if (skiaButton.ButtonID == index && state == true) Config.selectedEnchant = i;
+                if (skiaButton.ButtonID == index && state == false)
+                    index = -1;
                 // Button is NOT the one clicked
-                else skiaButton.SetValue(false);
+                else 
+                    skiaButton.SetValue(false);
             }
+            if (Config.selectedEnchant == index)
+                Config.selectedEnchant = -1;
+            else
+                Config.selectedEnchant = index;
+            Config.inputEnchantTime = 0;
+            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             // Click
             capi.Gui.PlaySound("toggleswitch");
             // Notify the table which one we clicked
@@ -301,10 +306,9 @@ namespace KRPGLib.Enchantment
         }
         public void OnInventorySlotModified(int slotid)
         {
-            // Direct call can cause InvalidOperationException
-            // capi.Event.EnqueueMainThreadTask(SetupDialog, "setupenchanterdlg");
             // Notify the table which one we clicked
             Config.selectedEnchant = -1;
+            Config.inputEnchantTime = 0;
             EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
             byte[] data = SerializerUtil.Serialize(packet);
             EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
@@ -322,9 +326,6 @@ namespace KRPGLib.Enchantment
         {
             base.OnGuiOpened();
             Inventory.SlotModified += OnInventorySlotModified;
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            // UpdateEnchantList(enchantNames);
-            // Update(inputEnchantTime, maxEnchantTime, nowEnchanting, outputText, selectedEnchant, capi);
         }
 
         public override void OnGuiClosed()
@@ -334,6 +335,9 @@ namespace KRPGLib.Enchantment
             SingleComposer.GetSlotGrid("inputSlot").OnGuiClosed(capi);
             SingleComposer.GetSlotGrid("outputSlot").OnGuiClosed(capi); 
             SingleComposer.GetSlotGrid("reagentSlot").OnGuiClosed(capi);
+
+            // Notify the table to remove us from the Readers list
+            capi.Network.SendBlockEntityPacket(BlockEntityPosition.X, BlockEntityPosition.Y, BlockEntityPosition.Z, 1338);
 
             base.OnGuiClosed();
         }

@@ -44,7 +44,7 @@ namespace KRPGLib.Enchantment
         };
         // Version
         public double Version;
-
+        // Not supported yet
         private bool IsDirty;
         public void MarkDirty()
         {
@@ -53,7 +53,7 @@ namespace KRPGLib.Enchantment
                 IsDirty = true;
             }
         }
-
+        // Not supported yet
         internal void Reload(KRPGEnchantRecipeConfig config)
         {
             if (config != null) 

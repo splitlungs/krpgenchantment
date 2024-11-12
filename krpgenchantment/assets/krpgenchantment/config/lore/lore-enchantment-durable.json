@@ -1,0 +1,6 @@
+{
+	"code": "enchantment-durable",
+	"title": "krpgenchantment:lore-enchantment-title",
+	"category": "research",
+	"pieces": [ "krpgenchantment:lore-enchantment-durable-piece1" ]
+}
