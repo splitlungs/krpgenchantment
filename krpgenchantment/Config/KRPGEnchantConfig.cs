@@ -15,15 +15,57 @@ namespace KRPGLib.Enchantment
     {
         // Global Options
         public List<string> DisabledEnchants = new List<string>();
-        
-        // Compatibility patches
-        public bool EnableFantasyCreatures;
-        public bool EnableFeverstoneWilds;
-        public bool EnableOutlaws;
-        public bool EnableRustAndRot;
+        // Recipe Config
+        public double EnchantTimeOverride = -1d;
+        public double LatentEnchantResetDays = 7d;
+        public int MaxLatentEnchants = 3;
+        public Dictionary<string, int> ValidReagents = new Dictionary<string, int>()
+        {
+            { "game:gem-emerald-rough", 3 },
+            { "game:gem-diamond-rough", 1 },
+            { "game:gem-olivine_peridot-rough", 3 }
+        };
+        public Dictionary<string, int> ReagentPotentialTiers = new Dictionary<string, int>()
+        {
+            { "low", 2 },
+            { "medium", 3 },
+            { "high", 5 }
+        };
+        // Compatibility patch list
+        public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>()
+        {
+            { "AncientArmory", false },
+            { "KRPGWands", false },
+            { "Paxel", false },
+            { "RustbowndMagic", false },
+            { "SpearExpantion", false },
+            { "Swordz", false },
+        };
+        // Lore Configuration
+        public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()
+        {
+            { "enchantment-chilling", 0 },
+            { "enchantment-durable", 1 },
+            { "enchantment-flaming", 2 },
+            { "enchantment-frost", 3 },
+            { "enchantment-harming", 4 },
+            { "enchantment-healing", 5 },
+            { "enchantment-igniting", 6 },
+            { "enchantment-knockback", 7 },
+            { "enchantment-lightning", 8 },
+            { "enchantment-pit", 9 },
+            { "enchantment-protection", 10 },
+            { "enchantment-resistelectric", 11 },
+            { "enchantment-resistfire", 12 },
+            { "enchantment-resistfrost", 13 },
+            { "enchantment-resistheal", 14 },
+            { "enchantment-resistinjury", 15 },
+            { "enchantment-resistpoison", 16 },
+            { "enchantment-shocking", 17 }
+        };
         // Version
         public double Version;
-
+        // Not supported yet
         private bool IsDirty;
         public void MarkDirty()
         {
@@ -32,17 +74,12 @@ namespace KRPGLib.Enchantment
                 IsDirty = true;
             }
         }
-
         internal void Reload(KRPGEnchantConfig config)
         {
             if (config != null) 
             {
                 DisabledEnchants = new List<string>();
                 DisabledEnchants = config.DisabledEnchants;
-                EnableFantasyCreatures = config.EnableFantasyCreatures;
-                EnableFeverstoneWilds = config.EnableFeverstoneWilds;
-                EnableOutlaws = config.EnableOutlaws;
-                EnableRustAndRot = config.EnableRustAndRot;
             }
         }
     }

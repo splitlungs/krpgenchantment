@@ -37,10 +37,10 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     if (Config.DisabledEnchants?.Count > 0) Config.DisabledEnchants = tempConfig.DisabledEnchants;
-                    if (Config.EnableFantasyCreatures) tempConfig.EnableFantasyCreatures = true;
-                    if (Config.EnableFeverstoneWilds) tempConfig.EnableFeverstoneWilds = true;
-                    if (Config.EnableOutlaws) tempConfig.EnableOutlaws = true;
-                    if (Config.EnableRustAndRot) tempConfig.EnableRustAndRot = true;
+                    // if (Config.EnableFantasyCreatures) tempConfig.EnableFantasyCreatures = true;
+                    // if (Config.EnableFeverstoneWilds) tempConfig.EnableFeverstoneWilds = true;
+                    // if (Config.EnableOutlaws) tempConfig.EnableOutlaws = true;
+                    // if (Config.EnableRustAndRot) tempConfig.EnableRustAndRot = true;
 
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;

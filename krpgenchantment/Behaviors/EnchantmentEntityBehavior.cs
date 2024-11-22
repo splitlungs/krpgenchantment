@@ -352,7 +352,7 @@ namespace KRPGLib.Enchantment
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
                 //
                 // entity.ReceiveDamage(source, dmg);
-                Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
+                // Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
                 hp.OnEntityReceiveDamage(source, ref dmg);
                 GenerateParticles(source, dmg);
             }

@@ -236,9 +236,13 @@ namespace KRPGLib.Enchantment
             if (!IsOpened()) return;
 
             if (canRead == true)
-                Config.outputText = outputText + Lang.Get(Config.enchantNames[selected]);
+            {
+                string[] strings = Config.enchantNames[selected].Split(":");
+                string s = outputText + Lang.Get("krpgenchantment:" + strings[1]);
+                Config.outputText = s;
+            }
 
-            capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
+            // capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
             SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
             // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             SingleComposer.ReCompose();
@@ -257,19 +261,19 @@ namespace KRPGLib.Enchantment
             for (int i = 0; i < scrollArea.Elements.Count; i++)
             {
                 SkiaToggleButtonGuiElement skiaButton = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
-                if (skiaButton.ButtonID != index)
-                    skiaButton.SetValue(false);
                 // Button is the one clicked AND is NOT depressed
-                if (skiaButton.ButtonID == index && state == false)
-                    index = -1;
-                // Button is NOT the one clicked
-                else 
+                if (skiaButton.ButtonID == index && Config.selectedEnchant == index)
+                    Config.selectedEnchant = -1;
+                // Button IS the one clicked
+                else if (skiaButton.ButtonID == index && Config.selectedEnchant == -1)
+                    Config.selectedEnchant = index;
+                else
                     skiaButton.SetValue(false);
             }
-            if (Config.selectedEnchant == index)
-                Config.selectedEnchant = -1;
-            else
-                Config.selectedEnchant = index;
+            // if (Config.selectedEnchant == index)
+            //     Config.selectedEnchant = -1;
+            // else
+            //     Config.selectedEnchant = index;
             Config.inputEnchantTime = 0;
             // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             // Click

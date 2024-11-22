@@ -15,9 +15,9 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
-        private const double ConfigVersion = 0.4d;
-        public const string ConfigFile = "KRPGEnchantment_Recipe_Config.json";
-        public static KRPGEnchantRecipeConfig Config { get; set; } = null!;
+        private const double ConfigVersion = 0.6d;
+        public const string ConfigFile = "KRPGEnchantment_Config.json";
+        public static KRPGEnchantConfig Config { get; set; } = null!;
 
         ICoreServerAPI sApi;
 
@@ -40,49 +40,56 @@ namespace KRPGLib.Enchantment
 
             try
             {
-                Config = sapi.LoadModConfig<KRPGEnchantRecipeConfig>(ConfigFile);
+                Config = sapi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
                 if (Config == null)
                 {
-                    Config = new KRPGEnchantRecipeConfig();
+                    Config = new KRPGEnchantConfig();
                     Config.Version = ConfigVersion;
                     sapi.StoreModConfig(Config, ConfigFile);
 
-                    sapi.Logger.Event("KRPGEnchantRecipeConfig file not found. A new one has been created.");
+                    sapi.Logger.Event("KRPGEnchantConfig file not found. A new one has been created.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
-                    KRPGEnchantRecipeConfig tempConfig = new KRPGEnchantRecipeConfig();
+                    KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
+
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
-                    // These will be deprecated in favor of CustomPatches at next release
-                    if (Config.EnableAncientArmory) tempConfig.CustomPatches["AncientArmory"] = true;
-                    else tempConfig.CustomPatches["AncientArmory"] = false;
-                    if (Config.EnableKRPGWands) tempConfig.CustomPatches["KRPGWands"] = true;
-                    else tempConfig.CustomPatches["KRPGWands"] = false;
-                    if (Config.EnablePaxel) tempConfig.CustomPatches["Paxel"] = true;
-                    else tempConfig.CustomPatches["Paxel"] = false;
-                    if (Config.EnableRustboundMagic) tempConfig.CustomPatches["RustboundMagic"] = true;
-                    else tempConfig.CustomPatches["EnableRustboundMagic"] = false;
-                    if (Config.EnableSpearExpantion) tempConfig.CustomPatches["SpearExpantion"] = true;
-                    else tempConfig.CustomPatches["SpearExpantion"] = false;
-                    if (Config.EnableSwordz) tempConfig.CustomPatches["Swordz"] = true;
-                    else tempConfig.CustomPatches["Swordz"] = false;
+                    if (!tempConfig.ValidReagents.ContainsKey("game:gem-emerald-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 3);
+                    if (!tempConfig.ValidReagents.ContainsKey("game:gem-diamond-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
+                    if (!tempConfig.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 3);
+
                     if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
-                    
+                    if (!tempConfig.CustomPatches.ContainsKey("AncientArmory")) 
+                        tempConfig.CustomPatches.Add("AncientArmory", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("KRPGWands")) 
+                        tempConfig.CustomPatches.Add("KRPGWands", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("Paxel")) 
+                        tempConfig.CustomPatches.Add("Paxel", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("RustboundMagic")) 
+                        tempConfig.CustomPatches.Add("RustboundMagic", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("SpearExpantion")) 
+                        tempConfig.CustomPatches.Add("SpearExpantion", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("Swordz")) 
+                        tempConfig.CustomPatches.Add("Swordz", false);
+
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;
                     sapi.StoreModConfig(Config, ConfigFile);
 
-                    sapi.Logger.Event("KRPGEnchantRecipeConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
+                    sapi.Logger.Event("KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
                 }
                 else
-                    sapi.Logger.Event("KRPGEnchantRecipeConfig file found. Loaded successfully.");
+                    sapi.Logger.Event("KRPGEnchantConfig file found. Loaded successfully.");
             }
             catch (Exception e)
             {
-                sapi.Logger.Error("Error loading KRPGEnchantRecipeConfig: {0}", e);
+                sapi.Logger.Error("Error loading KRPGEnchantConfig: {0}", e);
                 return;
             }
             classExclusiveRecipes = sapi.World.Config.GetBool("classExclusiveRecipes", true);
@@ -221,7 +228,7 @@ namespace KRPGLib.Enchantment
         {
             try
             {
-                var configTemp = sApi.LoadModConfig<KRPGEnchantRecipeConfig>(ConfigFile);
+                var configTemp = sApi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
                 Config.Reload(configTemp);
             }
             catch (Exception e)

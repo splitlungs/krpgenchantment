@@ -67,23 +67,29 @@ namespace KRPGLib.Enchantment
         public int IngredientQuantity(ItemSlot inSlot)
         {
             int qty = 1;
-            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+            // Get qty from Config
+            string itemcode = inSlot.Itemstack.Collectible.Code.ToString();
+            // Then check against the Config file
+            if (EnchantingRecipeLoader.Config.ValidReagents.ContainsKey(itemcode))
+                qty = EnchantingRecipeLoader.Config.ValidReagents[itemcode];
+            // Override from Recipe. Note this overrides Config.
+            foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in Ingredients)
             {
-                bool foundt = false;
-                if (ing.IsWildCard)
+                bool foundi = false;
+                if (ing.Value.IsWildCard)
                 {
-                    inSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
+                    inSlot.Itemstack.Collectible.WildCardMatch(ing.Value.Code);
 
                     bool foundw = false;
                     foundw =
-                            ing.Type == inSlot.Itemstack.Class &&
-                            WildcardUtil.Match(ing.Code, inSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                            ing.Value.Type == inSlot.Itemstack.Class &&
+                            WildcardUtil.Match(ing.Value.Code, inSlot.Itemstack.Collectible.Code, ing.Value.AllowedVariants)
                         ;
-                    if (foundw == true) foundt = true;
+                    if (foundw == true) foundi = true;
                 }
-                else if (ing.ResolvedItemstack.Satisfies(inSlot.Itemstack)) foundt = true;
+                else if (ing.Value.ResolvedItemstack.Satisfies(inSlot.Itemstack)) foundi = true;
 
-                if (foundt == true) qty = ing.Quantity;
+                if (foundi == true) qty = ing.Value.Quantity;
             }
             return qty;
         }
@@ -110,10 +116,15 @@ namespace KRPGLib.Enchantment
             int power = 0;
             if (!rOverride)
             {
-                string pot = inSlot.Itemstack.Attributes?.GetString("potential", "low");
+                string pot = rSlot.Itemstack.Attributes?.GetString("potential", "low").ToLower();
                 int maxPot = EnchantingRecipeLoader.Config.ReagentPotentialTiers[pot];
                 power = api.World.Rand.Next(1, maxPot + 1);
+                // api.Logger.Event("Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, pot);
             }
+            // else
+            // {
+            //     api.Logger.Warning("Could not get Config override for reagent potential.");
+            // }
             // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
             ITreeAttribute tree = outStack.Attributes?.GetTreeAttribute("enchantments");
             // Apply Enchantments

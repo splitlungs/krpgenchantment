@@ -111,7 +111,7 @@ namespace Vintagestory.GameContent
         /// Returns true if the given player can decrypt the enchant.
         /// </summary>
         /// <param name="api"></param>
-        /// <param name="byPlayer"></param>
+        /// <param name="player"></param>
         /// <param name="recipe"></param>
         /// <returns></returns>
         public static bool CanReadEnchant(this ICoreAPI api, string player, EnchantingRecipe recipe)
@@ -119,15 +119,20 @@ namespace Vintagestory.GameContent
             if (player != null && recipe != null)
             {
                 string enchant = recipe.Name.ToShortString();
+                // api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchant);
                 string[] text = enchant.Split(":");
-                api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchant);
+                if (!EnchantingRecipeLoader.Config.LoreIDs.ContainsKey(text[1]))
+                    return false;
+                int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                     api.Logger.Warning("Could not find ModJournal!");
-                bool canRead = journal.DidDiscoverLore(player, "lore-" + text[1], 0);
-                api.Logger.Event("Can {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
+                bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
+                // api.Logger.Event("Can {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
                 return canRead;
             }
+
+            api.Logger.Event("Player or recipe was null when attempting to read the runes!");
             return false;
         }
         /// <summary>
@@ -143,10 +148,13 @@ namespace Vintagestory.GameContent
             {
                 api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchantName);
                 string[] text = enchantName.Split(":");
+                if (!EnchantingRecipeLoader.Config.LoreIDs.ContainsKey(text[1]))
+                    return false;
+                int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                     api.Logger.Warning("Could not find ModJournal!");
-                bool canRead = journal.DidDiscoverLore(player, "lore-" + text[1], 0);
+                bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
                 api.Logger.Event("Can the {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, text[1], canRead);
                 return canRead;
             }
