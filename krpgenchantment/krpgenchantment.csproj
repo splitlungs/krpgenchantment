@@ -118,6 +118,7 @@
   <None Remove="assets\krpgenchantment\patches\game-tool-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\game-weapon-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
+  <None Remove="assets\krpgenchantment\patches\legacy-armor-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
@@ -130,18 +131,12 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\game-ammo.json" />
+  <None Remove="assets\krpgenchantment\recipes\enchanting-table\game-armor.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistelectric.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistfire.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistfrost.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistheal.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistinjury.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\armor\reagent-resistpoison.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-protection.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\universal\reagent-durable.json" />
   <None Remove="assets\krpgwands\recipes\enchanting-table\krpgwands-universal.json" />
   <None Remove="assets\outlaws\patches\outlaws-entity-behaviors.json" />
   <None Remove="assets\paxel\patches\krpg-tool-behaviors.json" />
@@ -183,19 +178,13 @@
   <None Remove="assets\swordz\swordz-stiletto-tier-1.json" />
   <None Remove="assets\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgwands\wand-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-chilling.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-flaming.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-frost.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-harming.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-healing.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-igniting.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-knockback.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-lightning.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-pit.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\reagent\reagent-shocking.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="assets\krpgenchantment\itemtypes\" />
 </ItemGroup>
 
 </Project>

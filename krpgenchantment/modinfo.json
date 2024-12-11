@@ -3,8 +3,8 @@
   "modid": "krpgenchantment",
   "name": "KRPGEnchantment",
   "authors": [ "BloodThunder" ],
-  "description": "Adds enchantments for use with KRPG systems.",
-  "version": "0.5.2",
+  "description": "Adds magical enchantments to VS!",
+  "version": "0.5.3",
   "dependencies": {
     "game": ""
   }

@@ -341,7 +341,7 @@ namespace KRPGLib.Enchantment
             SingleComposer.GetSlotGrid("reagentSlot").OnGuiClosed(capi);
 
             // Notify the table to remove us from the Readers list
-            capi.Network.SendBlockEntityPacket(BlockEntityPosition.X, BlockEntityPosition.Y, BlockEntityPosition.Z, 1338);
+            capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1338);
 
             base.OnGuiClosed();
         }

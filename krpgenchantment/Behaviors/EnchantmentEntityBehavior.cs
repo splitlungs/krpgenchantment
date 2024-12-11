@@ -10,7 +10,9 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Net;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -319,7 +321,8 @@ namespace KRPGLib.Enchantment
             // Apply Defenses
             if (IsPlayer)
             {
-                IInventory inv = agent?.GearInventory;
+                IInventory inv = player.InventoryManager.GetOwnInventory("character");
+                // IInventory inv = agent?.GearInventory;
                 float resist = 0f;
                 int[] wearableSlots = new int[3] { 12, 13, 14 };
 

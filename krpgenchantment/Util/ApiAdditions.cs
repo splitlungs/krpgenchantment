@@ -126,13 +126,15 @@ namespace Vintagestory.GameContent
                 int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
-                    api.Logger.Warning("Could not find ModJournal!");
+                {
+                    api.Logger.Warning("Could not find LegacyModJournal!");
+                    return false;
+                }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
                 // api.Logger.Event("Can {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
                 return canRead;
             }
-
-            api.Logger.Event("Player or recipe was null when attempting to read the runes!");
+            // api.Logger.Event("Player or recipe was null when attempting to read the runes!");
             return false;
         }
         /// <summary>
@@ -146,21 +148,63 @@ namespace Vintagestory.GameContent
         {
             if (player != null && enchantName != null)
             {
-                api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchantName);
+                // api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchantName);
                 string[] text = enchantName.Split(":");
                 if (!EnchantingRecipeLoader.Config.LoreIDs.ContainsKey(text[1]))
                     return false;
                 int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
-                    api.Logger.Warning("Could not find ModJournal!");
+                {
+                    api.Logger.Warning("Could not find LegacyModJournal!");
+                    return false;
+                }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
-                api.Logger.Event("Can the {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, text[1], canRead);
+                // api.Logger.Event("Can the {0} read {1}? {2}", api.World.PlayerByUid(player).PlayerName, text[1], canRead);
                 return canRead;
             }
-            api.Logger.Warning("Could not determine byPlayer or enchantName for CanReadEnchant api call.");
+            // api.Logger.Warning("Could not determine byPlayer or enchantName for CanReadEnchant api call.");
             return false;
         }
+        /// <summary>
+        /// This exists as a temporary replacement for a removed helper function in ModJournal.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="playerUid"></param>
+        /// <param name="code"></param>
+        /// <param name="chapterId"></param>
+        /// <returns></returns>
+        public static bool DidDiscoverLore(this ICoreAPI api, string playerUid, string code, int chapterId)
+        {
+            Dictionary<string, Journal> journalsByPlayerUid = new Dictionary<string, Journal>();
+
+            if (!journalsByPlayerUid.TryGetValue(playerUid, out var value))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < value.Entries.Count; i++)
+            {
+                if (!(value.Entries[i].LoreCode == code))
+                {
+                    continue;
+                }
+
+                JournalEntry journalEntry = value.Entries[i];
+                for (int j = 0; j < journalEntry.Chapters.Count; j++)
+                {
+                    if (journalEntry.Chapters[j].ChapterId == chapterId)
+                    {
+                        return true;
+                    }
+                }
+
+                break;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>

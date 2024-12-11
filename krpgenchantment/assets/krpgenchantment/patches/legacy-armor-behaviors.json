@@ -1,7 +1,7 @@
 [
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/arm.json",
+    "file": "game:itemtypes/wearable/arm.json",
     "path": "/behaviors",
     "value": [
       {
@@ -15,7 +15,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/armor.json",
+    "file": "game:itemtypes/wearable/armor.json",
     "path": "/behaviors",
     "value": [
       {
@@ -29,7 +29,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/emblem.json",
+    "file": "game:itemtypes/wearable/emblem.json",
     "path": "/behaviors",
     "value": [
       {
@@ -43,7 +43,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/emblem-butterflypin.json",
+    "file": "game:itemtypes/wearable/emblem-butterflypin.json",
     "path": "/behaviors",
     "value": [
       {
@@ -57,7 +57,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/face.json",
+    "file": "game:itemtypes/wearable/face.json",
     "path": "/behaviors",
     "value": [
       {
@@ -71,7 +71,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/foot.json",
+    "file": "game:itemtypes/wearable/foot.json",
     "path": "/behaviors",
     "value": [
       {
@@ -85,7 +85,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/hand.json",
+    "file": "game:itemtypes/wearable/hand.json",
     "path": "/behaviors",
     "value": [
       {
@@ -99,7 +99,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/head.json",
+    "file": "game:itemtypes/wearable/head.json",
     "path": "/behaviors",
     "value": [
       {
@@ -113,7 +113,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/lowerbody.json",
+    "file": "game:itemtypes/wearable/lowerbody.json",
     "path": "/behaviors",
     "value": [
       {
@@ -127,7 +127,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/neck.json",
+    "file": "game:itemtypes/wearable/neck.json",
     "path": "/behaviors",
     "value": [
       {
@@ -141,7 +141,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/shoulder.json",
+    "file": "game:itemtypes/wearable/shoulder.json",
     "path": "/behaviors",
     "value": [
       {
@@ -155,7 +155,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/upperbody.json",
+    "file": "game:itemtypes/wearable/upperbody.json",
     "path": "/behaviors",
     "value": [
       {
@@ -169,7 +169,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/uperbodyover.json",
+    "file": "game:itemtypes/wearable/uperbodyover.json",
     "path": "/behaviors",
     "value": [
       {
@@ -183,7 +183,7 @@
   },
   {
     "op": "addmerge",
-    "file": "game:itemtypes/wearable/seraph/waist.json",
+    "file": "game:itemtypes/wearable/waist.json",
     "path": "/behaviors",
     "value": [
       {

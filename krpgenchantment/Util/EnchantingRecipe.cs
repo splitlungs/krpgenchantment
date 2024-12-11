@@ -96,7 +96,9 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns an Enchanted ItemStack
         /// </summary>
-        /// <param name="inStack"></param>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
         /// <returns></returns>
         public ItemStack OutStack(ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
@@ -106,6 +108,9 @@ namespace KRPGLib.Enchantment
             ItemStack outStack = inSlot.Itemstack.Clone();
             // Setup Quantity
             outStack.StackSize = IngredientQuantity(inSlot);
+
+            api.Logger.Event("Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+
             // Setup Reagent Override
             bool rOverride = false;
             foreach (KeyValuePair<string, CraftingRecipeIngredient> keyValuePair in Ingredients)
@@ -204,7 +209,6 @@ namespace KRPGLib.Enchantment
                 int wildcardEndLen = val.Value.Code.Path.Length - wildcardStartLen - 1;
 
                 List<string> codes = new List<string>();
-
 
                 if (val.Value.Type == EnumItemClass.Block)
                 {
