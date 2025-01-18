@@ -3,6 +3,11 @@
     "name": "enchantment-chilling",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -33,6 +38,11 @@
     "name": "enchantment-flaming",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -63,6 +73,11 @@
     "name": "enchantment-frost",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -93,6 +108,11 @@
     "name": "enchantment-harming",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -123,6 +143,11 @@
     "name": "enchantment-healing",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -153,6 +178,11 @@
     "name": "enchantment-igniting",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -183,6 +213,11 @@
     "name": "enchantment-knockback",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -213,6 +248,11 @@
     "name": "enchantment-lightning",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -243,6 +283,11 @@
     "name": "enchantment-pit",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"
@@ -273,6 +318,11 @@
     "name": "enchantment-shocking",
     "processingHours": 1,
     "ingredients": {
+      "arrow": {
+        "type": "item",
+        "code": "game:arrow-*",
+        "quantity": 64
+      },
       "axe": {
         "type": "item",
         "code": "game:axe-*-*"

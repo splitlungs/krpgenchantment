@@ -218,6 +218,7 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
+                Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
                 Dictionary<string, int> enchants = new Dictionary<string, int>();
                 foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))

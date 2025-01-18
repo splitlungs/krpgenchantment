@@ -110,6 +110,7 @@
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-3.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-4.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\blades-tier-1.json" />
+  <None Remove="assets\krpgenchantment\config\configlib-patches.json" />
   <None Remove="assets\krpgenchantment\config\lore\lore-enchantment.json" />
   <None Remove="assets\krpgenchantment\fonts\dragon_alphabet.ttf" />
   <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />

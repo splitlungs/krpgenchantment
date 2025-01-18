@@ -1,0 +1,32 @@
+{
+  "version": 0,
+  "file": "KRPGEnchantment_Config.json",
+  "patches": {},
+  "settings": [
+    {
+      "type": "separator",
+      "title": "KRPGEnchantmentSettings"
+    },
+    {
+      "code": "EnchantTimeOverride",
+      "comment": "EnchantTimeOverrideComment",
+      "type": "float",
+      "clientSide": false,
+      "default": -1.0
+    },
+    {
+      "code": "LatentEnchantResetDays",
+      "comment": "LatentEnchantResetDaysComment",
+      "type": "float",
+      "clientSide": false,
+      "default": 7.0
+    },
+    {
+      "code": "MaxLatentEnchants",
+      "comment": "MaxLatentEnchantsComment",
+      "type": "integer",
+      "clientSide": false,
+      "default": 3
+    }
+  ]
+}

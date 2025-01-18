@@ -13,6 +13,14 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
+    "file": "game:entities/land/animalbot.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
     "file": "game:entities/land/bear.json"
   },
   {
@@ -102,6 +110,14 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/land/hooved/deer.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/hooved/elk-tamed.json"
   },
   {
     "op": "add",
@@ -230,6 +246,14 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/land/sheep-bighorn-male.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/shiver.json"
   },
   {
     "op": "add",

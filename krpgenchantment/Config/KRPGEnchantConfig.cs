@@ -15,6 +15,7 @@ namespace KRPGLib.Enchantment
     {
         // Global Options
         public List<string> DisabledEnchants = new List<string>();
+        public int MaxEnchantsPerItem = 4;
         // Recipe Config
         public double EnchantTimeOverride = -1d;
         public double LatentEnchantResetDays = 7d;

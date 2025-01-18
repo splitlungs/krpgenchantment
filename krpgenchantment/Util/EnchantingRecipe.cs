@@ -68,7 +68,7 @@ namespace KRPGLib.Enchantment
         {
             int qty = 1;
             // Get qty from Config
-            string itemcode = inSlot.Itemstack.Collectible.Code.ToString();
+            string itemcode = inSlot.Itemstack.Collectible.Code.ToShortString();
             // Then check against the Config file
             if (EnchantingRecipeLoader.Config.ValidReagents.ContainsKey(itemcode))
                 qty = EnchantingRecipeLoader.Config.ValidReagents[itemcode];
@@ -109,7 +109,7 @@ namespace KRPGLib.Enchantment
             // Setup Quantity
             outStack.StackSize = IngredientQuantity(inSlot);
 
-            api.Logger.Event("Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+            // api.Logger.Event("Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
 
             // Setup Reagent Override
             bool rOverride = false;
@@ -353,26 +353,34 @@ namespace KRPGLib.Enchantment
         {
             // Null Check
             if (inputSlot.Empty || reagentSlot.Empty) return false;
-
+            
             // Check Targets
             bool foundt = false;
-            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+            // bool flag2 = false;
+            // foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
+            foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in Ingredients)
             {
-                if (ing.IsWildCard)
+                api.Logger.Event("Echanting Recipe: {0}. Checking Resolved Ingredient {1}. Quantity of {2}", Name, ing.Value.Name, ing.Value.Quantity);
+                if (ing.Value.IsWildCard)
                 {
-                    inputSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
+                    api.Logger.Event("Ingredient is a Wildcard!");
+
+                    inputSlot.Itemstack.Collectible.WildCardMatch(ing.Value.Code);
 
                     bool foundw = false;
                     foundw =
-                            ing.Type == inputSlot.Itemstack.Class &&
-                            WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
+                            ing.Value.Type == inputSlot.Itemstack.Class &&
+                            WildcardUtil.Match(ing.Value.Code, inputSlot.Itemstack.Collectible.Code, ing.Value.AllowedVariants)
                         ;
                     if (foundw == true) foundt = true;
                 }
-                else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
+                else if (ing.Value.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
 
-                if (inputSlot.Itemstack.StackSize < ing.Quantity) foundt = false;
+                if (inputSlot.Itemstack.StackSize < ing.Value.Quantity) foundt = false;
             }
+
+            api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
+
             // Cancel if no Target
             if (!foundt) return false;
 
@@ -407,6 +415,9 @@ namespace KRPGLib.Enchantment
                         foundr = true;
                 }
             }
+
+            api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
+
             // Cancel if no Rreagent is found
             if (!foundr) return false;
 

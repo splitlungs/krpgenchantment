@@ -130,5 +130,15 @@
   "dsc-cmd-enchantment": "Manage the KRPG Enchantment mod.",
   "dsc-reload-config": "Reloads the config from file.",
   "cmd-reloadcfg-msg": "Config reloaded. Server restart may be required to see changes.",
-  "cmd-reloadcfg-fail": "Config reload failed."
+  "cmd-reloadcfg-fail": "Config reload failed.",
+
+  "KRPGEnchantmentSettings": "Configure KRPG Enchantment settings",
+  "EnchantTimeOverride": "Enchant Time Override",
+  "EnchantTimeOverrideComment": "Sets the amount of time to perform an enchantment in hours. -1 disables the override.",
+  "LatentEnchantResetDays": "Latent Enchantment Reset",
+  "LatentEnchantResetDaysComment": "Sets the amount of days between Latent Enchantment resets. 0 resets every time the item is checked by an Enchanting Table.",
+  "MaxLatentEnchants": "Maximum Latent Enchantments",
+  "MaxLatentEnchantsComment": "Sets the amount of Latent Enchantments an item can hold at a single time. 0 effectively disables players enchanting items on their own.",
+  "ValidReagents": "Valid Reagents",
+  "ValidReagentsComment": "Item and quantity required to perform an Enchantment."
 }
