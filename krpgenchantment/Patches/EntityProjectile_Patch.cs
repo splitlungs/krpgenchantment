@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -22,8 +23,12 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
-            if (__instance.ProjectileStack.Attributes.GetInt(EnumEnchantments.healing.ToString(), 0) > 0 
-                || __instance.WatchedAttributes.GetInt(EnumEnchantments.healing.ToString(), 0) > 0)
+            // Get Enchantments
+            ITreeAttribute tree = __instance.ProjectileStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            // Item overrides Entity's Enchantment
+            int ePower = tree.GetInt(EnumEnchantments.healing.ToString(), 0);
+            if (ePower > 0 || __instance.WatchedAttributes.GetInt(EnumEnchantments.healing.ToString(), 0) > 0)
                 __instance.Damage = 0;
 
             return true;
@@ -37,21 +42,34 @@ namespace KRPGLib.Enchantment
             if (eeb != null)
             {
                 // Get Enchantments
+                ITreeAttribute tree = __instance.ProjectileStack.Attributes?.GetTreeAttribute("enchantments");
                 Dictionary<string, int> enchants = new Dictionary<string, int>();
                 foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
                 {
                     // Item overrides Entity's Enchantment
-                    int ePower = __instance.ProjectileStack.Attributes.GetInt(val.ToString(), 0);
-                    if (ePower > 0)
-                    {
-                        enchants.Add(val.ToString(), ePower);
-                    }
+                    int ePower = tree.GetInt(val.ToString(), 0);
+                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
                     else
                     {
                         ePower = __instance.WatchedAttributes.GetInt(val.ToString(), 0);
                         if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
                     }
                 }
+                // Old Get Method
+                // foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+                // {
+                //     // Item overrides Entity's Enchantment
+                //     int ePower = __instance.ProjectileStack.Attributes.GetInt(val.ToString(), 0);
+                //     if (ePower > 0)
+                //     {
+                //         enchants.Add(val.ToString(), ePower);
+                //     }
+                //     else
+                //     {
+                //         ePower = __instance.WatchedAttributes.GetInt(val.ToString(), 0);
+                //         if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+                //     }
+                // }
                 // Process the Enchantments
                 eeb.TryEnchantments(__instance.FiredBy as EntityAgent, __instance.ProjectileStack, enchants);
             }

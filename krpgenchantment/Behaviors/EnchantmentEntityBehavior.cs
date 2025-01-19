@@ -218,14 +218,9 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
+                // Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
-                Dictionary<string, int> enchants = new Dictionary<string, int>();
-                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-                {
-                    int ePower = itemslot.Itemstack.Attributes.GetInt(val.ToString(), 0);
-                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                }
+                Dictionary<string, int> enchants = Api.GetEnchantments(itemslot);
 
                 // Should avoid default during healing
                 if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
@@ -293,11 +288,14 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void DamageEntity(Entity byEntity, ItemStack stack, EnumEnchantments enchant, int power)
         {
+            // Api.Logger.Event("{0} is being affected by a damage enchantment.", entity.GetName());
             // Configure Damage
             EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
+            
             DamageSource source = new DamageSource();
-            source.SourceEntity = byEntity;
-            source.DamageTier = stack.Collectible.ToolTier;
+            if (byEntity != null)
+                source.SourceEntity = byEntity;
+            // source.DamageTier = stack.Collectible.ToolTier;
             
             float dmg = 0;
 
@@ -322,31 +320,38 @@ namespace KRPGLib.Enchantment
             // Apply Defenses
             if (IsPlayer)
             {
-                IInventory inv = player.InventoryManager.GetOwnInventory("character");
-                // IInventory inv = agent?.GearInventory;
-                float resist = 0f;
-                int[] wearableSlots = new int[3] { 12, 13, 14 };
-
-                foreach (int i in wearableSlots)
+                // Api.Logger.Event("Damage enchant is affecting a player!");
+                IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
+                if (inv != null)
                 {
-                    if (!inv[i].Empty)
+                    // Api.Logger.Event("Player's inventory detected.");
+                    float resist = 0f;
+                    int[] wearableSlots = new int[3] { 12, 13, 14 };
+
+                    foreach (int i in wearableSlots)
                     {
-                        int rPower = 0;
-                        if (source.Type == EnumDamageType.Electricity)
-                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistelectric.ToString(), 0);
-                        else if (source.Type == EnumDamageType.Fire)
-                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistfire.ToString(), 0);
-                        else if (source.Type == EnumDamageType.Frost)
-                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistfrost.ToString(), 0);
-                        else if (source.Type == EnumDamageType.Heal)
-                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistheal.ToString(), 0);
-                        else if (source.Type == EnumDamageType.Injury)
-                            rPower += inv[i].Itemstack.Attributes.GetInt(EnumEnchantments.resistinjury.ToString(), 0);
-                        resist += rPower * 0.1f;
+                        if (!inv[i].Empty)
+                        {
+                            Dictionary<string, int> enchants = Api.GetEnchantments(inv[i]);
+                            int rPower = 0;
+                            if (source.Type == EnumDamageType.Electricity)
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectric.ToString(), 0);
+                            else if (source.Type == EnumDamageType.Fire)
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistfire.ToString(), 0);
+                            else if (source.Type == EnumDamageType.Frost)
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistfrost.ToString(), 0);
+                            else if (source.Type == EnumDamageType.Heal)
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistheal.ToString(), 0);
+                            else if (source.Type == EnumDamageType.Injury)
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistinjury.ToString(), 0);
+                            resist += rPower * 0.1f;
+                        }
                     }
+                    resist = 1 - resist;
+                    dmg = Math.Max(0f, dmg * resist);
                 }
-                resist = 1 - resist;
-                dmg = Math.Max(0f, dmg * resist);
+                // IInventory inv = player.InventoryManager.GetOwnInventory("character");
+                // IInventory inv = agent?.GearInventory;
             }
 
             // Apply Damage
@@ -355,9 +360,9 @@ namespace KRPGLib.Enchantment
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
                 //
-                // entity.ReceiveDamage(source, dmg);
+                entity.ReceiveDamage(source, dmg);
                 // Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
-                hp.OnEntityReceiveDamage(source, ref dmg);
+                // hp.OnEntityReceiveDamage(source, ref dmg);
                 GenerateParticles(source, dmg);
             }
         }
