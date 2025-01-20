@@ -420,7 +420,7 @@ namespace KRPGLib.Enchantment
                 if (block != null)
                 {
                     string blockCode = block.Code.ToString();
-                    if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel"))
+                    if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel") || blockCode.Contains("forestfloor"))
                         byEntity.World.BlockAccessor.BreakBlock(ipos, byEntity as IPlayer);
                 }
             }

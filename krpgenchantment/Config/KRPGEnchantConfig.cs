@@ -38,7 +38,7 @@ namespace KRPGLib.Enchantment
             { "AncientArmory", false },
             { "KRPGWands", false },
             { "Paxel", false },
-            { "RustbowndMagic", false },
+            { "RustboundMagic", false },
             { "SpearExpantion", false },
             { "Swordz", false },
         };

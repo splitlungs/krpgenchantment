@@ -1,0 +1,41 @@
+[
+  {
+    "file": "game:config/tradelists/trader-treasurehunter",
+    "op": "addmerge",
+    "path": "/selling/list",
+    "value": [
+      {
+        "code": "krpenchantment:recipebook-normal-purpleorange",
+        "type": "item",
+        "stacksize": 1,
+        "stock": {
+          "avg": 1,
+          "var": 0
+        },
+        "price": {
+          "avg": 64,
+          "var": 12
+        },
+        "attributes": {
+          "recipe": "chilling"
+        }
+      },
+      {
+        "code": "krpenchantment:recipebook-normal-gray",
+        "type": "item",
+        "stacksize": 1,
+        "stock": {
+          "avg": 1,
+          "var": 0
+        },
+        "price": {
+          "avg": 64,
+          "var": 12
+        },
+        "attributes": {
+          "skill": "temporaladaptation"
+        }
+      }
+    ]
+  }
+]

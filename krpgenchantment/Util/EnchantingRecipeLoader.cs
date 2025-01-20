@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingRecipeLoader : ModSystem
     {
-        private const double ConfigVersion = 0.7d;
+        private const double ConfigVersion = 0.8d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
                     Config.Version = ConfigVersion;
                     sapi.StoreModConfig(Config, ConfigFile);
 
-                    sapi.Logger.Event("KRPGEnchantConfig file not found. A new one has been created.");
+                    sapi.Logger.Warning("KRPGEnchantConfig file not found. A new one has been created.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
@@ -83,7 +83,7 @@ namespace KRPGLib.Enchantment
                     Config = tempConfig;
                     sapi.StoreModConfig(Config, ConfigFile);
 
-                    sapi.Logger.Event("KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
+                    sapi.Logger.Warning("KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
                 }
                 else
                     sapi.Logger.Event("KRPGEnchantConfig file found. Loaded successfully.");
