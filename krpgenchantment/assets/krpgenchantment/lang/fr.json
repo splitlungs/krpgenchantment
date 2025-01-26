@@ -82,25 +82,6 @@
 
   "krpg-magicdamage-arcane": "Arcane Damage",
 
-  "item-lore-book-aged-orangebrown": "Aged enchanter's manual (Orange brown)",
-  "item-lore-book-aged-orange": "Aged enchanter's manual (Orange)",
-  "item-lore-book-aged-darkgreen": "Aged enchanter's manual (Dark green)",
-  "item-lore-book-aged-darkgray": "Aged enchanter's manual (Dark gray)",
-  "item-lore-book-aged-cherryred": "Aged enchanter's manual (Cherry red)",
-  "item-lore-book-aged-brickred": "Aged enchanter's manual (Brick red)",
-  "item-lore-book-aged-darkolive": "Aged enchanter's manual (Dark olive)",
-  "item-lore-book-aged-darkbeige": "Aged enchanter's manual (Dark beige)",
-  "item-lore-book-aged-olive": "Aged enchanter's manual (Olive)",
-  "item-lore-book-aged-purpleorange": "Aged enchanter's manual (Purple orange)",
-  "item-lore-book-aged-gray": "Aged enchanter's manual (Gray)",
-  "item-lore-book-rotten-gray": "Rotten enchanter's manual (Gray)",
-  "item-lore-book-rotten-brown": "Rotten enchanter's manual (Brown)",
-  "item-lore-book-rotten-rust": "Rotten enchanter's manual (Rust)",
-  "item-lore-book-rotten-purple": "Rotten enchanter's manual (Purple)",
-  "item-lore-book-rotten-green": "Rotten enchanter's manual (Green)",
-
-  "loretype-enchantment": "Enchanting recipe manual. Teaches you how to identify the temporal properties of an enchantment.",
-
   "game:ingamediscovery-lore-enchantment": "Discovered lore 'Enchanter's Manual'\r\nPart {0} / {1}\r\n<font size=\"20\">Hit J to open your Journal</font>",
   "lore-enchantment-title": "Enchanter's Manual",
   "lore-enchantment-chilling": "1. Chilling",

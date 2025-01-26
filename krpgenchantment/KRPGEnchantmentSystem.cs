@@ -41,7 +41,7 @@ namespace KRPGLib.Enchantment
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));
             api.RegisterBlockEntityClass("EnchantingBE", typeof(EnchantingBE));
-            // api.RegisterItemClass("ReagentItem", typeof(ReagentItem));
+            api.RegisterItemClass("EnchantersManualItem", typeof(EnchantersManualItem));
 
             DoHarmonyPatch(api);
             Api.Logger.Event("KRPG Enchantment loaded.");

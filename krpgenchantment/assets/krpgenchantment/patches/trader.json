@@ -5,7 +5,7 @@
     "path": "/selling/list",
     "value": [
       {
-        "code": "krpenchantment:recipebook-normal-purpleorange",
+        "code": "krpgenchantment:lore-book-aged-purpleorange",
         "type": "item",
         "stacksize": 1,
         "stock": {
@@ -17,11 +17,11 @@
           "var": 12
         },
         "attributes": {
-          "recipe": "chilling"
+          "category": "enchantment"
         }
       },
       {
-        "code": "krpenchantment:recipebook-normal-gray",
+        "code": "krpgenchantment:lore-book-aged-gray",
         "type": "item",
         "stacksize": 1,
         "stock": {
@@ -33,7 +33,7 @@
           "var": 12
         },
         "attributes": {
-          "skill": "temporaladaptation"
+          "category": "enchantment"
         }
       }
     ]

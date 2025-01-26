@@ -1,0 +1,66 @@
+[
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/bear.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/hyena.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/moose.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/squirrel.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/wolf-male.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/minions/racoon-rotten-AF.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/special/rotembryo.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "rottingenimals:entities/water/rustybass.json"
+  }
+]

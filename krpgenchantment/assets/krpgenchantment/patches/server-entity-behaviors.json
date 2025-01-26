@@ -13,6 +13,14 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
+    "file": "game:entities/air/erel.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
     "file": "game:entities/land/animalbot.json"
   },
   {
@@ -30,6 +38,22 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/land/bell.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/bellmini.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/bowtorn.json"
   },
   {
     "op": "add",
@@ -69,6 +93,14 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
+    "file": "game:entities/land/eidolon-immobilized.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
     "file": "game:entities/land/fox.json"
   },
   {
@@ -78,6 +110,14 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/land/gazelle.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/grub.json"
   },
   {
     "op": "add",
@@ -174,6 +214,14 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/land/locust-hacked.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/land/mechhelper.json"
   },
   {
     "op": "add",
