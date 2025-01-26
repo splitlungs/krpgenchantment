@@ -5,7 +5,7 @@
     "path": "/selling/list",
     "value": [
       {
-        "code": "krpgenchantment:lore-book-aged-purpleorange",
+        "code": "krpgenchantment:lore-book-normal-darkgreen",
         "type": "item",
         "stacksize": 1,
         "stock": {
@@ -13,15 +13,15 @@
           "var": 0
         },
         "price": {
-          "avg": 64,
-          "var": 12
+          "avg": 60,
+          "var": 16
         },
         "attributes": {
           "category": "enchantment"
         }
       },
       {
-        "code": "krpgenchantment:lore-book-aged-gray",
+        "code": "krpgenchantment:lore-book-normal-darkgray",
         "type": "item",
         "stacksize": 1,
         "stock": {
@@ -29,13 +29,159 @@
           "var": 0
         },
         "price": {
-          "avg": 64,
-          "var": 12
+          "avg": 60,
+          "var": 16
+        },
+        "attributes": {
+          "category": "enchantment"
+        }
+      },
+      {
+        "code": "krpgenchantment:lore-book-normal-darkolive",
+        "type": "item",
+        "stacksize": 1,
+        "stock": {
+          "avg": 1,
+          "var": 0
+        },
+        "price": {
+          "avg": 60,
+          "var": 16
+        },
+        "attributes": {
+          "category": "enchantment"
+        }
+      },
+      {
+        "code": "krpgenchantment:lore-book-normal-darkbeige",
+        "type": "item",
+        "stacksize": 1,
+        "stock": {
+          "avg": 1,
+          "var": 0
+        },
+        "price": {
+          "avg": 60,
+          "var": 16
         },
         "attributes": {
           "category": "enchantment"
         }
       }
+      // NOTE: Keeping these in case if I can't figure out why I can't use variant wildcards here.
+      // There are just too many single entries and they flood the market otherwise
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-orangebrown",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-orange",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-cherryred",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-brickred",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-olive",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-purpleorange",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // },
+      // {
+      //   "code": "krpgenchantment:lore-book-normal-gray",
+      //   "type": "item",
+      //   "stacksize": 1,
+      //   "stock": {
+      //     "avg": 1,
+      //     "var": 0
+      //   },
+      //   "price": {
+      //     "avg": 60,
+      //     "var": 16
+      //   },
+      //   "attributes": {
+      //     "category": "enchantment"
+      //   }
+      // }
     ]
   }
 ]

@@ -21,35 +21,11 @@
 	"attributes": {
 		"category": "enchantment",
 		"displaycaseable": true,
-		"rolledShapeByType": {
-			"lore-paper": "game:item/lore/scroll-unbound"
-		},
 		"bookshelveableByType": {
-			"lore-scroll": false,
-			"lore-paper": false,
 			"*": true
 		},
 		"scrollrackableByType": {
-			"lore-scroll": true,
-			"lore-paper": true,
 			"*": false
-		},
-		"onscrollrackTransform": {
-			"translation": {
-				"x": -0.5,
-				"y": -0.18,
-				"z": 0.48
-			},
-			"rotation": {
-				"x": -45,
-				"y": 0,
-				"z": 0
-			},
-			"origin": {
-				"x": 0.5,
-				"y": 0.1,
-				"z": 0.5
-			}
 		},
 		"shelvable": true,
 		"readable": true,
@@ -90,28 +66,18 @@
 		{
 			"code": "color",
 			"states": [
-				"aged-orangebrown",
-				"aged-orange",
-				"aged-darkgreen",
-				"aged-darkgray",
-				"aged-cherryred",
-				"aged-brickred",
-				"aged-darkolive",
-				"aged-darkbeige",
-				"aged-olive",
-				"aged-purpleorange",
-				"aged-gray",
-				"rotten-gray",
-				"rotten-brown",
-				"rotten-rust",
-				"rotten-purple",
-				"rotten-green"
+				"normal-orangebrown",
+				"normal-orange",
+				"normal-darkgreen",
+				"normal-darkgray",
+				"normal-cherryred",
+				"normal-brickred",
+				"normal-darkolive",
+				"normal-darkbeige",
+				"normal-olive",
+				"normal-purpleorange",
+				"normal-gray"
 			]
-		},
-		{
-			"code": "type",
-			"states": [ "paper", "scroll" ],
-			"combine": "add"
 		}
 	],
 	"shapeByType": {
@@ -153,42 +119,6 @@
 				"z": 3.23
 			}
 		},
-		"lore-scroll": {
-			"translation": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"rotation": {
-				"x": -19,
-				"y": -59,
-				"z": 20
-			},
-			"origin": {
-				"x": 0.48,
-				"y": 0.05,
-				"z": 0.52
-			},
-			"scale": 2.4
-		},
-		"lore-paper": {
-			"translation": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"rotation": {
-				"x": -45,
-				"y": 28,
-				"z": -159
-			},
-			"origin": {
-				"x": 0.59,
-				"y": 0.18,
-				"z": 0.47
-			},
-			"scale": 1.6
-		},
 		"*": {
 			"rotate": true,
 			"translation": {
@@ -228,24 +158,6 @@
 			},
 			"scale": 2.07
 		},
-		"lore-scroll": {
-			"translation": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"rotation": {
-				"x": 23,
-				"y": -5,
-				"z": 10
-			},
-			"origin": {
-				"x": 0.5,
-				"y": 0.1,
-				"z": 0.5
-			},
-			"scale": 1.7
-		},
 		"*": {
 			"rotation": {
 				"x": 69,
@@ -278,24 +190,6 @@
 				"z": 0.5
 			},
 			"scale": 0.67
-		},
-		"lore-scroll": {
-			"translation": {
-				"x": -0.75,
-				"y": -0.08,
-				"z": -0.63
-			},
-			"rotation": {
-				"x": -56,
-				"y": -8,
-				"z": -8
-			},
-			"origin": {
-				"x": 0.5,
-				"y": 0.1,
-				"z": 0.5
-			},
-			"scale": 0.8
 		},
 		"*": {
 			"translation": {
@@ -334,42 +228,6 @@
 				"z": 0.5
 			},
 			"scale": 3.4
-		},
-		"lore-scroll": {
-			"translation": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"rotation": {
-				"x": 1,
-				"y": -3,
-				"z": 2
-			},
-			"origin": {
-				"x": 0.5,
-				"y": 0.01,
-				"z": 0.5
-			},
-			"scale": 4.03
-		},
-		"lore-paper": {
-			"translation": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"rotation": {
-				"x": -7,
-				"y": 0,
-				"z": 0
-			},
-			"origin": {
-				"x": 0.5,
-				"y": 0.07,
-				"z": 0.41
-			},
-			"scale": 3.5
 		},
 		"*": {
 			"translation": {
