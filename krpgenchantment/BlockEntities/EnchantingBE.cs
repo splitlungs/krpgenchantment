@@ -162,7 +162,7 @@ namespace KRPGLib.Enchantment
                 if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
                 // Api.Logger.Event("Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
                 Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot);
-                if (enchantments.Count >= EnchantingRecipeLoader.Config.MaxEnchantsPerItem) return false;
+                if (enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 return true;
             }
         }
@@ -207,8 +207,8 @@ namespace KRPGLib.Enchantment
         private double GetLatentEnchantResetTime()
         {
             // Return override first
-            if (EnchantingRecipeLoader.Config?.LatentEnchantResetDays != null)
-                return EnchantingRecipeLoader.Config.LatentEnchantResetDays;
+            if (EnchantingConfigLoader.Config?.LatentEnchantResetDays != null)
+                return EnchantingConfigLoader.Config.LatentEnchantResetDays;
             // Fall back to 7 days
             return 7.0d;
         }
@@ -233,7 +233,7 @@ namespace KRPGLib.Enchantment
         {
             get
             {
-                if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != null) return EnchantingRecipeLoader.Config.MaxLatentEnchants;
+                if (EnchantingConfigLoader.Config?.MaxLatentEnchants != null) return EnchantingConfigLoader.Config.MaxLatentEnchants;
                 else return 3;
             }
         }
@@ -249,8 +249,8 @@ namespace KRPGLib.Enchantment
         {
             double eto = -0.1d;
             // Return override first
-            if (EnchantingRecipeLoader.Config?.EnchantTimeOverride != null)
-                eto = EnchantingRecipeLoader.Config.EnchantTimeOverride;
+            if (EnchantingConfigLoader.Config?.EnchantTimeOverride != null)
+                eto = EnchantingConfigLoader.Config.EnchantTimeOverride;
             if (eto >= 0d)
                 return eto;
             // Then current recipe

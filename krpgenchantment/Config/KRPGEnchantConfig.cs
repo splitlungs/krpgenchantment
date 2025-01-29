@@ -36,6 +36,7 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>()
         {
             { "AncientArmory", false },
+            { "ElectricityAddon", false },
             { "KRPGWands", false },
             { "Paxel", false },
             { "RustboundMagic", false },

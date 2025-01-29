@@ -1,0 +1,56 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "staticsaber": {
+        "type": "item",
+        "code": "electricityaddon:static-saber-*",
+        "quantity": 1
+      },
+      "staticspear": {
+        "type": "item",
+        "code": "electricityaddon:static-spear-*",
+        "quantity": 1
+      },
+      "staticarmor": {
+        "type": "item",
+        "code": "electricityaddon:static-armor-*",
+        "quantity": 1
+      },
+      "staticboots": {
+        "type": "item",
+        "code": "electricityaddon:static-boots-*",
+        "quantity": 1
+      },
+      "statichelmet": {
+        "type": "item",
+        "code": "electricityaddon:static-helmet-*",
+        "quantity": 1
+      },
+      "staticshield": {
+        "type": "item",
+        "code": "electricityaddon:static-shield-*",
+        "quantity": 1
+      },
+      "eaxe": {
+        "type": "item",
+        "code": "electricityaddon:eaxe-*",
+        "quantity": 1
+      },
+      "echisel": {
+        "type": "item",
+        "code": "electricityaddon:echisel-*",
+        "quantity": 1
+      },
+      "edrill": {
+        "type": "item",
+        "code": "electricityaddon:edrill-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

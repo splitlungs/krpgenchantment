@@ -1,0 +1,86 @@
+[
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/arrow.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/bow.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/club.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/sword.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/scrap/mace.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/scrap/spear.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

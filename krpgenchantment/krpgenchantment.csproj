@@ -15,6 +15,10 @@
       <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CombatOverhaul">
+      <HintPath>..\..\..\Examples\combatoverhaul_0.1.21\CombatOverhaul.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -103,6 +107,7 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\combatoverhaul\patches\combatoverhaul-behaviors.json" />
   <None Remove="assets\ancientarmory\patches\ancientarmory-behaviors.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\aa-universal.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\aa-weapon.json" />
@@ -110,6 +115,9 @@
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-3.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-4.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\blades-tier-1.json" />
+  <None Remove="assets\electricityaddon\patches\electricityaddon-behaviors.json" />
+  <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-universal.json" />
+  <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-weapon.json" />
   <None Remove="assets\game\config\lore\enchantment.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
   <None Remove="assets\rottingenimals\patches\krpg-entity-behaviors.json" />
@@ -186,6 +194,10 @@
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="assets\combatoverhaul\recipes\enchanting-table\" />
 </ItemGroup>
 
 </Project>

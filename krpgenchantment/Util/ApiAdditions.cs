@@ -83,7 +83,7 @@ namespace Vintagestory.GameContent
                     foreach (string str in lEnchants)
                         enchants.Add(str);
                 }
-                if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                if (enchants?.Count < EnchantingConfigLoader.Config?.MaxLatentEnchants)
                     enchants = null;
                 return enchants;
             }
@@ -97,7 +97,7 @@ namespace Vintagestory.GameContent
                     foreach (string str in lEnchants)
                         enchants.Add(str);
                 }
-                if (enchants?.Count < EnchantingRecipeLoader.Config?.MaxLatentEnchants)
+                if (enchants?.Count < EnchantingConfigLoader.Config?.MaxLatentEnchants)
                     enchants = null;
                 return enchants;
             }
@@ -121,9 +121,9 @@ namespace Vintagestory.GameContent
                 string enchant = recipe.Name.ToShortString();
                 // api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchant);
                 string[] text = enchant.Split(":");
-                if (!EnchantingRecipeLoader.Config.LoreIDs.ContainsKey(text[1]))
+                if (!EnchantingConfigLoader.Config.LoreIDs.ContainsKey(text[1]))
                     return false;
-                int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
+                int id = EnchantingConfigLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
@@ -150,9 +150,9 @@ namespace Vintagestory.GameContent
             {
                 // api.Logger.Event("Attempting to check if {0} can read {1}.", api.World.PlayerByUid(player).PlayerName, enchantName);
                 string[] text = enchantName.Split(":");
-                if (!EnchantingRecipeLoader.Config.LoreIDs.ContainsKey(text[1]))
+                if (!EnchantingConfigLoader.Config.LoreIDs.ContainsKey(text[1]))
                     return false;
-                int id = EnchantingRecipeLoader.Config.LoreIDs[text[1]];
+                int id = EnchantingConfigLoader.Config.LoreIDs[text[1]];
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
@@ -226,16 +226,16 @@ namespace Vintagestory.GameContent
             // 0 or less means re-assess every time
             // Config default is 7 days
             double ero = 7d;
-            if (EnchantingRecipeLoader.Config?.LatentEnchantResetDays != null)
-                ero = EnchantingRecipeLoader.Config.LatentEnchantResetDays;
+            if (EnchantingConfigLoader.Config?.LatentEnchantResetDays != null)
+                ero = EnchantingConfigLoader.Config.LatentEnchantResetDays;
             if (latentStamp != 0 && timeStamp < latentStamp + ero)
                 return false;
             api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
-            if (EnchantingRecipeLoader.Config?.MaxLatentEnchants != mle)
-                mle = EnchantingRecipeLoader.Config.MaxLatentEnchants;
+            if (EnchantingConfigLoader.Config?.MaxLatentEnchants != mle)
+                mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
             api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes

@@ -1,5 +1,4 @@
-﻿using KRPGLib.Enchantment;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +13,6 @@ using Vintagestory.API.Net;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
@@ -68,6 +66,7 @@ namespace KRPGLib.Enchantment
             sApi = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().sApi;
             
             ConfigParticles();
+
         }
         /*
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
@@ -218,7 +217,7 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                // Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
+                Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
                 Dictionary<string, int> enchants = Api.GetEnchantments(itemslot);
 

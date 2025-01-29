@@ -1,0 +1,128 @@
+[
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/armor/static-armor.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/armor/static-boots.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/armor/static-helmet.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/armor/static-shield.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/tool/eaxe.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/tool/echisel.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/tool/edrill.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/weapon/static-saber.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "electricityaddon:itemtypes/weapon/static-spear.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

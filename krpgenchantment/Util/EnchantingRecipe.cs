@@ -70,8 +70,8 @@ namespace KRPGLib.Enchantment
             // Get qty from Config
             string itemcode = inSlot.Itemstack.Collectible.Code.ToShortString();
             // Then check against the Config file
-            if (EnchantingRecipeLoader.Config.ValidReagents.ContainsKey(itemcode))
-                qty = EnchantingRecipeLoader.Config.ValidReagents[itemcode];
+            if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(itemcode))
+                qty = EnchantingConfigLoader.Config.ValidReagents[itemcode];
             // Override from Recipe. Note this overrides Config.
             foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in Ingredients)
             {
@@ -122,7 +122,7 @@ namespace KRPGLib.Enchantment
             if (!rOverride)
             {
                 string pot = rSlot.Itemstack.Attributes?.GetString("potential", "low").ToLower();
-                int maxPot = EnchantingRecipeLoader.Config.ReagentPotentialTiers[pot];
+                int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers[pot];
                 power = api.World.Rand.Next(1, maxPot + 1);
                 // api.Logger.Event("Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, pot);
             }
@@ -406,9 +406,9 @@ namespace KRPGLib.Enchantment
                 }
             }
             // Then check against the Config file
-            if (!foundr && EnchantingRecipeLoader.Config.ValidReagents != null)
+            if (!foundr && EnchantingConfigLoader.Config.ValidReagents != null)
             {
-                foreach (KeyValuePair<string, int> reagent in EnchantingRecipeLoader.Config.ValidReagents)
+                foreach (KeyValuePair<string, int> reagent in EnchantingConfigLoader.Config.ValidReagents)
                 {
                     // Last chance to prove True, so we check qty simultaneously
                     if (reagentSlot.Itemstack.Collectible.Code.ToString() == reagent.Key && reagentSlot.Itemstack.StackSize >= reagent.Value)
