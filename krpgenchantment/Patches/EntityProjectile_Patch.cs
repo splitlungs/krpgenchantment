@@ -41,37 +41,7 @@ namespace KRPGLib.Enchantment
             var eeb = entity.GetBehavior<EnchantmentEntityBehavior>();
             if (eeb != null)
             {
-                // Get Enchantments
-                ITreeAttribute tree = __instance.ProjectileStack.Attributes?.GetTreeAttribute("enchantments");
-                Dictionary<string, int> enchants = new Dictionary<string, int>();
-                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-                {
-                    // Item overrides Entity's Enchantment
-                    int ePower = tree.GetInt(val.ToString(), 0);
-                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                    else
-                    {
-                        ePower = __instance.WatchedAttributes.GetInt(val.ToString(), 0);
-                        if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                    }
-                }
-                // Old Get Method
-                // foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-                // {
-                //     // Item overrides Entity's Enchantment
-                //     int ePower = __instance.ProjectileStack.Attributes.GetInt(val.ToString(), 0);
-                //     if (ePower > 0)
-                //     {
-                //         enchants.Add(val.ToString(), ePower);
-                //     }
-                //     else
-                //     {
-                //         ePower = __instance.WatchedAttributes.GetInt(val.ToString(), 0);
-                //         if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                //     }
-                // }
-                // Process the Enchantments
-                eeb.TryEnchantments(__instance.FiredBy as EntityAgent, __instance.ProjectileStack, enchants);
+                eeb.TryEnchantments(__instance.FiredBy as EntityAgent, __instance.ProjectileStack);
             }
         }
     }

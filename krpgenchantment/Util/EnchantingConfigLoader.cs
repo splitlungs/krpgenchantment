@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.81d;
+        private const double ConfigVersion = 0.82d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -73,6 +73,10 @@ namespace KRPGLib.Enchantment
                     if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
                     if (!tempConfig.CustomPatches.ContainsKey("AncientArmory"))
                         tempConfig.CustomPatches.Add("AncientArmory", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("Armory"))
+                        tempConfig.CustomPatches.Add("Armory", false);
+                    if (!tempConfig.CustomPatches.ContainsKey("CombatOverhaul"))
+                        tempConfig.CustomPatches.Add("CombatOverhaul", false);
                     if (!tempConfig.CustomPatches.ContainsKey("ElectricityAddon"))
                         tempConfig.CustomPatches.Add("ElectricityAddon", false);
                     if (!tempConfig.CustomPatches.ContainsKey("KRPGWands"))

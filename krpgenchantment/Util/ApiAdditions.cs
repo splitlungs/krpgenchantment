@@ -23,42 +23,43 @@ namespace Vintagestory.GameContent
         /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
         /// </summary>
-        /// <param name="inSlot"></param>
+        /// <param name="api"></param>
+        /// <param name="itemStack"></param>
         /// <returns></returns>
-        public static Dictionary<string, int> GetEnchantments(this ICoreAPI api, ItemSlot inSlot)
+        public static Dictionary<string, int> GetEnchantments(this ICoreAPI api, ItemStack itemStack)
         {
-            ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null)
+                return null;
+
             Dictionary<string, int> enchants = new Dictionary<string, int>();
+            // Get Enchantments
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            {
+                int ePower = tree.GetInt(val.ToString(), 0);
+                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+            }
+            return enchants;
 
             // Get Enchantments for Migration
             // Will be removed in 0.6.x
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int ePower = inSlot.Itemstack.Attributes.GetInt(val.ToString(), 0);
-                if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-            }
-
-            // Migrate old Enchantments if needed
-            // Will be removed in 0.6.x
-            if (enchants.Count > 0)
-            {
-                foreach (KeyValuePair<string, int> keyValuePair in enchants)
-                {
-                    tree.SetInt(keyValuePair.Key, keyValuePair.Value);
-                    inSlot.Itemstack.Attributes.RemoveAttribute(keyValuePair.Key);
-                }
-            }
-            else
-            {
-                // Get Enchantments
-                foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-                {
-                    int ePower = tree.GetInt(val.ToString(), 0);
-                    if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-                }
-            }
-
-            return enchants;
+            // IT'S TIME
+            // foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
+            // {
+            //     int ePower = itemStack.Attributes.GetInt(val.ToString(), 0);
+            //     if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
+            // }
+            // 
+            // // Migrate old Enchantments if needed
+            // // Will be removed in 0.6.x
+            // if (enchants.Count > 0)
+            // {
+            //     foreach (KeyValuePair<string, int> keyValuePair in enchants)
+            //     {
+            //         tree.SetInt(keyValuePair.Key, keyValuePair.Value);
+            //         itemStack.Attributes.RemoveAttribute(keyValuePair.Key);
+            //     }
+            // }
         }
 
         /// <summary>
@@ -215,12 +216,12 @@ namespace Vintagestory.GameContent
         {
             // Sanity check
             if (api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
-            api.World.Logger.Event("Attempting to Assess {0}", inSlot.GetStackName());
+            // api.World.Logger.Event("Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = api.World.Calendar.ElapsedDays;
-            api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+            // api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -230,18 +231,18 @@ namespace Vintagestory.GameContent
                 ero = EnchantingConfigLoader.Config.LatentEnchantResetDays;
             if (latentStamp != 0 && timeStamp < latentStamp + ero)
                 return false;
-            api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
+            // api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
             if (EnchantingConfigLoader.Config?.MaxLatentEnchants != mle)
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
-            api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
+            // api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
-            api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
+            // api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
@@ -270,7 +271,7 @@ namespace Vintagestory.GameContent
                     strEnc += ";";
                 }
 
-                api.World.Logger.Event("LatentEnchants string is {0}", str);
+                // api.World.Logger.Event("LatentEnchants string is {0}", str);
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
                 tree.SetDouble("latentEnchantTime", timeStamp);

@@ -16,7 +16,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="CombatOverhaul">
-      <HintPath>..\..\..\Examples\combatoverhaul_0.1.21\CombatOverhaul.dll</HintPath>
+      <HintPath>..\..\..\Examples\combatoverhaul_0.1.22\CombatOverhaul.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -107,6 +107,7 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\armory\patches\armory-behaviors.json" />
   <None Remove="assets\combatoverhaul\patches\combatoverhaul-behaviors.json" />
   <None Remove="assets\ancientarmory\patches\ancientarmory-behaviors.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\aa-universal.json" />
@@ -115,6 +116,9 @@
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-3.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-4.json" />
   <None Remove="assets\ancientarmory\recipes\enchanting-table\blades-tier-1.json" />
+  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-armor.json" />
+  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-universal.json" />
+  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-weapon.json" />
   <None Remove="assets\electricityaddon\patches\electricityaddon-behaviors.json" />
   <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-universal.json" />
   <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-weapon.json" />

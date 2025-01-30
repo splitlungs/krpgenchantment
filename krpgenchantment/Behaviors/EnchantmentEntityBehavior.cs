@@ -40,24 +40,24 @@ namespace KRPGLib.Enchantment
             // Edit: We won't in 1.20
             // player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName).SlotModified += OnGearModified;
         }
-        public void OnGearModified(int slotId)
-        {
-            if (!IsPlayer)
-            {
-                Api.Logger.Event("Player {0} modified slot {1}", player.PlayerUID, slotId);
-                IInventory ownInventory = player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName);
-                if (ownInventory != null)
-                {
-                    if (ownInventory[slotId].Empty)
-                        Api.Logger.Event("Modified slot {0} was empty!", slotId);
-                    else
-                    {
-                        int power = ownInventory[slotId].Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
-                        Api.Logger.Event("Modified slot {0} as Protection {1}", slotId, power);
-                    }
-                }
-            }
-        }
+        // public void OnGearModified(int slotId)
+        // {
+        //     if (!IsPlayer)
+        //     {
+        //         Api.Logger.Event("Player {0} modified slot {1}", player.PlayerUID, slotId);
+        //         IInventory ownInventory = player.InventoryManager.GetOwnInventory(GlobalConstants.characterInvClassName);
+        //         if (ownInventory != null)
+        //         {
+        //             if (ownInventory[slotId].Empty)
+        //                 Api.Logger.Event("Modified slot {0} was empty!", slotId);
+        //             else
+        //             {
+        //                 int power = ownInventory[slotId].Itemstack.Attributes.GetInt(EnumEnchantments.protection.ToString(), 0);
+        //                 Api.Logger.Event("Modified slot {0} as Protection {1}", slotId, power);
+        //             }
+        //         }
+        //     }
+        // }
         public override void Initialize(EntityProperties properties, JsonObject attributes)
         {
             base.Initialize(properties, attributes);
@@ -217,9 +217,11 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
+                // Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
-                Dictionary<string, int> enchants = Api.GetEnchantments(itemslot);
+                Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
+                if (enchants == null)
+                    return;
 
                 // Should avoid default during healing
                 if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
@@ -227,7 +229,7 @@ namespace KRPGLib.Enchantment
                 else
                     handled = EnumHandling.Handled;
 
-                TryEnchantments(byEntity, itemslot.Itemstack, enchants);
+                TryEnchantments(byEntity, itemslot.Itemstack);
             }
             else
             {
@@ -239,11 +241,15 @@ namespace KRPGLib.Enchantment
         /// Generic Enchantment processing.
         /// </summary>
         /// <param name="byEntity"></param>
-        /// <param name="enchants"></param>
-        public void TryEnchantments(EntityAgent byEntity, ItemStack stack, Dictionary<string, int> enchants)
+        /// <param name="stack"></param>
+        public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
         {
-            foreach (KeyValuePair<string, int> pair in enchants)
-                TryEnchantment(byEntity, stack, pair.Key, pair.Value);
+            Dictionary<string, int> enchants = Api.GetEnchantments(stack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                    TryEnchantment(byEntity, pair.Key, pair.Value);
+            }
         }
         /// <summary>
         /// Generic Enchantment processing.
@@ -252,19 +258,19 @@ namespace KRPGLib.Enchantment
         /// <param name="enchant"></param>
         /// <param name="power"></param>
         /// <returns></returns>
-        public void TryEnchantment(EntityAgent byEntity, ItemStack stack, string enchant, int power)
+        public void TryEnchantment(EntityAgent byEntity, string enchant, int power)
         {
             // Alt Damage
             if (enchant == EnumEnchantments.healing.ToString())
-                DamageEntity(byEntity, stack, EnumEnchantments.healing, power);
+                DamageEntity(byEntity, EnumEnchantments.healing, power);
             else if (enchant == EnumEnchantments.flaming.ToString())
-                DamageEntity(byEntity, stack, EnumEnchantments.flaming, power);
+                DamageEntity(byEntity, EnumEnchantments.flaming, power);
             else if (enchant == EnumEnchantments.frost.ToString())
-                DamageEntity(byEntity, stack, EnumEnchantments.frost, power);
+                DamageEntity(byEntity, EnumEnchantments.frost, power);
             else if (enchant == EnumEnchantments.harming.ToString())
-                DamageEntity(byEntity, stack, EnumEnchantments.harming, power);
+                DamageEntity(byEntity, EnumEnchantments.harming, power);
             else if (enchant == EnumEnchantments.shocking.ToString())
-                DamageEntity(byEntity, stack, EnumEnchantments.shocking, power);
+                DamageEntity(byEntity, EnumEnchantments.shocking, power);
             // Alt Effects
             else if (enchant == EnumEnchantments.chilling.ToString())
                 ChillEntity(power);
@@ -285,7 +291,7 @@ namespace KRPGLib.Enchantment
         /// <param name="byEntity"></param>
         /// <param name="enchant"></param>
         /// <param name="power"></param>
-        public void DamageEntity(Entity byEntity, ItemStack stack, EnumEnchantments enchant, int power)
+        public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power)
         {
             // Api.Logger.Event("{0} is being affected by a damage enchantment.", entity.GetName());
             // Configure Damage
@@ -331,7 +337,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.GetEnchantments(inv[i]);
+                            Dictionary<string, int> enchants = Api.GetEnchantments(inv[i].Itemstack);
                             int rPower = 0;
                             if (source.Type == EnumDamageType.Electricity)
                                 rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectric.ToString(), 0);

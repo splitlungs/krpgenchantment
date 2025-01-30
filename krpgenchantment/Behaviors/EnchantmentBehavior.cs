@@ -195,7 +195,7 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void GetAttributes(ItemSlot inSlot)
         {
-            Enchantments = Api.GetEnchantments(inSlot);
+            Enchantments = Api.GetEnchantments(inSlot.Itemstack);
             Enchantable = Api.IsEnchantable(inSlot);
         }
         /// <summary>
@@ -215,9 +215,12 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
-            Dictionary<string, int> enchants = Api.GetEnchantments(inSlot);
-            foreach (KeyValuePair<string, int> pair in enchants)
-                dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key.ToString()) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
+            Dictionary<string, int> enchants = Api.GetEnchantments(inSlot.Itemstack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                    dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key.ToString()) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
+            }
         }
         
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
@@ -228,8 +231,8 @@ namespace KRPGLib.Enchantment
             if (aimSelf == 1)
             {
                 // Get Enchantments
-                Dictionary<string, int> enchants = Api.GetEnchantments(slot);
-                byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack, enchants);
+                // Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
+                byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack);
             }
 
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);

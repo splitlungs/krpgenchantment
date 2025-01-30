@@ -148,7 +148,7 @@ namespace KRPGLib.Enchantment
         {
             if (slot.Itemstack == null) return false;
 
-            Dictionary<string, int> enchants = Api.GetEnchantments(slot);
+            Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
 
             if (enchants.Count > 0) return true;
 
@@ -161,7 +161,7 @@ namespace KRPGLib.Enchantment
                 if (CurrentRecipe == null) return false;
                 if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
                 // Api.Logger.Event("Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
-                Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot);
+                Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot.Itemstack);
                 if (enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 return true;
             }
@@ -314,7 +314,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void enchantInput()
         {
-            Api.World.Logger.Event("Attempting to enchant an item.");
+            // Api.World.Logger.Event("Attempting to enchant an item.");
             ItemStack outStack = CurrentRecipe.OutStack(Api, InputSlot, ReagentSlot).Clone();
             if (OutputSlot.Empty)
             {
@@ -337,7 +337,7 @@ namespace KRPGLib.Enchantment
                     Api.World.SpawnItemEntity(outStack, this.Pos.ToVec3d().Add(0.5 + face.Normalf.X * 0.7, 0.75, 0.5 + face.Normalf.Z * 0.7), new Vec3d(face.Normalf.X * 0.02f, 0, face.Normalf.Z * 0.02f));
                 }
             }
-            Api.World.Logger.Event("Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
+            // Api.World.Logger.Event("Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
             int rQty = CurrentRecipe.IngredientQuantity(ReagentSlot);
             int iQty = CurrentRecipe.IngredientQuantity(InputSlot);
             ReagentSlot.TakeOut(rQty);
@@ -430,7 +430,7 @@ namespace KRPGLib.Enchantment
         {
             if (Api.Side != EnumAppSide.Client)
             {
-                Api.Logger.Event("Tried to toggle ambient enchanter sound, but was not client side.");
+                // Api.Logger.Event("Tried to toggle ambient enchanter sound, but was not client side.");
                 return;
             }
 
@@ -632,7 +632,7 @@ namespace KRPGLib.Enchantment
                             if (e.Name.ToShortString() == LatentEnchants[SelectedEnchant])
                             {
                                 CurrentRecipe = e.Clone();
-                                Api.World.Logger.Event("Found selected enchant in the registry. Setting as CurrentRecipe.");
+                                // Api.World.Logger.Event("Found selected enchant in the registry. Setting as CurrentRecipe.");
                             }
                         }
                     }
@@ -641,7 +641,7 @@ namespace KRPGLib.Enchantment
                 }
                 else
                 {
-                    Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
+                    // Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
                     SelectedEnchant = -1;
                 }
                 UpdateReaders();

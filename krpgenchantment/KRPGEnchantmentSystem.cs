@@ -5,6 +5,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using System.Collections.Generic;
 
 namespace KRPGLib.Enchantment
 {
@@ -12,6 +13,7 @@ namespace KRPGLib.Enchantment
     {
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
+        public COSystem combatOverhaul;
 
         public override void AssetsLoaded(ICoreAPI api)
         {
@@ -23,6 +25,13 @@ namespace KRPGLib.Enchantment
         {
             sApi = api;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
+
+            if (EnchantingConfigLoader.Config?.CustomPatches.GetValueOrDefault("CombatOverhaul", false) == true 
+                && api.ModLoader.IsModEnabled("combatoverhaul") == true)
+            {
+                combatOverhaul = new COSystem();
+                combatOverhaul.StartServerSide(sApi);
+            }
         }
         public void RegisterPlayerEEB(IServerPlayer byPlayer)
         {

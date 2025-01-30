@@ -360,10 +360,10 @@ namespace KRPGLib.Enchantment
             // foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
             foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in Ingredients)
             {
-                api.Logger.Event("Echanting Recipe: {0}. Checking Resolved Ingredient {1}. Quantity of {2}", Name, ing.Value.Name, ing.Value.Quantity);
+                // api.Logger.Event("Echanting Recipe: {0}. Checking Resolved Ingredient {1}. Quantity of {2}", Name, ing.Value.Name, ing.Value.Quantity);
                 if (ing.Value.IsWildCard)
                 {
-                    api.Logger.Event("Ingredient is a Wildcard!");
+                    // api.Logger.Event("Ingredient is a Wildcard!");
 
                     inputSlot.Itemstack.Collectible.WildCardMatch(ing.Value.Code);
 
@@ -379,7 +379,7 @@ namespace KRPGLib.Enchantment
                 if (inputSlot.Itemstack.StackSize < ing.Value.Quantity) foundt = false;
             }
 
-            api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
+            // api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
 
             // Cancel if no Target
             if (!foundt) return false;
@@ -416,7 +416,7 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
+            // api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
 
             // Cancel if no Rreagent is found
             if (!foundr) return false;
