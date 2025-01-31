@@ -220,16 +220,17 @@ namespace KRPGLib.Enchantment
                 // Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
                 Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
-                if (enchants == null)
-                    return;
+                if (enchants != null)
+                {
 
-                // Should avoid default during healing
-                if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
-                    handled = EnumHandling.PreventDefault;
-                else
-                    handled = EnumHandling.Handled;
+                    // Should avoid default during healing
+                    if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                        handled = EnumHandling.PreventDefault;
+                    else
+                        handled = EnumHandling.Handled;
 
-                TryEnchantments(byEntity, itemslot.Itemstack);
+                    TryEnchantments(byEntity, itemslot.Itemstack);
+                }
             }
             else
             {

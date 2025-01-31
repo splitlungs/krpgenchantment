@@ -1,0 +1,15 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "firearm": {
+        "type": "item",
+        "code": "maltiezfirearms:firearm-*-*"
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

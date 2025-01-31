@@ -1,0 +1,100 @@
+[
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/bayonet.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/arquebus.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/blunderbuss.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/carbine.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/musket.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/pistol.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezfirearms:itemtypes/firearms/superimposed.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

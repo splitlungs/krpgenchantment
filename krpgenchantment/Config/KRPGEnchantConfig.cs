@@ -35,14 +35,17 @@ namespace KRPGLib.Enchantment
         // Compatibility patch list
         public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>()
         {
-            { "AncientArmory", false },
-            { "CombatOverhaul", false },
-            { "ElectricityAddon", false },
-            { "KRPGWands", false },
-            { "Paxel", false },
-            { "RustboundMagic", false },
-            { "SpearExpantion", false },
-            { "Swordz", false },
+            { "AncientArmory", true },
+            { "Armory", true },
+            { "CombatOverhaul", true },
+            { "ElectricityAddon", true },
+            { "KRPGWands", true },
+            { "MaltiezCrossbows", true },
+            { "MaltiezFirearms", true },
+            { "Paxel", true },
+            { "RustboundMagic", true },
+            { "SpearExpantion", true },
+            { "Swordz", true },
         };
         // Lore Configuration
         public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()

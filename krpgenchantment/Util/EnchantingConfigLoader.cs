@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.82d;
+        private const double ConfigVersion = 0.83d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -72,23 +72,27 @@ namespace KRPGLib.Enchantment
 
                     if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
                     if (!tempConfig.CustomPatches.ContainsKey("AncientArmory"))
-                        tempConfig.CustomPatches.Add("AncientArmory", false);
+                        tempConfig.CustomPatches.Add("AncientArmory", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Armory"))
-                        tempConfig.CustomPatches.Add("Armory", false);
+                        tempConfig.CustomPatches.Add("Armory", true);
                     if (!tempConfig.CustomPatches.ContainsKey("CombatOverhaul"))
-                        tempConfig.CustomPatches.Add("CombatOverhaul", false);
+                        tempConfig.CustomPatches.Add("CombatOverhaul", true);
                     if (!tempConfig.CustomPatches.ContainsKey("ElectricityAddon"))
-                        tempConfig.CustomPatches.Add("ElectricityAddon", false);
+                        tempConfig.CustomPatches.Add("ElectricityAddon", true);
                     if (!tempConfig.CustomPatches.ContainsKey("KRPGWands"))
-                        tempConfig.CustomPatches.Add("KRPGWands", false);
+                        tempConfig.CustomPatches.Add("KRPGWands", true);
+                    if (!tempConfig.CustomPatches.ContainsKey("MaltiezCrossbows"))
+                        tempConfig.CustomPatches.Add("MaltiezFirearms", true);
+                    if (!tempConfig.CustomPatches.ContainsKey("MaltiezFirearms"))
+                        tempConfig.CustomPatches.Add("MaltiezCrossbows", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Paxel"))
-                        tempConfig.CustomPatches.Add("Paxel", false);
+                        tempConfig.CustomPatches.Add("Paxel", true);
                     if (!tempConfig.CustomPatches.ContainsKey("RustboundMagic"))
-                        tempConfig.CustomPatches.Add("RustboundMagic", false);
+                        tempConfig.CustomPatches.Add("RustboundMagic", true);
                     if (!tempConfig.CustomPatches.ContainsKey("SpearExpantion"))
-                        tempConfig.CustomPatches.Add("SpearExpantion", false);
+                        tempConfig.CustomPatches.Add("SpearExpantion", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Swordz"))
-                        tempConfig.CustomPatches.Add("Swordz", false);
+                        tempConfig.CustomPatches.Add("Swordz", true);
 
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;

@@ -1,0 +1,44 @@
+[
+  {
+    "op": "addmerge",
+    "file": "maltiezcrossbows:itemtypes/crossbow.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezcrossbows:itemtypes/crossbow-old.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "maltiezcrossbows:itemtypes/crossbow-repeating.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

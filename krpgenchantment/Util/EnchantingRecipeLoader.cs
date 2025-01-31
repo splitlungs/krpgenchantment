@@ -50,7 +50,10 @@ namespace KRPGLib.Enchantment
             {
                 foreach (KeyValuePair<string, bool> keyValuePair in EnchantingConfigLoader.Config.CustomPatches)
                 {
-                    if (keyValuePair.Value == true)
+                    if (keyValuePair.Value != true)
+                        continue;
+
+                    if (sApi.ModLoader.IsModEnabled(keyValuePair.Key.ToLower()))
                         files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", keyValuePair.Key.ToLower()));
                 }
             }
