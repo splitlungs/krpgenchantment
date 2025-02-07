@@ -69,6 +69,8 @@ namespace KRPGLib.Enchantment
             { "enchantment-resistpoison", 16 },
             { "enchantment-shocking", 17 }
         };
+        // Deboog
+        public bool Debug = false;
         // Version
         public double Version;
         // Not supported yet

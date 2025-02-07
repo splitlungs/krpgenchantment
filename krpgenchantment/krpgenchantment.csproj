@@ -124,6 +124,7 @@
   <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-weapon.json" />
   <None Remove="assets\game\config\lore\enchantment.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
+  <None Remove="assets\krpgenchantment\lang\uk.json" />
   <None Remove="assets\maltiezcrossbows\patches\maltiez-crossbows-behaviors.json" />
   <None Remove="assets\maltiezcrossbows\recipes\enchanting-table\maltiezcrossbows-universal.json" />
   <None Remove="assets\maltiezcrossbows\recipes\enchanting-table\maltiezcrossbows-weapon.json" />

@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.83d;
+        private const double ConfigVersion = 0.84d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -93,7 +93,8 @@ namespace KRPGLib.Enchantment
                         tempConfig.CustomPatches.Add("SpearExpantion", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Swordz"))
                         tempConfig.CustomPatches.Add("Swordz", true);
-
+                    
+                    tempConfig.Debug = false;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;
                     sApi.StoreModConfig(Config, ConfigFile);

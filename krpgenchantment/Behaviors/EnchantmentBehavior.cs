@@ -230,9 +230,12 @@ namespace KRPGLib.Enchantment
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
             if (aimSelf == 1)
             {
-                // Get Enchantments
-                // Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
                 byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack);
+            }
+
+            if (byEntity.Attributes.GetInt("aimingCancel") == 1)
+            {
+                return;
             }
 
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);

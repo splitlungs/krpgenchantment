@@ -160,7 +160,8 @@ namespace KRPGLib.Enchantment
             {
                 if (CurrentRecipe == null) return false;
                 if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
-                // Api.Logger.Event("Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
                 Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot.Itemstack);
                 if (enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 return true;
@@ -314,7 +315,8 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void enchantInput()
         {
-            // Api.World.Logger.Event("Attempting to enchant an item.");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.World.Logger.Event("Attempting to enchant an item.");
             ItemStack outStack = CurrentRecipe.OutStack(Api, InputSlot, ReagentSlot).Clone();
             if (OutputSlot.Empty)
             {
@@ -337,7 +339,8 @@ namespace KRPGLib.Enchantment
                     Api.World.SpawnItemEntity(outStack, this.Pos.ToVec3d().Add(0.5 + face.Normalf.X * 0.7, 0.75, 0.5 + face.Normalf.Z * 0.7), new Vec3d(face.Normalf.X * 0.02f, 0, face.Normalf.Z * 0.02f));
                 }
             }
-            // Api.World.Logger.Event("Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.World.Logger.Event("Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
             int rQty = CurrentRecipe.IngredientQuantity(ReagentSlot);
             int iQty = CurrentRecipe.IngredientQuantity(InputSlot);
             ReagentSlot.TakeOut(rQty);
@@ -641,7 +644,8 @@ namespace KRPGLib.Enchantment
                 }
                 else
                 {
-                    // Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
                     SelectedEnchant = -1;
                 }
                 UpdateReaders();
@@ -689,7 +693,8 @@ namespace KRPGLib.Enchantment
                     SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
                     bool assed = Api.AssessItem(InputSlot, ReagentSlot);
-                    // if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
                 }
                 UpdateEnchantingState();
                 UpdateReaders();

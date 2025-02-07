@@ -216,12 +216,16 @@ namespace Vintagestory.GameContent
         {
             // Sanity check
             if (api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
-            // api.World.Logger.Event("Attempting to Assess {0}", inSlot.GetStackName());
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.World.Logger.Event("Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = api.World.Calendar.ElapsedDays;
-            // api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -231,24 +235,30 @@ namespace Vintagestory.GameContent
                 ero = EnchantingConfigLoader.Config.LatentEnchantResetDays;
             if (latentStamp != 0 && timeStamp < latentStamp + ero)
                 return false;
-            // api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
             if (EnchantingConfigLoader.Config?.MaxLatentEnchants != mle)
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
-            // api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
-            // api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
             for (int i = 0; i < mle; i++)
             {
-                int rNum = api.World.Rand.Next(recipes.Count -1);
+                int rNum = api.World.Rand.Next(recipes.Count);
                 var er = recipes[rNum].Clone();
                 if (er != null)
                     str += er.Name.ToShortString() + ";";
@@ -271,7 +281,9 @@ namespace Vintagestory.GameContent
                     strEnc += ";";
                 }
 
-                // api.World.Logger.Event("LatentEnchants string is {0}", str);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.World.Logger.Event("LatentEnchants string is {0}", str);
+
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
                 tree.SetDouble("latentEnchantTime", timeStamp);

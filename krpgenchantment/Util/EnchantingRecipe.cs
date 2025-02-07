@@ -131,7 +131,7 @@ namespace KRPGLib.Enchantment
             //     api.Logger.Warning("Could not get Config override for reagent potential.");
             // }
             // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
-            ITreeAttribute tree = outStack.Attributes?.GetTreeAttribute("enchantments");
+            ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
             // Apply Enchantments
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {

@@ -217,7 +217,8 @@ namespace KRPGLib.Enchantment
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
-                // Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
                 Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
                 if (enchants != null)
@@ -246,6 +247,19 @@ namespace KRPGLib.Enchantment
         public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
         {
             Dictionary<string, int> enchants = Api.GetEnchantments(stack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                    TryEnchantment(byEntity, pair.Key, pair.Value);
+            }
+        }
+        /// <summary>
+        /// Generic Enchantment processing.
+        /// </summary>
+        /// <param name="byEntity"></param>
+        /// <param name="enchants"></param>
+        public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
+        {
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
@@ -294,13 +308,14 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power)
         {
-            // Api.Logger.Event("{0} is being affected by a damage enchantment.", entity.GetName());
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("{0} is being affected by a damage enchantment.", entity.GetName());
             // Configure Damage
             EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
             
             DamageSource source = new DamageSource();
             if (byEntity != null)
-                source.SourceEntity = byEntity;
+                source.CauseEntity = byEntity;
             // source.DamageTier = stack.Collectible.ToolTier;
             
             float dmg = 0;
@@ -330,7 +345,8 @@ namespace KRPGLib.Enchantment
                 IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
                 if (inv != null)
                 {
-                    // Api.Logger.Event("Player's inventory detected.");
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("Player's inventory detected when receiving a damage enchant.");
                     float resist = 0f;
                     int[] wearableSlots = new int[3] { 12, 13, 14 };
 
@@ -365,10 +381,13 @@ namespace KRPGLib.Enchantment
             {
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
-                //
-                entity.ReceiveDamage(source, dmg);
-                // Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
-                // hp.OnEntityReceiveDamage(source, ref dmg);
+                bool didDamage = entity.ReceiveDamage(source, dmg);
+                
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
+                hp.OnEntityReceiveDamage(source, ref dmg);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("Particle-ing the target after Enchantment Damage.");
                 GenerateParticles(source, dmg);
             }
         }

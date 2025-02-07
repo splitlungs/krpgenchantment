@@ -72,6 +72,11 @@ namespace KRPGLib.Enchantment
             }
         }
 
+        public override void Dispose()
+        {
+            harmony?.UnpatchAll("KRPGEnchantmentPatch");
+        }
+
         private static Harmony harmony;
     }
 }
