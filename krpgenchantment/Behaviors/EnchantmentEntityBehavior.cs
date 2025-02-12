@@ -31,8 +31,19 @@ namespace KRPGLib.Enchantment
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             agent = entity as EntityAgent;
+            if (agent != null)
+            {
+                EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
+                hp.onDamaged += this.OnDamaged;
+            }
         }
         #region Events
+        public float OnDamaged(float dmg, DamageSource dmgSource)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0}'s Health behavior has received damage event for {1} {2} damage.", entity.GetName(), dmg, dmgSource.Type);
+            return dmg;
+        }
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
             player = byPlayer;
@@ -218,7 +229,7 @@ namespace KRPGLib.Enchantment
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("{0} was attacked by an enchanted weapon.", entity.GetName());
+                    Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
                 Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
                 if (enchants != null)
@@ -250,7 +261,11 @@ namespace KRPGLib.Enchantment
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
-                    TryEnchantment(byEntity, pair.Key, pair.Value);
+                {
+                    bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
+                    if (didEnchant != true)
+                        Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but failed!", pair.Key, pair.Value);
+                }
             }
         }
         /// <summary>
@@ -258,14 +273,18 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="byEntity"></param>
         /// <param name="enchants"></param>
-        public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
-        {
-            if (enchants != null)
-            {
-                foreach (KeyValuePair<string, int> pair in enchants)
-                    TryEnchantment(byEntity, pair.Key, pair.Value);
-            }
-        }
+        // public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
+        // {
+        //     if (enchants != null)
+        //     {
+        //         foreach (KeyValuePair<string, int> pair in enchants)
+        //         {
+        //             bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value);
+        //             if (didEnchant != true)
+        //                 Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but failed!", pair.Key, pair.Value);
+        //         }
+        //     }
+        // }
         /// <summary>
         /// Generic Enchantment processing.
         /// </summary>
@@ -273,19 +292,19 @@ namespace KRPGLib.Enchantment
         /// <param name="enchant"></param>
         /// <param name="power"></param>
         /// <returns></returns>
-        public void TryEnchantment(EntityAgent byEntity, string enchant, int power)
+        public bool TryEnchantment(EntityAgent byEntity, string enchant, int power, ItemStack stack)
         {
             // Alt Damage
             if (enchant == EnumEnchantments.healing.ToString())
-                DamageEntity(byEntity, EnumEnchantments.healing, power);
+                DamageEntity(byEntity, EnumEnchantments.healing, power, stack);
             else if (enchant == EnumEnchantments.flaming.ToString())
-                DamageEntity(byEntity, EnumEnchantments.flaming, power);
+                DamageEntity(byEntity, EnumEnchantments.flaming, power, stack);
             else if (enchant == EnumEnchantments.frost.ToString())
-                DamageEntity(byEntity, EnumEnchantments.frost, power);
+                DamageEntity(byEntity, EnumEnchantments.frost, power, stack);
             else if (enchant == EnumEnchantments.harming.ToString())
-                DamageEntity(byEntity, EnumEnchantments.harming, power);
+                DamageEntity(byEntity, EnumEnchantments.harming, power, stack);
             else if (enchant == EnumEnchantments.shocking.ToString())
-                DamageEntity(byEntity, EnumEnchantments.shocking, power);
+                DamageEntity(byEntity, EnumEnchantments.shocking, power, stack);
             // Alt Effects
             else if (enchant == EnumEnchantments.chilling.ToString())
                 ChillEntity(power);
@@ -297,6 +316,11 @@ namespace KRPGLib.Enchantment
                 CallLightning(power);
             else if (enchant == EnumEnchantments.pit.ToString())
                 CreatePit(byEntity, power);
+            // No enchant was processed
+            else
+                return false;
+
+            return true;
         }
         #endregion
         #region Alt Damage
@@ -306,17 +330,21 @@ namespace KRPGLib.Enchantment
         /// <param name="byEntity"></param>
         /// <param name="enchant"></param>
         /// <param name="power"></param>
-        public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power)
+        public void DamageEntity(Entity byEntity, EnumEnchantments enchant, int power, ItemStack stack)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("{0} is being affected by a damage enchantment.", entity.GetName());
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", entity.GetName());
             // Configure Damage
-            EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
+            // EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
             
             DamageSource source = new DamageSource();
             if (byEntity != null)
+            {
                 source.CauseEntity = byEntity;
-            // source.DamageTier = stack.Collectible.ToolTier;
+                source.SourceEntity = byEntity;
+            }
+            if (stack != null)
+                source.DamageTier = stack.Collectible.ToolTier;
             
             float dmg = 0;
 
@@ -346,7 +374,7 @@ namespace KRPGLib.Enchantment
                 if (inv != null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("Player's inventory detected when receiving a damage enchant.");
+                        Api.Logger.Event("[KRPGEnchantment] Player's inventory detected when receiving a damage enchant.");
                     float resist = 0f;
                     int[] wearableSlots = new int[3] { 12, 13, 14 };
 
@@ -379,16 +407,24 @@ namespace KRPGLib.Enchantment
             // Apply Damage
             if (entity.ShouldReceiveDamage(source, dmg))
             {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
+
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
                 bool didDamage = entity.ReceiveDamage(source, dmg);
-                
+                if (didDamage != true)
+                    Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
+
+                // hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("Dealing {0} {1} damage.", dmg, source.Type.ToString());
-                hp.OnEntityReceiveDamage(source, ref dmg);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("Particle-ing the target after Enchantment Damage.");
+                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
                 GenerateParticles(source, dmg);
+            }
+            else
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Warning("[KRPGEnchantment] Tried to deal {0} damage to {1}, but it should not receive damage!", dmg, entity.GetName());
             }
         }
         #endregion
@@ -510,7 +546,7 @@ namespace KRPGLib.Enchantment
                 }
             }
             else
-                Api.Logger.Debug("Could not find Weather System!");
+                Api.Logger.Debug("[KRPGEnchantment] Could not find Weather System!");
         }
         /// <summary>
         /// Attempt to poison the entity. Power multiplies number of 12s refreshes.

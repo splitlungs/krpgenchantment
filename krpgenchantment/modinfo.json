@@ -4,7 +4,7 @@
   "name": "KRPGEnchantment",
   "authors": [ "BloodThunder" ],
   "description": "Adds magical enchantments to VS!",
-  "version": "0.6.13",
+  "version": "0.6.14",
   "dependencies": {
     "game": ""
   }
