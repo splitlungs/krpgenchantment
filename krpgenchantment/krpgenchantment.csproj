@@ -107,6 +107,7 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\scrapblocks\patches\scrapblocks-behaviors.json" />
   <None Remove="assets\armory\patches\armory-behaviors.json" />
   <None Remove="assets\combatoverhaul\patches\combatoverhaul-behaviors.json" />
   <None Remove="assets\ancientarmory\patches\ancientarmory-behaviors.json" />
@@ -170,6 +171,9 @@
   <None Remove="assets\paxel\recipes\enchanting-table\paxel-uninversal.json" />
   <None Remove="assets\rustboundmagic\patches\krpg-armor-behaviors.json" />
   <None Remove="assets\rustboundmagic\recipes\enchanting-table\rustbound-universal.json" />
+  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-armor.json" />
+  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-universal.json" />
+  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-weapon.json" />
   <None Remove="assets\spearexpantion\patches\tools-behaviors.json" />
   <None Remove="assets\spearexpantion\patches\wearable-behaviors.json" />
   <None Remove="assets\spearexpantion\recipes\enchanting-table\spearexpantion-armor.json" />

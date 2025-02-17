@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.84d;
+        private const double ConfigVersion = 0.85d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -89,6 +89,8 @@ namespace KRPGLib.Enchantment
                         tempConfig.CustomPatches.Add("Paxel", true);
                     if (!tempConfig.CustomPatches.ContainsKey("RustboundMagic"))
                         tempConfig.CustomPatches.Add("RustboundMagic", true);
+                    if (!tempConfig.CustomPatches.ContainsKey("ScrapBlocks"))
+                        tempConfig.CustomPatches.Add("ScrapBlocks", true);
                     if (!tempConfig.CustomPatches.ContainsKey("SpearExpantion"))
                         tempConfig.CustomPatches.Add("SpearExpantion", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Swordz"))

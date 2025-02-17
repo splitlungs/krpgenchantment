@@ -44,6 +44,7 @@ namespace KRPGLib.Enchantment
             { "MaltiezFirearms", true },
             { "Paxel", true },
             { "RustboundMagic", true },
+            { "ScrapBlocks", true },
             { "SpearExpantion", true },
             { "Swordz", true },
         };

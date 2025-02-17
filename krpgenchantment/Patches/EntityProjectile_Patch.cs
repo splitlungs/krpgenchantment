@@ -43,26 +43,7 @@ namespace KRPGLib.Enchantment
             {
                 // Projectile Enchantments
                 eeb.TryEnchantments(__instance.FiredBy as EntityAgent, __instance.ProjectileStack);
-
-                // Projectile Entity Enchantments - WIP
-                // 
-                // ITreeAttribute pTree = __instance.WatchedAttributes.GetOrAddTreeAttribute("enchantments");
-                // if (pTree != null)
-                // {
-                //     foreach (IAttribute attr in pTree.Values)
-                //     {
-                //         __instance.World.Logger.Warning("EntityProjectile has {0} {1}", attr.ToString(), attr.GetValue());
-                //     }
-                //     ItemStack tempStack = __instance.ProjectileStack.Clone();
-                //     tempStack.Attributes.MergeTree(pTree);
-                //     ITreeAttribute tTree = tempStack.Attributes.GetOrAddTreeAttribute("enchantments");
-                //     foreach (IAttribute attr in tTree.Values)
-                //     {
-                //         __instance.World.Logger.Warning("EntityProjectile has {0} {1}", attr.ToString(), attr.GetValue());
-                //     }
-                //     eeb.TryEnchantments(__instance.FiredBy as EntityAgent, tempStack);
-                // }
-
+                
                 // Default Bow enchantments
                 string enchantString = __instance.FiredBy.WatchedAttributes.GetString("pendingRangedEnchants");
                 if (enchantString != null)
@@ -84,22 +65,46 @@ namespace KRPGLib.Enchantment
                             enchants.Add(s, sPower);
                         }
                     }
-                
+
                     if (enchants.ContainsKey("healing"))
                         __instance.Damage = 0;
-                
+
                     ItemStack enchantedStack = __instance.ProjectileStack.Clone();
-                
+
                     if (entity.Api.World.Calendar.ElapsedSeconds - timestamp > 6)
                         return;
-                
+
                     ITreeAttribute tree = enchantedStack.Attributes.GetOrAddTreeAttribute("enchantments");
                     foreach (KeyValuePair<string, int> keyValuePair in enchants)
                         tree.SetInt(keyValuePair.Key, keyValuePair.Value);
                     enchantedStack.Attributes.MergeTree(tree);
-                
+
                     eeb.TryEnchantments(__instance.FiredBy as EntityAgent, enchantedStack);
                 }
+
+                // if (didEnchant != true)
+                //     entity.World.Api.Logger.Error("[KRPG Enchantment] Attempted to process a projectile's enchantments, but ");
+                
+                // Projectile Entity Enchantments - WIP
+                // 
+                // ITreeAttribute pTree = __instance.WatchedAttributes.GetOrAddTreeAttribute("enchantments");
+                // if (pTree != null)
+                // {
+                //     foreach (IAttribute attr in pTree.Values)
+                //     {
+                //         __instance.World.Logger.Warning("EntityProjectile has {0} {1}", attr.ToString(), attr.GetValue());
+                //     }
+                //     ItemStack tempStack = __instance.ProjectileStack.Clone();
+                //     tempStack.Attributes.MergeTree(pTree);
+                //     ITreeAttribute tTree = tempStack.Attributes.GetOrAddTreeAttribute("enchantments");
+                //     foreach (IAttribute attr in tTree.Values)
+                //     {
+                //         __instance.World.Logger.Warning("EntityProjectile has {0} {1}", attr.ToString(), attr.GetValue());
+                //     }
+                //     eeb.TryEnchantments(__instance.FiredBy as EntityAgent, tempStack);
+                // }
+
+                
             }
         }
     }

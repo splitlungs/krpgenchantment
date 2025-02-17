@@ -1,0 +1,172 @@
+[
+  {
+    "name": "enchantment-chilling",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "chilling": 5
+    }
+  },
+  {
+    "name": "enchantment-flaming",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "flaming": 5
+    }
+  },
+  {
+    "name": "enchantment-frost",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "frost": 5
+    }
+  },
+  {
+    "name": "enchantment-harming",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "harming": 5
+    }
+  },
+  {
+    "name": "enchantment-healing",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "healing": 5
+    }
+  },
+  {
+    "name": "enchantment-igniting",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "igniting": 5
+    }
+  },
+  {
+    "name": "enchantment-knockback",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "knockback": 5
+    }
+  },
+  {
+    "name": "enchantment-lightning",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "lightning": 5
+    }
+  },
+  {
+    "name": "enchantment-pit",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "pit": 5
+    }
+  },
+  {
+    "name": "enchantment-shocking",
+    "processingHours": 1,
+    "ingredients": {
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "shocking": 5
+    }
+  }
+]

@@ -1,20 +1,6 @@
 [
   {
     "op": "addmerge",
-    "file": "krpgwands:itemtypes/krpg-wand.json",
-    "path": "/behaviors",
-    "value": [
-      {
-        "name": "EnchantmentBehavior",
-        "properties": {
-          "enchantable": true
-        }
-      }
-    ],
-    "side": "server"
-  },
-  {
-    "op": "addmerge",
     "file": "krpgwands:itemtypes/wands/wand-metal.json",
     "path": "/behaviors",
     "value": [

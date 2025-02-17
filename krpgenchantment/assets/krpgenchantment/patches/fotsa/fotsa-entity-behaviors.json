@@ -534,5 +534,21 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "elephantidae:entities/land/elephantidae.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "viverridae:entities/land/nandiniidae.json"
+  },
+  {
+    "op": "add",
+    "path": "/server/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "viverridae:entities/land/viverridae.json"
   }
 ]

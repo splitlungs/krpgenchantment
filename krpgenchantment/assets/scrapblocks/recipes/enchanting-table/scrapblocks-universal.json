@@ -1,0 +1,31 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "scraparmor": {
+        "type": "item",
+        "code": "scrapblocks:armor-*-*-*"
+      },
+      "scrappick": {
+        "type": "item",
+        "code": "scrapblocks:pickaxe-*"
+      },
+      "scrapshovel": {
+        "type": "item",
+        "code": "scrapblocks:shovel-*"
+      },
+      "scrapweapons": {
+        "type": "item",
+        "code": "scrapblocks:blade-*-*"
+      },
+      "scrapspear": {
+        "type": "item",
+        "code": "scrapblocks:spear-*-*"
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]
