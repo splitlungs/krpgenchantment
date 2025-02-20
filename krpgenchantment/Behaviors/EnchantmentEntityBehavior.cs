@@ -264,7 +264,7 @@ namespace KRPGLib.Enchantment
                 {
                     bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
                     if (didEnchant != true)
-                        Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but failed!", pair.Key, pair.Value);
+                        Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but nothing to do or it failed.", pair.Key, pair.Value);
                 }
             }
         }

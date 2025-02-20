@@ -14,6 +14,7 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public COSystem combatOverhaul;
+        public KRPGWandsSystem krpgWands;
 
         public override void AssetsLoaded(ICoreAPI api)
         {
@@ -31,6 +32,12 @@ namespace KRPGLib.Enchantment
             {
                 combatOverhaul = new COSystem();
                 combatOverhaul.StartServerSide(sApi);
+            }
+            if (EnchantingConfigLoader.Config?.CustomPatches.GetValueOrDefault("KRPGWands", false) == true
+                && api.ModLoader.IsModEnabled("krpgwands") == true)
+            {
+                krpgWands = new KRPGWandsSystem();
+                krpgWands.StartServerSide(sApi);
             }
         }
         public void RegisterPlayerEEB(IServerPlayer byPlayer)
