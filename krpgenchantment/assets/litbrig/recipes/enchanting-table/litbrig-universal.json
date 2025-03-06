@@ -1,0 +1,16 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

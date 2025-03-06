@@ -108,6 +108,8 @@
   "LatentEnchantResetDaysComment": "Sets the amount of days between Latent Enchantment resets. 0 resets every time the item is checked by an Enchanting Table.",
   "MaxLatentEnchants": "Maximum Latent Enchantments",
   "MaxLatentEnchantsComment": "Sets the amount of Latent Enchantments an item can hold at a single time. 0 effectively disables players enchanting items on their own.",
+  "MaxDamageEnchants": "Maximum Damage Enchantments",
+  "MaxDamageEnchantsComment": "Sets the amount of Damage Enchantments an item can hold at a single time. This includes Flaming, Frost, Harming, and Shocking. -1 or less is no limit.",
   "ValidReagents": "Valid Reagents",
   "ValidReagentsComment": "Item and quantity required to perform an Enchantment."
 }

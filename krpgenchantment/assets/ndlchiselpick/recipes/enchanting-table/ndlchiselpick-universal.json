@@ -1,0 +1,16 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "chiselpick": {
+        "type": "item",
+        "code": "ndlchiselpick:chiselpick-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

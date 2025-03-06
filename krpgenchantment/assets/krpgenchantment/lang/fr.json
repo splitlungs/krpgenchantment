@@ -108,6 +108,8 @@
   "LatentEnchantResetDaysComment": "Définit le nombre de jours entre les réinitialisations de l'enchantement latent. 0 se réinitialise à chaque fois que l'objet est vérifié par une table d'enchantement.",
   "MaxLatentEnchants": "Enchantements latents maximum",
   "MaxLatentEnchantsComment": "Définit la quantité d'enchantements latents qu'un objet peut contenir à la fois. 0 empêche efficacement les joueurs d'enchanter eux-mêmes les objets.",
+  "MaxDamageEnchants": "Enchantements de dégâts maximum",
+  "MaxDamageEnchantsComment": "Définit la quantité d'enchantements de dégâts qu'un objet peut contenir en une seule fois. Cela inclut les enchantements Flamboyants, Givrants, Nuisibles et Électrocutants. -1 ou moins signifie qu'il n'y a pas de limite.",
   "ValidReagents": "Réactifs valides",
   "ValidReagentsComment": "Objet et quantité requis pour effectuer un enchantement."
 }

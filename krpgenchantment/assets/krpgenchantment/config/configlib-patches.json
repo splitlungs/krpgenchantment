@@ -27,6 +27,13 @@
       "type": "integer",
       "clientSide": false,
       "default": 3
+    },
+    {
+      "code": "MaxDamageEnchants",
+      "comment": "MaxDamageEnchantsComment",
+      "type": "integer",
+      "clientSide": false,
+      "default": 3
     }
   ]
 }

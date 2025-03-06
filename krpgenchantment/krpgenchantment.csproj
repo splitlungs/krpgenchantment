@@ -16,7 +16,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="CombatOverhaul">
-      <HintPath>..\..\..\Examples\combatoverhaul_0.1.22\CombatOverhaul.dll</HintPath>
+      <HintPath>..\..\..\Examples\combatoverhaul_0.1.29\CombatOverhaul.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="krpgwands">
@@ -111,6 +111,11 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\litbrig\patches\litbrig-behaviors.json" />
+  <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-armor.json" />
+  <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-universal.json" />
+  <None Remove="assets\ndlchiselpick\patches\ndlchiselpick-behaviors.json" />
+  <None Remove="assets\ndlchiselpick\recipes\enchanting-table\ndlchiselpick-universal.json" />
   <None Remove="assets\scrapblocks\patches\scrapblocks-behaviors.json" />
   <None Remove="assets\armory\patches\armory-behaviors.json" />
   <None Remove="assets\combatoverhaul\patches\combatoverhaul-behaviors.json" />
@@ -208,6 +213,10 @@
   <None Remove="assets\swordz\swordz-stiletto-tier-1.json" />
   <None Remove="assets\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgwands\wand-tier-1.json" />
+  <None Remove="assets\tonwexp-neue\patches\tonwexp-behaviors.json" />
+  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\tonwexp-armor.json" />
+  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\townexp-universal.json" />
+  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\townexp-weapon.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>

@@ -1,0 +1,71 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "tonwexparmor": {
+        "type": "item",
+        "code": "tonwexp:armor-*-*-*"
+      },
+      "tonwexpaxe": {
+        "type": "item",
+        "code": "tonwexp:axe-*"
+      },
+      "bages": {
+        "type": "item",
+        "code": "tonwexp:bages-*"
+      },
+      "carsword": {
+        "type": "item",
+        "code": "tonwexp:carsword-*"
+      },
+      "flamberge": {
+        "type": "item",
+        "code": "tonwexp:flamberge-*"
+      },
+      "tonwexpgladius": {
+        "type": "item",
+        "code": "tonwexp:gladius-*"
+      },
+      "tonwexpgross": {
+        "type": "item",
+        "code": "tonwexp:gross-*"
+      },
+      "tonwexpkatana": {
+        "type": "item",
+        "code": "tonwexp:katana-*"
+      },
+      "tonwexpkatzbalger": {
+        "type": "item",
+        "code": "tonwexp:katzbalger-*"
+      },
+      "tonwexpmace": {
+        "type": "item",
+        "code": "tonwexp:mace-*"
+      },
+      "tonwexppilum": {
+        "type": "item",
+        "code": "tonwexp:pilum-*"
+      },
+      "tonwexpsaber": {
+        "type": "item",
+        "code": "tonwexp:saber-*"
+      },
+      "tonwexpscutum": {
+        "type": "item",
+        "code": "tonwexp:scutum-*-*-*"
+      },
+      "tonwexpseax": {
+        "type": "item",
+        "code": "tonwexp:seax-*"
+      },
+      "tonwexpspear": {
+        "type": "item",
+        "code": "tonwexp:spear-*"
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

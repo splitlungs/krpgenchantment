@@ -1,0 +1,93 @@
+[
+  {
+    "name": "enchantment-protection",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "protection": 5
+    }
+  },
+  {
+    "name": "enchantment-resistelectricity",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistelectricity": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfire",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistfire": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfrost",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistfrost": 5
+    }
+  },
+  {
+    "name": "enchantment-resistheal",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistheal": 5
+    }
+  },
+  {
+    "name": "enchantment-resistinjury",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistinjury": 5
+    }
+  },
+  {
+    "name": "enchantment-resistpoison",
+    "processingHours": 1,
+    "ingredients": {
+      "litbrig": {
+        "type": "item",
+        "code": "litbrig:tailoredbrigandine-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistpoison": 5
+    }
+  }
+]

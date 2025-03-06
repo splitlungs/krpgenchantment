@@ -1,6 +1,20 @@
 [
   {
     "op": "addmerge",
+    "file": "combatoverhaul:itemtypes/wearable/seraph/armor.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
     "file": "game:itemtypes/combatoverhaul/arrow.json",
     "path": "/behaviors",
     "value": [
@@ -30,6 +44,20 @@
   {
     "op": "addmerge",
     "file": "game:itemtypes/combatoverhaul/club.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "game:itemtypes/combatoverhaul/spear.json",
     "path": "/behaviors",
     "value": [
       {

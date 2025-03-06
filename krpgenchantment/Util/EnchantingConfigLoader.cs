@@ -15,12 +15,13 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.85d;
+        private const double ConfigVersion = 0.87d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
         ICoreServerAPI sApi;
 
+        // Load before anything else, especially before ConfigLib does anything.
         public override double ExecuteOrder()
         {
             return 0;
@@ -61,14 +62,15 @@ namespace KRPGLib.Enchantment
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
+                    if (Config.MaxDamageEnchants != -1) tempConfig.MaxDamageEnchants = Config.MaxDamageEnchants;
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     if (!tempConfig.ValidReagents.ContainsKey("game:gem-emerald-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 3);
+                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 1);
                     if (!tempConfig.ValidReagents.ContainsKey("game:gem-diamond-rough"))
                         tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
                     if (!tempConfig.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 3);
+                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
 
                     if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
                     if (!tempConfig.CustomPatches.ContainsKey("AncientArmory"))
@@ -81,10 +83,14 @@ namespace KRPGLib.Enchantment
                         tempConfig.CustomPatches.Add("ElectricityAddon", true);
                     if (!tempConfig.CustomPatches.ContainsKey("KRPGWands"))
                         tempConfig.CustomPatches.Add("KRPGWands", true);
+                    if (!tempConfig.CustomPatches.ContainsKey("LitBrig"))
+                        tempConfig.CustomPatches.Add("LitBrig", true);
                     if (!tempConfig.CustomPatches.ContainsKey("MaltiezCrossbows"))
                         tempConfig.CustomPatches.Add("MaltiezFirearms", true);
                     if (!tempConfig.CustomPatches.ContainsKey("MaltiezFirearms"))
                         tempConfig.CustomPatches.Add("MaltiezCrossbows", true);
+                    if (!tempConfig.CustomPatches.ContainsKey("NDLChiselPick"))
+                        tempConfig.CustomPatches.Add("NDLChiselPick", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Paxel"))
                         tempConfig.CustomPatches.Add("Paxel", true);
                     if (!tempConfig.CustomPatches.ContainsKey("RustboundMagic"))
@@ -95,7 +101,9 @@ namespace KRPGLib.Enchantment
                         tempConfig.CustomPatches.Add("SpearExpantion", true);
                     if (!tempConfig.CustomPatches.ContainsKey("Swordz"))
                         tempConfig.CustomPatches.Add("Swordz", true);
-                    
+                    if (!tempConfig.CustomPatches.ContainsKey("Tonwexp-Neue"))
+                        tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
+
                     tempConfig.Debug = false;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;

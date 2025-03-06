@@ -40,26 +40,6 @@ namespace Vintagestory.GameContent
                 if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
             }
             return enchants;
-
-            // Get Enchantments for Migration
-            // Will be removed in 0.6.x
-            // IT'S TIME
-            // foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            // {
-            //     int ePower = itemStack.Attributes.GetInt(val.ToString(), 0);
-            //     if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
-            // }
-            // 
-            // // Migrate old Enchantments if needed
-            // // Will be removed in 0.6.x
-            // if (enchants.Count > 0)
-            // {
-            //     foreach (KeyValuePair<string, int> keyValuePair in enchants)
-            //     {
-            //         tree.SetInt(keyValuePair.Key, keyValuePair.Value);
-            //         itemStack.Attributes.RemoveAttribute(keyValuePair.Key);
-            //     }
-            // }
         }
 
         /// <summary>

@@ -156,7 +156,21 @@
   {
     "op": "addmerge",
     "file": "armory:itemtypes/weapons/mace.json",
-    "path": "/behaviors",
+    "path": "/behaviorsByType/@.*-(copper|.*bronze|.*iron|steel)",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "armory:itemtypes/weapons/mace.json",
+    "path": "/behaviorsByType/*",
     "value": [
       {
         "name": "EnchantmentBehavior",
@@ -212,7 +226,21 @@
   {
     "op": "addmerge",
     "file": "armory:itemtypes/weapons/shield-heavy.json",
-    "path": "/behaviors",
+    "path": "/behaviorsByType/@.*-(.*iron)",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "armory:itemtypes/weapons/shield-heavy.json",
+    "path": "/behaviorsByType/*",
     "value": [
       {
         "name": "EnchantmentBehavior",
@@ -226,7 +254,21 @@
   {
     "op": "addmerge",
     "file": "armory:itemtypes/weapons/shield-light.json",
-    "path": "/behaviors",
+    "path": "/behaviorsByType/@.*-(.*iron)",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "armory:itemtypes/weapons/shield-light.json",
+    "path": "/behaviorsByType/*",
     "value": [
       {
         "name": "EnchantmentBehavior",
@@ -282,7 +324,21 @@
   {
     "op": "addmerge",
     "file": "armory:itemtypes/weapons/sword-short.json",
-    "path": "/behaviors",
+    "path": "/behaviorsByType/*-steel",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  },
+  {
+    "op": "addmerge",
+    "file": "armory:itemtypes/weapons/sword-short.json",
+    "path": "/behaviorsByType/*",
     "value": [
       {
         "name": "EnchantmentBehavior",

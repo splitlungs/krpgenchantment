@@ -20,11 +20,12 @@ namespace KRPGLib.Enchantment
         public double EnchantTimeOverride = -1d;
         public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
+        public int MaxDamageEnchants = -1;
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>()
         {
-            { "game:gem-emerald-rough", 3 },
+            { "game:gem-emerald-rough", 1 },
             { "game:gem-diamond-rough", 1 },
-            { "game:gem-olivine_peridot-rough", 3 }
+            { "game:gem-olivine_peridot-rough", 1 }
         };
         public Dictionary<string, int> ReagentPotentialTiers = new Dictionary<string, int>()
         {
@@ -40,13 +41,16 @@ namespace KRPGLib.Enchantment
             { "CombatOverhaul", true },
             { "ElectricityAddon", true },
             { "KRPGWands", true },
+            { "LitBrig", true },
             { "MaltiezCrossbows", true },
             { "MaltiezFirearms", true },
+            { "NDLChiselPick", true },
             { "Paxel", true },
             { "RustboundMagic", true },
             { "ScrapBlocks", true },
             { "SpearExpantion", true },
             { "Swordz", true },
+            { "Tonwexp-Neue", true }
         };
         // Lore Configuration
         public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()

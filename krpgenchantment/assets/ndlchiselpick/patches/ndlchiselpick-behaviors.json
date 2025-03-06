@@ -1,0 +1,16 @@
+[
+  {
+    "op": "addmerge",
+    "file": "ndlchiselpick:itemtypes/chiselpick.json",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "EnchantmentBehavior",
+        "properties": {
+          "enchantable": true
+        }
+      }
+    ],
+    "side": "server"
+  }
+]

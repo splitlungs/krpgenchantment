@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
@@ -109,7 +110,8 @@ namespace KRPGLib.Enchantment
             // Setup Quantity
             outStack.StackSize = IngredientQuantity(inSlot);
 
-            // api.Logger.Event("Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
 
             // Setup Reagent Override
             bool rOverride = false;
@@ -124,12 +126,13 @@ namespace KRPGLib.Enchantment
                 string pot = rSlot.Itemstack.Attributes?.GetString("potential", "low").ToLower();
                 int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers[pot];
                 power = api.World.Rand.Next(1, maxPot + 1);
-                // api.Logger.Event("Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, pot);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, pot);
             }
-            // else
-            // {
-            //     api.Logger.Warning("Could not get Config override for reagent potential.");
-            // }
+            else if (EnchantingConfigLoader.Config?.Debug == true)
+            {
+                api.Logger.Event("[KRPGEnchantment] Could not get Config override for reagent potential.");
+            }
             // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
             ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
             // Apply Enchantments
@@ -148,13 +151,31 @@ namespace KRPGLib.Enchantment
                     || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
                     )
                     tree.SetInt(EnumEnchantments.healing.ToString(), 0);
-
                 // Re-roll if the recipe limits max power
                 if (rOverride)
                     power = enchant.Value;
                 // Write Enchant
                 tree.SetInt(enchant.Key, power);
             }
+            // Limit damage enchants.
+            int maxDE = EnchantingConfigLoader.Config.MaxDamageEnchants;
+            if (maxDE >= 0)
+            {
+                int numDmgEnchants = 0;
+                if (tree.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
+                if (tree.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
+                if (tree.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
+                if (tree.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
+                if (numDmgEnchants > maxDE)
+                {
+                    int roll = api.World.Rand.Next(1, 5);
+                    if (roll == 1) tree.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    else if (roll == 2) tree.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    else if (roll == 3) tree.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    else if (roll == 4) tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
+                }
+            }
+
             tree.RemoveAttribute("latentEnchantTime");
             tree.RemoveAttribute("latentEnchants");
             outStack.Attributes.MergeTree(tree);
@@ -175,12 +196,12 @@ namespace KRPGLib.Enchantment
             {
                 if (!Ingredients.ContainsKey(pair.Key))
                 {
-                    world.Logger.Error("Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pair.Key);
+                    world.Logger.Error("[KRPGEnchantment] Enchanting Recipe {0} contains an ingredient pattern code {1} but supplies no ingredient for it.", Name, pair.Key);
                     return false;
                 }
                 if (!Ingredients[pair.Key].Resolve(world, "Enchanting recipe"))
                 {
-                    world.Logger.Error("Enchanting Recipe: {0} contains an ingredient that cannot be resolved: {1}", pair.Key, Ingredients[pair.Key]);
+                    world.Logger.Error("[KRPGEnchantment] Enchanting Recipe: {0} contains an ingredient that cannot be resolved: {1}", pair.Key, Ingredients[pair.Key]);
                     return false;
                 }
 

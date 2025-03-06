@@ -316,6 +316,8 @@ namespace KRPGLib.Enchantment
                 CallLightning(power);
             else if (enchant == EnumEnchantments.pit.ToString())
                 CreatePit(byEntity, power);
+            else if (enchant == EnumEnchantments.durable.ToString())
+                return true;
             // No enchant was processed
             else
                 return false;
@@ -445,8 +447,11 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void KnockbackEntity(int power)
         {
-            double weightedPower = power * 100;
+            double weightedPower = power * 20;
+            // EntityPos facing = entity.SidedPos.AheadCopy(0.1);
+            // entity.SidedPos.Motion.Mul(facing.X * -weightedPower, 1, facing.Z * -weightedPower);
             entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
+            
         }
         /// <summary>
         /// Creates a 1x1x1 pit under the target Entity multiplied by Power. Only works only Soil, Sand, or Gravel

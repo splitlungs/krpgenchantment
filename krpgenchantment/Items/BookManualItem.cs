@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -34,20 +36,32 @@ namespace KRPGLib.Enchantment
                 treeAttribute.SetItemstack("itemstack", itemslot.Itemstack.Clone());
                 api.Event.PushEvent("loreDiscovery", treeAttribute);
             }
+            handling = EnumHandHandling.PreventDefault;
 
             base.OnHeldInteractStart(itemslot, byEntity, blockSel, entitySel, firstEvent, ref handling);
-            handling = EnumHandHandling.PreventDefault;
         }
 
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
-            base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
+            dsc.Append(Lang.Get("krpgenchantment:loretype-enchantment") + "\n" + "\n");
 
-            string @string = inSlot.Itemstack.Attributes.GetString("category");
-            if (@string != null)
+            base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
+        }
+
+        public override string GetHeldItemName(ItemStack itemStack)
+        {
+            string @string = base.GetHeldItemName(itemStack);
+            var cID = itemStack.Attributes["chapterIds"] as IntArrayAttribute;
+            if (cID != null)
             {
-                dsc.Append(Lang.Get("krpgenchantment:loretype-" + @string));
+                foreach (KeyValuePair<string, int> keyValuePair in EnchantingConfigLoader.Config.LoreIDs)
+                {
+                    if (cID.value.Contains(keyValuePair.Value))
+                        @string += ": " + Lang.Get("krpgenchantment:" + keyValuePair.Key);
+                }
             }
+
+            return @string;
         }
 
         public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot)
