@@ -14,8 +14,11 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantersManualItem : ItemBook
     {
+        
         public override void OnHeldInteractStart(ItemSlot itemslot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling)
         {
+            if (EnchantingConfigLoader.Config.Debug == true)
+                api.Logger.Event("[KRPGEnchantment] Attempting to push enchantingLoreDiscovery event.");
             string @string = itemslot.Itemstack.Attributes.GetString("category");
             if (byEntity.World.Side == EnumAppSide.Server && @string != null)
             {
@@ -50,18 +53,29 @@ namespace KRPGLib.Enchantment
 
         public override string GetHeldItemName(ItemStack itemStack)
         {
-            string @string = base.GetHeldItemName(itemStack);
-            var cID = itemStack.Attributes["chapterIds"] as IntArrayAttribute;
-            if (cID != null)
+            if (Code == null)
             {
-                foreach (KeyValuePair<string, int> keyValuePair in EnchantingConfigLoader.Config.LoreIDs)
+                return "Invalid block, id " + Id;
+            }
+            
+            string text = ItemClass.Name();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(Lang.GetMatching(Code?.Domain + ":" + text + "-" + Code?.Path));
+            var cID = itemStack.Attributes["chapterIds"] as IntArrayAttribute;
+            if (cID != null && EnchantingConfigLoader.Config?.LoreIDs != null)
+            {
+                if (EnchantingConfigLoader.Config.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Enchanter's Manual has been read, and should append its enchantment to its name.");
+                Dictionary<string, int> lores = EnchantingConfigLoader.Config.LoreIDs;
+                foreach (KeyValuePair<string, int> keyValuePair in lores)
                 {
                     if (cID.value.Contains(keyValuePair.Value))
-                        @string += ": " + Lang.Get("krpgenchantment:" + keyValuePair.Key);
+                        stringBuilder.Append(": " + Lang.Get("krpgenchantment:" + keyValuePair.Key));
                 }
+                return stringBuilder.ToString();
             }
 
-            return @string;
+            return base.GetHeldItemName(itemStack);
         }
 
         public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot)

@@ -38,6 +38,7 @@ namespace KRPGLib.Enchantment
         {
             { "AncientArmory", true },
             { "Armory", true },
+            { "CANJewelry", true },
             { "CombatOverhaul", true },
             { "ElectricityAddon", true },
             { "KRPGWands", true },

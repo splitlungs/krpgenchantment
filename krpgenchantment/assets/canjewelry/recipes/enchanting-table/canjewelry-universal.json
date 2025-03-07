@@ -1,0 +1,15 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "cangemchisel": {
+        "type": "item",
+        "code": "canjewelry:cangemchisel-*"
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

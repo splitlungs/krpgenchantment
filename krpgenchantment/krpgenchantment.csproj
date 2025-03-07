@@ -111,6 +111,8 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\canjewelry\patches\canjewelry-behaviors.json" />
+  <None Remove="assets\canjewelry\recipes\enchanting-table\canjewelry-universal.json" />
   <None Remove="assets\litbrig\patches\litbrig-behaviors.json" />
   <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-armor.json" />
   <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-universal.json" />
