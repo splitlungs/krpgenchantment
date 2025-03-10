@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment
                 {
                     value = (___loreDiscoveryiesByPlayerUid[plr.PlayerUID] = new Dictionary<string, LoreDiscovery>());
                 }
-    
+                
                 if (!value.ContainsKey(asset.Code))
                 {
                     __result = new LoreDiscovery
@@ -35,6 +35,7 @@ namespace KRPGLib.Enchantment
                         Code = asset.Code,
                         ChapterIds = new List<int> { 0 }
                     };
+                    return false;
                 }
     
                 LoreDiscovery loreDiscovery = value[asset.Code];
@@ -48,12 +49,13 @@ namespace KRPGLib.Enchantment
                 }
                 if (pieces.Count > 0)
                 {
-                    int piece = ___sapi.World.Rand.Next(0, pieces.Count + 1);
+                    int piece = ___sapi.World.Rand.Next(0, pieces.Count);
                     __result = new LoreDiscovery
                     {
                         ChapterIds = new List<int> { pieces[piece] },
                         Code = loreDiscovery.Code
                     };
+                    return false;
                 }
                 __result = null;
                 return false;

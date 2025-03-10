@@ -14,14 +14,13 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantersManualItem : ItemBook
     {
-        
         public override void OnHeldInteractStart(ItemSlot itemslot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling)
         {
-            if (EnchantingConfigLoader.Config.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Attempting to push enchantingLoreDiscovery event.");
             string @string = itemslot.Itemstack.Attributes.GetString("category");
             if (byEntity.World.Side == EnumAppSide.Server && @string != null)
             {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Attempting to push enchantingLoreDiscovery event.");
                 IPlayer player = null;
                 if (byEntity is EntityPlayer)
                 {
@@ -39,9 +38,9 @@ namespace KRPGLib.Enchantment
                 treeAttribute.SetItemstack("itemstack", itemslot.Itemstack.Clone());
                 api.Event.PushEvent("loreDiscovery", treeAttribute);
             }
-            handling = EnumHandHandling.PreventDefault;
 
             base.OnHeldInteractStart(itemslot, byEntity, blockSel, entitySel, firstEvent, ref handling);
+            handling = EnumHandHandling.PreventDefault;
         }
 
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
@@ -61,17 +60,16 @@ namespace KRPGLib.Enchantment
             string text = ItemClass.Name();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(Lang.GetMatching(Code?.Domain + ":" + text + "-" + Code?.Path));
-            var cID = itemStack.Attributes["chapterIds"] as IntArrayAttribute;
-            if (cID != null && EnchantingConfigLoader.Config?.LoreIDs != null)
+            // var cID = itemStack.Attributes["chapterIds"] as IntArrayAttribute;
+            var cID = itemStack.Attributes["textCodes"] as StringArrayAttribute;
+            if (cID != null)
             {
-                if (EnchantingConfigLoader.Config.Debug == true)
+                if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Enchanter's Manual has been read, and should append its enchantment to its name.");
-                Dictionary<string, int> lores = EnchantingConfigLoader.Config.LoreIDs;
-                foreach (KeyValuePair<string, int> keyValuePair in lores)
-                {
-                    if (cID.value.Contains(keyValuePair.Value))
-                        stringBuilder.Append(": " + Lang.Get("krpgenchantment:" + keyValuePair.Key));
-                }
+
+                char[] prefixes = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
+                string s = Lang.Get(cID.value[0]).TrimStart(prefixes);
+                stringBuilder.Append(":" + s);
                 return stringBuilder.ToString();
             }
 
