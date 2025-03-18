@@ -24,7 +24,7 @@
     }
   },
   {
-    "name": "enchantment-resistelectric",
+    "name": "enchantment-resistelectricity",
     "processingHours": 1,
     "ingredients": {
       "armorbody": {
@@ -44,7 +44,7 @@
       }
     },
     "enchantments": {
-      "resistelectric": 5
+      "resistelectricity": 5
     }
   },
   {

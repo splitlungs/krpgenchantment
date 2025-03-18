@@ -39,6 +39,12 @@ namespace Vintagestory.GameContent
                 int ePower = tree.GetInt(val.ToString(), 0);
                 if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
             }
+            // Temporary converter for resistelectric bug
+            if (enchants.ContainsKey("resistelectric") && api.Side == EnumAppSide.Server)
+            {
+                tree.SetInt("resistelectricity", enchants.GetValueOrDefault("resistelectric", 0));
+                tree.SetInt("resistelectric", 0);
+            }
             return enchants;
         }
 
@@ -62,7 +68,14 @@ namespace Vintagestory.GameContent
                 if (lEnchants != null)
                 {
                     foreach (string str in lEnchants)
+                    {
+                        // Temporary measure to resolve enchantment-resistelectric bug
+                        if (str == "krpgenchantment:enchantment-resistelectric")
+                        {
+                            string s = str + "ity";
+                        }
                         enchants.Add(str);
+                    }
                 }
                 if (enchants?.Count < EnchantingConfigLoader.Config?.MaxLatentEnchants)
                     enchants = null;

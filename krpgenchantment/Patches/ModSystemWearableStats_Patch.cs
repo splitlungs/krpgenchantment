@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment
             }
             else if (dmgSource.Type == EnumDamageType.Electricity)
             {
-                eType = EnumEnchantments.resistelectric.ToString();
+                eType = EnumEnchantments.resistelectricity.ToString();
             }
             else if (dmgSource.Type == EnumDamageType.Fire)
             {

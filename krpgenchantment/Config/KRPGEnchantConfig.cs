@@ -67,7 +67,7 @@ namespace KRPGLib.Enchantment
             { "enchantment-lightning", 8 },
             { "enchantment-pit", 9 },
             { "enchantment-protection", 10 },
-            { "enchantment-resistelectric", 11 },
+            { "enchantment-resistelectricity", 11 },
             { "enchantment-resistfire", 12 },
             { "enchantment-resistfrost", 13 },
             { "enchantment-resistheal", 14 },

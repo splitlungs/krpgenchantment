@@ -17,7 +17,7 @@
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
   "enchantment-protection": "Защита",
-  "enchantment-resistelectric": "Сопротивление электричеству",
+  "enchantment-resistelectricity": "Сопротивление электричеству",
   "enchantment-resistfire": "Сопротивление огню",
   "enchantment-resistfrost": "Сопротивление морозу",
   "enchantment-resistheal": "Сопротивление исцелению",
@@ -64,7 +64,7 @@
   "lore-enchantment-lightning": "9. Призыв молнии",
   "lore-enchantment-pit": "10. Яма",
   "lore-enchantment-protection": "11. Защита",
-  "lore-enchantment-resistelectric": "12. Сопротивление электричеству",
+  "lore-enchantment-resistelectricity": "12. Сопротивление электричеству",
   "lore-enchantment-resistfire": "13. Сопротивление огню",
   "lore-enchantment-resistfrost": "14. Сопротивление морозу",
   "lore-enchantment-resistheal": "15. Сопротивление исцелению",
@@ -84,7 +84,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Призыв молнии",
   "krpgenchantment:lore-enchantment-pit": "10. Яма",
   "krpgenchantment:lore-enchantment-protection": "11. Защита",
-  "krpgenchantment:lore-enchantment-resistelectric": "12. Сопротивление электричеству",
+  "krpgenchantment:lore-enchantment-resistelectricity": "12. Сопротивление электричеству",
   "krpgenchantment:lore-enchantment-resistfire": "13. Сопротивление огню",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Сопротивление морозу",
   "krpgenchantment:lore-enchantment-resistheal": "15. Сопротивление исцелению",
@@ -111,5 +111,7 @@
   "MaxDamageEnchants": "Чары максимального урона",
   "MaxDamageEnchantsComment": "Устанавливает количество чар урона, которые предмет может удерживать одновременно. Сюда входят Пламя, Мороз, Повреждения и Шок. -1 или меньше не является пределом.",
   "ValidReagents": "Действующие реагенты",
-  "ValidReagentsComment": "Предмет и количество, необходимое для выполнения зачарования."
+  "ValidReagentsComment": "Предмет и количество, необходимое для выполнения зачарования.",
+  "Debug": "Отлаживать",
+  "DebugComment": "Включите для более подробного ведения журнала."
 }

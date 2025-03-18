@@ -43,7 +43,7 @@ namespace KRPGLib.Enchantment
             ["pit"] = 5,
             ["productive"] = 5,
             ["protection"] = 5,
-            ["resistelectric"] = 5,
+            ["resistelectricity"] = 5,
             ["resistfire"] = 5,
             ["resistfrost"] = 5,
             ["resistheal"] = 5,
@@ -56,7 +56,7 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, int> AmmoEnchants = new Dictionary<string, int>()
         { ["chilling"] = 5, ["flaming"] = 5, ["frost"] = 5, ["harming"] = 5, ["healing"] = 5, ["knockback"] = 5, ["igniting"] = 5, ["lightning"] = 5, ["pit"] = 5, ["shocking"] = 5 };
         public Dictionary<string, int> ArmorEnchants = new Dictionary<string, int>()
-        { ["fast"] = 5, ["protection"] = 5, ["resistelectric"] = 5, ["resistfire"] = 5, ["resistfrost"] = 5, ["resistheal"] = 5, ["resistinjury"] = 5, ["resistpoison"] = 5, ["running"] = 5 };
+        { ["fast"] = 5, ["protection"] = 5, ["resistelectricity"] = 5, ["resistfire"] = 5, ["resistfrost"] = 5, ["resistheal"] = 5, ["resistinjury"] = 5, ["resistpoison"] = 5, ["running"] = 5 };
         public Dictionary<string, int> MeleeEnchants = new Dictionary<string, int>()
         { ["chilling"] = 5, ["flaming"] = 5, ["frost"] = 5, ["harming"] = 5, ["healing"] = 5, ["knockback"] = 5, ["igniting"] = 5, ["lightning"] = 5, ["pit"] = 5, ["shocking"] = 5 };
         public Dictionary<string, int> RangedEnchants = new Dictionary<string, int>()

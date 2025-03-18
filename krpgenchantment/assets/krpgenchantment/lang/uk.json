@@ -17,7 +17,7 @@
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
   "enchantment-protection": "Захист",
-  "enchantment-resistelectric": "Опір електриці",
+  "enchantment-resistelectricity": "Опір електриці",
   "enchantment-resistfire": "Опір вогню",
   "enchantment-resistfrost": "Опір морозу",
   "enchantment-resistheal": "Опір зціленню",
@@ -64,7 +64,7 @@
   "lore-enchantment-lightning": "9. Заклик блискавки",
   "lore-enchantment-pit": "10. Яма",
   "lore-enchantment-protection": "11. Захист",
-  "lore-enchantment-resistelectric": "12. Опір електриці",
+  "lore-enchantment-resistelectricity": "12. Опір електриці",
   "lore-enchantment-resistfire": "13. Опір вогню",
   "lore-enchantment-resistfrost": "14. Опір морозу",
   "lore-enchantment-resistheal": "15. Опір зціленню",
@@ -84,7 +84,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Заклик блискавки",
   "krpgenchantment:lore-enchantment-pit": "10. Яма",
   "krpgenchantment:lore-enchantment-protection": "11. Захист",
-  "krpgenchantment:lore-enchantment-resistelectric": "12. Опір електриці",
+  "krpgenchantment:lore-enchantment-resistelectricity": "12. Опір електриці",
   "krpgenchantment:lore-enchantment-resistfire": "13. Опір вогню",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Опір морозу",
   "krpgenchantment:lore-enchantment-resistheal": "15. Опір зціленню",
@@ -111,5 +111,7 @@
   "MaxDamageEnchants": "Зачарування максимальної шкоди",
   "MaxDamageEnchantsComment": "Встановлює кількість зачарувань шкоди, які може містити предмет за один раз. Сюди входять полум’я, мороз, шкода та шок. -1 або менше не обмеження.",
   "ValidReagents": "Реагенти, що діють",
-  "ValidReagentsComment": "Предмет і кількість, необхідне виконання зачарування."
+  "ValidReagentsComment": "Предмет і кількість, необхідне виконання зачарування.",
+  "Debug": "Налагодження",
+  "DebugComment": "Увімкніть для більш детального журналювання."
 }

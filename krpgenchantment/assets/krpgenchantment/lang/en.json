@@ -17,7 +17,7 @@
   "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
   "enchantment-protection": "Protection",
-  "enchantment-resistelectric": "Resist Electricity",
+  "enchantment-resistelectricity": "Resist Electricity",
   "enchantment-resistfire": "Resist Fire",
   "enchantment-resistfrost": "Resist Frost",
   "enchantment-resistheal": "Resist Healing",
@@ -64,7 +64,7 @@
   "lore-enchantment-lightning": "9. Call Lightning",
   "lore-enchantment-pit": "10. Pit",
   "lore-enchantment-protection": "11. Protection",
-  "lore-enchantment-resistelectric": "12. Resist Electricity",
+  "lore-enchantment-resistelectricity": "12. Resist Electricity",
   "lore-enchantment-resistfire": "13. Resist Fire",
   "lore-enchantment-resistfrost": "14. Resist Frost",
   "lore-enchantment-resistheal": "15. Resist Healing",
@@ -84,7 +84,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Call Lightning",
   "krpgenchantment:lore-enchantment-pit": "10. Pit",
   "krpgenchantment:lore-enchantment-protection": "11. Protection",
-  "krpgenchantment:lore-enchantment-resistelectric": "12. Resist Electricity",
+  "krpgenchantment:lore-enchantment-resistelectricity": "12. Resist Electricity",
   "krpgenchantment:lore-enchantment-resistfire": "13. Resist Fire",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Resist Frost",
   "krpgenchantment:lore-enchantment-resistheal": "15. Resist Healing",
@@ -111,5 +111,7 @@
   "MaxDamageEnchants": "Maximum Damage Enchantments",
   "MaxDamageEnchantsComment": "Sets the amount of Damage Enchantments an item can hold at a single time. This includes Flaming, Frost, Harming, and Shocking. -1 or less is no limit.",
   "ValidReagents": "Valid Reagents",
-  "ValidReagentsComment": "Item and quantity required to perform an Enchantment."
+  "ValidReagentsComment": "Item and quantity required to perform an Enchantment.",
+  "Debug": "Debug",
+  "DebugComment": "Enable for more verbose logging."
 }

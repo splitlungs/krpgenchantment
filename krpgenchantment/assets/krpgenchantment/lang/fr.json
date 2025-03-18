@@ -17,7 +17,7 @@
   "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
   "enchantment-protection": "Protection",
-  "enchantment-resistelectric": "Resist Electricity",
+  "enchantment-resistelectricity": "Resist Electricity",
   "enchantment-resistfire": "Resist Fire",
   "enchantment-resistfrost": "Resist Frost",
   "enchantment-resistheal": "Resist Healing",
@@ -64,7 +64,7 @@
   "lore-enchantment-lightning": "9. Call Lightning",
   "lore-enchantment-pit": "10. Pit",
   "lore-enchantment-protection": "11. Protection",
-  "lore-enchantment-resistelectric": "12. Resist Electricity",
+  "lore-enchantment-resistelectricity": "12. Resist Electricity",
   "lore-enchantment-resistfire": "13. Resist Fire",
   "lore-enchantment-resistfrost": "14. Resist Frost",
   "lore-enchantment-resistheal": "15. Resist Healing",
@@ -84,7 +84,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Call Lightning",
   "krpgenchantment:lore-enchantment-pit": "10. Pit",
   "krpgenchantment:lore-enchantment-protection": "11. Protection",
-  "krpgenchantment:lore-enchantment-resistelectric": "12. Resist Electricity",
+  "krpgenchantment:lore-enchantment-resistelectricity": "12. Resist Electricity",
   "krpgenchantment:lore-enchantment-resistfire": "13. Resist Fire",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Resist Frost",
   "krpgenchantment:lore-enchantment-resistheal": "15. Resist Healing",
@@ -111,5 +111,7 @@
   "MaxDamageEnchants": "Enchantements de dégâts maximum",
   "MaxDamageEnchantsComment": "Définit la quantité d'enchantements de dégâts qu'un objet peut contenir en une seule fois. Cela inclut les enchantements Flamboyants, Givrants, Nuisibles et Électrocutants. -1 ou moins signifie qu'il n'y a pas de limite.",
   "ValidReagents": "Réactifs valides",
-  "ValidReagentsComment": "Objet et quantité requis pour effectuer un enchantement."
+  "ValidReagentsComment": "Objet et quantité requis pour effectuer un enchantement.",
+  "Debug": "Déboguer",
+  "DebugComment": "Activer pour une journalisation plus détaillée."
 }

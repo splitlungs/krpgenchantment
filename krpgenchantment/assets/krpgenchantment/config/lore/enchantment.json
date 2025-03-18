@@ -1,4 +1,3 @@
-// NOTE: We MUST put this file in game: domain for reasons since 1.20
 {
 	"code": "enchantment",
 	"title": "krpgenchantment:lore-enchantment-title",
@@ -15,7 +14,7 @@
 		"krpgenchantment:lore-enchantment-lightning",
 		"krpgenchantment:lore-enchantment-pit",
 		"krpgenchantment:lore-enchantment-protection",
-		"krpgenchantment:lore-enchantment-resistelectric",
+		"krpgenchantment:lore-enchantment-resistelectricity",
 		"krpgenchantment:lore-enchantment-resistfire",
 		"krpgenchantment:lore-enchantment-resistfrost",
 		"krpgenchantment:lore-enchantment-resistheal",

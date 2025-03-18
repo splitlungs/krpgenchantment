@@ -373,7 +373,7 @@ namespace KRPGLib.Enchantment
                             Dictionary<string, int> enchants = Api.GetEnchantments(inv[i].Itemstack);
                             int rPower = 0;
                             if (source.Type == EnumDamageType.Electricity)
-                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectric.ToString(), 0);
+                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectricity.ToString(), 0);
                             else if (source.Type == EnumDamageType.Fire)
                                 rPower += enchants.GetValueOrDefault(EnumEnchantments.resistfire.ToString(), 0);
                             else if (source.Type == EnumDamageType.Frost)
