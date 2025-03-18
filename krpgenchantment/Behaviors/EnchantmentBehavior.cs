@@ -62,17 +62,22 @@ namespace KRPGLib.Enchantment
             Api = api;
 
             // Particles - Not Working Yet
-            /*
+            // ConfigParticles();
+        }
+        private void ConfigParticles()
+        {
             collObj.LightHsv = new byte[3] { 4, 4, 14 };
             collObj.ParticleProperties = new AdvancedParticleProperties[3];
             collObj.ParticleProperties[0] = new AdvancedParticleProperties
             {
-                PosOffset = new NatFloat[3]
-                {
-                    NatFloat.createUniform(-0.2f, 0f),
-                    NatFloat.createUniform(0f, 0f),
-                    NatFloat.createUniform(0f, 0f)
-                },
+
+                basePos = collObj.TopMiddlePos.ToVec3d(),
+                // PosOffset = new NatFloat[3]
+                // {
+                //     NatFloat.createUniform(-0.2f, 0f),
+                //     NatFloat.createUniform(0f, 0f),
+                //     NatFloat.createUniform(0f, 0f)
+                // },
                 HsvaColor = new NatFloat[4]
                 {
                     NatFloat.createUniform(30f, 20f),
@@ -96,12 +101,13 @@ namespace KRPGLib.Enchantment
             };
             collObj.ParticleProperties[1] = new AdvancedParticleProperties
             {
-                PosOffset = new NatFloat[3]
-                {
-                    NatFloat.createUniform(-0.2f, 0f),
-                    NatFloat.createUniform(0f, 0f),
-                    NatFloat.createUniform(0f, 0f)
-                },
+                basePos = collObj.TopMiddlePos.ToVec3d(),
+                // PosOffset = new NatFloat[3]
+                // {
+                //     NatFloat.createUniform(-0.2f, 0f),
+                //     NatFloat.createUniform(0f, 0f),
+                //     NatFloat.createUniform(0f, 0f)
+                // },
                 HsvaColor = new NatFloat[4]
                 {
                 NatFloat.createUniform(30f, 20f),
@@ -127,12 +133,13 @@ namespace KRPGLib.Enchantment
             };
             collObj.ParticleProperties[2] = new AdvancedParticleProperties
             {
-                PosOffset = new NatFloat[3]
-                {
-                    NatFloat.createUniform(-0.2f, 0f),
-                    NatFloat.createUniform(0f, 0f),
-                    NatFloat.createUniform(0f, 0f)
-                },
+                basePos = collObj.TopMiddlePos.ToVec3d(),
+                // PosOffset = new NatFloat[3]
+                // {
+                //     NatFloat.createUniform(-0.2f, 0f),
+                //     NatFloat.createUniform(0f, 0f),
+                //     NatFloat.createUniform(0f, 0f)
+                // },
                 HsvaColor = new NatFloat[4]
                 {
                 NatFloat.createUniform(0f, 0f),
@@ -156,7 +163,6 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true,
                 DieInLiquid = true
             };
-            */
         }
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
         {

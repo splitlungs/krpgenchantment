@@ -25,8 +25,6 @@ namespace KRPGLib.Enchantment
         {
             base.OnLoaded(api);
             Api = api;
-
-            Potential = this.collObj.Attributes?["enchantmentPotential"].ToString();
         }
         
         public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
@@ -36,6 +34,7 @@ namespace KRPGLib.Enchantment
         public override void Initialize(JsonObject properties)
         {
             base.Initialize(properties);
+            Potential = collObj.Attributes?["enchantmentPotential"].ToString();
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
@@ -45,8 +44,15 @@ namespace KRPGLib.Enchantment
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
-                    dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key.ToString()) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
+                    dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:reagent-potential-" + pair.Key.ToString()) + "</font>"));
             }
+        }
+        void RollPotential(ItemStack itemStack)
+        {
+            if (Api.Side != EnumAppSide.Server)
+                return;
+
+            ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantingPotential");
         }
     }
 }

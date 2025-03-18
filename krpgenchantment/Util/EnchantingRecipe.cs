@@ -89,7 +89,7 @@ namespace KRPGLib.Enchantment
                     if (foundw == true) foundi = true;
                 }
                 else if (ing.Value.ResolvedItemstack.Satisfies(inSlot.Itemstack)) foundi = true;
-
+                
                 if (foundi == true) qty = ing.Value.Quantity;
             }
             return qty;

@@ -25,6 +25,7 @@ namespace KRPGLib.Enchantment
 
         private EntityAgent agent;
         private IServerPlayer player = null;
+        private WeatherSystemServer weatherSystem;
 
         public bool IsPlayer { get { if (player != null) return true; return false; } }
 
@@ -75,9 +76,11 @@ namespace KRPGLib.Enchantment
             
             Api = entity.Api as ICoreAPI;
             sApi = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().sApi;
-            
+            weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
+
             ConfigParticles();
 
+            // sApi.World.RegisterGameTickListener(TickPassiveParticles, 500);
         }
         /*
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
@@ -272,23 +275,6 @@ namespace KRPGLib.Enchantment
         /// Generic Enchantment processing.
         /// </summary>
         /// <param name="byEntity"></param>
-        /// <param name="enchants"></param>
-        // public void TryEnchantments(EntityAgent byEntity, Dictionary<string, int> enchants)
-        // {
-        //     if (enchants != null)
-        //     {
-        //         foreach (KeyValuePair<string, int> pair in enchants)
-        //         {
-        //             bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value);
-        //             if (didEnchant != true)
-        //                 Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but failed!", pair.Key, pair.Value);
-        //         }
-        //     }
-        // }
-        /// <summary>
-        /// Generic Enchantment processing.
-        /// </summary>
-        /// <param name="byEntity"></param>
         /// <param name="enchant"></param>
         /// <param name="power"></param>
         /// <returns></returns>
@@ -450,7 +436,8 @@ namespace KRPGLib.Enchantment
             double weightedPower = power * 20;
             // EntityPos facing = entity.SidedPos.AheadCopy(0.1);
             // entity.SidedPos.Motion.Mul(facing.X * -weightedPower, 1, facing.Z * -weightedPower);
-            entity.SidedPos.Motion.Mul(-weightedPower, 1, -weightedPower);
+            entity.SidedPos.Motion.AddCopy(-weightedPower, 1, -weightedPower);
+            // Vec3d repulse = entity.ownPosRepulse;
             
         }
         /// <summary>
@@ -506,10 +493,12 @@ namespace KRPGLib.Enchantment
         /// <param name="power"></param>
         public void IgniteEntity(int power)
         {
+            // Refresh ticks if needed
             if (igniteTicksRemaining > 0)
             {
                 igniteTicksRemaining = power;
             }
+            // or run as normal
             else 
             {
                 if (power > 1)
@@ -535,23 +524,50 @@ namespace KRPGLib.Enchantment
             }
 
         }
+        long lightningID;
+        int lightningTicksRemaining = 0;
         /// <summary>
-        /// Create a lightning strike at Pos. Power multiplies the number of lightning strikes.
+        /// Create a lightning strike at Pos. Power increases chance of multiple lightning strikes.
         /// </summary>
         /// <param name="world"></param>
         /// <param name="pos"></param>
         public void CallLightning(int power)
         {
-            WeatherSystemServer weatherSystem = Api.ModLoader.GetModSystem<WeatherSystemServer>();
-            if (weatherSystem != null)
+            // Refresh ticks if needed
+            if (lightningTicksRemaining > 0)
             {
-                for (int i = 0; i < power; i++)
-                {
-                    weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ);
-                }
+                lightningTicksRemaining = power;
+            }
+            if (power == 1)
+            {
+                lightningTicksRemaining = 1;
+                SpawnLightning(500);
+            }
+            else if (power > 1)
+            {
+                int mul = Math.Abs(power / 2);
+                int roll = Api.World.Rand.Next(power - mul, power + 1);
+                lightningTicksRemaining = roll;
+                lightningID = Api.World.RegisterGameTickListener(SpawnLightning, 500);
             }
             else
-                Api.Logger.Debug("[KRPGEnchantment] Could not find Weather System!");
+                Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", entity.EntityId);
+        }
+        private void SpawnLightning(float dt)
+        {
+            
+            if (weatherSystem != null && lightningTicksRemaining > 0)
+            {
+                // double xDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
+                // double zDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
+                Vec3d offSet = new Vec3d(Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble(), 0, Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble());
+                weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ + offSet);
+                lightningTicksRemaining--;
+            }
+            else
+            {
+                Api.World.UnregisterGameTickListener(lightningID);
+            }
         }
         /// <summary>
         /// Attempt to poison the entity. Power multiplies number of 12s refreshes.
@@ -1055,6 +1071,45 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
+
+        private void TickPassiveParticles(float dt)
+        {
+            if (!agent.IsRendered && !IsPlayer)
+                return;
+
+            ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
+
+            if (slot.Empty)
+                return;
+
+            Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
+            if (enchants.Count < 1) return;
+
+            int power = 0;
+            if (enchants.ContainsKey("lightning"))
+            {
+                int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
+                advancedParticleProperties.basePos.Set(agent.ActiveHandItemSlot.Itemstack.Item.TopMiddlePos.ToVec3d());
+                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
+                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
+                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
+                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
+                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
+                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
+                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
+                {
+                    1 => 3f,
+                    0 => 0.5f,
+                    _ => 1.25f,
+                };
+                for (int i = 0; i <= power; i++)
+                {
+                    Api.World.SpawnParticles(advancedParticleProperties);
+                }
+            }
+
+        }
         private void GenerateParticles(DamageSource damageSource, float damage)
         {
             int power = (int)Math.Ceiling(damage);
@@ -1191,6 +1246,8 @@ namespace KRPGLib.Enchantment
                     Api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
+
+
         }
         #endregion
     }
