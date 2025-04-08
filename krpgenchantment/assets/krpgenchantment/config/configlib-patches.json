@@ -1,11 +1,18 @@
 {
-  "version": 0.89,
+  "version": 0,
   "file": "KRPGEnchantment_Config.json",
   "patches": {},
   "settings": [
     {
       "type": "separator",
       "title": "KRPGEnchantmentSettings"
+    },
+    {
+      "code": "MaxEnchantTier",
+      "comment": "MaxEnchantTierComment",
+      "type": "integer",
+      "clientSide": false,
+      "default": 5
     },
     {
       "code": "EnchantTimeOverride",

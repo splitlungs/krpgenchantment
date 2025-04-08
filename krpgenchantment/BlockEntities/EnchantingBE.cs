@@ -31,7 +31,7 @@ namespace KRPGLib.Enchantment
         public int SelectedEnchant = -1;
         public Dictionary<string, bool> Readers = new Dictionary<string, bool>();
         // Internal use
-        EnchantingTableGui clientDialog;
+        public EnchantingTableGui clientDialog;
         public EnchantingRecipe CurrentRecipe;
         int nowOutputFace;
         #region Candles
@@ -161,42 +161,20 @@ namespace KRPGLib.Enchantment
                 if (CurrentRecipe == null) return false;
                 if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
+                    Api.Logger.VerboseDebug("[KRPGEnchantment] Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
                 Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot.Itemstack);
                 if (enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 return true;
             }
         }
         /// <summary>
-        /// Deprecated. Use ValidRecipes. Returns Matching EnchantingRecipe or null if not found.
-        /// </summary>
-        /// <returns></returns>
-        /*
-        public EnchantingRecipe GetMatchingEnchantingRecipe()
-        {
-            var enchantingRecipes = Api.GetEnchantingRecipes();
-            if (enchantingRecipes != null)
-            {
-                for (int i = 0; i < enchantingRecipes.Count; i++)
-                {
-                    if (enchantingRecipes[i].Matches(Api, InputSlot, ReagentSlot))
-                        return enchantingRecipes[i].Clone();
-                }
-            }
-            else
-                Api.Logger.Event("No Matching Enchanting Recipe Registry found!");
-
-            return null;
-        }
-        */
-        /// <summary>
         /// Deprecated? Gets valid Enchanting Recipes based on current InputSlot and ReagentSlot and stores them in ValidRecipes. Returns null if none found.
         /// </summary>
         /// <returns></returns>
-        public List<EnchantingRecipe> ValidRecipes
-        {
-            get { return Api.GetValidEnchantingRecipes(InputSlot, ReagentSlot); }
-        }
+        // public List<EnchantingRecipe> ValidRecipes
+        // {
+        //     get { return Api.GetValidEnchantingRecipes(InputSlot, ReagentSlot); }
+        // }
         /// <summary>
         /// Can be overriden from EnchantingRecipeConfig. Default 7 days.
         /// </summary>
@@ -316,7 +294,7 @@ namespace KRPGLib.Enchantment
         private void enchantInput()
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("Attempting to enchant an item.");
+                Api.World.Logger.VerboseDebug("[KRPGEnchantment] Attempting to enchant an item.");
             ItemStack outStack = CurrentRecipe.OutStack(Api, InputSlot, ReagentSlot).Clone();
             if (OutputSlot.Empty)
             {
@@ -340,7 +318,7 @@ namespace KRPGLib.Enchantment
                 }
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
+                Api.World.Logger.VerboseDebug("[KRPGEnchantment] Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
             int rQty = CurrentRecipe.IngredientQuantity(ReagentSlot);
             int iQty = CurrentRecipe.IngredientQuantity(InputSlot);
             ReagentSlot.TakeOut(rQty);
@@ -640,12 +618,12 @@ namespace KRPGLib.Enchantment
                         }
                     }
                     else
-                        Api.World.Logger.Error("Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
+                        Api.World.Logger.Error("[KRPGEnchantment] Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
                 }
                 else
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.World.Logger.Warning("Selected enchant is invalid. Not setting CurrentRecipe.");
+                        Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant is invalid. Not setting CurrentRecipe.");
                     SelectedEnchant = -1;
                 }
                 UpdateReaders();
@@ -692,9 +670,10 @@ namespace KRPGLib.Enchantment
                     CurrentRecipe = null;
                     SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
-                    bool assed = Api.AssessItem(InputSlot, ReagentSlot);
+                    ICoreServerAPI sApi = Api as ICoreServerAPI;
+                    bool assed = sApi.AssessItem(InputSlot, ReagentSlot);
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        if (!assed) Api.Logger.Warning("EnchantingTable could not Assess an item!");
+                        if (!assed) Api.Logger.Warning("[KRPGEnchantment] EnchantingTable could not Assess an item!");
                 }
                 UpdateEnchantingState();
                 UpdateReaders();

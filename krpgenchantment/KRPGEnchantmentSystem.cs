@@ -6,6 +6,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using System.Collections.Generic;
+using Vintagestory.API.Common.Entities;
 
 namespace KRPGLib.Enchantment
 {
@@ -15,6 +16,11 @@ namespace KRPGLib.Enchantment
         public ICoreServerAPI sApi;
         public COSystem combatOverhaul;
         public KRPGWandsSystem krpgWands;
+
+        // Future Event based Enchantment trigger
+        // Placeholder for now, but planned use in the future
+        public event EnchantTriggerDelegate? EnchantTrigger;
+        public delegate void EnchantTriggerDelegate(Entity target, DamageSource damageSource, ItemSlot? slot, ref float damage);
 
         public override void AssetsLoaded(ICoreAPI api)
         {
@@ -46,13 +52,14 @@ namespace KRPGLib.Enchantment
             if (eb != null)
                 eb.RegisterPlayer(byPlayer);
             else
-                sApi.Logger.Warning("No EnchantmentEntityBehavior found on Player {0}", byPlayer.PlayerUID);
+                sApi.Logger.Warning("[KRPGEnchantment] No EnchantmentEntityBehavior found on Player {0}.", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {
             base.Start(api);
             Api = api;
 
+            api.RegisterCollectibleBehaviorClass("ReagentBehavior", typeof(ReagentBehavior));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));

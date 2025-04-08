@@ -4,6 +4,7 @@
 
   "krpg-enchant": "Зачарувати",
   "enchantable": "Зачарований",
+  "reagent-potential": "Power",
 
   "enchantment-chilling": "Охолодження",
   "enchantment-durable": "Міцний",
@@ -17,6 +18,7 @@
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
   "enchantment-protection": "Захист",
+  "enchantment-resistelectric": "Опір електриці",
   "enchantment-resistelectricity": "Опір електриці",
   "enchantment-resistfire": "Опір вогню",
   "enchantment-resistfrost": "Опір морозу",
@@ -64,6 +66,7 @@
   "lore-enchantment-lightning": "9. Заклик блискавки",
   "lore-enchantment-pit": "10. Яма",
   "lore-enchantment-protection": "11. Захист",
+  "lore-enchantment-resistelectric": "12. Опір електриці",
   "lore-enchantment-resistelectricity": "12. Опір електриці",
   "lore-enchantment-resistfire": "13. Опір вогню",
   "lore-enchantment-resistfrost": "14. Опір морозу",
@@ -84,6 +87,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Заклик блискавки",
   "krpgenchantment:lore-enchantment-pit": "10. Яма",
   "krpgenchantment:lore-enchantment-protection": "11. Захист",
+  "krpgenchantment:lore-enchantment-resistelectric": "12. Опір електриці",
   "krpgenchantment:lore-enchantment-resistelectricity": "12. Опір електриці",
   "krpgenchantment:lore-enchantment-resistfire": "13. Опір вогню",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Опір морозу",
@@ -102,6 +106,8 @@
   "cmd-reloadcfg-fail": "Не вдалося перезавантажити конфігурацію.",
 
   "KRPGEnchantmentSettings": "Налаштування параметрів чарівності KRPG",
+  "MaxEnchantTier": "Maximum Enchantment Tier",
+  "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeOverride": "Перевизначення часу зачарування",
   "EnchantTimeOverrideComment": "Встановлює кількість часу для зачарування в годинах. -1 відключає перевизначення.",
   "LatentEnchantResetDays": "Скидання прихованих чар",

@@ -13,6 +13,7 @@ using Vintagestory.API.Net;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
+using Vintagestory.ServerMods.NoObf;
 
 namespace KRPGLib.Enchantment
 {
@@ -403,6 +404,25 @@ namespace KRPGLib.Enchantment
                 bool didDamage = entity.ReceiveDamage(source, dmg);
                 if (didDamage != true)
                     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
+
+                // hp.OnEntityReceiveDamage(source, ref dmg);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+                GenerateParticles(source, dmg);
+            }
+            else if (!sApi.Server.Config.AllowPvP && source.Type == EnumDamageType.Heal)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Trying to heal while PvP is disabled. Dealing damage anyway.");
+
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
+
+                // Disabled because there is something stopping this from happening in rapid succession.
+                // Some kind of timer is locking damage, and must be calculated manually here, instead.
+                entity.GetBehavior<EntityBehaviorHealth>().OnEntityReceiveDamage(source, ref dmg);
+                // if (didDamage != true)
+                //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
 
                 // hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)

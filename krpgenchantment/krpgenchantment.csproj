@@ -15,16 +15,16 @@
       <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CombatOverhaul">
-      <HintPath>..\..\..\Examples\combatoverhaul_0.1.29\CombatOverhaul.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="krpgwands">
       <HintPath>..\..\..\Examples\krpgwands_0.5.0\krpgwands.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:\Users\radmin\AppData\Roaming\Vintagestory\Lib\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Overhaullib">
+      <HintPath>..\..\..\Examples\overhaullib_0.2.2\Overhaullib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="protobuf-net">

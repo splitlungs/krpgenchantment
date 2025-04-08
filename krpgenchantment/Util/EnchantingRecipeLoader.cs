@@ -40,7 +40,7 @@ namespace KRPGLib.Enchantment
         public void ReloadEnchantingRecipes()
         {
             
-            sApi.World.Logger.Warning("Reloading KRPG Enchantment Recipes!");
+            sApi.World.Logger.Warning("[KRPGEnchantment] Reloading KRPG Enchantment Recipes!");
         }
 
         public void LoadEnchantingRecipes()
@@ -77,7 +77,7 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            sApi.World.Logger.Event("{0} enchanting recipes loaded from {1} files", recipeQuantity, files.Count);
+            sApi.World.Logger.Notification("[KRPGEnchantment] {0} enchanting recipes loaded from {1} files.", recipeQuantity, files.Count);
             sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
         }
 

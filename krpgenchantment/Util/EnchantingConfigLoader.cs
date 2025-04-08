@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.89d;
+        private const double ConfigVersion = 0.91d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -53,11 +53,12 @@ namespace KRPGLib.Enchantment
                     Config.Version = ConfigVersion;
                     sApi.StoreModConfig(Config, ConfigFile);
 
-                    sApi.Logger.Warning("KRPGEnchantConfig file not found. A new one has been created.");
+                    sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
+                    if (Config.MaxEnchantTier >= 0) tempConfig.MaxEnchantTier = Config.MaxEnchantTier;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
@@ -113,14 +114,14 @@ namespace KRPGLib.Enchantment
                     Config = tempConfig;
                     sApi.StoreModConfig(Config, ConfigFile);
 
-                    sApi.Logger.Warning("KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
+                    sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
                 }
                 else
-                    sApi.Logger.Event("KRPGEnchantConfig file found. Loaded successfully.");
+                    sApi.Logger.Notification("[KRPGEnchantment] KRPGEnchantConfig file found. Loaded successfully.");
             }
             catch (Exception e)
             {
-                sApi.Logger.Error("Error loading KRPGEnchantConfig: {0}", e);
+                sApi.Logger.Error("[KRPGEnchantment] Error loading KRPGEnchantConfig: {0}", e);
                 return;
             }
             classExclusiveRecipes = sApi.World.Config.GetBool("classExclusiveRecipes", true);
@@ -162,7 +163,7 @@ namespace KRPGLib.Enchantment
             }
             catch (Exception e)
             {
-                sApi.Logger.Error("Error reloading KRPGEnchantment Recipe Config: ", e.ToString());
+                sApi.Logger.Error("[KRPGEnchantment] Error reloading KRPGEnchantment Recipe Config: ", e.ToString());
                 return false;
             }
 

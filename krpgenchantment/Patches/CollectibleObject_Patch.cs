@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Client;
+using Vintagestory.API.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.MathTools;
@@ -35,5 +36,34 @@ namespace KRPGLib.Enchantment
 
             return true;
         }
+
+        // [HarmonyPatch(typeof(CollectibleObject), "GetHeldItemInfo")]
+        // public static void Postfix(CollectibleObject __instance, ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
+        // {
+        //     if (!EnchantingConfigLoader.Config.ValidReagents.ContainsKey(__instance.Code)) return;
+        // 
+        //     ITreeAttribute tree = inSlot.Itemstack.Attributes?.GetOrAddTreeAttribute("enchantments");
+        //     if (tree == null) return;
+        // 
+        //     int p = tree.GetInt("potential");
+        // 
+        //     dsc.Append("<font color=\"" + Enum.GetName(typeof(EnchantColors), p) + "\">" + Lang.Get("krpgenchantment:reagent-potential") + ": " + p);
+        // }
+        // [HarmonyPatch(typeof(CollectibleObject), "OnCollected")]
+        // public static void Postfix(CollectibleObject __instance, ItemStack stack, Entity entity)
+        // {
+        //     if (!EnchantingConfigLoader.Config.ValidReagents.ContainsKey(__instance.Code)) return;
+        // 
+        //     ITreeAttribute tree = stack.Attributes?.GetOrAddTreeAttribute("enchantments");
+        //     if (tree == null) return;
+        // 
+        //     int p = tree.GetInt("potential");
+        //     if (p == 0)
+        //     {
+        //         entity.Api.Logger.Event("[KRPGEnchantment] Assessing a collectible with Power {0}.", p);
+        //         p = entity.Api.AssessReagent(stack);
+        //     }
+        //     entity.Api.Logger.Event("[KRPGEnchantment] Collected a collectible with Power {0}.", p);
+        // }
     }
 }

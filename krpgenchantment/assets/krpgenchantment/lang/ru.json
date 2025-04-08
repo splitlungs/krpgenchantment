@@ -4,6 +4,7 @@
 
   "krpg-enchant": "Зачаровать",
   "enchantable": "Зачарованый",
+  "reagent-potential": "Power",
 
   "enchantment-chilling": "Охлаждение",
   "enchantment-durable": "Прочный",
@@ -17,6 +18,7 @@
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
   "enchantment-protection": "Защита",
+  "enchantment-resistelectric": "Сопротивление электричеству",
   "enchantment-resistelectricity": "Сопротивление электричеству",
   "enchantment-resistfire": "Сопротивление огню",
   "enchantment-resistfrost": "Сопротивление морозу",
@@ -64,6 +66,7 @@
   "lore-enchantment-lightning": "9. Призыв молнии",
   "lore-enchantment-pit": "10. Яма",
   "lore-enchantment-protection": "11. Защита",
+  "lore-enchantment-resistelectric": "12. Сопротивление электричеству",
   "lore-enchantment-resistelectricity": "12. Сопротивление электричеству",
   "lore-enchantment-resistfire": "13. Сопротивление огню",
   "lore-enchantment-resistfrost": "14. Сопротивление морозу",
@@ -84,6 +87,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Призыв молнии",
   "krpgenchantment:lore-enchantment-pit": "10. Яма",
   "krpgenchantment:lore-enchantment-protection": "11. Защита",
+  "krpgenchantment:lore-enchantment-resistelectric": "12. Сопротивление электричеству",
   "krpgenchantment:lore-enchantment-resistelectricity": "12. Сопротивление электричеству",
   "krpgenchantment:lore-enchantment-resistfire": "13. Сопротивление огню",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Сопротивление морозу",
@@ -102,6 +106,8 @@
   "cmd-reloadcfg-fail": "Не удалось перезагрузить конфигурацию.",
 
   "KRPGEnchantmentSettings": "Настройка параметров зачарования KRPG",
+  "MaxEnchantTier": "Maximum Enchantment Tier",
+  "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeOverride": "Переопределение времени зачарования",
   "EnchantTimeOverrideComment": "Устанавливает количество времени для выполнения зачарования в часах. -1 отключает переопределение.",
   "LatentEnchantResetDays": "Сброс скрытых чар",

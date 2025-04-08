@@ -44,6 +44,7 @@ namespace Vintagestory.GameContent
             {
                 tree.SetInt("resistelectricity", enchants.GetValueOrDefault("resistelectric", 0));
                 tree.SetInt("resistelectric", 0);
+                itemStack.Attributes.MergeTree(tree);
             }
             return enchants;
         }
@@ -97,7 +98,7 @@ namespace Vintagestory.GameContent
             }
             else
             {
-                api.Logger.Error("Error when attempting to get Latent Enchants. Attribute tree not found.");
+                api.Logger.Error("[KRPGEnchantment] Error when attempting to get Latent Enchants. Attribute tree not found.");
                 return null;
             }
         }
@@ -121,7 +122,7 @@ namespace Vintagestory.GameContent
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
-                    api.Logger.Warning("Could not find LegacyModJournal!");
+                    api.Logger.Warning("[KRPGEnchantment] Could not find LegacyModJournal!");
                     return false;
                 }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
@@ -150,7 +151,7 @@ namespace Vintagestory.GameContent
                 ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
-                    api.Logger.Warning("Could not find LegacyModJournal!");
+                    api.Logger.Warning("[KRPGEnchantment] Could not find LegacyModJournal!");
                     return false;
                 }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
@@ -205,20 +206,20 @@ namespace Vintagestory.GameContent
         /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
-        public static bool AssessItem(this ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        public static bool AssessItem(this ICoreServerAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
             // Sanity check
             if (api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.World.Logger.Event("Attempting to Assess {0}", inSlot.GetStackName());
+                api.World.Logger.VerboseDebug("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = api.World.Calendar.ElapsedDays;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.World.Logger.Event("LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+                api.World.Logger.VerboseDebug("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -230,7 +231,7 @@ namespace Vintagestory.GameContent
                 return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.World.Logger.Event("EnchantResetOverride set to {0}", ero);
+                api.World.Logger.VerboseDebug("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
@@ -238,14 +239,14 @@ namespace Vintagestory.GameContent
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.World.Logger.Event("Max Latent Enchants set to {0}", mle);
+                api.World.Logger.VerboseDebug("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<EnchantingRecipe> recipes = api.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.World.Logger.Event("{0} valid recipes found.", recipes.Count);
+                api.World.Logger.VerboseDebug("[KRPGEnchantment] {0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
@@ -256,7 +257,7 @@ namespace Vintagestory.GameContent
                 if (er != null)
                     str += er.Name.ToShortString() + ";";
                 else
-                    api.World.Logger.Warning("ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
+                    api.World.Logger.Warning("[KRPGEnchantment] ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
             }
 
             // Write the assessment to attributes
@@ -275,7 +276,7 @@ namespace Vintagestory.GameContent
                 }
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    api.World.Logger.Event("LatentEnchants string is {0}", str);
+                    api.World.Logger.VerboseDebug("[KRPGEnchantment] LatentEnchants string is {0}", str);
 
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
@@ -287,6 +288,38 @@ namespace Vintagestory.GameContent
 
             return true;
         }
+        /// <summary>
+        /// Call this to assign a EnchantPotential attribute to an item. Returns 0 if it is not valid.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        // public static int AssessReagent(this ICoreAPI api, ItemStack stack)
+        // {
+        //     if (EnchantingConfigLoader.Config?.Debug == true)
+        //         api.World.Logger.Event("[KRPGEnchantment] Attempting to Assess a {0}.", stack.GetName());
+        //     // Check if we can actually access Attributes
+        //     ITreeAttribute tree = stack?.Attributes?.GetOrAddTreeAttribute("enchantments");
+        //     if (tree == null)
+        //         return 0;
+        //     // Return an existing Potential or roll a new one
+        //     int p = tree.GetInt("potential");
+        //     if (p != 0)
+        //     {
+        //         int power = 0;
+        //         // Attempt to roll a random Potential based on Config
+        //         if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(stack.Collectible.Code))
+        //         {
+        //             power = api.World.Rand.Next(EnchantingConfigLoader.Config.MaxEnchantTier) + 1;
+        //         }
+        //         // Write back to Attributes
+        //         tree.SetInt("potential", power);
+        //         stack.Attributes?.MergeTree(tree);
+        //         // Return for convenience
+        //         return power;
+        //     }
+        //     return p;
+        // }
         /// <summary>
         /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
         /// </summary>
@@ -311,7 +344,7 @@ namespace Vintagestory.GameContent
                     return null;
             }
             else
-                api.Logger.Error("EnchantingRecipe Registry could not be found! Please report error to author.");
+                api.Logger.Error("[KRPGEnchantment] EnchantingRecipe Registry could not be found! Please report error to author.");
             return null;
         }
         /// <summary>
@@ -373,8 +406,8 @@ namespace Vintagestory.GameContent
             // Download the file to the client's ModData if it doesn't exist
             if (!File.Exists(fontPath))
             {
-                api.World.Logger.Error("Font file not found at path: {0}.", fontPath);
-                api.World.Logger.Event("Copying font file to path: {0}.", fontPath);
+                api.World.Logger.Warning("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
+                api.World.Logger.Event("[KRPGEnchantment] Copying font file to path: {0}.", fontPath);
 
                 try
                 {
@@ -391,14 +424,14 @@ namespace Vintagestory.GameContent
                 }
                 catch (Exception e)
                 {
-                    api.World.Logger.Error("Failed to download custom font: {0}", e.Message);
+                    api.World.Logger.Error("[KRPGEnchantment] Failed to download custom font: {0}", e.Message);
                     return null;
                 }
             }
             // Check if the font file was created and bail if not
             if (!File.Exists(fontPath))
             {
-                api.World.Logger.Error("Font file not found at path: {0}.", fontPath);
+                api.World.Logger.Error("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
                 return null;
             }
 
@@ -415,14 +448,14 @@ namespace Vintagestory.GameContent
                     }
                     else
                     {
-                        api.World.Logger.Error("Failed to create SKTypeface from the font file.");
+                        api.World.Logger.Error("[KRPGEnchantment] Failed to create SKTypeface from the font file.");
                         return null;
                     }
                 }
             }
             catch (Exception e)
             {
-                api.World.Logger.Error("Failed to load custom font: " + e.Message);
+                api.World.Logger.Error("[KRPGEnchantment] Failed to load custom font: " + e.Message);
                 return null;
             }
         }

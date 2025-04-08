@@ -15,6 +15,7 @@ namespace KRPGLib.Enchantment
     {
         // Global Options
         public List<string> DisabledEnchants = new List<string>();
+        public int MaxEnchantTier = 5;
         public int MaxEnchantsPerItem = 4;
         // Recipe Config
         public double EnchantTimeOverride = -1d;
@@ -67,6 +68,7 @@ namespace KRPGLib.Enchantment
             { "enchantment-lightning", 8 },
             { "enchantment-pit", 9 },
             { "enchantment-protection", 10 },
+            { "enchantment-resistelectric", 11 },
             { "enchantment-resistelectricity", 11 },
             { "enchantment-resistfire", 12 },
             { "enchantment-resistfrost", 13 },

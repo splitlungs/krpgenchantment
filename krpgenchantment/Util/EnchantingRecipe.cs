@@ -111,7 +111,7 @@ namespace KRPGLib.Enchantment
             outStack.StackSize = IngredientQuantity(inSlot);
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+                api.Logger.VerboseDebug("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
 
             // Setup Reagent Override
             bool rOverride = false;
@@ -123,15 +123,17 @@ namespace KRPGLib.Enchantment
             int power = 0;
             if (!rOverride)
             {
+                // ITreeAttribute rTree = rSlot.Itemstack.Attributes?.GetOrAddTreeAttribute("enchantments");
+                // int maxPot = rTree.GetInt("potential");
                 string pot = rSlot.Itemstack.Attributes?.GetString("potential", "low").ToLower();
                 int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers[pot];
                 power = api.World.Rand.Next(1, maxPot + 1);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    api.Logger.Event("[KRPGEnchantment] Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, pot);
+                    api.Logger.Event("[KRPGEnchantment] Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, maxPot);
             }
             else if (EnchantingConfigLoader.Config?.Debug == true)
             {
-                api.Logger.Event("[KRPGEnchantment] Could not get Config override for reagent potential.");
+                api.Logger.Warning("[KRPGEnchantment] Could not get Config override for reagent potential.");
             }
             // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
             ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
@@ -400,7 +402,8 @@ namespace KRPGLib.Enchantment
                 if (inputSlot.Itemstack.StackSize < ing.Value.Quantity) foundt = false;
             }
 
-            // api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
 
             // Cancel if no Target
             if (!foundt) return false;
@@ -437,7 +440,8 @@ namespace KRPGLib.Enchantment
                 }
             }
 
-            // api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
 
             // Cancel if no Rreagent is found
             if (!foundr) return false;

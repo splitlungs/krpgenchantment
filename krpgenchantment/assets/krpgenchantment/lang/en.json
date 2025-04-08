@@ -4,6 +4,7 @@
 
   "krpg-enchant": "Enchant",
   "enchantable": "Enchantable",
+  "reagent-potential": "Power",
 
   "enchantment-chilling": "Chilling",
   "enchantment-durable": "Durable",
@@ -17,6 +18,7 @@
   "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
   "enchantment-protection": "Protection",
+  "enchantment-resistelectric": "Resist Electricity",
   "enchantment-resistelectricity": "Resist Electricity",
   "enchantment-resistfire": "Resist Fire",
   "enchantment-resistfrost": "Resist Frost",
@@ -64,6 +66,7 @@
   "lore-enchantment-lightning": "9. Call Lightning",
   "lore-enchantment-pit": "10. Pit",
   "lore-enchantment-protection": "11. Protection",
+  "lore-enchantment-resistelectric": "12. Resist Electricity",
   "lore-enchantment-resistelectricity": "12. Resist Electricity",
   "lore-enchantment-resistfire": "13. Resist Fire",
   "lore-enchantment-resistfrost": "14. Resist Frost",
@@ -84,6 +87,7 @@
   "krpgenchantment:lore-enchantment-lightning": "9. Call Lightning",
   "krpgenchantment:lore-enchantment-pit": "10. Pit",
   "krpgenchantment:lore-enchantment-protection": "11. Protection",
+  "krpgenchantment:lore-enchantment-resistelectric": "12. Resist Electricity",
   "krpgenchantment:lore-enchantment-resistelectricity": "12. Resist Electricity",
   "krpgenchantment:lore-enchantment-resistfire": "13. Resist Fire",
   "krpgenchantment:lore-enchantment-resistfrost": "14. Resist Frost",
@@ -102,6 +106,8 @@
   "cmd-reloadcfg-fail": "Config reload failed.",
 
   "KRPGEnchantmentSettings": "Configure KRPG Enchantment settings",
+  "MaxEnchantTier": "Maximum Enchantment Tier",
+  "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeOverride": "Enchant Time Override",
   "EnchantTimeOverrideComment": "Sets the amount of time to perform an enchantment in hours. -1 disables the override.",
   "LatentEnchantResetDays": "Latent Enchantment Reset",
