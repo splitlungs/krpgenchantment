@@ -1,0 +1,63 @@
+{
+  "code": "assessment-table",
+  "class": "AssessmentBlock",
+  "entityClass": "AssessmentBE",
+  "maxStackSize": 1,
+  "maxSlotStackSize": 2,
+  "behaviors": [
+    { "name": "BreakIfFloating" },
+    { "name": "Container" }
+  ],
+  "storageFlags": 5,
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  },
+  "attributes": {
+    "propickable": true,
+    "drop": {
+      "normal-generic": true
+    }
+  },
+  "variantgroups": [
+    {
+      "code": "type",
+      "state": "normal-generic"
+    }
+  ],
+  "creativeinventory": {
+    "general": [ "*" ],
+    "terrain": [ "*" ],
+    "construction": [ "*" ]
+  },
+  "shape": { "base": "krpgenchantment:block/enchanting-table" },
+  "replaceable": 90,
+  "requiredMiningTier": 0,
+  "fertility": 0,
+  "sounds": {
+    "walk": "game:walk/stone",
+    "byTool": {
+      "Pickaxe": {
+        "hit": "game:block/rock-hit-pickaxe",
+        "break": "game:block/rock-break-pickaxe"
+      }
+    }
+  },
+  "heldTpIdleAnimation": "holdbothhandslarge",
+  "heldTpUseAnimation": "twohandplaceblock",
+  "tpHandTransform": {
+    "translation": {
+      "x": -1.23,
+      "y": -0.91,
+      "z": -0.8
+    },
+    "rotation": {
+      "x": -2,
+      "y": 25,
+      "z": -78
+    },
+    "scale": 0.4
+  }
+}

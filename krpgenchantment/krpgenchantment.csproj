@@ -111,39 +111,17 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\canjewelry\patches\canjewelry-behaviors.json" />
-  <None Remove="assets\canjewelry\recipes\enchanting-table\canjewelry-universal.json" />
-  <None Remove="assets\litbrig\patches\litbrig-behaviors.json" />
-  <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-armor.json" />
-  <None Remove="assets\litbrig\recipes\enchanting-table\litbrig-universal.json" />
-  <None Remove="assets\ndlchiselpick\patches\ndlchiselpick-behaviors.json" />
-  <None Remove="assets\ndlchiselpick\recipes\enchanting-table\ndlchiselpick-universal.json" />
-  <None Remove="assets\scrapblocks\patches\scrapblocks-behaviors.json" />
-  <None Remove="assets\armory\patches\armory-behaviors.json" />
-  <None Remove="assets\combatoverhaul\patches\combatoverhaul-behaviors.json" />
-  <None Remove="assets\ancientarmory\patches\ancientarmory-behaviors.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\aa-universal.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\aa-weapon.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-2.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-3.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\axe-tier-4.json" />
-  <None Remove="assets\ancientarmory\recipes\enchanting-table\blades-tier-1.json" />
-  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-armor.json" />
-  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-universal.json" />
-  <None Remove="assets\combatoverhaul\recipes\enchanting-table\game-weapon.json" />
-  <None Remove="assets\electricityaddon\patches\electricityaddon-behaviors.json" />
-  <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-universal.json" />
-  <None Remove="assets\electricityaddon\recipes\enchanting-table\electricityaddon-weapon.json" />
+  <None Remove="assets\krpgenchantment\blocktypes\assessment-table.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-universal.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-weapon.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-2.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-3.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-4.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blades-tier-1.json" />
   <None Remove="assets\game\config\lore\enchantment.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
   <None Remove="assets\krpgenchantment\lang\uk.json" />
   <None Remove="assets\krpgenchantment\patches\fotsa\fotsa-entity-behaviors.json" />
-  <None Remove="assets\maltiezcrossbows\patches\maltiez-crossbows-behaviors.json" />
-  <None Remove="assets\maltiezcrossbows\recipes\enchanting-table\maltiezcrossbows-universal.json" />
-  <None Remove="assets\maltiezcrossbows\recipes\enchanting-table\maltiezcrossbows-weapon.json" />
-  <None Remove="assets\maltiezfirearms\patches\maltiezfirearms-behaviors.json" />
-  <None Remove="assets\maltiezfirearms\recipes\enchanting-table\maltiezfirearms-universal.json" />
-  <None Remove="assets\maltiezfirearms\recipes\enchanting-table\maltiezfirearms-weapon.json" />
   <None Remove="assets\krpgenchantment\config\configlib-patches.json" />
   <None Remove="assets\krpgenchantment\fonts\dragon_alphabet.ttf" />
   <None Remove="assets\krpgenchantment\lang\fr.json" />
@@ -173,60 +151,36 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
-  <None Remove="assets\krpgwands\recipes\enchanting-table\krpgwands-universal.json" />
-  <None Remove="assets\paxel\patches\krpg-tool-behaviors.json" />
-  <None Remove="assets\paxel\paxel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\paxel\paxel-tier-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
-  <None Remove="assets\paxel\recipes\enchanting-table\paxel-uninversal.json" />
-  <None Remove="assets\rustboundmagic\patches\krpg-armor-behaviors.json" />
-  <None Remove="assets\rustboundmagic\recipes\enchanting-table\rustbound-universal.json" />
-  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-armor.json" />
-  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-universal.json" />
-  <None Remove="assets\scrapblocks\recipes\enchanting-table\scrapblocks-weapon.json" />
-  <None Remove="assets\spearexpantion\patches\tools-behaviors.json" />
-  <None Remove="assets\spearexpantion\patches\wearable-behaviors.json" />
-  <None Remove="assets\spearexpantion\recipes\enchanting-table\spearexpantion-armor.json" />
-  <None Remove="assets\spearexpantion\recipes\enchanting-table\spearexpantion-universal.json" />
-  <None Remove="assets\spearexpantion\recipes\enchanting-table\spearexpantion-weapon.json" />
-  <None Remove="assets\swordz\patches\krpg-armor-behaviors.json" />
-  <None Remove="assets\swordz\patches\krpg-tool-behaviors.json" />
-  <None Remove="assets\swordz\patches\krpg-weapon-behaviors.json" />
-  <None Remove="assets\swordz\recipes\enchanting-table\body-tier-1.json" />
-  <None Remove="assets\swordz\recipes\enchanting-table\head-tier-1.json" />
-  <None Remove="assets\swordz\recipes\enchanting-table\legs-tier-1.json" />
-  <None Remove="assets\swordz\recipes\enchanting-table\swordz-armor.json" />
-  <None Remove="assets\swordz\recipes\enchanting-table\swordz-universal.json" />
-  <None Remove="assets\swordz\swordz-bearded-tier-1.json" />
-  <None Remove="assets\swordz\swordz-daneaxe-tier-1.json" />
-  <None Remove="assets\swordz\swordz-nadziak-tier-1.json" />
-  <None Remove="assets\swordz\swordz-padded-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-bismuthbronze-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-blackbronze-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-copper-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-iron-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-lead-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-meteoriciron-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-steel-tier-1.json" />
-  <None Remove="assets\swordz\swordz-pernach-tinbronze-tier-1.json" />
-  <None Remove="assets\swordz\swordz-seax-tier-1.json" />
-  <None Remove="assets\swordz\swordz-shortsword-tier-1.json" />
-  <None Remove="assets\swordz\swordz-stiletto-tier-1.json" />
-  <None Remove="assets\swordz\swordz-warhammer-tier-1.json" />
-  <None Remove="assets\krpgwands\wand-tier-1.json" />
-  <None Remove="assets\tonwexp-neue\patches\tonwexp-behaviors.json" />
-  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\tonwexp-armor.json" />
-  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\townexp-universal.json" />
-  <None Remove="assets\tonwexp-neue\recipes\enchanting-table\townexp-weapon.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-bearded-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-daneaxe-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-nadziak-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-padded-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-bismuthbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-blackbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-copper-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-iron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-lead-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-meteoriciron-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-steel-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-tinbronze-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-seax-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-shortsword-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
+  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\krpgwands\wand-tier-1.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
 
 <ItemGroup>
-  <Folder Include="assets\combatoverhaul\recipes\enchanting-table\" />
-  <Folder Include="assets\krpgenchantment\compatibility\" />
+  <Content Update="assets\krpgenchantment\patches\combatoverhaul\combatoverhaul-behaviors.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
 </ItemGroup>
 
 </Project>
