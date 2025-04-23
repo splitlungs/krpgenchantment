@@ -148,7 +148,7 @@ namespace KRPGLib.Enchantment
         {
             if (slot.Itemstack == null) return false;
 
-            Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
 
             if (enchants.Count > 0) return true;
 
@@ -162,7 +162,7 @@ namespace KRPGLib.Enchantment
                 if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.VerboseDebug("[KRPGEnchantment] Current Recipe {0} Matches ingredients!", CurrentRecipe.Name);
-                Dictionary<String, int> enchantments = Api.GetEnchantments(InputSlot.Itemstack);
+                Dictionary<String, int> enchantments = Api.EnchantAccessor().GetEnchantments(InputSlot.Itemstack);
                 if (enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 return true;
             }
@@ -196,14 +196,14 @@ namespace KRPGLib.Enchantment
         /// </summary>
         public List<string> LatentEnchants
         {
-            get { return Api.GetLatentEnchants(InputSlot, false); }
+            get { return Api.EnchantAccessor().GetLatentEnchants(InputSlot, false); }
         }
         /// <summary>
         /// Returns a list of LatentEnchants, encrypted, 8 characters
         /// </summary>
         public List<string> LatentEnchantsEncrypted
         {
-            get { return Api.GetLatentEnchants(InputSlot, true); }
+            get { return Api.EnchantAccessor().GetLatentEnchants(InputSlot, true); }
         }
         /// <summary>
         /// Returns default 3 if not set in the config file
@@ -343,7 +343,7 @@ namespace KRPGLib.Enchantment
 
                     foreach (KeyValuePair<string, bool> keyValuePair in Readers)
                     {
-                        if (Api.CanReadEnchant(keyValuePair.Key, CurrentRecipe) == true)
+                        if (Api.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentRecipe) == true)
                             Readers[keyValuePair.Key] = true;
                         else
                             Readers[keyValuePair.Key] = false;
@@ -533,7 +533,7 @@ namespace KRPGLib.Enchantment
                 }
                 else if (clientDialog == null && !Readers.ContainsKey(byPlayer.PlayerUID))
                 {
-                    bool canRead = Api.CanReadEnchant(byPlayer.PlayerUID, CurrentRecipe);
+                    bool canRead = Api.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentRecipe);
                     Readers.Add(byPlayer.PlayerUID, canRead);
                     // Api.Logger.Event("RClick. Adding player {0} from Readers list with value of {1}.", byPlayer.PlayerUID, canRead);
                 }
@@ -605,7 +605,7 @@ namespace KRPGLib.Enchantment
                 // Set the selected latent enchant if it's valid, or un-set them if not
                 if (SelectedEnchant >= 0 && LatentEnchants != null)
                 {
-                    List<EnchantingRecipe> recipes = Api.GetEnchantingRecipes();
+                    List<EnchantingRecipe> recipes = Api.EnchantAccessor().GetEnchantingRecipes();
                     if (recipes != null)
                     {
                         foreach (EnchantingRecipe e in recipes)
@@ -647,7 +647,7 @@ namespace KRPGLib.Enchantment
             {
                 foreach (KeyValuePair<string, bool> keyValuePair in Readers)
                 {
-                    Api.CanReadEnchant(keyValuePair.Key, CurrentRecipe);
+                    Api.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentRecipe);
                 }
             }
             else
@@ -671,7 +671,7 @@ namespace KRPGLib.Enchantment
                     SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
                     ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    bool assed = sApi.AssessItem(InputSlot, ReagentSlot);
+                    bool assed = sApi.EnchantAccessor().AssessItem(InputSlot, ReagentSlot);
                     if (EnchantingConfigLoader.Config?.Debug == true)
                         if (!assed) Api.Logger.Warning("[KRPGEnchantment] EnchantingTable could not Assess an item!");
                 }

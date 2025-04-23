@@ -201,8 +201,8 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void GetAttributes(ItemSlot inSlot)
         {
-            Enchantments = Api.GetEnchantments(inSlot.Itemstack);
-            Enchantable = Api.IsEnchantable(inSlot);
+            Enchantments = Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
+            Enchantable = Api.EnchantAccessor().IsEnchantable(inSlot);
         }
         /// <summary>
         /// Sets all Enchantment data to ItemStack's Attributes
@@ -221,7 +221,7 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
-            Dictionary<string, int> enchants = Api.GetEnchantments(inSlot.Itemstack);
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)

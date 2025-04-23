@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Vintagestory.API.Common.Entities;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Util;
+using Vintagestory.API.Client;
 
 namespace KRPGLib.Enchantment
 {
@@ -17,6 +18,7 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public IWorldAccessor world;
+        public EnchantAccessor EnchantAccessor { get; private set; }
         public static Dictionary <string, Enchantment> Enchantments;
         private static Harmony harmony;
         private COSystem combatOverhaul;
@@ -37,9 +39,6 @@ namespace KRPGLib.Enchantment
                 {
                     if (keyValuePair.Value != true)
                         continue;
-
-                    if (sApi.ModLoader.IsModEnabled(keyValuePair.Key.ToLower()))
-                        files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "compatibility/enchantments/" + keyValuePair.Key.ToLower(), "krpgenchantment"));
 
                     if (sApi.ModLoader.IsModEnabled(keyValuePair.Key.ToLower()))
                         files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "enchantments/" + keyValuePair.Key.ToLower()));
@@ -80,8 +79,13 @@ namespace KRPGLib.Enchantment
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
+            EnchantAccessor.sApi = api;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
+        }
+        public override void StartClientSide(ICoreClientAPI api)
+        {
+            EnchantAccessor.cApi = api;
         }
         private void RegisterCompatibility()
         {
@@ -110,6 +114,9 @@ namespace KRPGLib.Enchantment
         {
             base.Start(api);
             Api = api;
+
+            EnchantAccessor = new EnchantAccessor();
+            EnchantAccessor.Api = api;
 
             api.RegisterCollectibleBehaviorClass("ReagentBehavior", typeof(ReagentBehavior));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));

@@ -21,7 +21,7 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
         public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
-            Dictionary<string, int> enchants = byEntity.Api.GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
             if (enchants == null)
             {
                 // byEntity.Api.Logger.Event("A bow was fired, but no enchantments were on it.");

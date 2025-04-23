@@ -12,7 +12,6 @@ using Vintagestory.API.Server;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
-using KRPGLib.Enchantments;
 
 namespace KRPGLib.Enchantment
 {
@@ -22,7 +21,7 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
         public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
         {
-            Dictionary<string, int> enchants = world.Api.GetEnchantments(itemslot.Itemstack);
+            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
 
@@ -32,7 +31,7 @@ namespace KRPGLib.Enchantment
             {
                 float amountf = 1f;
                 EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnTrigger", Code = "durable", Power = durable };
-                bool didEnchantment = world.Api.DoEnchantment(enchant, itemslot, ref amountf);
+                bool didEnchantment = world.Api.EnchantAccessor().DoEnchantment(enchant, itemslot, ref amountf);
                 if (didEnchantment != false)
                     amount = (int)amountf;
 

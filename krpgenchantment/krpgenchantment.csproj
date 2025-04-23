@@ -183,4 +183,12 @@
   </Content>
 </ItemGroup>
 
+<ItemGroup>
+  <Folder Include="src\Enchantments\Armor\" />
+  <Folder Include="src\Enchantments\Accessory\" />
+  <Folder Include="src\Enchantments\Tool\" />
+  <Folder Include="src\Enchantments\Universal\" />
+  <Folder Include="src\Enchantments\Ranged\" />
+</ItemGroup>
+
 </Project>

@@ -7,13 +7,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Cairo;
 using Vintagestory.API.Config;
-using System.ComponentModel;
 using Vintagestory.API.Util;
-using System.Text;
-using System.IO;
-using System.Collections;
-using Vintagestory.API.Server;
-using System.Net.Sockets;
 
 namespace KRPGLib.Enchantment
 {
@@ -40,7 +34,7 @@ namespace KRPGLib.Enchantment
 
             this.capi = capi;
             Config = config.Clone();
-            customTypeface = capi.LoadCustomFont(Config.customFont);
+            customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
             SetupDialog();
 
             // capi.World.Player.InventoryManager.OpenInventory(Inventory);
@@ -58,7 +52,7 @@ namespace KRPGLib.Enchantment
             // 2. Sanitize data
             // Get our font. Internet required if first time
             if (customTypeface == null)
-                customTypeface = capi.LoadCustomFont(Config.customFont);
+                customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
             // Create a new List of Latent Enchants if none found or malformed
             if (Config.enchantNamesEncrypted == null)
             {

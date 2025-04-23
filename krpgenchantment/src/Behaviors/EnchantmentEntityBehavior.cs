@@ -235,7 +235,7 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
-                Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
+                Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
                 if (enchants != null)
                 {
 
@@ -261,7 +261,7 @@ namespace KRPGLib.Enchantment
         /// <param name="stack"></param>
         public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
         {
-            Dictionary<string, int> enchants = Api.GetEnchantments(stack);
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(stack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
@@ -371,7 +371,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
                             int rPower = 0;
                             if (source.Type == EnumDamageType.Electricity)
                                 rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectricity.ToString(), 0);
@@ -1102,7 +1102,7 @@ namespace KRPGLib.Enchantment
             if (slot.Empty)
                 return;
 
-            Dictionary<string, int> enchants = Api.GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
             if (enchants.Count < 1) return;
 
             int power = 0;

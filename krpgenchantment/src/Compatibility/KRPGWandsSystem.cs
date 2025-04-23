@@ -35,7 +35,7 @@ namespace KRPGLib.Enchantment
             eeb.TryEnchantments(damageSource.CauseEntity as EntityAgent, slot.Itemstack);
 
             // Manual Healing check to overwrite damage
-            Dictionary<string, int> enchants = sApi.GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(slot.Itemstack);
             if (enchants == null)
                 return;
             if (enchants.ContainsKey("healing"))
