@@ -34,7 +34,7 @@ namespace KRPGLib.Enchantment
 
             this.capi = capi;
             Config = config.Clone();
-            customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
+            customTypeface = capi.LoadCustomFont(Config.customFont);
             SetupDialog();
 
             // capi.World.Player.InventoryManager.OpenInventory(Inventory);
@@ -52,7 +52,7 @@ namespace KRPGLib.Enchantment
             // 2. Sanitize data
             // Get our font. Internet required if first time
             if (customTypeface == null)
-                customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
+                customTypeface = capi.LoadCustomFont(Config.customFont);
             // Create a new List of Latent Enchants if none found or malformed
             if (Config.enchantNamesEncrypted == null)
             {

@@ -85,16 +85,5 @@ namespace Vintagestory.GameContent
         /// </summary>
         /// <returns></returns>
         List<EnchantingRecipe> GetEnchantingRecipes();
-        /// <summary>
-        /// Register an Enchanting Recipe
-        /// </summary>
-        /// <param name="recipe"></param>
-        void RegisterEnchantingRecipe(EnchantingRecipe recipe);
-        /// <summary>
-        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
-        /// </summary>
-        /// <param name="fName"></param>
-        /// <returns></returns>
-        SKTypeface LoadCustomFont(string fName);
     }
 }

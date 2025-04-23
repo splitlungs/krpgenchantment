@@ -221,7 +221,7 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
+            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)

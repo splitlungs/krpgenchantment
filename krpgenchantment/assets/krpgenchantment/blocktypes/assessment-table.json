@@ -1,6 +1,7 @@
 {
   "code": "assessment-table",
   "class": "AssessmentBlock",
+  "enabled": false,
   "entityClass": "AssessmentBE",
   "maxStackSize": 1,
   "maxSlotStackSize": 2,

@@ -32,6 +32,83 @@ namespace Vintagestory.GameContent
             KRPGEnchantmentSystem modSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
             return modSys.EnchantAccessor;
         }
+
+        /// <summary>
+        /// Register an Enchanting Recipe
+        /// </summary>
+        /// <param name="recipe"></param>
+        public static void RegisterEnchantingRecipe(this ICoreServerAPI api, EnchantingRecipe recipe)
+        {
+            api.ModLoader.GetModSystem<EnchantingRecipeSystem>().RegisterEnchantingRecipe(recipe);
+        }
+
+
+        /// <summary>
+        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
+        public static SKTypeface LoadCustomFont(this ICoreClientAPI api, string fName)
+        {
+            // Path to the font file in the ModData folder
+            string fontPath = System.IO.Path.Combine(api.GetOrCreateDataPath(System.IO.Path.Combine("ModData", "krpgenchantment", "fonts")), fName);
+
+            // Download the file to the client's ModData if it doesn't exist
+            if (!File.Exists(fontPath))
+            {
+                api.World.Logger.Warning("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
+                api.World.Logger.Event("[KRPGEnchantment] Copying font file to path: {0}.", fontPath);
+
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        using (var s = client.GetStreamAsync("http://kronos-gaming.net/downloads/files/" + fName))
+                        {
+                            using (var fs = new FileStream(fontPath, FileMode.OpenOrCreate))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    api.World.Logger.Error("[KRPGEnchantment] Failed to download custom font: {0}", e.Message);
+                    return null;
+                }
+            }
+            // Check if the font file was created and bail if not
+            if (!File.Exists(fontPath))
+            {
+                api.World.Logger.Error("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
+                return null;
+            }
+
+            try
+            {
+                // Load the custom font using SkiaSharp
+                using (var fontStream = File.OpenRead(fontPath))
+                {
+                    SKTypeface customTypeface = SKTypeface.FromStream(fontStream);
+                    if (customTypeface != null)
+                    {
+                        // api.World.Logger.Notification("Custom font successfully loaded from: " + fontPath);
+                        return customTypeface;
+                    }
+                    else
+                    {
+                        api.World.Logger.Error("[KRPGEnchantment] Failed to create SKTypeface from the font file.");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                api.World.Logger.Error("[KRPGEnchantment] Failed to load custom font: " + e.Message);
+                return null;
+            }
+        }
         /*
         /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
