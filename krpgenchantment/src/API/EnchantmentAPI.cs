@@ -47,11 +47,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Processes an Enchantment from the server. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="enchant"></param>
-        /// <param name="trigger"></param>
-        /// <param name="target"></param>
-        /// <param name="damageSource"></param>
         /// <param name="slot"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
@@ -69,7 +65,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
         public List<string> GetLatentEnchants(ItemSlot inSlot, bool encrypt)
@@ -122,7 +117,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns true if the given player can decrypt the enchant.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="player"></param>
         /// <param name="recipe"></param>
         /// <returns></returns>
@@ -152,8 +146,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
         /// </summary>
-        /// <param name="api"></param>
-        /// <param name="byPlayer"></param>
+        /// <param name="player"></param>
         /// <param name="enchantName"></param>
         /// <returns></returns>
         public bool CanReadEnchant(string player, string enchantName)
@@ -181,7 +174,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// This exists as a temporary replacement for a removed helper function in ModJournal.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="playerUid"></param>
         /// <param name="code"></param>
         /// <param name="chapterId"></param>
@@ -220,7 +212,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
         public bool AssessItem(ItemSlot inSlot, ItemSlot rSlot)
@@ -309,8 +300,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Call to assign a EnchantPotential attribute to an item. Returns 0 if it is not valid.
         /// </summary>
-        /// <param name="api"></param>
-        /// <param name="slot"></param>
+        /// <param name="stack"></param>
         /// <returns></returns>
         public int AssessReagent(ItemStack stack)
         {
@@ -341,7 +331,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <param name="rSlot"></param>
         /// <returns></returns>
@@ -368,7 +357,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns if the ItemStack is Enchantable or not.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <returns></returns>
         public bool IsEnchantable(ItemSlot inSlot)
@@ -393,7 +381,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// List of all loaded Enchanting Recipes
         /// </summary>
-        /// <param name="api"></param>
         /// <returns></returns>
         public List<EnchantingRecipe> GetEnchantingRecipes()
         {
@@ -403,7 +390,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Register an Enchanting Recipe
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="recipe"></param>
         public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
         {
@@ -413,7 +399,6 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="fName"></param>
         /// <returns></returns>
         public SKTypeface LoadCustomFont(string fName)

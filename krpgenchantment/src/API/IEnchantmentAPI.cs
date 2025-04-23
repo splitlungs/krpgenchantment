@@ -43,7 +43,7 @@ namespace Vintagestory.GameContent
         /// <summary>
         /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
         /// </summary>
-        /// <param name="byPlayer"></param>
+        /// <param name="player"></param>
         /// <param name="enchantName"></param>
         /// <returns></returns>
         bool CanReadEnchant(string player, string enchantName);
