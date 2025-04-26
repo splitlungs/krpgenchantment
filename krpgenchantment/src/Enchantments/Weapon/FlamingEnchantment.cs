@@ -7,26 +7,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
-    public class FlamingEnchantment : Enchantment
+    public class DamageEnchantment : Enchantment
     {
-        public FlamingEnchantment(ICoreAPI api) : base(api)
-        {
+        EnumDamageType DamageType { get 
+            {
+                if (Modifiers[0].ToString().ToLower() == "heal")
+                    return EnumDamageType.Heal;
+                else if (Modifiers[0].ToString().ToLower() == "flaming")
+                    return EnumDamageType.Fire;
+                else if (Modifiers[0].ToString().ToLower() == "frost")
+                    return EnumDamageType.Frost;
+                else if (Modifiers[0].ToString().ToLower() == "injury")
+                    return EnumDamageType.Injury;
+                else if (Modifiers[0].ToString().ToLower() == "electricity")
+                    return EnumDamageType.Electricity;
+                else 
+                    return EnumDamageType.Injury;
+            } 
+        }
+        string DamageResist { get { return (string)Modifiers[1]; } }
+        int MaxDamage { get { return (int)Modifiers[2]; } }
+        float PowerMultiplier { get { return (float)Modifiers[3]; } }
 
+        public DamageEnchantment(ICoreAPI api) : base(api)
+        {
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
+
             // Configure Damage
             // EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
 
             DamageSource source = enchant.ToDamageSource();
+            source.Type = DamageType;
+
             // if (byEntity != null)
             // {
             //     source.CauseEntity = byEntity;
@@ -39,9 +62,9 @@ namespace KRPGLib.Enchantment
 
             for (int i = 1; i <= enchant.Power; i++)
             {
-                dmg += Api.World.Rand.Next(1, 4);
+                dmg += Api.World.Rand.Next(MaxDamage +1);
                 dmg += Api.World.Rand.NextSingle();
-                dmg += enchant.Power * 0.1f;
+                dmg += enchant.Power * PowerMultiplier;
             }
             
             // Apply Defenses
@@ -61,9 +84,7 @@ namespace KRPGLib.Enchantment
                         if (!inv[i].Empty)
                         {
                             Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
-                            int rPower = 0;
-                            if (source.Type == EnumDamageType.Fire)
-                                rPower += enchants.GetValueOrDefault(EnumEnchantments.resistfire.ToString(), 0);
+                            int rPower = enchants.GetValueOrDefault(DamageResist, 0);
                             resist += rPower * 0.1f;
                         }
                     }
@@ -90,7 +111,7 @@ namespace KRPGLib.Enchantment
                 // hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, enchant.Type, dmg);
+                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
             }
             else if (!sApi.Server.Config.AllowPvP && source.Type == EnumDamageType.Heal)
             {
@@ -109,7 +130,7 @@ namespace KRPGLib.Enchantment
                 // hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, enchant.Type, dmg);
+                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
             }
             else
             {

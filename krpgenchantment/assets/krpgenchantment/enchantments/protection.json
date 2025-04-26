@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "protection",
+    "loreCode": "enchantment-protection",
+    "loreChapterID": 10,
+    "maxTier": 5,
+    "modifiers": [
+      "blunt;piercing;slashing", 0.1
+    ]
+  }
+]

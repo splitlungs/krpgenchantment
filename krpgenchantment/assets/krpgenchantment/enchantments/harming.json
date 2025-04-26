@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "harming",
+    "loreCode": "enchantment-harming",
+    "loreChapterID": 4,
+    "maxTier": 5,
+    "modifiers": [
+      "injury", "resistinjury", 3, 0.1
+    ]
+  }
+]

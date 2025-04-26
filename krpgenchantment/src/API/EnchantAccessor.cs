@@ -56,17 +56,13 @@ namespace KRPGLib.Enchantment
         /// <param name="slot"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
-        public bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref float damage)
+        public bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters)
         {
-            if (!EnchantmentRegistry.ContainsKey(enchant.Code))
+            if (EnchantmentRegistry[enchant.Code]?.Enabled != true || EnchantingConfigLoader.Config.DisabledEnchants.Contains(enchant.Code))
                 return false;
 
-            // Enchantment ench = EnchantClassToTypeMapping[enchant.Code] obj;
+            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot, parameters);
 
-            // if (EnchantRegistry[enchant.Code]?.Enabled != true)
-            //     return false;
-
-            // EnchantRegistry[enchant.Code].OnTrigger(sApi, enchant, slot, ref damage);
             return true;
         }
         /// <summary>
@@ -403,43 +399,46 @@ namespace KRPGLib.Enchantment
         public void RegisterEnchantmentClass(AssetLocation properties, Type t)
         {
             // Get ClassName and make sure Properties file is probably okay
-            string className = sApi.Assets.Get<JsonObject>(properties)["className"].ToString();
-            if (className == null)
+            string code = sApi.Assets.Get<JsonObject>(properties)["code"].ToString();
+            if (code == null)
             {
-                sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing ClassName. Check the enchantment properties file.");
+                sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing Code. Check the enchantment properties file.");
                 return;
             }
             // Register the Enchantment Class
-            this.EnchantClassToTypeMapping[className] = t;
+            this.EnchantCodeToTypeMapping[code] = t;
             // Create a new instance
             IEnchantment enchant = CreateEnchantment(properties);
             // Add to the Registry
-            EnchantmentRegistry.Add(className, enchant);
+            EnchantmentRegistry.Add(code, enchant);
+
+            sApi.World.Logger.VerboseDebug("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", code);
         }
-        private Dictionary<string, Type> EnchantClassToTypeMapping = new Dictionary<string, Type>();
-        private IEnchantment CreateEnchantment(AssetLocation properties)
+        private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
+        private Enchantment CreateEnchantment(AssetLocation properties)
         {
             JsonObject propObj = sApi.Assets.Get<JsonObject>(properties);
-            string className = propObj["className"].ToString();
+            string code = propObj["code"].ToString();
             Type enchantType;
-            if (className == null || !this.EnchantClassToTypeMapping.TryGetValue(className, out enchantType))
+            if (code == null || !this.EnchantCodeToTypeMapping.TryGetValue(code, out enchantType))
             {
-                throw new Exception("Don't know how to instantiate enchantment of class '" + className + "' did you forget to register a mapping?");
+                throw new Exception("Don't know how to instantiate enchantment of class '" + code + "' did you forget to register a mapping?");
             }
-            IEnchantment result;
+            Enchantment result;
             try
             {
-                result = (IEnchantment)Activator.CreateInstance(enchantType);
+                result = (Enchantment)Activator.CreateInstance(enchantType, new object[1] { Api });
             }
             catch (Exception exception)
             {
                 DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(39, 2);
                 defaultInterpolatedStringHandler.AppendLiteral("Error on instantiating enchantment class '");
-                defaultInterpolatedStringHandler.AppendFormatted(className);
+                defaultInterpolatedStringHandler.AppendFormatted(code);
                 defaultInterpolatedStringHandler.AppendLiteral("':\n");
                 defaultInterpolatedStringHandler.AppendFormatted<Exception>(exception);
                 throw new Exception(defaultInterpolatedStringHandler.ToStringAndClear(), exception);
             }
+            result.Initialize(propObj);
             return result;
         }
     }

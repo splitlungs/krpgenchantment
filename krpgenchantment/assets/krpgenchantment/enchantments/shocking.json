@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "shocking",
+    "loreCode": "enchantment-shocking",
+    "loreChapterID": 17,
+    "maxTier": 5,
+    "modifiers": [
+      "electricity", "resistelectricity", 3, 0.1
+    ]
+  }
+]

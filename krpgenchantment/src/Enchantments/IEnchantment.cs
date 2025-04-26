@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Common;
 using KRPGLib.Enchantment;
+using System.Text.Json.Nodes;
 
 namespace KRPGLib.API
 {
@@ -18,8 +19,8 @@ namespace KRPGLib.API
         string LoreCode { get; set; }
         int LoreChapterID { get; set; }
         int MaxTier { get; set; }
-        float[] Modifiers { get; set; }
-        void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref float? damage);
+        object[] Modifiers { get; set; }
+        void OnTrigger(EnchantmentSource enchant, ItemSlot slot, object[] parameters);
         void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage);
         void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage);
         void OnToggle(EnchantmentSource enchant, ItemSlot slot);

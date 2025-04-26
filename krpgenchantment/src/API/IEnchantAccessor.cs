@@ -27,7 +27,7 @@ namespace Vintagestory.GameContent
         /// <param name="slot"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
-        bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref float damage);
+        bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters);
         /// <summary>
         /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
         /// </summary>

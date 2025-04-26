@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "resistfrost",
+    "loreCode": "enchantment-resistfrost",
+    "loreChapterID": 13,
+    "maxTier": 5,
+    "modifiers": [
+      "frost", 0.1
+    ]
+  }
+]

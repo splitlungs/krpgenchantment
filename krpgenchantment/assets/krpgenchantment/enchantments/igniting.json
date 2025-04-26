@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "igniting",
+    "loreCode": "enchantment-igniting",
+    "loreChapterID": 6,
+    "maxTier": 5,
+    "modifiers": [
+      1
+    ]
+  }
+]

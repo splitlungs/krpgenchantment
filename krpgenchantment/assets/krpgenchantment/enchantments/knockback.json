@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "knockback",
+    "loreCode": "enchantment-knockback",
+    "loreChapterID": 7,
+    "maxTier": 5,
+    "modifiers": [
+      1
+    ]
+  }
+]

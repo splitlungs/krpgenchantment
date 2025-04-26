@@ -2,8 +2,8 @@
   {
     "enabled": true,
     "code": "pit",
-    "loreCodes": "enchantment-pit",
-    "loreID": 9,
+    "loreCode": "enchantment-pit",
+    "loreChapterID": 9,
     "maxTier": 5,
     "modifiers": [
       0.5,

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {

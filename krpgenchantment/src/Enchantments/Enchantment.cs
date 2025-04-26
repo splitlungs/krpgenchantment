@@ -31,7 +31,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier = 5;
         // Configurable JSON multiplier for effects
-        public float[] Modifiers;
+        public object[] Modifiers;
     }
     /// <summary>
     /// Base class for an Enchantment.
@@ -52,7 +52,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier { get; set; }
         // Configurable JSON multiplier for effects
-        public float[] Modifiers { get; set; }
+        public object[] Modifiers { get; set; }
 
         public Enchantment(ICoreAPI api)
         {
@@ -69,21 +69,21 @@ namespace KRPGLib.Enchantment
             LoreCode = properties["LoreCode"].AsString();
             LoreChapterID = properties["LoreChapterID"].AsInt();
             MaxTier = properties["MaxTier"].AsInt();
-            Modifiers = properties["Modifiers"].AsArray<float>();
+            Modifiers = properties["Modifiers"].AsArray<object>();
         }
-
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
-        /// <param name="trigger"></param>
-        /// <param name="target"></param>
-        /// <param name="damageSource"></param>
+        /// <param name="enchant"></param>
         /// <param name="slot"></param>
-        /// <param name="damage"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        /// <param name="parameters"></param>
+        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, object[] parameters)
         {
             MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
-            meth?.Invoke(this, new object[3] { enchant, slot, damage });
+            if (parameters != null)
+                meth?.Invoke(this, new object[3] { enchant, slot, parameters });
+            else
+                meth.Invoke(this, new object[2] { enchant, slot });
         }
 
         public virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)

@@ -30,14 +30,20 @@ namespace KRPGLib.Enchantment
             if (durable > 0)
             {
                 float amountf = 1f;
-                EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnTrigger", Code = "durable", Power = durable };
-                bool didEnchantment = world.Api.EnchantAccessor().DoEnchantment(enchant, itemslot, ref amountf);
-                if (didEnchantment != false)
-                    amount = (int)amountf;
+                EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnHit", Code = "durable", Power = durable };
+                object[] parameters = new object[1] { amountf };
+                bool didEnchantment = world.Api.EnchantAccessor().DoEnchantment(enchant, itemslot, ref parameters);
+                if (didEnchantment != true)
+                    return true;
 
-                int roll = world.Rand.Next(10);
-                if (roll + durable + 1 >= 10)
-                    amount = 0;
+                amount = (int)parameters[0];
+
+                // if (didEnchantment != false)
+                //     amount = (int)amountf;
+                // 
+                // int roll = world.Rand.Next(10);
+                // if (roll + durable + 1 >= 10)
+                //     amount = 0;
             }
 
             return true;

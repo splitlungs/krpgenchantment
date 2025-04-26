@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "flaming",
+    "loreCode": "enchantment-flaming",
+    "loreChapterID": 2,
+    "maxTier": 5,
+    "modifiers": [
+      "fire", "resistfire", 3, 0.1
+    ]
+  }
+]

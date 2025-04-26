@@ -31,85 +31,6 @@ namespace KRPGLib.Enchantment
             if (!(api is ICoreServerAPI sapi)) return;
             this.sApi = sapi;
         }
-        public void LoadEnchantments()
-        {
-            Dictionary<AssetLocation, JToken> files = new Dictionary<AssetLocation, JToken>();
-            // Path to the font file in the ModData folder
-            List<EnchantmentProperties> enchantData = new List<EnchantmentProperties>();
-            string fPath = Path.Combine(sApi.GetOrCreateDataPath(Path.Combine("ModData", "krpgenchantment", "enchantments")));
-            foreach (string file in Directory.GetFiles(fPath))
-            {
-                string ConfigFile = "KRPGEnchantment//Enchantments";
-                EnchantmentProperties Config = new EnchantmentProperties();
-                Config = sApi.LoadModConfig<EnchantmentProperties>(ConfigFile);
-
-                if (Config != null)
-                {
-                    enchantData.Add(Config);
-                }
-                else
-                {
-                    EnchantmentProperties newConfig = new EnchantmentProperties();
-                    sApi.StoreModConfig(newConfig, ConfigFile);
-                    sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
-                }
-            }
-
-            // string ConfigFile = "KRPGEnchantment//Enchantments";
-            // EnchantmentData Config = new EnchantmentData();
-            // Config = sApi.LoadModConfig<EnchantmentData>(ConfigFile);
-            // if (Config == null)
-            // {
-            //     Config = new EnchantmentData();
-            //     sApi.StoreModConfig(Config, ConfigFile);
-            // 
-            //     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
-            // }
-
-            // Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "enchantments", "krpgenchantment");
-            if (EnchantingConfigLoader.Config.CustomPatches.Count > 0)
-            {
-                foreach (KeyValuePair<string, bool> keyValuePair in EnchantingConfigLoader.Config.CustomPatches)
-                {
-                    if (keyValuePair.Value != true)
-                        continue;
-
-                    if (sApi.ModLoader.IsModEnabled(keyValuePair.Key.ToLower()))
-                        files.AddRange(sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "enchantments/" + keyValuePair.Key.ToLower()));
-                }
-            }
-
-            int fileQuantity = 0;
-
-            foreach (var val in files)
-            {
-                if (val.Value is JObject)
-                {
-                    LoadEnchantment(val.Key, val.Value.ToObject<Enchantment>(val.Key.Domain));
-                    fileQuantity++;
-                }
-                if (val.Value is JArray)
-                {
-                    foreach (var token in (val.Value as JArray))
-                    {
-                        LoadEnchantment(val.Key, token.ToObject<Enchantment>(val.Key.Domain));
-                        fileQuantity++;
-                    }
-                }
-            }
-
-            sApi.World.Logger.Notification("[KRPGEnchantment] {0} enchantments loaded from {1} files.", fileQuantity, files.Count);
-        }
-
-        public void LoadEnchantment(AssetLocation loc, Enchantment enchant)
-        {
-            if (!enchant.Enabled) return;
-
-            // if (enchant.Name == null) enchant.Name = loc;
-
-            // if (enchant.Code != null && !EnchantAccessor.EnchantRegistry.ContainsKey(enchant.Code))
-            //     EnchantAccessor.EnchantRegistry.Add(enchant.Code, enchant.GetType());
-        }
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
@@ -117,12 +38,25 @@ namespace KRPGLib.Enchantment
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
 
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment:enchantments/pit"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment:enchantments/flaming"), typeof(FlamingEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/chilling"), typeof(ChillingEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/durable"), typeof(DurableEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/flaming"), typeof(DamageEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/frost"), typeof(DamageEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/harming"), typeof(DamageEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/healing"), typeof(DamageEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/igniting"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/knockback"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/lightning"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/pit"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/protection"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistelectricity"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfire"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfrost"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistheal"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistinjury"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistpoison"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/shocking"), typeof(DamageEnchantment));
         }
-        
-        // Dictionary<string, Enchantment> d2 = [];
-        // private IEnchantment EnchantGeneric<T>() where T : Enchantment, new() { }
 
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -194,25 +128,19 @@ namespace KRPGLib.Enchantment
         // Events in case if I decide to use them later.
         // public event EnchantTriggerDelegate EnchantTrigger;
         // public delegate void EnchantTriggerDelegate(string enchant, string trigger, Entity target, DamageSource damageSource, ItemSlot slot, ref float damage);
-        
+
         /// <summary>
-        /// Processes EnchantTrigger event for vanilla VS.
+        /// Processes EnchantTrigger event for vanilla VS. Pass NULL for parameters if none are required.
         /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="trigger"></param>
-        /// <param name="target"></param>
-        /// <param name="damageSource"></param>
+        /// <param name="enchantSource"></param>
         /// <param name="slot"></param>
-        /// <param name="damage"></param>
-        // public void OnTriggerEnchantment(string enchant, string trigger, Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
+        /// <param name="parameters"></param>
+        // public void OnTriggerEnchantment(EnchantmentSource enchantSource, ItemSlot slot, object[] parameters)
         // {
-        //     if (!Enchantments.ContainsKey(enchant))
+        //     if (EnchantAccessor.EnchantmentRegistry[enchantSource.Code]?.Enabled != true)
         //         return;
         // 
-        //     if (Enchantments[enchant]?.Enabled != true)
-        //         return;
-        // 
-        //     Enchantments[enchant].OnTrigger(trigger, target, damageSource, slot, ref damage);
+        //     EnchantAccessor.EnchantmentRegistry[enchantSource.Code].OnTrigger(enchantSource, slot, parameters);
         // }
     }
 }

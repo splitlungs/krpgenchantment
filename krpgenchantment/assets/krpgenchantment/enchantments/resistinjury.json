@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "resistinjury",
+    "loreCode": "enchantment-resistinjury",
+    "loreChapterID": 15,
+    "maxTier": 5,
+    "modifiers": [
+      "injury", 0.1
+    ]
+  }
+]
