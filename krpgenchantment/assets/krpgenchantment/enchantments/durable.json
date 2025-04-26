@@ -1,0 +1,12 @@
+[
+  {
+    "enabled": true,
+    "code": "durable",
+    "loreCode": "enchantment-durable",
+    "loreChapterID": 1,
+    "maxTier": 5,
+    "modifiers": [
+      1
+    ]
+  }
+]

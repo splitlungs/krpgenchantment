@@ -8,56 +8,103 @@ using HarmonyLib;
 using System.Reflection;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Datastructures;
+using KRPGLib.API;
 
 namespace KRPGLib.Enchantment
 {
     /// <summary>
+    /// Configurable JSON data used to configure Enchantment classes.
+    /// </summary>
+    public class EnchantmentProperties
+    {
+        // Toggles processing of this enchantment
+        public bool Enabled = true;
+        // How the Enchantment is referenced in code
+        public string Code = "enchantment";
+        // Define which registered class to instantiate with
+        public string ClassName { get; set; }
+        // The code used to lookup the enchantment's Lore in the lang file
+        public string LoreCode = "enchantment-lore";
+        // The ID of the chapter in the Lore config file
+        public int LoreChapterID = 0;
+        // The maximum functional Power of an Enchantment
+        public int MaxTier = 5;
+        // Configurable JSON multiplier for effects
+        public float[] Modifiers;
+    }
+    /// <summary>
     /// Base class for an Enchantment.
     /// </summary>
-    public abstract class Enchantment
+    public abstract class Enchantment : IEnchantment
     {
-        public ICoreAPI Api;
-        public bool Enabled = false; // Toggles processing of this enchantment
-        public string Code = "enchantment";
-        public string Name = "Enchantment";
-        public string Description = "Description of an enchantment.";
-        public int MaxTier = 5;
-        public float Multiplier = 1f;
+        public ICoreAPI Api { get; set; }
+        // Toggles processing of this enchantment
+        public bool Enabled { get; set; }
+        // How the Enchantment is referenced in code
+        public string Code { get; set; }
+        // Define which registered class to instantiate with
+        public string ClassName { get; set; }
+        // The code used to lookup the enchantment's Lore in the lang file
+        public string LoreCode { get; set; }
+        // The ID of the chapter in the Lore config file
+        public int LoreChapterID { get; set; }
+        // The maximum functional Power of an Enchantment
+        public int MaxTier { get; set; }
+        // Configurable JSON multiplier for effects
+        public float[] Modifiers { get; set; }
+
+        public Enchantment(ICoreAPI api)
+        {
+            Api = api;
+        }
+        /// <summary>
+        /// Called right after the Enchantment is created. Must call base method to load JSON Properties.
+        /// </summary>
+        /// <param name="properties"></param>
+        public virtual void Initialize(JsonObject properties)
+        {
+            Enabled = properties["Enabled"].AsBool();
+            Code = properties["Code"].AsString();
+            LoreCode = properties["LoreCode"].AsString();
+            LoreChapterID = properties["LoreChapterID"].AsInt();
+            MaxTier = properties["MaxTier"].AsInt();
+            Modifiers = properties["Modifiers"].AsArray<float>();
+        }
 
         /// <summary>
-        /// Will execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
+        /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="trigger"></param>
         /// <param name="target"></param>
         /// <param name="damageSource"></param>
         /// <param name="slot"></param>
         /// <param name="damage"></param>
-        public void OnTrigger(ICoreAPI api, EnchantmentSource enchant, ItemSlot slot, ref float damage)
+        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
-            Api = api;
             MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
             meth?.Invoke(this, new object[3] { enchant, slot, damage });
         }
 
-        protected virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float damage)
+        public virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
-
+        
         }
-        protected virtual void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float damage)
+        public virtual void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
-
+        
         }
-        protected virtual void OnToggle(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnToggle(EnchantmentSource enchant, ItemSlot slot)
         {
-
+        
         }
-        protected virtual void OnStart(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnStart(EnchantmentSource enchant, ItemSlot slot)
         {
-
+        
         }
-        protected virtual void OnEnd(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnEnd(EnchantmentSource enchant, ItemSlot slot)
         {
-
+        
         }
         protected static AdvancedParticleProperties[] HealParticleProps;
         protected static AdvancedParticleProperties[] FireParticleProps;

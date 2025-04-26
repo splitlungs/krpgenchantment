@@ -8,10 +8,11 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using KRPGLib.Enchantment;
+using KRPGLib.API;
 
 namespace Vintagestory.GameContent
 {
-    public interface IEnchantmentAPI
+    public interface IEnchantAccessor
     {
         /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
@@ -85,5 +86,15 @@ namespace Vintagestory.GameContent
         /// </summary>
         /// <returns></returns>
         List<EnchantingRecipe> GetEnchantingRecipes();
+        /// <summary>
+        /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
+        /// </summary>
+        public Dictionary<string, IEnchantment> EnchantmentRegistry { get; }
+        /// <summary>
+        /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="t"></param>
+        void RegisterEnchantmentClass(AssetLocation properties, Type t);
     }
 }

@@ -9,14 +9,19 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.API;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
+using HarmonyLib;
+using KRPGLib.API;
 
 namespace KRPGLib.Enchantment
 {
-    public class EnchantAccessor : IEnchantmentAPI
+    public class EnchantAccessor : IEnchantAccessor
     {
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public ICoreClientAPI cApi;
+        
         /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
         /// </summary>
@@ -53,13 +58,15 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref float damage)
         {
-            if (!KRPGEnchantmentSystem.Enchantments.ContainsKey(enchant.Code))
+            if (!EnchantmentRegistry.ContainsKey(enchant.Code))
                 return false;
 
-            if (KRPGEnchantmentSystem.Enchantments[enchant.Code]?.Enabled != true)
-                return false;
+            // Enchantment ench = EnchantClassToTypeMapping[enchant.Code] obj;
 
-            KRPGEnchantmentSystem.Enchantments[enchant.Code].OnTrigger(sApi, enchant, slot, ref damage);
+            // if (EnchantRegistry[enchant.Code]?.Enabled != true)
+            //     return false;
+
+            // EnchantRegistry[enchant.Code].OnTrigger(sApi, enchant, slot, ref damage);
             return true;
         }
         /// <summary>
@@ -208,7 +215,6 @@ namespace KRPGLib.Enchantment
 
             return false;
         }
-
         /// <summary>
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>
@@ -250,7 +256,7 @@ namespace KRPGLib.Enchantment
                 sApi.World.Logger.VerboseDebug("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
-            IEnchantmentAPI eApi = sApi.EnchantAccessor();
+            IEnchantAccessor eApi = sApi.EnchantAccessor();
             List<EnchantingRecipe> recipes = eApi.GetValidEnchantingRecipes(inSlot, rSlot);
             if (recipes == null) return false;
 
@@ -370,14 +376,13 @@ namespace KRPGLib.Enchantment
 
             EnchantmentBehavior eb = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
             if (eb != null)
-                enchantable = eb.EnchantProps.Enchantable;
+                enchantable = eb.Enchantable;
             if (enchantable != true)
                 return false;
 
             return true;
 
         }
-
         /// <summary>
         /// List of all loaded Enchanting Recipes
         /// </summary>
@@ -386,6 +391,56 @@ namespace KRPGLib.Enchantment
         {
             return Api.ModLoader.GetModSystem<EnchantingRecipeSystem>().EnchantingRecipes;
         }
-
+        /// <summary>
+        /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
+        /// </summary>
+        public Dictionary<string, IEnchantment> EnchantmentRegistry { get; private set; }
+        /// <summary>
+        /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="t"></param>
+        public void RegisterEnchantmentClass(AssetLocation properties, Type t)
+        {
+            // Get ClassName and make sure Properties file is probably okay
+            string className = sApi.Assets.Get<JsonObject>(properties)["className"].ToString();
+            if (className == null)
+            {
+                sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing ClassName. Check the enchantment properties file.");
+                return;
+            }
+            // Register the Enchantment Class
+            this.EnchantClassToTypeMapping[className] = t;
+            // Create a new instance
+            IEnchantment enchant = CreateEnchantment(properties);
+            // Add to the Registry
+            EnchantmentRegistry.Add(className, enchant);
+        }
+        private Dictionary<string, Type> EnchantClassToTypeMapping = new Dictionary<string, Type>();
+        private IEnchantment CreateEnchantment(AssetLocation properties)
+        {
+            JsonObject propObj = sApi.Assets.Get<JsonObject>(properties);
+            string className = propObj["className"].ToString();
+            Type enchantType;
+            if (className == null || !this.EnchantClassToTypeMapping.TryGetValue(className, out enchantType))
+            {
+                throw new Exception("Don't know how to instantiate enchantment of class '" + className + "' did you forget to register a mapping?");
+            }
+            IEnchantment result;
+            try
+            {
+                result = (IEnchantment)Activator.CreateInstance(enchantType);
+            }
+            catch (Exception exception)
+            {
+                DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(39, 2);
+                defaultInterpolatedStringHandler.AppendLiteral("Error on instantiating enchantment class '");
+                defaultInterpolatedStringHandler.AppendFormatted(className);
+                defaultInterpolatedStringHandler.AppendLiteral("':\n");
+                defaultInterpolatedStringHandler.AppendFormatted<Exception>(exception);
+                throw new Exception(defaultInterpolatedStringHandler.ToStringAndClear(), exception);
+            }
+            return result;
+        }
     }
 }

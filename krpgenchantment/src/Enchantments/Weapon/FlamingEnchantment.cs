@@ -15,7 +15,11 @@ namespace KRPGLib.Enchantment
 {
     public class FlamingEnchantment : Enchantment
     {
-        protected override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float damage)
+        public FlamingEnchantment(ICoreAPI api) : base(api)
+        {
+
+        }
+        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());

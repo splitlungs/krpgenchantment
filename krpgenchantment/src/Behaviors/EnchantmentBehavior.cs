@@ -21,25 +21,25 @@ namespace KRPGLib.Enchantment
     /// <summary>
     /// Holds all Enchantment data from JSON
     /// </summary>
-    public class EnchantmentProperties
-    {
-        public Dictionary<string, int> Enchants;
-
-        public bool Enchantable = false;
-
-        /// <summary>
-        /// Returns a copy.
-        /// </summary>
-        /// <returns></returns>
-        public EnchantmentProperties Clone()
-        {
-            return new EnchantmentProperties()
-            {
-                Enchants = Enchants,
-                Enchantable = Enchantable
-            };
-        }
-    }
+    // public class EnchantmentProperties
+    // {
+    //     public Dictionary<string, int> Enchants;
+    // 
+    //     public bool Enchantable = false;
+    // 
+    //     /// <summary>
+    //     /// Returns a copy.
+    //     /// </summary>
+    //     /// <returns></returns>
+    //     public EnchantmentProperties Clone()
+    //     {
+    //         return new EnchantmentProperties()
+    //         {
+    //             Enchants = Enchants,
+    //             Enchantable = Enchantable
+    //         };
+    //     }
+    // }
 
     public class EnchantmentBehavior : CollectibleBehavior
     {
@@ -48,13 +48,13 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
-        public EnchantmentProperties EnchantProps { get; protected set; }
+        // public EnchantmentProperties EnchantProps { get; protected set; }
         public Dictionary<string, int> Enchantments = new Dictionary<string, int>();
         public bool Enchantable = false;
 
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
-            this.EnchantProps = new EnchantmentProperties();
+            // this.EnchantProps = new EnchantmentProperties();
         }
         public override void OnLoaded(ICoreAPI api)
         {
@@ -171,7 +171,7 @@ namespace KRPGLib.Enchantment
         public override void Initialize(JsonObject properties)
         {
             base.Initialize(properties);
-            EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
+            // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
         }
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
@@ -179,7 +179,7 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void GetProperties(JsonObject properties)
         {
-            EnchantProps.Enchantable = properties["enchantable"].AsBool(false);
+            // EnchantProps.Enchantable = properties["enchantable"].AsBool(false);
             foreach (var eType in Enum.GetNames<EnumEnchantments>())
                 properties[eType].AsInt(0);
         }
@@ -190,9 +190,9 @@ namespace KRPGLib.Enchantment
         public void SetAttributesFromProps(ItemStack itemStack)
         {
             ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            tree.SetBool("enchantable", EnchantProps.Enchantable);
-            foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
-                tree.SetInt(keyValuePair.Key, keyValuePair.Value);
+            // tree.SetBool("enchantable", EnchantProps.Enchantable);
+            // foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
+            //     tree.SetInt(keyValuePair.Key, keyValuePair.Value);
             itemStack.Attributes.MergeTree(tree);
         }
         /// <summary>

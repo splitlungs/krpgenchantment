@@ -10,6 +10,8 @@ using Vintagestory.API.Common.Entities;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Util;
 using Vintagestory.API.Client;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace KRPGLib.Enchantment
 {
@@ -18,8 +20,7 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public IWorldAccessor world;
-        public EnchantAccessor EnchantAccessor { get; private set; }
-        public static Dictionary <string, Enchantment> Enchantments;
+        public static EnchantAccessor EnchantAccessor { get; private set; } = null!;
         private static Harmony harmony;
         private COSystem combatOverhaul;
         private KRPGWandsSystem krpgWands;
@@ -32,7 +33,40 @@ namespace KRPGLib.Enchantment
         }
         public void LoadEnchantments()
         {
-            Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "enchantments", "krpgenchantment");
+            Dictionary<AssetLocation, JToken> files = new Dictionary<AssetLocation, JToken>();
+            // Path to the font file in the ModData folder
+            List<EnchantmentProperties> enchantData = new List<EnchantmentProperties>();
+            string fPath = Path.Combine(sApi.GetOrCreateDataPath(Path.Combine("ModData", "krpgenchantment", "enchantments")));
+            foreach (string file in Directory.GetFiles(fPath))
+            {
+                string ConfigFile = "KRPGEnchantment//Enchantments";
+                EnchantmentProperties Config = new EnchantmentProperties();
+                Config = sApi.LoadModConfig<EnchantmentProperties>(ConfigFile);
+
+                if (Config != null)
+                {
+                    enchantData.Add(Config);
+                }
+                else
+                {
+                    EnchantmentProperties newConfig = new EnchantmentProperties();
+                    sApi.StoreModConfig(newConfig, ConfigFile);
+                    sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
+                }
+            }
+
+            // string ConfigFile = "KRPGEnchantment//Enchantments";
+            // EnchantmentData Config = new EnchantmentData();
+            // Config = sApi.LoadModConfig<EnchantmentData>(ConfigFile);
+            // if (Config == null)
+            // {
+            //     Config = new EnchantmentData();
+            //     sApi.StoreModConfig(Config, ConfigFile);
+            // 
+            //     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
+            // }
+
+            // Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "enchantments", "krpgenchantment");
             if (EnchantingConfigLoader.Config.CustomPatches.Count > 0)
             {
                 foreach (KeyValuePair<string, bool> keyValuePair in EnchantingConfigLoader.Config.CustomPatches)
@@ -71,10 +105,10 @@ namespace KRPGLib.Enchantment
         {
             if (!enchant.Enabled) return;
 
-            if (enchant.Name == null) enchant.Name = loc;
+            // if (enchant.Name == null) enchant.Name = loc;
 
-            if (enchant.Code != null && !Enchantments.ContainsKey(enchant.Code))
-                Enchantments.Add(enchant.Code, enchant);
+            // if (enchant.Code != null && !EnchantAccessor.EnchantRegistry.ContainsKey(enchant.Code))
+            //     EnchantAccessor.EnchantRegistry.Add(enchant.Code, enchant.GetType());
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
@@ -82,7 +116,14 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.sApi = api;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
+
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment:enchantments/pit"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment:enchantments/flaming"), typeof(FlamingEnchantment));
         }
+        
+        // Dictionary<string, Enchantment> d2 = [];
+        // private IEnchantment EnchantGeneric<T>() where T : Enchantment, new() { }
+
         public override void StartClientSide(ICoreClientAPI api)
         {
             EnchantAccessor.cApi = api;

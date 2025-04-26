@@ -26,11 +26,11 @@ namespace Vintagestory.GameContent
         /// </summary>
         /// <param name="api"></param>
         /// <returns></returns>
-        public static IEnchantmentAPI EnchantAccessor(this ICoreAPI api)
+        public static IEnchantAccessor EnchantAccessor(this ICoreAPI api)
         {
-            //return KRPGEnchantmentSystem.EnchantAccessor;
-            KRPGEnchantmentSystem modSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
-            return modSys.EnchantAccessor;
+            return KRPGEnchantmentSystem.EnchantAccessor;
+            // KRPGEnchantmentSystem modSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
+            // return modSys.EnchantAccessor;
         }
 
         /// <summary>
