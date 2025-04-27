@@ -13,10 +13,10 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
-    public class DurableEnchantment : Enchantment
+    public class DamageResistEnchantment : Enchantment
     {
         double PowerMultiplier { get { return (double)Modifiers[0]; } }
-        public DurableEnchantment(ICoreAPI api) : base(api)
+        public DamageResistEnchantment(ICoreAPI api) : base(api)
         {
 
         }

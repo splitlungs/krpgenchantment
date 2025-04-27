@@ -34,6 +34,15 @@ namespace KRPGLib.Enchantment
         public object[] Modifiers;
     }
     /// <summary>
+    /// Generic for creating Tick Registries
+    /// </summary>
+    public class EnchantTick
+    {
+        public int TicksRemaining;
+        public long TickTimeStart;
+        public long LastTickTime;
+    }
+    /// <summary>
     /// Base class for an Enchantment.
     /// </summary>
     public abstract class Enchantment : IEnchantment
@@ -53,10 +62,13 @@ namespace KRPGLib.Enchantment
         public int MaxTier { get; set; }
         // Configurable JSON multiplier for effects
         public object[] Modifiers { get; set; }
+        // Used to manage generic ticks. You still have to register your tick method with the API.
+        public Dictionary<long, EnchantTick> TickRegistry { get; set; }
 
         public Enchantment(ICoreAPI api)
         {
             Api = api;
+            TickRegistry = new Dictionary<long, EnchantTick>();
         }
         /// <summary>
         /// Called right after the Enchantment is created. Must call base method to load JSON Properties.
@@ -77,13 +89,13 @@ namespace KRPGLib.Enchantment
         /// <param name="enchant"></param>
         /// <param name="slot"></param>
         /// <param name="parameters"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, object[] parameters)
+        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters)
         {
             MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
             if (parameters != null)
                 meth?.Invoke(this, new object[3] { enchant, slot, parameters });
             else
-                meth.Invoke(this, new object[2] { enchant, slot });
+                meth?.Invoke(this, new object[2] { enchant, slot });
         }
 
         public virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)

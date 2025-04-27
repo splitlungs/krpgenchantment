@@ -6,7 +6,8 @@
     "loreChapterID": 6,
     "maxTier": 5,
     "modifiers": [
-      1
+      1,
+      12500
     ]
   }
 ]

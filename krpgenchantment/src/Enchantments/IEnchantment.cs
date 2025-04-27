@@ -20,7 +20,8 @@ namespace KRPGLib.API
         int LoreChapterID { get; set; }
         int MaxTier { get; set; }
         object[] Modifiers { get; set; }
-        void OnTrigger(EnchantmentSource enchant, ItemSlot slot, object[] parameters);
+        Dictionary<long, EnchantTick> TickRegistry { get; set; }
+        void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters);
         void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage);
         void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage);
         void OnToggle(EnchantmentSource enchant, ItemSlot slot);

@@ -37,24 +37,24 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.sApi = api;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
-
+            
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/chilling"), typeof(ChillingEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/durable"), typeof(DurableEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/flaming"), typeof(DamageEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/frost"), typeof(DamageEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/harming"), typeof(DamageEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/healing"), typeof(DamageEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/igniting"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/knockback"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/lightning"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/igniting"), typeof(IgnitingEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/knockback"), typeof(KnockbackEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/lightning"), typeof(LightningEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/pit"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/protection"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistelectricity"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfire"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfrost"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistheal"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistinjury"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistpoison"), typeof(PitEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/protection"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistelectricity"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfire"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfrost"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistheal"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistinjury"), typeof(DamageResistEnchantment));
+            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistpoison"), typeof(DamageResistEnchantment));
             api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/shocking"), typeof(DamageEnchantment));
         }
 

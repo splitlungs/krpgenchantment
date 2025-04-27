@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             
             EntityBehaviorBodyTemperature ebbt = enchant.TargetEntity.GetBehavior<EntityBehaviorBodyTemperature>();
             if (ebbt != null)
-                ebbt.CurBodyTemperature = enchant.Power * Modifiers[0];
+                ebbt.CurBodyTemperature = enchant.Power * (float)Modifiers[0];
         }
     }
 }

@@ -7,10 +7,10 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 using KRPGLib.Enchantment;
-using KRPGLib.API;
 
-namespace Vintagestory.GameContent
+namespace KRPGLib.API
 {
     public interface IEnchantAccessor
     {

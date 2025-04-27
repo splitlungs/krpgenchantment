@@ -61,7 +61,7 @@ namespace KRPGLib.Enchantment
             if (EnchantmentRegistry[enchant.Code]?.Enabled != true || EnchantingConfigLoader.Config.DisabledEnchants.Contains(enchant.Code))
                 return false;
 
-            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot, parameters);
+            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot, ref parameters);
 
             return true;
         }
