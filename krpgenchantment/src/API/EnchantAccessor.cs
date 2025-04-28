@@ -417,7 +417,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
         /// </summary>
-        /// <param name="domainAndPath"></param>
+        /// <param name="enchantClass"></param>
         /// <param name="t"></param>
         public void RegisterEnchantmentClass(string enchantClass, Type t)
         {
@@ -425,32 +425,6 @@ namespace KRPGLib.Enchantment
 
             try
             {
-                // AssetLocation properties = new AssetLocation(domainAndPath);
-                // bool valid = properties.Valid;
-                // if (!valid)
-                // {
-                //     sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid Properties file location.");
-                // }
-                // IAsset asset = Api.Assets.Get(properties);
-                // if (asset.IsLoaded() != true)
-                // {
-                //     Api.Logger.Event("[KRPGEnchantment] Asset at {0} is loaded, apparently.");
-                // }
-
-                // string path = Path.Combine(GamePaths.AssetsPath, domainAndPath);
-                // string path = properties.Path;
-                // EnchantmentProperties enchantProps = new EnchantmentProperties();
-                // if (File.Exists(path))
-                // {
-                //     sApi.Logger.Event("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing Code. Check the enchantment properties file.");
-                //     EnchantmentProperties enchantP = JsonConvert.DeserializeObject<EnchantmentProperties>(File.ReadAllText(path));
-                // }
-
-                // JToken file = sApi.Assets.Get<JToken>(properties);
-                // Get ClassName and make sure Properties file is probably okay
-                // JsonObject propObj = file.ToObject<JsonObject>(properties.Domain);
-                // file.Populate<EnchantmentProperties>(enchantProps);
-                // .ToObject<EnchantmentProperties>()
                 if (enchantClass == null)
                 {
                     sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing Code. Check the enchantment properties file.");

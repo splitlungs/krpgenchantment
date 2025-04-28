@@ -93,7 +93,7 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
         /// </summary>
-        /// <param name="domainAndPath"></param>
+        /// <param name="enchantClass"></param>
         /// <param name="t"></param>
         void RegisterEnchantmentClass(string enchantClass, Type t);
     }
