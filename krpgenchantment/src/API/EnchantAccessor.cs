@@ -466,7 +466,7 @@ namespace KRPGLib.Enchantment
             }
         }
         private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
-        public Type GetBlockClass(string enchantClass)
+        public Type GetEnchantmentClass(string enchantClass)
         {
             Type val = null;
             this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out val);
