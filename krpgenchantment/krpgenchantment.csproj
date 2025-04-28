@@ -120,24 +120,6 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blades-tier-1.json" />
   <None Remove="assets\game\config\lore\enchantment.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
-  <None Remove="assets\krpgenchantment\enchantments\chilling.json" />
-  <None Remove="assets\krpgenchantment\enchantments\durable.json" />
-  <None Remove="assets\krpgenchantment\enchantments\flaming.json" />
-  <None Remove="assets\krpgenchantment\enchantments\frost.json" />
-  <None Remove="assets\krpgenchantment\enchantments\harming.json" />
-  <None Remove="assets\krpgenchantment\enchantments\healing.json" />
-  <None Remove="assets\krpgenchantment\enchantments\igniting.json" />
-  <None Remove="assets\krpgenchantment\enchantments\knockback.json" />
-  <None Remove="assets\krpgenchantment\enchantments\lightning.json" />
-  <None Remove="assets\krpgenchantment\enchantments\pit.json" />
-  <None Remove="assets\krpgenchantment\enchantments\protection.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistelectricity.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistfire.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistfrost.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistheal.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistinjury.json" />
-  <None Remove="assets\krpgenchantment\enchantments\resistpoison.json" />
-  <None Remove="assets\krpgenchantment\enchantments\shocking.json" />
   <None Remove="assets\krpgenchantment\lang\uk.json" />
   <None Remove="assets\krpgenchantment\patches\fotsa\fotsa-entity-behaviors.json" />
   <None Remove="assets\krpgenchantment\config\configlib-patches.json" />
@@ -202,7 +184,6 @@
 </ItemGroup>
 
 <ItemGroup>
-  <Folder Include="src\Enchantments\Armor\" />
   <Folder Include="src\Enchantments\Accessory\" />
   <Folder Include="src\Enchantments\Tool\" />
   <Folder Include="src\Enchantments\Universal\" />

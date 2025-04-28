@@ -12,6 +12,7 @@ using Vintagestory.API.Util;
 using Vintagestory.API.Client;
 using System.IO;
 using System.Runtime.CompilerServices;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
@@ -20,7 +21,7 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public IWorldAccessor world;
-        public static EnchantAccessor EnchantAccessor { get; private set; } = null!;
+        // public static EnchantAccessor EnchantAccessor { get; private set; } = null!;
         private static Harmony harmony;
         private COSystem combatOverhaul;
         private KRPGWandsSystem krpgWands;
@@ -34,33 +35,9 @@ namespace KRPGLib.Enchantment
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
-            EnchantAccessor.sApi = api;
+
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
-            
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/chilling"), typeof(ChillingEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/durable"), typeof(DurableEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/flaming"), typeof(DamageEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/frost"), typeof(DamageEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/harming"), typeof(DamageEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/healing"), typeof(DamageEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/igniting"), typeof(IgnitingEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/knockback"), typeof(KnockbackEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/lightning"), typeof(LightningEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/pit"), typeof(PitEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/protection"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistelectricity"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfire"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistfrost"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistheal"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistinjury"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/resistpoison"), typeof(DamageResistEnchantment));
-            api.EnchantAccessor().RegisterEnchantmentClass(new AssetLocation("krpgenchantment", "enchantments/shocking"), typeof(DamageEnchantment));
-        }
-
-        public override void StartClientSide(ICoreClientAPI api)
-        {
-            EnchantAccessor.cApi = api;
         }
         private void RegisterCompatibility()
         {
@@ -89,9 +66,6 @@ namespace KRPGLib.Enchantment
         {
             base.Start(api);
             Api = api;
-
-            EnchantAccessor = new EnchantAccessor();
-            EnchantAccessor.Api = api;
 
             api.RegisterCollectibleBehaviorClass("ReagentBehavior", typeof(ReagentBehavior));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));

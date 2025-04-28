@@ -7,8 +7,9 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Common;
 using KRPGLib.Enchantment;
 using System.Text.Json.Nodes;
+using Vintagestory.GameContent;
 
-namespace KRPGLib.API
+namespace KRPGLib.Enchantment.API
 {
     public interface IEnchantment
     {

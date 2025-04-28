@@ -11,6 +11,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
@@ -18,6 +19,12 @@ namespace KRPGLib.Enchantment
     {
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
+            Enabled = true;
+            Code = "chilling";
+            LoreCode = "enchantment-chilling";
+            LoreChapterID = 0;
+            MaxTier = 5;
+            Modifiers = new object[1] { -10 };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

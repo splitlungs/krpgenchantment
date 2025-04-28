@@ -9,14 +9,16 @@ using System.Reflection;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
-using KRPGLib.API;
+using KRPGLib.Enchantment.API;
+using System.IO;
+using System.Xml.Linq;
 
 namespace KRPGLib.Enchantment
 {
     /// <summary>
     /// Configurable JSON data used to configure Enchantment classes.
     /// </summary>
-    public class EnchantmentProperties
+    public class EnchantmentProperties : IByteSerializable
     {
         // Toggles processing of this enchantment
         public bool Enabled = true;
@@ -32,6 +34,53 @@ namespace KRPGLib.Enchantment
         public int MaxTier = 5;
         // Configurable JSON multiplier for effects
         public object[] Modifiers;
+        public EnchantmentProperties Clone()
+        {
+            return CloneTo<EnchantmentProperties>();
+        }
+
+        public T CloneTo<T>() where T : EnchantmentProperties, new()
+        {
+            T val = new T
+            {
+                Enabled = Enabled,
+                Code = Code,
+                ClassName = ClassName,
+                LoreChapterID = LoreChapterID,
+                MaxTier = MaxTier,
+                Modifiers = Modifiers
+            };
+
+            return val;
+        }
+        public void ToBytes(BinaryWriter writer)
+        {
+            writer.Write(Enabled);
+            writer.Write(Code);
+            writer.Write(ClassName);
+            writer.Write(LoreCode);
+            writer.Write(MaxTier);
+            writer.Write((int)Modifiers.Length);
+            foreach (var val in Modifiers)
+            {
+                Type t = val.GetType();
+                writer.Write((string)val);
+            }
+        }
+        public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
+        {
+            Enabled = reader.ReadBoolean();
+            Code = reader.ReadString();
+            ClassName = reader.ReadString();
+            LoreCode = reader.ReadString();
+            MaxTier = reader.ReadInt32();
+            int length = reader.ReadInt32();
+            Modifiers = new string[length];
+            for (int i = 0; i < Modifiers.Length; i++)
+            {
+                Modifiers[i] = reader.ReadString();
+            }
+        }
     }
     /// <summary>
     /// Generic for creating Tick Registries
@@ -64,6 +113,9 @@ namespace KRPGLib.Enchantment
         public object[] Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
         public Dictionary<long, EnchantTick> TickRegistry { get; set; }
+        // 
+        public EnchantmentProperties EnchantProps { get; set; }
+        public JsonObject PropertiesObject { get; set; }
 
         public Enchantment(ICoreAPI api)
         {
@@ -74,14 +126,17 @@ namespace KRPGLib.Enchantment
         /// Called right after the Enchantment is created. Must call base method to load JSON Properties.
         /// </summary>
         /// <param name="properties"></param>
-        public virtual void Initialize(JsonObject properties)
+        public virtual void Initialize(EnchantmentProperties properties)
         {
-            Enabled = properties["Enabled"].AsBool();
-            Code = properties["Code"].AsString();
-            LoreCode = properties["LoreCode"].AsString();
-            LoreChapterID = properties["LoreChapterID"].AsInt();
-            MaxTier = properties["MaxTier"].AsInt();
-            Modifiers = properties["Modifiers"].AsArray<object>();
+            // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
+
+            EnchantProps = properties;
+            // Enabled = properties.Enabled;
+            // Code = properties.Code;
+            // LoreCode = properties.LoreCode;
+            // LoreChapterID = properties.LoreChapterID;
+            // MaxTier = properties.MaxTier;
+            // Modifiers = properties.Modifiers;
         }
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.

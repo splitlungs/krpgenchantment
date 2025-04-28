@@ -13,27 +13,31 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
-    public class DurableEnchantment : Enchantment
+    public class ResistFrostEnchantment : Enchantment
     {
-        double PowerMultiplier { get { return (double)Modifiers[0]; } }
-        public DurableEnchantment(ICoreAPI api) : base(api)
+        string DamageResist { get { return (string)Modifiers[0]; } }
+        float PowerMultiplier { get { return (float)Modifiers[1]; } }
+        public ResistFrostEnchantment(ICoreAPI api) : base(api)
         {
             Enabled = true;
-            Code = "durable";
-            LoreCode = "enchantment-durable";
-            LoreChapterID = 0;
+            Code = "resistfrost";
+            LoreCode = "enchantment-resistfrost";
+            LoreChapterID = 13;
             MaxTier = 5;
-            Modifiers = new object[1] { 0.10 };
+            Modifiers = new object[2] { "frost", 0.1 };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());
-            // Roll 0.01 - 1.00
-            double roll = Api.World.Rand.NextDouble() + 0.01;
-            double bonus = enchant.Power * PowerMultiplier;
-            if ((roll + bonus) >= (1.00 - bonus))
-                damage = 0;
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());
+
+            if (DamageResist.Contains(enchant.Type.ToString()))
+            {
+                float resist = enchant.Power * PowerMultiplier;
+                float dmg = MathF.Min(((1 - resist) * (float)damage), 0);
+                damage = dmg;
+            }
+
             if (EnchantingConfigLoader.Config.Debug == true)
                 Api.Logger.VerboseDebug("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", damage, slot.Itemstack.GetName());
         }

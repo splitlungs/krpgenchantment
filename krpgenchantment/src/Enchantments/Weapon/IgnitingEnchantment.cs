@@ -11,6 +11,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
@@ -21,6 +22,13 @@ namespace KRPGLib.Enchantment
 
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
+            Enabled = true;
+            Code = "igniting";
+            LoreCode = "enchantment-igniting";
+            LoreChapterID = 6;
+            MaxTier = 5;
+            Modifiers = new object[2] { 1, 12500 };
+
             TickRegistry = new Dictionary<long, EnchantTick>();
 
             Api.World.RegisterGameTickListener(IgniteTick, 1000);

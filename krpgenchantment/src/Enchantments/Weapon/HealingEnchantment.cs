@@ -11,12 +11,15 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
-    public class DamageEnchantment : Enchantment
+    public class HealingEnchantment : Enchantment
     {
-        EnumDamageType DamageType { get 
+        EnumDamageType DamageType
+        {
+            get
             {
                 if (Modifiers[0].ToString().ToLower() == "heal")
                     return EnumDamageType.Heal;
@@ -28,16 +31,22 @@ namespace KRPGLib.Enchantment
                     return EnumDamageType.Injury;
                 else if (Modifiers[0].ToString().ToLower() == "electricity")
                     return EnumDamageType.Electricity;
-                else 
+                else
                     return EnumDamageType.Injury;
-            } 
+            }
         }
         string DamageResist { get { return (string)Modifiers[1]; } }
         int MaxDamage { get { return (int)Modifiers[2]; } }
         float PowerMultiplier { get { return (float)Modifiers[3]; } }
 
-        public DamageEnchantment(ICoreAPI api) : base(api)
+        public HealingEnchantment(ICoreAPI api) : base(api)
         {
+            Enabled = true;
+            Code = "healing";
+            LoreCode = "enchantment-healing";
+            LoreChapterID = 5;
+            MaxTier = 5;
+            Modifiers = new object[4] { "heal", "resistheal", 3, 0.1 };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

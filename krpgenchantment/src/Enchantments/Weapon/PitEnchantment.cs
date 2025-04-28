@@ -8,27 +8,33 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
     public class PitEnchantment : Enchantment
     {
+        int MulXZ { get { return (int)MathF.Floor((float)Modifiers[0]); } }
+        int MulY { get { return (int)MathF.Floor((float)Modifiers[1]); } }
+
         public PitEnchantment(ICoreAPI api) : base(api)
         {
-            
+            Enabled = true;
+            Code = "pit";
+            LoreCode = "enchantment-pit";
+            LoreChapterID = 9;
+            MaxTier = 5;
+            Modifiers = new object[2] { 0.5, 1 };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
-            int mulXZ = (int)MathF.Floor(Modifiers[0]);
-            int mulY = (int)MathF.Floor(Modifiers[1]);
-
             BlockPos bpos = enchant.TargetEntity.SidedPos.AsBlockPos;
             List<Vec3d> pitArea = new List<Vec3d>();
-            for (int x = 0; x <= mulXZ; x++)
+            for (int x = 0; x <= MulXZ; x++)
             {
-                for (int y = 0; y <= mulY; y++)
+                for (int y = 0; y <= MulY; y++)
                 {
-                    for (int z = 0; z <= mulXZ; z++)
+                    for (int z = 0; z <= MulXZ; z++)
                     {
                         pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z + z));
                         pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z - z));

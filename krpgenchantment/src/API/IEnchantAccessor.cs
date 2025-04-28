@@ -7,10 +7,10 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
-using Vintagestory.GameContent;
 using KRPGLib.Enchantment;
+using Vintagestory.GameContent;
 
-namespace KRPGLib.API
+namespace KRPGLib.Enchantment.API
 {
     public interface IEnchantAccessor
     {
@@ -89,12 +89,12 @@ namespace KRPGLib.API
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
-        public Dictionary<string, IEnchantment> EnchantmentRegistry { get; }
+        // Dictionary<string, Enchantment> EnchantmentRegistry();
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
         /// </summary>
-        /// <param name="properties"></param>
+        /// <param name="domainAndPath"></param>
         /// <param name="t"></param>
-        void RegisterEnchantmentClass(AssetLocation properties, Type t);
+        void RegisterEnchantmentClass(string enchantClass, Type t);
     }
 }

@@ -16,6 +16,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using static System.Net.Mime.MediaTypeNames;
+using KRPGLib.Enchantment.API;
 
 namespace Vintagestory.GameContent
 {
@@ -28,9 +29,7 @@ namespace Vintagestory.GameContent
         /// <returns></returns>
         public static IEnchantAccessor EnchantAccessor(this ICoreAPI api)
         {
-            return KRPGEnchantmentSystem.EnchantAccessor;
-            // KRPGEnchantmentSystem modSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
-            // return modSys.EnchantAccessor;
+            return api.ModLoader.GetModSystem<EnchantAccessor>();
         }
 
         /// <summary>
