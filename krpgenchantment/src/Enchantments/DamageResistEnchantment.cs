@@ -15,16 +15,21 @@ namespace KRPGLib.Enchantment
 {
     public class DamageResistEnchantment : Enchantment
     {
-        string DamageResist { get { return (string)Modifiers[0]; } }
-        float PowerMultiplier { get { return (float)Modifiers[1]; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "fire"); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public DamageResistEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "damageresist";
+            Category = "Armor";
             LoreCode = "enchantment-damageresist";
             LoreChapterID = -1;
             MaxTier = 5;
-            Modifiers = new object[2] { "injury", 0.1 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }
+            };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

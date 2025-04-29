@@ -17,36 +17,24 @@ namespace KRPGLib.Enchantment
 {
     public class ShockingEnchantment : Enchantment
     {
-        EnumDamageType DamageType
-        {
-            get
-            {
-                if (Modifiers[0].ToString().ToLower() == "heal")
-                    return EnumDamageType.Heal;
-                else if (Modifiers[0].ToString().ToLower() == "flaming")
-                    return EnumDamageType.Fire;
-                else if (Modifiers[0].ToString().ToLower() == "frost")
-                    return EnumDamageType.Frost;
-                else if (Modifiers[0].ToString().ToLower() == "injury")
-                    return EnumDamageType.Injury;
-                else if (Modifiers[0].ToString().ToLower() == "electricity")
-                    return EnumDamageType.Electricity;
-                else
-                    return EnumDamageType.Injury;
-            }
-        }
-        string DamageResist { get { return (string)Modifiers[1]; } }
-        int MaxDamage { get { return (int)Modifiers[2]; } }
-        float PowerMultiplier { get { return (float)Modifiers[3]; } }
+        EnumDamageType DamageType { get { return EnumDamageType.Electricity; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistelectricity"); } }
+        int MaxDamage { get { return (int)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
 
         public ShockingEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "shocking";
+            Category = "Weapon";
             LoreCode = "enchantment-shocking";
             LoreChapterID = 17;
             MaxTier = 5;
-            Modifiers = new object[4] { "electricity", "resistelectricity", 3, 0.1 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                { "DamageResist", "resistelectricity" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
+            };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

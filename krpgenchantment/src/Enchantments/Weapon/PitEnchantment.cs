@@ -14,17 +14,22 @@ namespace KRPGLib.Enchantment
 {
     public class PitEnchantment : Enchantment
     {
-        int MulXZ { get { return (int)MathF.Floor((float)Modifiers[0]); } }
-        int MulY { get { return (int)MathF.Floor((float)Modifiers[1]); } }
+        int MulXZ { get { return (int)MathF.Floor((float)Modifiers.GetValueOrDefault("MulXZ", 0.5)); } }
+        int MulY { get { return (int)MathF.Floor((float)Modifiers.GetValueOrDefault("MulY", 1)); } }
 
         public PitEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "pit";
+            Category = "Weapon";
             LoreCode = "enchantment-pit";
             LoreChapterID = 9;
             MaxTier = 5;
-            Modifiers = new object[2] { 0.5, 1 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                { "MulXZ", 0.5 }, {"MulY", 1 }
+            };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

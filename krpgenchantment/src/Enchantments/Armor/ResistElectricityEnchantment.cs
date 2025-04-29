@@ -15,16 +15,21 @@ namespace KRPGLib.Enchantment
 {
     public class ResistElectricityEnchantment : Enchantment
     {
-        string DamageResist { get { return (string)Modifiers[0]; } }
-        float PowerMultiplier { get { return (float)Modifiers[1]; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "electricity"); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public ResistElectricityEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "resistelectricity";
+            Category = "Armor";
             LoreCode = "enchantment-resistelectricity";
             LoreChapterID = 11;
             MaxTier = 5;
-            Modifiers = new object[2] { "electricity", 0.1 };
+            Modifiers = new Dictionary<string, object>()
+            { 
+                { "DamageResist", "electricity"}, { "PowerMultiplier", 0.1 } 
+            };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

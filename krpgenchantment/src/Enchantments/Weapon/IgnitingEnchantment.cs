@@ -17,17 +17,22 @@ namespace KRPGLib.Enchantment
 {
     public class IgnitingEnchantment : Enchantment
     {
-        int TickMultiplier { get { return (int)Modifiers[0]; } }
-        int TickDuration { get { return (int)Modifiers[1]; } }
+        int TickMultiplier { get { return (int)Modifiers.GetValueOrDefault("TickMultiplier", 1); } }
+        int TickDuration { get { return (int)Modifiers.GetValueOrDefault("TickDuration", 12500); } }
 
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "igniting";
+            Category = "Weapon";
             LoreCode = "enchantment-igniting";
             LoreChapterID = 6;
             MaxTier = 5;
-            Modifiers = new object[2] { 1, 12500 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                {"TickMultiplier", 1 }, {"TickDuration", 12500 }
+            };
 
             TickRegistry = new Dictionary<long, EnchantTick>();
 

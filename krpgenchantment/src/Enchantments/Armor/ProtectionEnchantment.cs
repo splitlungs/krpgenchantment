@@ -10,21 +10,28 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
     public class ProtectionEnchantment : Enchantment
     {
-        string DamageResist { get { return (string)Modifiers[0]; } }
-        float PowerMultiplier { get { return (float)Modifiers[1]; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "blunt;piercing;slashing"); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public ProtectionEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "protection";
+            Category = "Armor";
             LoreCode = "enchantment-protection";
             LoreChapterID = 10;
             MaxTier = 5;
-            Modifiers = new object[2] { "blunt;piercing;slashing", 0.1 };
+            Modifiers = new Dictionary<string, object>()
+            { 
+                {"DamageResist", "blunt;piercing;slashing" }, 
+                {"PowerMultiplier", 0.1f } 
+            };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

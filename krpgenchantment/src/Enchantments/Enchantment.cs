@@ -24,8 +24,10 @@ namespace KRPGLib.Enchantment
         public bool Enabled = true;
         // How the Enchantment is referenced in code
         public string Code = "enchantment";
+        // Used to sort the configs currently
+        public string Category = "Universal";
         // Define which registered class to instantiate with
-        public string ClassName { get; set; }
+        public string ClassName = "Enchantment";
         // The code used to lookup the enchantment's Lore in the lang file
         public string LoreCode = "enchantment-lore";
         // The ID of the chapter in the Lore config file
@@ -33,7 +35,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier = 5;
         // Configurable JSON multiplier for effects
-        public object[] Modifiers;
+        public Dictionary<string, object> Modifiers;
         public EnchantmentProperties Clone()
         {
             return CloneTo<EnchantmentProperties>();
@@ -45,7 +47,9 @@ namespace KRPGLib.Enchantment
             {
                 Enabled = Enabled,
                 Code = Code,
+                Category = Category,
                 ClassName = ClassName,
+                LoreCode = LoreCode,
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
                 Modifiers = Modifiers
@@ -57,28 +61,33 @@ namespace KRPGLib.Enchantment
         {
             writer.Write(Enabled);
             writer.Write(Code);
+            writer.Write(Category);
             writer.Write(ClassName);
             writer.Write(LoreCode);
+            writer.Write(LoreChapterID);
             writer.Write(MaxTier);
-            writer.Write((int)Modifiers.Length);
-            foreach (var val in Modifiers)
+            writer.Write((int)Modifiers.Count);
+            foreach (KeyValuePair<string, object> enchant in Modifiers)
             {
-                Type t = val.GetType();
-                writer.Write((string)val);
+                writer.Write(enchant.Key);
+                writer.Write(enchant.Value.ToString());
             }
         }
         public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
             Enabled = reader.ReadBoolean();
             Code = reader.ReadString();
+            Category = reader.ReadString();
             ClassName = reader.ReadString();
             LoreCode = reader.ReadString();
+            LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
             int length = reader.ReadInt32();
-            Modifiers = new string[length];
-            for (int i = 0; i < Modifiers.Length; i++)
+            Modifiers = new Dictionary<string, object>();
+            for (int k = 0; k < length; k++)
             {
-                Modifiers[i] = reader.ReadString();
+                string key = reader.ReadString();
+                Modifiers[key] = reader.ReadString();
             }
         }
     }
@@ -101,6 +110,8 @@ namespace KRPGLib.Enchantment
         public bool Enabled { get; set; }
         // How the Enchantment is referenced in code
         public string Code { get; set; }
+        // Used to sort the configs currently
+        public string Category { get; set; }
         // Define which registered class to instantiate with
         public string ClassName { get; set; }
         // The code used to lookup the enchantment's Lore in the lang file
@@ -110,15 +121,17 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier { get; set; }
         // Configurable JSON multiplier for effects
-        public object[] Modifiers { get; set; }
+        public Dictionary<string, object> Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
         public Dictionary<long, EnchantTick> TickRegistry { get; set; }
-        // 
-        public EnchantmentProperties EnchantProps { get; set; }
-        public JsonObject PropertiesObject { get; set; }
+        // Properties loaded from JSON
+        public EnchantmentProperties Properties { get; set; }
+        // Raw JSON of the Properties
+        public JsonObject PropObject { get; set; }
 
         public Enchantment(ICoreAPI api)
         {
+            // Setup the default config
             Api = api;
             TickRegistry = new Dictionary<long, EnchantTick>();
         }
@@ -130,7 +143,7 @@ namespace KRPGLib.Enchantment
         {
             // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
 
-            EnchantProps = properties;
+            Properties = properties.Clone();
             // Enabled = properties.Enabled;
             // Code = properties.Code;
             // LoreCode = properties.LoreCode;
@@ -138,29 +151,58 @@ namespace KRPGLib.Enchantment
             // MaxTier = properties.MaxTier;
             // Modifiers = properties.Modifiers;
         }
+#nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="slot"></param>
         /// <param name="parameters"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters)
+        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref object?[]? parameters)
         {
-            MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
+            MethodInfo? meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
             if (parameters != null)
                 meth?.Invoke(this, new object[3] { enchant, slot, parameters });
             else
                 meth?.Invoke(this, new object[2] { enchant, slot });
         }
-
+#nullable disable
+        /// <summary>
+        /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="slot"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot)
+        {
+            MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
+            meth?.Invoke(this, new object[2] { enchant, slot });
+        }
+        /// <summary>
+        /// Triggered from an enchanted item when it successfully attacks an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="slot"></param>
+        /// <param name="damage"></param>
         public virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
         
         }
+        /// <summary>
+        /// Triggered when an entity wearing an enchanted item is successfully attacked.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="slot"></param>
+        /// <param name="damage"></param>
         public virtual void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
         
         }
+        /// <summary>
+        /// Triggered when an enchanted item is interacted with.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="slot"></param>
         public virtual void OnToggle(EnchantmentSource enchant, ItemSlot slot)
         {
         

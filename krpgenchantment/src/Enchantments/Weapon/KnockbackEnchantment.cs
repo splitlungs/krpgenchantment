@@ -15,15 +15,20 @@ namespace KRPGLib.Enchantment
 {
     public class KnockbackEnchantment : Enchantment
     {
-        double PowerMultiplier { get { return (double)Modifiers[0]; } }
+        double PowerMultiplier { get { return (double)Modifiers.GetValueOrDefault("PowerMultiplier", 20); } }
         public KnockbackEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "knockback";
+            Category = "Weapon";
             LoreCode = "enchantment-knockback";
             LoreChapterID = 7;
             MaxTier = 5;
-            Modifiers = new object[1] { 20 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                {"PowerMultiplier", 20 }
+            };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

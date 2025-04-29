@@ -20,6 +20,7 @@ namespace KRPGLib.Enchantment.API
         /// <param name="itemStack"></param>
         /// <returns></returns>
         public Dictionary<string, int> GetEnchantments(ItemStack itemStack);
+        #nullable enable
         /// <summary>
         /// Processes an Enchantment from the server. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
@@ -27,7 +28,8 @@ namespace KRPGLib.Enchantment.API
         /// <param name="slot"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
-        bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters);
+        bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref object?[]? parameters);
+        #nullable disable
         /// <summary>
         /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
         /// </summary>
@@ -89,12 +91,13 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
-        // Dictionary<string, Enchantment> EnchantmentRegistry();
+        Dictionary<string, Enchantment> EnchantmentRegistry { get { return EnchantmentRegistry; } }
         /// <summary>
-        /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here.
+        /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
         /// </summary>
         /// <param name="enchantClass"></param>
+        /// <param name="configLocation"></param>
         /// <param name="t"></param>
-        void RegisterEnchantmentClass(string enchantClass, Type t);
+        bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
     }
 }

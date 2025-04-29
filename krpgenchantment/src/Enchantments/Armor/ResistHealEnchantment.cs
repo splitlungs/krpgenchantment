@@ -15,16 +15,21 @@ namespace KRPGLib.Enchantment
 {
     public class ResistHealEnchantment : Enchantment
     {
-        string DamageResist { get { return (string)Modifiers[0]; } }
-        float PowerMultiplier { get { return (float)Modifiers[1]; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "heal"); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public ResistHealEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "resistheal";
+            Category = "Armor";
             LoreCode = "enchantment-resistheal";
             LoreChapterID = 14;
             MaxTier = 5;
-            Modifiers = new object[2] { "heal", 0.1 };
+            Modifiers = new Dictionary<string, object>()
+            {
+                { "DamageResist", "heal"}, { "PowerMultiplier", 0.1 }
+            };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

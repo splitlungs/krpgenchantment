@@ -15,8 +15,8 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.91d;
-        public const string ConfigFile = "KRPGEnchantment_Config.json";
+        private const double ConfigVersion = 0.92d;
+        public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
         ICoreServerAPI sApi;
@@ -58,7 +58,7 @@ namespace KRPGLib.Enchantment
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
-                    if (Config.MaxEnchantTier >= 0) tempConfig.MaxEnchantTier = Config.MaxEnchantTier;
+                    // if (Config.MaxEnchantTier >= 0) tempConfig.MaxEnchantTier = Config.MaxEnchantTier;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
@@ -107,7 +107,7 @@ namespace KRPGLib.Enchantment
                     if (!Config.CustomPatches.ContainsKey("Tonwexp-Neue"))
                         tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
 
-                    Config.LoreIDs = tempConfig.LoreIDs;
+                    // Config.LoreIDs = tempConfig.LoreIDs;
 
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;

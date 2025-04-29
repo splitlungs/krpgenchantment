@@ -17,14 +17,17 @@ namespace KRPGLib.Enchantment
 {
     public class ChillingEnchantment : Enchantment
     {
+        public float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", -10); } }
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "chilling";
+            Category = "Weapon";
             LoreCode = "enchantment-chilling";
             LoreChapterID = 0;
             MaxTier = 5;
-            Modifiers = new object[1] { -10 };
+            Modifiers = new Dictionary<string, object>() { { "PowerMultiplier", -10 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
@@ -33,7 +36,7 @@ namespace KRPGLib.Enchantment
             
             EntityBehaviorBodyTemperature ebbt = enchant.TargetEntity.GetBehavior<EntityBehaviorBodyTemperature>();
             if (ebbt != null)
-                ebbt.CurBodyTemperature = enchant.Power * (float)Modifiers[0];
+                ebbt.CurBodyTemperature = enchant.Power * PowerMultiplier;
         }
     }
 }

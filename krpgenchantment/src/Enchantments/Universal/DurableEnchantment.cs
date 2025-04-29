@@ -15,15 +15,17 @@ namespace KRPGLib.Enchantment
 {
     public class DurableEnchantment : Enchantment
     {
-        double PowerMultiplier { get { return (double)Modifiers[0]; } }
+        double PowerMultiplier { get { return (double)Modifiers.GetValueOrDefault("PowerMultiplier", 0.10d); } }
         public DurableEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "durable";
+            Category = "Universal";
             LoreCode = "enchantment-durable";
-            LoreChapterID = 0;
+            LoreChapterID = 1;
             MaxTier = 5;
-            Modifiers = new object[1] { 0.10 };
+            Modifiers = new Dictionary<string, object> { { "PowerMultiplier", 0.10d } };
         }
         public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {

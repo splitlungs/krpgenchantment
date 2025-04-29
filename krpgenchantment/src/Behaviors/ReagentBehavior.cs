@@ -17,6 +17,7 @@ namespace KRPGLib.Enchantment
     {
         public ICoreAPI Api;
         public string Potential;
+        public int Quantity = 1;
         /// <summary>
         /// Handles all Reagent generation
         /// </summary>

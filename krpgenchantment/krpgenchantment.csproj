@@ -127,11 +127,7 @@
   <None Remove="assets\krpgenchantment\lang\fr.json" />
   <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\game-armor-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\game-tool-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\game-weapon-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\legacy-armor-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\trader.json" />
@@ -186,7 +182,6 @@
 <ItemGroup>
   <Folder Include="src\Enchantments\Accessory\" />
   <Folder Include="src\Enchantments\Tool\" />
-  <Folder Include="src\Enchantments\Universal\" />
   <Folder Include="src\Enchantments\Ranged\" />
 </ItemGroup>
 

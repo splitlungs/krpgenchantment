@@ -16,19 +16,24 @@ namespace KRPGLib.Enchantment
 {
     public class LightningEnchantment : Enchantment
     {
-        int Delay { get { return (int)Modifiers[0]; } }
-        float PowerMultiplier { get { return (float)Modifiers[1]; } }
-        int MaxBonusStrikes { get { return (int)Modifiers[2]; } }
+        int Delay { get { return (int)Modifiers.GetValueOrDefault("Delay", 500); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.5f); } }
+        int MaxBonusStrikes { get { return (int)Modifiers.GetValueOrDefault("MaxBonusStrikes", 1); } }
         ICoreServerAPI sApi;
         WeatherSystemServer weatherSystem;
         public LightningEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "lightning";
+            Category = "Weapon";
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
-            Modifiers = new object[3] { 500, 0.5, 1 };
+            Modifiers = new Dictionary<string, object>()
+            { 
+                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }
+            };
 
             sApi = (ICoreServerAPI)Api;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();

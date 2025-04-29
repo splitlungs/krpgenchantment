@@ -12,6 +12,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
 using System.Reflection.Emit;
+using Vintagestory.Common;
 
 namespace KRPGLib.Enchantment
 {
@@ -27,7 +28,13 @@ namespace KRPGLib.Enchantment
                 // byEntity.Api.Logger.Event("A bow was fired, but no enchantments were on it.");
                 return;
             }
-    
+
+            foreach (KeyValuePair<string, int> keyValuePair in enchants)
+            {
+                EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnHit", Code = keyValuePair.Key, Power = keyValuePair.Value };
+                object[] obj = null;
+                byEntity.Api.EnchantAccessor().DoEnchantment(enchant, slot, ref obj);
+            }
             string enchantString = byEntity.Api.World.Calendar.ElapsedSeconds.ToString() + ";";
             foreach (KeyValuePair<string, int> keyValuePair in enchants)
             {

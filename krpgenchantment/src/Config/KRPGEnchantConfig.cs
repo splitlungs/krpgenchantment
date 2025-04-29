@@ -14,8 +14,8 @@ namespace KRPGLib.Enchantment
     public class KRPGEnchantConfig
     {
         // Global Options
-        public List<string> DisabledEnchants = new List<string>();
-        public int MaxEnchantTier = 5;
+        // public List<string> DisabledEnchants = new List<string>();
+        // public int MaxEnchantTier = 5;
         public int MaxEnchantsPerItem = 4;
         // Recipe config.
         public double EnchantTimeOverride = -1d;
@@ -55,28 +55,28 @@ namespace KRPGLib.Enchantment
             { "Tonwexp-Neue", true }
         };
         // Lore Configuration
-        public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()
-        {
-            { "enchantment-chilling", 0 },
-            { "enchantment-durable", 1 },
-            { "enchantment-flaming", 2 },
-            { "enchantment-frost", 3 },
-            { "enchantment-harming", 4 },
-            { "enchantment-healing", 5 },
-            { "enchantment-igniting", 6 },
-            { "enchantment-knockback", 7 },
-            { "enchantment-lightning", 8 },
-            { "enchantment-pit", 9 },
-            { "enchantment-protection", 10 },
-            { "enchantment-resistelectric", 11 },
-            { "enchantment-resistelectricity", 11 },
-            { "enchantment-resistfire", 12 },
-            { "enchantment-resistfrost", 13 },
-            { "enchantment-resistheal", 14 },
-            { "enchantment-resistinjury", 15 },
-            { "enchantment-resistpoison", 16 },
-            { "enchantment-shocking", 17 }
-        };
+        // public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()
+        // {
+        //     { "enchantment-chilling", 0 },
+        //     { "enchantment-durable", 1 },
+        //     { "enchantment-flaming", 2 },
+        //     { "enchantment-frost", 3 },
+        //     { "enchantment-harming", 4 },
+        //     { "enchantment-healing", 5 },
+        //     { "enchantment-igniting", 6 },
+        //     { "enchantment-knockback", 7 },
+        //     { "enchantment-lightning", 8 },
+        //     { "enchantment-pit", 9 },
+        //     { "enchantment-protection", 10 },
+        //     { "enchantment-resistelectric", 11 },
+        //     { "enchantment-resistelectricity", 11 },
+        //     { "enchantment-resistfire", 12 },
+        //     { "enchantment-resistfrost", 13 },
+        //     { "enchantment-resistheal", 14 },
+        //     { "enchantment-resistinjury", 15 },
+        //     { "enchantment-resistpoison", 16 },
+        //     { "enchantment-shocking", 17 }
+        // };
         // Deboog
         public bool Debug = false;
         // Version
@@ -94,9 +94,9 @@ namespace KRPGLib.Enchantment
         {
             if (config != null) 
             {
-                DisabledEnchants = new List<string>();
-                DisabledEnchants = config.DisabledEnchants;
-                if (config.MaxEnchantTier >= 0) MaxEnchantTier = config.MaxEnchantTier;
+                // DisabledEnchants = new List<string>();
+                // DisabledEnchants = config.DisabledEnchants;
+                // if (config.MaxEnchantTier >= 0) MaxEnchantTier = config.MaxEnchantTier;
                 if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
                 if (config.EnchantTimeOverride >= 0) EnchantTimeOverride = config.EnchantTimeOverride;
                 if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;
@@ -145,7 +145,7 @@ namespace KRPGLib.Enchantment
                 if (!config.CustomPatches.ContainsKey("Tonwexp-Neue"))
                     CustomPatches.Add("Tonwexp-Neue", true);
 
-                config.LoreIDs = LoreIDs;
+                // config.LoreIDs = LoreIDs;
 
                 if (config.Debug == true) Debug = true;
                 

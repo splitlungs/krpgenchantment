@@ -31,6 +31,7 @@ namespace KRPGLib.Enchantment
             if (ePower > 0 || __instance.WatchedAttributes.GetInt(EnumEnchantments.healing.ToString(), 0) > 0)
                 __instance.Damage = 0;
 
+
             return true;
         }
 

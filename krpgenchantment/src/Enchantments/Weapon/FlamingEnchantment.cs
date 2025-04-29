@@ -17,36 +17,24 @@ namespace KRPGLib.Enchantment
 {
     public class FlamingEnchantment : Enchantment
     {
-        EnumDamageType DamageType
-        {
-            get
-            {
-                if (Modifiers[0].ToString().ToLower() == "heal")
-                    return EnumDamageType.Heal;
-                else if (Modifiers[0].ToString().ToLower() == "flaming")
-                    return EnumDamageType.Fire;
-                else if (Modifiers[0].ToString().ToLower() == "frost")
-                    return EnumDamageType.Frost;
-                else if (Modifiers[0].ToString().ToLower() == "injury")
-                    return EnumDamageType.Injury;
-                else if (Modifiers[0].ToString().ToLower() == "electricity")
-                    return EnumDamageType.Electricity;
-                else
-                    return EnumDamageType.Injury;
-            }
-        }
-        string DamageResist { get { return (string)Modifiers[1]; } }
-        int MaxDamage { get { return (int)Modifiers[2]; } }
-        float PowerMultiplier { get { return (float)Modifiers[3]; } }
+        EnumDamageType DamageType { get { return EnumDamageType.Fire; } }
+        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistfire"); } }
+        int MaxDamage { get { return (int)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
+        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
 
         public FlamingEnchantment(ICoreAPI api) : base(api)
         {
+            // Setup the default config
             Enabled = true;
             Code = "flaming";
+            Category = "Weapon";
             LoreCode = "enchantment-flaming";
             LoreChapterID = 2;
             MaxTier = 5;
-            Modifiers = new object[4] { "fire", "resistfire", 3, 0.1 };
+            Modifiers = new Dictionary<string, object>() 
+            {
+                { "DamageResist", "resistfire" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
+            };
         }
         public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
         {
