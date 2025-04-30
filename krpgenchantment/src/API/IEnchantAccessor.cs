@@ -15,6 +15,17 @@ namespace KRPGLib.Enchantment.API
     public interface IEnchantAccessor
     {
         /// <summary>
+        /// Register an Enchanting Recipe
+        /// </summary>
+        /// <param name="recipe"></param>
+        void RegisterEnchantingRecipe(EnchantingRecipe recipe);
+        /// <summary>
+        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
+        SKTypeface LoadCustomFont(string fName);
+        /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
         /// </summary>
         /// <param name="itemStack"></param>

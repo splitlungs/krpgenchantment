@@ -26,8 +26,6 @@ namespace KRPGLib.Enchantment
         public string Code = "enchantment";
         // Used to sort the configs currently
         public string Category = "Universal";
-        // Define which registered class to instantiate with
-        public string ClassName = "Enchantment";
         // The code used to lookup the enchantment's Lore in the lang file
         public string LoreCode = "enchantment-lore";
         // The ID of the chapter in the Lore config file
@@ -48,7 +46,6 @@ namespace KRPGLib.Enchantment
                 Enabled = Enabled,
                 Code = Code,
                 Category = Category,
-                ClassName = ClassName,
                 LoreCode = LoreCode,
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
@@ -62,7 +59,6 @@ namespace KRPGLib.Enchantment
             writer.Write(Enabled);
             writer.Write(Code);
             writer.Write(Category);
-            writer.Write(ClassName);
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
@@ -78,7 +74,6 @@ namespace KRPGLib.Enchantment
             Enabled = reader.ReadBoolean();
             Code = reader.ReadString();
             Category = reader.ReadString();
-            ClassName = reader.ReadString();
             LoreCode = reader.ReadString();
             LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
@@ -133,7 +128,6 @@ namespace KRPGLib.Enchantment
         {
             // Setup the default config
             Api = api;
-            TickRegistry = new Dictionary<long, EnchantTick>();
         }
         /// <summary>
         /// Called right after the Enchantment is created. Must call base method to load JSON Properties.
@@ -143,13 +137,15 @@ namespace KRPGLib.Enchantment
         {
             // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
 
+            if (TickRegistry == null) TickRegistry = new Dictionary<long, EnchantTick>();
+            
             Properties = properties.Clone();
-            // Enabled = properties.Enabled;
-            // Code = properties.Code;
-            // LoreCode = properties.LoreCode;
-            // LoreChapterID = properties.LoreChapterID;
-            // MaxTier = properties.MaxTier;
-            // Modifiers = properties.Modifiers;
+            Enabled = properties.Enabled;
+            Code = properties.Code;
+            LoreCode = properties.LoreCode;
+            LoreChapterID = properties.LoreChapterID;
+            MaxTier = properties.MaxTier;
+            Modifiers = properties.Modifiers;
         }
 #nullable enable
         /// <summary>

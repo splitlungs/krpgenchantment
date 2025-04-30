@@ -1,6 +1,8 @@
-﻿using System;
+﻿using KRPGLib.Enchantment.API;
+using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
@@ -15,7 +17,7 @@ namespace KRPGLib.Enchantment
 
         public override double ExecuteOrder()
         {
-            return 0.6;
+            return 0;
         }
         public override void StartPre(ICoreAPI api)
         {
@@ -31,9 +33,13 @@ namespace KRPGLib.Enchantment
         {
             if (!canRegister)
             {
-                throw new InvalidOperationException("Coding error: Can no long register enchanting recipes. Register them during AssetsLoad/AssetsFinalize and with ExecuteOrder < 99999");
+                throw new InvalidOperationException("[KRPGEnchantment] Coding error: Can no long register enchanting recipes. Register them during AssetsLoad/AssetsFinalize and with ExecuteOrder < 99999");
             }
-
+            foreach (var ench in recipe.Enchantments)
+            {
+                IEnchantment enchant = Api.EnchantAccessor().EnchantmentRegistry.GetValueOrDefault(ench.Key, null);
+                if (enchant?.Enabled != true) recipe.Enabled = false;
+            }
             EnchantingRecipes.Add(recipe);
         }
     }

@@ -23,16 +23,22 @@ namespace KRPGLib.Enchantment
     {
         public override double ExecuteOrder()
         {
-            return 1;
+            // It's important to load after EnchantmentAccessor, but before EnchantmentRecipes loads. 0.1 - 0.9 is valid.
+            // Enchanting Recipes load at 1.0
+            return 0.1;
         }
         public override bool ShouldLoad(EnumAppSide side)
         {
+            // The server should be authoritative
             return side == EnumAppSide.Server;
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
             base.StartServerSide(api);
 
+            // Make sure each value is unique when registering your enchantment class, so as to prevent conflicts when adding your own Enchantments.
+            // Prefix it with something like "mymod-myenchant" as the className.
+            // Enable Debug in the KRPGEnchantment_Config.json to get more info in the Debug log.
             int count = 0;
             if (api.EnchantAccessor().RegisterEnchantmentClass("chilling", "Weapon/chilling.json", typeof(ChillingEnchantment)) == true) count++;
             if (api.EnchantAccessor().RegisterEnchantmentClass("durable", "Universal/durable.json", typeof(DurableEnchantment)) == true) count++;

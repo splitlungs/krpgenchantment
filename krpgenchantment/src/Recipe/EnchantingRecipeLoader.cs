@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Client;
@@ -10,6 +11,8 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
+using KRPGLib.Enchantment.API;
+using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {
@@ -29,10 +32,18 @@ namespace KRPGLib.Enchantment
 
         bool classExclusiveRecipes = true;
 
-        public override void AssetsLoaded(ICoreAPI api)
+        // public override void AssetsFinalize(ICoreAPI api)
+        // {
+        //     if (!(api is ICoreServerAPI sapi)) return;
+        //     this.sApi = sapi;
+        // 
+        //     LoadEnchantingRecipes();
+        // }
+
+        public override void StartServerSide(ICoreServerAPI api)
         {
-            if (!(api is ICoreServerAPI sapi)) return;
-            this.sApi = sapi;
+            base.StartServerSide(api);
+            this.sApi = api;
 
             LoadEnchantingRecipes();
         }
@@ -45,6 +56,7 @@ namespace KRPGLib.Enchantment
 
         public void LoadEnchantingRecipes()
         {
+
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
             if (EnchantingConfigLoader.Config.CustomPatches.Count > 0)
             {
@@ -62,24 +74,33 @@ namespace KRPGLib.Enchantment
             }
 
             int fileQuantity = 0;
-
-            foreach (var val in files)
+            try
             {
-                if (val.Value is JObject)
+                foreach (var val in files)
                 {
-                    LoadRecipe(val.Key, val.Value.ToObject<EnchantingRecipe>(val.Key.Domain));
-                    fileQuantity++;
-                }
-                if (val.Value is JArray)
-                {
-                    foreach (var token in (val.Value as JArray))
+
+                    if (val.Value is JObject)
                     {
-                        LoadRecipe(val.Key, token.ToObject<EnchantingRecipe>(val.Key.Domain));
+                        LoadRecipe(val.Key, val.Value.ToObject<EnchantingRecipe>(val.Key.Domain));
                         fileQuantity++;
                     }
+                    if (val.Value is JArray)
+                    {
+                        foreach (var token in (val.Value as JArray))
+                        {
+                            LoadRecipe(val.Key, token.ToObject<EnchantingRecipe>(val.Key.Domain));
+                            fileQuantity++;
+                        }
+                    }
                 }
-            }
 
+            }
+            catch (Exception e)
+            {
+                throw new Exception("[KRPGEnchantment] Error loading Enchantment Recipe: " + e);
+                // sApi.Logger.Error("[KRPGEnchantment] Error loading Enchantment Recipe: {0}", e);
+                // return;
+            }
             sApi.World.Logger.Notification("[KRPGEnchantment] {0} enchanting recipes loaded from {1} files.", fileQuantity, files.Count);
             sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
         }
@@ -87,6 +108,7 @@ namespace KRPGLib.Enchantment
         public void LoadRecipe(AssetLocation loc, EnchantingRecipe recipe)
         {
             if (!recipe.Enabled) return;
+
             if (!classExclusiveRecipes) recipe.RequiresTrait = null;
 
             if (recipe.Name == null) recipe.Name = loc;
@@ -139,15 +161,16 @@ namespace KRPGLib.Enchantment
                 foreach (EnchantingRecipe subRecipe in subRecipes)
                 {
                     if (!subRecipe.ResolveIngredients(sApi.World)) continue;
-                    sApi.RegisterEnchantingRecipe(subRecipe);
+                    sApi.EnchantAccessor().RegisterEnchantingRecipe(subRecipe);
                 }
 
             }
             else
             {
                 if (!recipe.ResolveIngredients(sApi.World)) return;
-                sApi.RegisterEnchantingRecipe(recipe);
+                sApi.EnchantAccessor().RegisterEnchantingRecipe(recipe);
             }
+
         }
     }
 }
