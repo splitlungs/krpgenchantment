@@ -53,13 +53,12 @@ namespace KRPGLib.Enchantment
             {
                 BlockPos ipos = bpos;
                 ipos.Set(pitArea[i]);
-                Block block = enchant.CauseEntity.World.BlockAccessor.GetBlock(ipos);
-                
-                if (block != null && Api.World.Claims.TestAccess((IPlayer)enchant.CauseEntity, ipos, EnumBlockAccessFlags.BuildOrBreak) == EnumWorldAccessResponse.Granted)
+                Block block = Api.World.BlockAccessor.GetBlock(ipos);
+                if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
+                    || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
                 {
-                    string blockCode = block.Code.FirstCodePart().ToString();
-                    if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel") || blockCode.Contains("forestfloor"))
-                        Api.World.BlockAccessor.BreakBlock(ipos, enchant.CauseEntity as IPlayer);
+                    // if (Api.World.Claims.TestAccess(player, ipos, EnumBlockAccessFlags.BuildOrBreak) != EnumWorldAccessResponse.Granted) continue;
+                    Api.World.BlockAccessor.BreakBlock(ipos, enchant.CauseEntity as IPlayer);
                 }
             }
 
