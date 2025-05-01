@@ -492,9 +492,7 @@ namespace KRPGLib.Enchantment
                 if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
                     || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
                 {
-                    ICoreServerAPI sApi = (ICoreServerAPI)Api;
-                    if (!sApi.World.Claims.TryAccess(player, ipos, EnumBlockAccessFlags.BuildOrBreak)) continue;
-
+                    // if (Api.World.Claims.TestAccess(player, ipos, EnumBlockAccessFlags.BuildOrBreak) != EnumWorldAccessResponse.Granted) continue;
                     byEntity.World.BlockAccessor.BreakBlock(ipos, byEntity as IPlayer);
                 }
             }
