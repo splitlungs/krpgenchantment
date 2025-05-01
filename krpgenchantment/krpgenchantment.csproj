@@ -111,6 +111,14 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+  <None Remove="assets\forlornadditions\patches\forlornadditions-behaviors.json" />
+  <None Remove="assets\forlornadditions\recipes\enchanting-table\armory-armor.json" />
+  <None Remove="assets\forlornadditions\recipes\enchanting-table\armory-universal.json" />
+  <None Remove="assets\forlornadditions\recipes\enchanting-table\armory-weapon.json" />
+  <None Remove="assets\blackguardadditions\patches\blackguardadditions-behaviors.json" />
+  <None Remove="assets\blackguardadditions\recipes\enchanting-table\armory-armor.json" />
+  <None Remove="assets\blackguardadditions\recipes\enchanting-table\armory-universal.json" />
+  <None Remove="assets\blackguardadditions\recipes\enchanting-table\armory-weapon.json" />
   <None Remove="assets\canjewelry\patches\canjewelry-behaviors.json" />
   <None Remove="assets\canjewelry\recipes\enchanting-table\canjewelry-universal.json" />
   <None Remove="assets\litbrig\patches\litbrig-behaviors.json" />

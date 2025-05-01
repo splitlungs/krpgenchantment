@@ -488,13 +488,12 @@ namespace KRPGLib.Enchantment
             {
                 BlockPos ipos = bpos;
                 ipos.Set(pitArea[i]);
+                if (!byEntity.World.Claims.TryAccess(byEntity as IPlayer, ipos, EnumBlockAccessFlags.BuildOrBreak)) continue;
                 Block block = byEntity.World.BlockAccessor.GetBlock(ipos);
-
-                if (block != null)
+                if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
+                    || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
                 {
-                    string blockCode = block.Code.ToString();
-                    if (blockCode.Contains("soil") || blockCode.Contains("sand") || blockCode.Contains("gravel") || blockCode.Contains("forestfloor"))
-                        byEntity.World.BlockAccessor.BreakBlock(ipos, byEntity as IPlayer);
+                    byEntity.World.BlockAccessor.BreakBlock(ipos, byEntity as IPlayer);
                 }
             }
         }

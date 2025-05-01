@@ -1,0 +1,93 @@
+[
+  {
+    "name": "enchantment-protection",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "protection": 5
+    }
+  },
+  {
+    "name": "enchantment-resistelectricity",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistelectricity": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfire",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistfire": 5
+    }
+  },
+  {
+    "name": "enchantment-resistfrost",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistfrost": 5
+    }
+  },
+  {
+    "name": "enchantment-resistheal",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistheal": 5
+    }
+  },
+  {
+    "name": "enchantment-resistinjury",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistinjury": 5
+    }
+  },
+  {
+    "name": "enchantment-resistpoison",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      }
+    },
+    "enchantments": {
+      "resistpoison": 5
+    }
+  }
+]
