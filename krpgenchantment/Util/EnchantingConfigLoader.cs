@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 0.91d;
+        private const double ConfigVersion = 0.92d;
         public const string ConfigFile = "KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 

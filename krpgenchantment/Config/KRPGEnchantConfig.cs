@@ -39,9 +39,11 @@ namespace KRPGLib.Enchantment
         {
             { "AncientArmory", true },
             { "Armory", true },
+            { "BlackguardAdditions", true },
             { "CANJewelry", true },
             { "CombatOverhaul", true },
             { "ElectricityAddon", true },
+            { "ForlornAdditions", true },
             { "KRPGWands", true },
             { "LitBrig", true },
             { "MaltiezCrossbows", true },
