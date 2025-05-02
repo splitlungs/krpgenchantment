@@ -62,7 +62,7 @@ namespace KRPGLib.Enchantment
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
-            writer.Write((int)Modifiers.Count);
+            writer.Write(Modifiers.Count);
             foreach (KeyValuePair<string, object> enchant in Modifiers)
             {
                 writer.Write(enchant.Key);
@@ -79,7 +79,7 @@ namespace KRPGLib.Enchantment
             MaxTier = reader.ReadInt32();
             int length = reader.ReadInt32();
             Modifiers = new Dictionary<string, object>();
-            for (int k = 0; k < length; k++)
+            for (int i = 0; i < length; i++)
             {
                 string key = reader.ReadString();
                 Modifiers[key] = reader.ReadString();
@@ -100,23 +100,24 @@ namespace KRPGLib.Enchantment
     /// </summary>
     public abstract class Enchantment : IEnchantment
     {
+        // Set during instantiation
         public ICoreAPI Api { get; set; }
-        // Toggles processing of this enchantment
-        public bool Enabled { get; set; }
-        // How the Enchantment is referenced in code
-        public string Code { get; set; }
-        // Used to sort the configs currently
-        public string Category { get; set; }
         // Define which registered class to instantiate with
         public string ClassName { get; set; }
+        // Toggles processing of this enchantment
+        public bool Enabled { get { return Properties.Enabled; } set { Properties.Enabled = value; } }
+        // How the Enchantment is referenced in code
+        public string Code { get { return Properties.Code; } set { Properties.Code = value; } }
+        // Used to sort the configs currently
+        public string Category { get { return Properties.Category; } set { Properties.Category = value; } }
         // The code used to lookup the enchantment's Lore in the lang file
-        public string LoreCode { get; set; }
+        public string LoreCode { get { return Properties.LoreCode; } set { Properties.LoreCode = value; } }
         // The ID of the chapter in the Lore config file
-        public int LoreChapterID { get; set; }
+        public int LoreChapterID { get { return Properties.LoreChapterID; } set { Properties.LoreChapterID = value; } }
         // The maximum functional Power of an Enchantment
-        public int MaxTier { get; set; }
+        public int MaxTier { get { return Properties.MaxTier; } set { Properties.MaxTier = value; } }
         // Configurable JSON multiplier for effects
-        public Dictionary<string, object> Modifiers { get; set; }
+        public Dictionary<string, object> Modifiers { get { return Properties.Modifiers; } set { Properties.Modifiers = value; } }
         // Used to manage generic ticks. You still have to register your tick method with the API.
         public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
@@ -140,14 +141,8 @@ namespace KRPGLib.Enchantment
             if (TickRegistry == null) TickRegistry = new Dictionary<long, EnchantTick>();
             
             Properties = properties.Clone();
-            Enabled = properties.Enabled;
-            Code = properties.Code;
-            LoreCode = properties.LoreCode;
-            LoreChapterID = properties.LoreChapterID;
-            MaxTier = properties.MaxTier;
-            Modifiers = properties.Modifiers;
         }
-#nullable enable
+        #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
@@ -162,7 +157,7 @@ namespace KRPGLib.Enchantment
             else
                 meth?.Invoke(this, new object[2] { enchant, slot });
         }
-#nullable disable
+        #nullable disable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>

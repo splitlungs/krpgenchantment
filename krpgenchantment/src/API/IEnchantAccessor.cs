@@ -15,17 +15,6 @@ namespace KRPGLib.Enchantment.API
     public interface IEnchantAccessor
     {
         /// <summary>
-        /// Register an Enchanting Recipe
-        /// </summary>
-        /// <param name="recipe"></param>
-        void RegisterEnchantingRecipe(EnchantingRecipe recipe);
-        /// <summary>
-        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
-        /// </summary>
-        /// <param name="fName"></param>
-        /// <returns></returns>
-        SKTypeface LoadCustomFont(string fName);
-        /// <summary>
         /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
         /// </summary>
         /// <param name="itemStack"></param>
@@ -68,7 +57,13 @@ namespace KRPGLib.Enchantment.API
         /// <param name="code"></param>
         /// <param name="chapterId"></param>
         /// <returns></returns>
-        bool DidDiscoverLore(string playerUid, string code, int chapterId);
+        // bool DidDiscoverLore(string playerUid, string code, int chapterId);
+        /// <summary>
+        /// Returns if the ItemStack is Enchantable or not.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        bool IsEnchantable(ItemSlot inSlot);
         /// <summary>
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>
@@ -89,12 +84,6 @@ namespace KRPGLib.Enchantment.API
         /// <returns></returns>
         List<EnchantingRecipe> GetValidEnchantingRecipes(ItemSlot inSlot, ItemSlot rSlot);
         /// <summary>
-        /// Returns if the ItemStack is Enchantable or not.
-        /// </summary>
-        /// <param name="inSlot"></param>
-        /// <returns></returns>
-        bool IsEnchantable(ItemSlot inSlot);
-        /// <summary>
         /// List of all loaded Enchanting Recipes
         /// </summary>
         /// <returns></returns>
@@ -102,7 +91,7 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
-        Dictionary<string, Enchantment> EnchantmentRegistry { get { return EnchantmentRegistry; } }
+        Dictionary<string, IEnchantment> EnchantmentRegistry { get { return EnchantmentRegistry; } }
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
         /// </summary>
@@ -110,5 +99,16 @@ namespace KRPGLib.Enchantment.API
         /// <param name="configLocation"></param>
         /// <param name="t"></param>
         bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
+        /// <summary>
+        /// Register an Enchanting Recipe
+        /// </summary>
+        /// <param name="recipe"></param>
+        void RegisterEnchantingRecipe(EnchantingRecipe recipe);
+        /// <summary>
+        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
+        SKTypeface LoadCustomFont(string fName);
     }
 }

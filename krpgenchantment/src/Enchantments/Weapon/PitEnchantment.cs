@@ -20,7 +20,7 @@ namespace KRPGLib.Enchantment
         public PitEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
-            Enabled = true;
+            Properties.Enabled = true;
             Code = "pit";
             Category = "Weapon";
             LoreCode = "enchantment-pit";

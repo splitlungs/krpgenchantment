@@ -13,25 +13,25 @@ namespace KRPGLib.Enchantment.API
 {
     public interface IEnchantment
     {
-        ICoreAPI Api { get; set; }
+        ICoreAPI Api { get; }
         // Toggles processing of this enchantment
-        bool Enabled { get; set; }
+        bool Enabled { get; }
         // How the Enchantment is referenced in code
-        string Code { get; set; }
+        string Code { get; }
         // Used to sort the configs currently
-        string Category { get; set; }
+        string Category { get; }
         // Define which registered class to instantiate with
-        string ClassName { get; set; }
+        string ClassName { get; }
         // The code used to lookup the enchantment's Lore in the lang file
-        string LoreCode { get; set; }
+        string LoreCode { get; }
         // The ID of the chapter in the Lore config file
-        int LoreChapterID { get; set; }
+        int LoreChapterID { get; }
         // The maximum functional Power of an Enchantment
-        int MaxTier { get; set; }
+        int MaxTier { get; }
         // Configurable JSON multiplier for effects
-        Dictionary<string, object> Modifiers { get; set; }
+        Dictionary<string, object> Modifiers { get; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
-        Dictionary<long, EnchantTick> TickRegistry { get; set; }
+        Dictionary<long, EnchantTick> TickRegistry { get; }
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
