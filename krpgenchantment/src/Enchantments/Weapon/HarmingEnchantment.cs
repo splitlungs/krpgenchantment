@@ -18,6 +18,9 @@ namespace KRPGLib.Enchantment
     public class HarmingEnchantment : Enchantment
     {
         EnumDamageType DamageType { get { return EnumDamageType.Injury; } }
+        // string DamageResist { get { return Attributes.GetString("DamageResist", "resistinjury"); } }
+        // int MaxDamage { get { return Attributes.GetInt("MaxDamage", 3); } }
+        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistinjury"); } }
         int MaxDamage { get { return (int)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
         float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
@@ -31,12 +34,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-harming";
             LoreChapterID = 4;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetString("DamageResist", "resistinjury");
+            // Attributes.SetInt("MaxDamage", 3);
+            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new Dictionary<string, object>()
             {
                 { "DamageResist", "resistinjury" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
             };
         }
-        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
@@ -80,7 +87,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = Api.GetEnchantments(inv[i].Itemstack);
                             int rPower = enchants.GetValueOrDefault(DamageResist, 0);
                             resist += rPower * 0.1f;
                         }

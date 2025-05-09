@@ -12,6 +12,7 @@ using Vintagestory.API.Server;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
@@ -21,23 +22,24 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
         public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
         {
-            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+            Dictionary<string, int> enchants = world.Api.GetEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
-
+            
             int durable = enchants.GetValueOrDefault("durable", 0);
-
+            
             if (durable > 0)
             {
-                float amountf = 1f;
-                EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnHit", Code = "durable", Power = durable };
-                object[] parameters = new object[1] { amountf };
-                bool didEnchantment = world.Api.EnchantAccessor().DoEnchantment(enchant, itemslot, ref parameters);
+                EnchantmentSource enchant = new EnchantmentSource() { 
+                    SourceStack = itemslot.Itemstack, 
+                    Trigger = "OnHit", 
+                    Code = "durable", 
+                    Power = durable };
+                Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", amount } };
+                bool didEnchantment = world.Api.TryEnchantment(enchant, ref parameters);
                 if (didEnchantment != true)
                     return true;
-
-                amount = (int)parameters[0];
-
+            
                 // if (didEnchantment != false)
                 //     amount = (int)amountf;
                 // 
@@ -46,8 +48,13 @@ namespace KRPGLib.Enchantment
                 //     amount = 0;
             }
 
+            // Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", amount } };
+            // bool didEnchants = world.Api.EnchantAccessor().TryEnchantment(itemslot, "OnHit", byEntity, byEntity, ref parameters);
+            // amount = (int)parameters["damage"];
+
             return true;
         }
+
         // [HarmonyPatch(typeof(CollectibleObject), "OnLoadedNative")]
         // public static void Postfix(CollectibleObject __instance, ICoreAPI api)
         // {

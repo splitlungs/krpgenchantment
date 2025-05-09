@@ -15,6 +15,8 @@ namespace KRPGLib.Enchantment
 {
     public class DamageResistEnchantment : Enchantment
     {
+        // string DamageResist { get { return Attributes.GetString("DamageResist", "blunt;piercing;slashing"); } }
+        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "fire"); } }
         float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public DamageResistEnchantment(ICoreAPI api) : base(api)
@@ -26,12 +28,15 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-damageresist";
             LoreChapterID = -1;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetString("DamageResist", "blunt;piercing;slashing");
+            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new Dictionary<string, object>()
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }
             };
         }
-        public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());
@@ -39,12 +44,13 @@ namespace KRPGLib.Enchantment
             if (DamageResist.Contains(enchant.Type.ToString()))
             {
                 float resist = enchant.Power * PowerMultiplier;
-                float dmg = MathF.Min(((1 - resist) * (float)damage), 0);
-                damage = dmg;
+                float dmg = MathF.Min(((1 - resist) * (float)parameters["damage"]), 0);
+                parameters["damage"] = dmg;
             }
 
             if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.VerboseDebug("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", damage, slot.Itemstack.GetName());
+                Api.Logger.Event("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", 
+                    parameters["damage"], enchant.SourceStack.GetName());
         }
     }
 }

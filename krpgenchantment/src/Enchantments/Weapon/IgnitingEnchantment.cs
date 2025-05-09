@@ -17,9 +17,10 @@ namespace KRPGLib.Enchantment
 {
     public class IgnitingEnchantment : Enchantment
     {
-        int TickMultiplier { get { return (int)Modifiers.GetValueOrDefault("TickMultiplier", 1); } }
-        int TickDuration { get { return (int)Modifiers.GetValueOrDefault("TickDuration", 12500); } }
-
+        // int TickMultiplier { get { return Attributes.GetInt("TickMultiplier", 1); } }
+        // int TickDuration { get { return Attributes.GetInt("TickDuration", 12500); } }
+        int TickMultiplier { get { return (int)(long)Modifiers.GetValueOrDefault("TickMultiplier", 1); } }
+        int TickDuration { get { return (int)(long)Modifiers.GetValueOrDefault("TickDuration", 12500); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -33,12 +34,13 @@ namespace KRPGLib.Enchantment
             {
                 {"TickMultiplier", 1 }, {"TickDuration", 12500 }
             };
-
-            TickRegistry = new Dictionary<long, EnchantTick>();
+            // Attributes = new TreeAttribute();
+            // Attributes.SetInt("TickMultiplier", 1);
+            // Attributes.SetInt("TickDuration", 12500);
 
             Api.World.RegisterGameTickListener(IgniteTick, 1000);
         }
-        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Igniting enchantment.", enchant.TargetEntity.GetName());

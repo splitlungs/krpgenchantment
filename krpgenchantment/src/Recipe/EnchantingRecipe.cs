@@ -111,7 +111,7 @@ namespace KRPGLib.Enchantment
             outStack.StackSize = IngredientQuantity(inSlot);
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.VerboseDebug("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+                api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
 
             // Setup Reagent Override
             bool rOverride = false;
@@ -137,15 +137,16 @@ namespace KRPGLib.Enchantment
             }
             // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
             ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
+            ITreeAttribute active = tree?.GetOrAddTreeAttribute("active");
             // Apply Enchantments
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
                 // Overwrite Healing
                 if (enchant.Key == EnumEnchantments.healing.ToString())
                 {
-                    tree.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    tree.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    tree.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    active.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    active.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    active.SetInt(EnumEnchantments.harming.ToString(), 0);
                     tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
                 }
                 // Overwrite Alternate Damage
@@ -164,20 +165,21 @@ namespace KRPGLib.Enchantment
             if (maxDE >= 0)
             {
                 int numDmgEnchants = 0;
-                if (tree.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
-                if (tree.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
-                if (tree.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
-                if (tree.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
                 if (numDmgEnchants > maxDE)
                 {
                     int roll = api.World.Rand.Next(1, 5);
-                    if (roll == 1) tree.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    else if (roll == 2) tree.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    else if (roll == 3) tree.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    else if (roll == 4) tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
+                    if (roll == 1) active.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    else if (roll == 2) active.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    else if (roll == 3) active.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    else if (roll == 4) active.SetInt(EnumEnchantments.shocking.ToString(), 0);
                 }
             }
 
+            tree.MergeTree(active);
             tree.RemoveAttribute("latentEnchantTime");
             tree.RemoveAttribute("latentEnchants");
             outStack.Attributes.MergeTree(tree);
@@ -380,30 +382,33 @@ namespace KRPGLib.Enchantment
             // Check Targets
             bool foundt = false;
             // bool flag2 = false;
-            // foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
-            foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in Ingredients)
+            // foreach (KeyValuePair<string, CraftingRecipeIngredient> ing in resolvedIngredients)
+            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
             {
-                // api.Logger.Event("Echanting Recipe: {0}. Checking Resolved Ingredient {1}. Quantity of {2}", Name, ing.Value.Name, ing.Value.Quantity);
-                if (ing.Value.IsWildCard)
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Enchanting Recipe: {0}. Checking Ingredient {1}. Quantity of {2}", Name, ing.Code, ing.Quantity);
+                if (ing.IsWildCard)
                 {
-                    // api.Logger.Event("Ingredient is a Wildcard!");
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        api.Logger.Event("[KRPGEnchantment] Enchanting Recipe: {0}. Ingredient {1} is a Wildcard!", Name, ing.Code);
 
-                    inputSlot.Itemstack.Collectible.WildCardMatch(ing.Value.Code);
+                    // bool foundw = inputSlot.Itemstack.Collectible.WildCardMatch(ing.Code);
 
                     bool foundw = false;
                     foundw =
-                            ing.Value.Type == inputSlot.Itemstack.Class &&
-                            WildcardUtil.Match(ing.Value.Code, inputSlot.Itemstack.Collectible.Code, ing.Value.AllowedVariants)
+                            ing.Type == inputSlot.Itemstack.Class &&
+                            WildcardUtil.Match(ing.Code, inputSlot.Itemstack.Collectible.Code, ing.AllowedVariants)
                         ;
+
                     if (foundw == true) foundt = true;
                 }
-                else if (ing.Value.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
+                else if (ing.ResolvedItemstack.Satisfies(inputSlot.Itemstack)) foundt = true;
 
-                if (inputSlot.Itemstack.StackSize < ing.Value.Quantity) foundt = false;
+                if (inputSlot.Itemstack.StackSize < ing.Quantity) foundt = false;
             }
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
+                api.Logger.Event("[KRPGEnchantment] Enchanting Recipe: {0}. Found target in Matches? {1}", Name, foundt);
 
             // Cancel if no Target
             if (!foundt) return false;
@@ -441,7 +446,7 @@ namespace KRPGLib.Enchantment
             }
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
+                api.Logger.Event("[KRPGEnchantment] Enchanting Recipe: {0}. Found Reagent in Matches? {1}", Name, foundr);
 
             // Cancel if no Rreagent is found
             if (!foundr) return false;
@@ -484,48 +489,49 @@ namespace KRPGLib.Enchantment
         /// <param name="writer"></param>
         public void ToBytes(BinaryWriter writer)
         {
-            writer.Write(processingHours);
-
-            writer.Write(resolvedIngredients.Count);
-            for (int i = 0; i < resolvedIngredients.Count; i++)
-            {
-                if (resolvedIngredients[i] == null)
-                {
-                    writer.Write(value: true);
-                    continue;
-                }
-
-                writer.Write(value: false);
-                resolvedIngredients[i].ToBytes(writer);
-            }
-
             writer.Write(Name.ToShortString());
-            writer.Write(Attributes == null);
+            writer.Write(Enabled);
+            writer.Write(processingHours);
+            writer.Write(RecipeGroup);
+            writer.Write(Attributes != null);
             if (Attributes != null)
             {
                 writer.Write(Attributes.Token.ToString());
             }
-
             writer.Write(RequiresTrait != null);
             if (RequiresTrait != null)
             {
                 writer.Write(RequiresTrait);
             }
-
-            writer.Write(RecipeGroup);
             writer.Write(CopyAttributesFrom != null);
             if (CopyAttributesFrom != null)
             {
                 writer.Write(CopyAttributesFrom);
             }
-
             writer.Write(ShowInCreatedBy);
+
             writer.Write(Ingredients.Count);
             foreach (KeyValuePair<string, CraftingRecipeIngredient> ingredient in Ingredients)
             {
                 writer.Write(ingredient.Key);
                 ingredient.Value.ToBytes(writer);
             }
+
+            writer.Write(resolvedIngredients.Count);
+            for (int i = 0; i < resolvedIngredients.Count; i++)
+            {
+                resolvedIngredients[i].ToBytes(writer);
+
+                // if (resolvedIngredients[i] != null)
+                // {
+                //     writer.Write(value: true);
+                //     continue;
+                // }
+                // 
+                // writer.Write(value: false);
+                // resolvedIngredients[i].ToBytes(writer);
+            }
+
             writer.Write(Enchantments.Count);
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
@@ -541,42 +547,28 @@ namespace KRPGLib.Enchantment
         /// <param name="resolver"></param>
         public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
         {
-            processingHours = reader.ReadDouble();
-
-            int num = reader.ReadInt32();
-            resolvedIngredients = new List<EnchantingRecipeIngredient>();
-            for (int i = 0; i < num; i++)
-            {
-                if (!reader.ReadBoolean())
-                {
-                    EnchantingRecipeIngredient ing = new EnchantingRecipeIngredient();
-                    ing.FromBytes(reader, resolver);
-                    resolvedIngredients.Add(ing.CloneTo<EnchantingRecipeIngredient>());
-                }
-            }
-
             Name = new AssetLocation(reader.ReadString());
-            if (!reader.ReadBoolean())
+            Enabled = reader.ReadBoolean();
+            processingHours = reader.ReadDouble();
+            RecipeGroup = reader.ReadInt32();
+            if (reader.ReadBoolean())
             {
                 string json = reader.ReadString();
                 Attributes = new JsonObject(JToken.Parse(json));
             }
-
             if (reader.ReadBoolean())
             {
                 RequiresTrait = reader.ReadString();
             }
-
-            RecipeGroup = reader.ReadInt32();
             if (reader.ReadBoolean())
             {
                 CopyAttributesFrom = reader.ReadString();
             }
-
             ShowInCreatedBy = reader.ReadBoolean();
-            int num2 = reader.ReadInt32();
+            
+            int num = reader.ReadInt32();
             Ingredients = new Dictionary<string, CraftingRecipeIngredient>();
-            for (int j = 0; j < num2; j++)
+            for (int i = 0; i < num; i++)
             {
                 string key = reader.ReadString();
                 CraftingRecipeIngredient craftingRecipeIngredient = new CraftingRecipeIngredient();
@@ -584,9 +576,23 @@ namespace KRPGLib.Enchantment
                 Ingredients[key] = craftingRecipeIngredient;
             }
 
+            int num2 = reader.ReadInt32();
+            resolvedIngredients = new List<EnchantingRecipeIngredient>();
+            for (int i = 0; i < num2; i++)
+            {
+                EnchantingRecipeIngredient ing = new EnchantingRecipeIngredient();
+                ing.FromBytes(reader, resolver);
+                resolvedIngredients.Add(ing);
+                
+                // if (!reader.ReadBoolean())
+                // {
+                //     
+                // }
+            }
+
             int num3 = reader.ReadInt32();
             Enchantments = new Dictionary<string, int>();
-            for (int k = 0; k < num3; k++)
+            for (int i = 0; i < num3; i++)
             {
                 string key = reader.ReadString();
                 Enchantments[key] = reader.ReadInt32();
@@ -602,28 +608,21 @@ namespace KRPGLib.Enchantment
             EnchantingRecipe recipe = new EnchantingRecipe();
 
             recipe.Ingredients = new Dictionary<string, CraftingRecipeIngredient>();
-            if (Ingredients != null)
+            foreach (var val in Ingredients)
             {
-                foreach (var val in Ingredients)
-                {
-                    recipe.Ingredients[val.Key] = val.Value.Clone();
-                }
+                recipe.Ingredients[val.Key] = val.Value.Clone();
             }
-            if (resolvedIngredients != null)
+            recipe.resolvedIngredients = new List<EnchantingRecipeIngredient>();
+            foreach (EnchantingRecipeIngredient ing in resolvedIngredients)
             {
-                recipe.resolvedIngredients = new List<EnchantingRecipeIngredient>();
-                foreach(EnchantingRecipeIngredient ing in resolvedIngredients)
-                    recipe.resolvedIngredients.Add(ing.CloneTo<EnchantingRecipeIngredient>());
+                recipe.resolvedIngredients.Add(ing.CloneTo<EnchantingRecipeIngredient>());
             }
             recipe.Enchantments = new Dictionary<string, int>();
-            if (Enchantments != null)
+            foreach (var val in Enchantments)
             {
-                foreach (var val in Enchantments)
-                {
-                    recipe.Enchantments[val.Key] = (int)val.Value;
-                }
+                recipe.Enchantments[val.Key] = (int)val.Value;
             }
-
+            recipe.Enabled = Enabled;
             recipe.Name = Name;
             recipe.Attributes = Attributes?.Clone();
             recipe.RequiresTrait = RequiresTrait;

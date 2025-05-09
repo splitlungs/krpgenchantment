@@ -12,6 +12,8 @@ using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using System.IO;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
+using SkiaSharp;
 
 namespace KRPGLib.Enchantment
 {
@@ -34,6 +36,8 @@ namespace KRPGLib.Enchantment
         public int MaxTier = 5;
         // Configurable JSON multiplier for effects
         public Dictionary<string, object> Modifiers;
+        // Configured in struct, assigned by config file
+        // public ITreeAttribute Attributes;
         public EnchantmentProperties Clone()
         {
             return CloneTo<EnchantmentProperties>();
@@ -50,6 +54,7 @@ namespace KRPGLib.Enchantment
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
                 Modifiers = Modifiers
+                // Attributes = Attributes
             };
 
             return val;
@@ -62,6 +67,11 @@ namespace KRPGLib.Enchantment
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
+            // writer.Write(Attributes != null);
+            // if (Attributes != null)
+            // {
+            //     Attributes.ToBytes(writer);
+            // }
             writer.Write(Modifiers.Count);
             foreach (KeyValuePair<string, object> enchant in Modifiers)
             {
@@ -77,6 +87,10 @@ namespace KRPGLib.Enchantment
             LoreCode = reader.ReadString();
             LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
+            // if (reader.ReadBoolean())
+            // {
+            //     Attributes.FromBytes(reader);
+            // }
             int length = reader.ReadInt32();
             Modifiers = new Dictionary<string, object>();
             for (int i = 0; i < length; i++)
@@ -91,6 +105,7 @@ namespace KRPGLib.Enchantment
     /// </summary>
     public class EnchantTick
     {
+        public long TargetID;
         public int TicksRemaining;
         public long TickTimeStart;
         public long LastTickTime;
@@ -105,23 +120,25 @@ namespace KRPGLib.Enchantment
         // Define which registered class to instantiate with
         public string ClassName { get; set; }
         // Toggles processing of this enchantment
-        public bool Enabled { get { return Properties.Enabled; } set { Properties.Enabled = value; } }
+        public bool Enabled { get; set; }
         // How the Enchantment is referenced in code
-        public string Code { get { return Properties.Code; } set { Properties.Code = value; } }
+        public string Code { get; set; }
         // Used to sort the configs currently
-        public string Category { get { return Properties.Category; } set { Properties.Category = value; } }
+        public string Category { get; set; }
         // The code used to lookup the enchantment's Lore in the lang file
-        public string LoreCode { get { return Properties.LoreCode; } set { Properties.LoreCode = value; } }
+        public string LoreCode { get; set; }
         // The ID of the chapter in the Lore config file
-        public int LoreChapterID { get { return Properties.LoreChapterID; } set { Properties.LoreChapterID = value; } }
+        public int LoreChapterID { get; set; }
         // The maximum functional Power of an Enchantment
-        public int MaxTier { get { return Properties.MaxTier; } set { Properties.MaxTier = value; } }
-        // Configurable JSON multiplier for effects
-        public Dictionary<string, object> Modifiers { get { return Properties.Modifiers; } set { Properties.Modifiers = value; } }
+        public int MaxTier { get; set; }
+        // Similar to "Attributes". You can set your own serializable values here
+        public Dictionary<string, object> Modifiers { get; set; }
+        // Configured in struct, assigned by config file
+        // public ITreeAttribute Attributes { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
         public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
-        public EnchantmentProperties Properties { get; set; }
+        // public EnchantmentProperties Properties = new EnchantmentProperties();
         // Raw JSON of the Properties
         public JsonObject PropObject { get; set; }
 
@@ -136,46 +153,56 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void Initialize(EnchantmentProperties properties)
         {
-            // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
-
+            Enabled = properties.Enabled;
+            Code = properties.Code;
+            Category = properties.Category;
+            LoreCode = properties.LoreCode;
+            LoreChapterID = properties.LoreChapterID;
+            MaxTier = properties.MaxTier;
+            Modifiers = properties.Modifiers;
+            // Attributes = properties.Attributes.Clone();
             if (TickRegistry == null) TickRegistry = new Dictionary<long, EnchantTick>();
-            
-            Properties = properties.Clone();
+            ConfigParticles();
         }
-        #nullable enable
+
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
         /// <param name="parameters"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot, ref object?[]? parameters)
+        public virtual void OnTrigger(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
-            MethodInfo? meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
-            if (parameters != null)
-                meth?.Invoke(this, new object[3] { enchant, slot, parameters });
-            else
-                meth?.Invoke(this, new object[2] { enchant, slot });
+            try
+            {
+                MethodInfo meth = this.GetType().GetMethod(enchant.Trigger,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (parameters != null)
+                    meth.Invoke(this, new object[2] { enchant, parameters });
+                else
+                    meth.Invoke(this, new object[1] { enchant });
+            }
+            catch(Exception ex) 
+            {
+                Api.Logger.Error("[KRPGEnchantment] Error attempting to trigger an Enchantment: {0}", ex);
+            }
         }
-        #nullable disable
+
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
         /// <param name="parameters"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ItemSlot slot)
-        {
-            MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
-            meth?.Invoke(this, new object[2] { enchant, slot });
-        }
+        // public virtual void OnTrigger(EnchantmentSource enchant, ItemStack stack)
+        // {
+        //     MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
+        //     meth?.Invoke(this, new object[2] { enchant, stack });
+        // }
         /// <summary>
         /// Triggered from an enchanted item when it successfully attacks an entity.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
-        /// <param name="damage"></param>
-        public virtual void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        /// <param name="parameters"></param>
+        public virtual void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
         
         }
@@ -183,29 +210,29 @@ namespace KRPGLib.Enchantment
         /// Triggered when an entity wearing an enchanted item is successfully attacked.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
-        /// <param name="damage"></param>
-        public virtual void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        /// <param name="parameters"></param>
+        public virtual void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
         
         }
+
         /// <summary>
         /// Triggered when an enchanted item is interacted with.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
-        public virtual void OnToggle(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnToggle(EnchantmentSource enchant)
         {
         
         }
-        public virtual void OnStart(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnStart(EnchantmentSource enchant)
         {
         
         }
-        public virtual void OnEnd(EnchantmentSource enchant, ItemSlot slot)
+        public virtual void OnEnd(EnchantmentSource enchant)
         {
         
         }
+
         protected static AdvancedParticleProperties[] HealParticleProps;
         protected static AdvancedParticleProperties[] FireParticleProps;
         protected static AdvancedParticleProperties[] FrostParticleProps;

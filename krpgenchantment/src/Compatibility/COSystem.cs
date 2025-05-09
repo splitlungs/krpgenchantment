@@ -11,15 +11,22 @@ using Vintagestory.GameContent;
 using CombatOverhaul;
 using Vintagestory.API.Datastructures;
 using CombatOverhaul.Implementations;
+using KRPGLib.Enchantment.API;
+using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
     public class COSystem
     {
         ICoreServerAPI sApi;
-        public void StartServerSide(ICoreServerAPI api)
+        ICoreAPI Api;
+
+        public void StartServerSide(ICoreAPI api)
         {
-            sApi = api;
+            if (api.Side != EnumAppSide.Server) return;
+
+            Api = api;
+            sApi = (ICoreServerAPI)api;
 
             CombatOverhaulSystem COSys = sApi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
@@ -30,33 +37,39 @@ namespace KRPGLib.Enchantment
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (!target.HasBehavior<EnchantmentEntityBehavior>())
+            if (Api.GetEnchantments(slot.Itemstack) == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged event, but could not find Enchantments to try.");
                 return;
+            }
 
-            EnchantmentEntityBehavior eeb = target.GetBehavior<EnchantmentEntityBehavior>();
-            eeb.TryEnchantments(damageSource.CauseEntity as EntityAgent, slot.Itemstack);
-
-            // Manual Healing check to overwrite damage
-            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(slot.Itemstack);
-            if (enchants == null)
-                return;
-            if (enchants.ContainsKey("healing"))
-                damage = 0;
+            Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
+            bool didEnchantments = Api.TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            damage = (float)parameters["damage"];
+            
+            if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
+            if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
-            if (!target.HasBehavior<EnchantmentEntityBehavior>())
+            if (Api.GetEnchantments(weaponStack) == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] COSystem received OnRangedDamaged event, but could not find Enchantments to try.");
                 return;
+            }
 
-            EnchantmentEntityBehavior eeb = target.GetBehavior<EnchantmentEntityBehavior>();
-            eeb.TryEnchantments(damageSource.CauseEntity as EntityAgent, weaponStack);
+            Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
+            bool didEnchantments = Api.TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            damage = (float)parameters["damage"];
 
-            // Manual Healing check to overwrite damage
-            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(weaponStack);
-            if (enchants == null)
-                return;
-            if (enchants.ContainsKey("healing"))
-                damage = 0;
+            if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
+            if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
     }
 }

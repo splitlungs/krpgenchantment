@@ -13,6 +13,7 @@ using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
 using System.Reflection.Emit;
 using Vintagestory.Common;
+using System.Runtime.CompilerServices;
 
 namespace KRPGLib.Enchantment
 {
@@ -22,25 +23,29 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
         public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
-            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
-            if (enchants == null)
-            {
-                // byEntity.Api.Logger.Event("A bow was fired, but no enchantments were on it.");
-                return;
-            }
-
-            foreach (KeyValuePair<string, int> keyValuePair in enchants)
-            {
-                EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnHit", Code = keyValuePair.Key, Power = keyValuePair.Value };
-                object[] obj = null;
-                byEntity.Api.EnchantAccessor().DoEnchantment(enchant, slot, ref obj);
-            }
-            string enchantString = byEntity.Api.World.Calendar.ElapsedSeconds.ToString() + ";";
-            foreach (KeyValuePair<string, int> keyValuePair in enchants)
-            {
-                enchantString += keyValuePair.Key + ";" + keyValuePair.Value.ToString() + ";";
-            }
-            byEntity.WatchedAttributes.SetString("pendingRangedEnchants", enchantString);
+            // Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
+            // if (enchants == null)
+            // {
+            //     // byEntity.Api.Logger.Event("A bow was fired, but no enchantments were on it.");
+            //     return;
+            // }
+            // 
+            // foreach (KeyValuePair<string, int> keyValuePair in enchants)
+            // {
+            //     EnchantmentSource enchant = new EnchantmentSource() { 
+            //         SourceStack = slot.Itemstack,
+            //         Trigger = "OnAttack", 
+            //         Code = keyValuePair.Key, 
+            //         Power = keyValuePair.Value };
+            //     Dictionary<string, object> parameters = new Dictionary<string, object>();
+            //     byEntity.Api.EnchantAccessor().TryEnchantments(enchant, byEntity,  ref parameters);
+            // }
+            // string enchantString = byEntity.Api.World.Calendar.ElapsedSeconds.ToString() + ";";
+            // foreach (KeyValuePair<string, int> keyValuePair in enchants)
+            // {
+            //     enchantString += keyValuePair.Key + ";" + keyValuePair.Value.ToString() + ";";
+            // }
+            // byEntity.WatchedAttributes.SetString("pendingRangedEnchants", enchantString);
     
             // byEntity.Api.Logger.Event("pendingRangedEnchants is {0}", enchantString);
     

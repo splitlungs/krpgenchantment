@@ -15,39 +15,24 @@ using HarmonyLib;
 using KRPGLib.Enchantment.API;
 using Newtonsoft.Json;
 using Vintagestory.API.Config;
+using static System.Net.Mime.MediaTypeNames;
+using Vintagestory.API.Common.Entities;
 
 namespace KRPGLib.Enchantment
 {
-    public class EnchantAccessor : ModSystem, IEnchantAccessor
+    /// <summary>
+    /// Primary controller for KRPG Enchantments. Should be managed through the API and almost never addressed directly.
+    /// </summary>
+    public class EnchantAccessor : IEnchantAccessor
     {
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public ICoreClientAPI cApi;
-        #region ModSystem
-        public override double ExecuteOrder()
-        {
-            return 0;
-        }
-
-        public override void Start(ICoreAPI api)
-        {
-            base.Start(api);
-            Api = api;
-        }
-        public override void StartClientSide(ICoreClientAPI api)
-        {
-            base.StartClientSide(api);
-            cApi = api;
-        }
-        public override void StartServerSide(ICoreServerAPI api)
-        {
-            base.StartServerSide(api);
-            sApi = api;
-        }
-        #endregion
+        public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         #region Assessments
+        /*
         /// <summary>
-        /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided. Will migrate 0.4.x enchants until 0.6.x
+        /// Returns all Enchantments on the ItemStack's Attributes in the ItemSlot provided.
         /// </summary>
         /// <param name="itemStack"></param>
         /// <returns></returns>
@@ -65,12 +50,12 @@ namespace KRPGLib.Enchantment
                 if (ePower > 0) { enchants.Add(val.ToString(), ePower); }
             }
             // Temporary converter for resistelectric bug
-            if (enchants.ContainsKey("resistelectric") && Api.Side == EnumAppSide.Server)
-            {
-                tree.SetInt("resistelectricity", enchants.GetValueOrDefault("resistelectric", 0));
-                tree.SetInt("resistelectric", 0);
-                itemStack.Attributes.MergeTree(tree);
-            }
+            // if (enchants.ContainsKey("resistelectric") && Api.Side == EnumAppSide.Server)
+            // {
+            //     tree.SetInt("resistelectricity", enchants.GetValueOrDefault("resistelectric", 0));
+            //     tree.SetInt("resistelectric", 0);
+            //     itemStack.Attributes.MergeTree(tree);
+            // }
             return enchants;
         }
         /// <summary>
@@ -159,14 +144,14 @@ namespace KRPGLib.Enchantment
             if (sApi.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.VerboseDebug("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
+                sApi.World.Logger.Event("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
             double timeStamp = sApi.World.Calendar.ElapsedDays;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.VerboseDebug("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+                sApi.World.Logger.Event("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -178,7 +163,7 @@ namespace KRPGLib.Enchantment
                 return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.VerboseDebug("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
+                sApi.World.Logger.Event("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
@@ -186,15 +171,14 @@ namespace KRPGLib.Enchantment
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.VerboseDebug("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
+                sApi.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
-            IEnchantAccessor eApi = sApi.EnchantAccessor();
-            List<EnchantingRecipe> recipes = eApi.GetValidEnchantingRecipes(inSlot, rSlot);
+            List<EnchantingRecipe> recipes = sApi.EnchantAccessor().GetValidEnchantingRecipes(Api, inSlot, rSlot);
             if (recipes == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.VerboseDebug("[KRPGEnchantment] {0} valid recipes found.", recipes.Count);
+                sApi.World.Logger.Event("[KRPGEnchantment] {0} valid recipes found.", recipes.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
@@ -224,7 +208,7 @@ namespace KRPGLib.Enchantment
                 }
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    sApi.World.Logger.VerboseDebug("[KRPGEnchantment] LatentEnchants string is {0}", str);
+                    sApi.World.Logger.Event("[KRPGEnchantment] LatentEnchants string is {0}", str);
 
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
@@ -244,7 +228,7 @@ namespace KRPGLib.Enchantment
         public int AssessReagent(ItemStack stack)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.VerboseDebug("[KRPGEnchantment] Attempting to Assess a {0}.", stack.GetName());
+                Api.World.Logger.Event("[KRPGEnchantment] Attempting to Assess a {0}.", stack.GetName());
             // Check if we can actually access Attributes
             ITreeAttribute tree = stack?.Attributes?.GetOrAddTreeAttribute("enchantments");
             if (tree == null)
@@ -267,58 +251,46 @@ namespace KRPGLib.Enchantment
             }
             return p;
         }
+        */
         #endregion
         #region Triggers
+        /*
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="enchant"></param>
         /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool TryEnchantments(EnchantmentSource enchant, ItemSlot slot, ref object[] parameters)
+        public bool TryEnchantments(ICoreAPI api, ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters)
         {
-            if (EnchantmentRegistry[enchant.Code]?.Enabled != true)
-                return false;
-
-            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot, ref parameters);
-
-            return true;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().TryEnchantments(slot, trigger, byEntity, targetEntity, ref parameters);
         }
         /// <summary>
-        /// Processes an Enchantment from the server. Returns false if it fails to run an Enchantment trigger.
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="enchant"></param>
         /// <param name="slot"></param>
-        /// <param name="damage"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot)
+        public bool TryEnchantments(ICoreAPI api, ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters)
         {
-            if (EnchantmentRegistry[enchant.Code]?.Enabled != true)
-                return false;
-
-            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot);
-
-            return true;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().TryEnchantments(stack, trigger, byEntity, targetEntity, ref parameters);
         }
-        #nullable enable
         /// <summary>
-        /// Processes an Enchantment from the server. Returns false if it fails to run an Enchantment trigger.
+        /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="slot"></param>
-        /// <param name="damage"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool DoEnchantment(EnchantmentSource enchant, ItemSlot slot, ref object?[]? parameters)
+        public bool TryEnchantment(ICoreAPI api, EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
-            if (EnchantmentRegistry[enchant.Code]?.Enabled != true)
-                return false;
-
-            EnchantmentRegistry[enchant.Code].OnTrigger(enchant, slot, ref parameters);
-
-            return true;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().TryEnchantment(enchant, ref parameters);
         }
-        #nullable disable
         #endregion
         #region Lore
         /// <summary>
@@ -327,31 +299,9 @@ namespace KRPGLib.Enchantment
         /// <param name="player"></param>
         /// <param name="recipe"></param>
         /// <returns></returns>
-        public bool CanReadEnchant(string player, EnchantingRecipe recipe)
+        public bool CanReadEnchant(ICoreAPI api, string player, EnchantingRecipe recipe)
         {
-            if (player != null && recipe != null)
-            {
-                string enchant = recipe.Name.ToShortString();
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.VerboseDebug("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchant);
-                string[] text = enchant.Split(":");
-                if (!Api.EnchantAccessor().EnchantmentRegistry.TryGetValue(text[1]).Enabled)
-                    return false;
-                int id = Api.EnchantAccessor().EnchantmentRegistry.TryGetValue(text[1]).LoreChapterID;
-                ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
-                if (journal == null)
-                {
-                    Api.Logger.Error("[KRPGEnchantment] Could not find ModJournal!");
-                    return false;
-                }
-                bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.VerboseDebug("[KRPGEnchantment] Can {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
-                return canRead;
-            }
-
-            Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
-            return false;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().CanReadEnchant(player, recipe);
         }
         /// <summary>
         /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
@@ -359,174 +309,24 @@ namespace KRPGLib.Enchantment
         /// <param name="player"></param>
         /// <param name="enchantName"></param>
         /// <returns></returns>
-        public bool CanReadEnchant(string player, string enchantName)
+        public bool CanReadEnchant(ICoreAPI api, string player, string enchantName)
         {
-            if (player != null && enchantName != null)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.VerboseDebug("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchantName);
-                string[] text = enchantName.Split(":");
-                if (!Api.EnchantAccessor().EnchantmentRegistry.TryGetValue(text[1]).Enabled)
-                    return false;
-                int id = Api.EnchantAccessor().EnchantmentRegistry.TryGetValue(text[1]).LoreChapterID;
-                ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
-                if (journal == null)
-                {
-                    Api.Logger.Warning("[KRPGEnchantment] Could not find ModJournal!");
-                    return false;
-                }
-                bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.VerboseDebug("[KRPGEnchantment] Can the {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, text[1], canRead);
-                return canRead;
-            }
-            
-            Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
-            return false;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().CanReadEnchant(player, enchantName);
         }
-        /// <summary>
-        /// This exists as a temporary replacement for a removed helper function in ModJournal.
-        /// </summary>
-        /// <param name="playerUid"></param>
-        /// <param name="code"></param>
-        /// <param name="chapterId"></param>
-        /// <returns></returns>
-        // public bool DidDiscoverLore(string playerUid, string code, int chapterId)
-        // {
-        //     Dictionary<string, Journal> journalsByPlayerUid = new Dictionary<string, Journal>();
-        // 
-        //     if (!journalsByPlayerUid.TryGetValue(playerUid, out var value))
-        //     {
-        //         return false;
-        //     }
-        // 
-        //     for (int i = 0; i < value.Entries.Count; i++)
-        //     {
-        //         if (!(value.Entries[i].LoreCode == code))
-        //         {
-        //             continue;
-        //         }
-        // 
-        //         JournalEntry journalEntry = value.Entries[i];
-        //         for (int j = 0; j < journalEntry.Chapters.Count; j++)
-        //         {
-        //             if (journalEntry.Chapters[j].ChapterId == chapterId)
-        //             {
-        //                 return true;
-        //             }
-        //         }
-        // 
-        //         break;
-        //     }
-        // 
-        //     return false;
-        // }
+        */
         #endregion
-        #region Registration and Loading
-        /// <summary>
-        /// Register an Enchanting Recipe
-        /// </summary>
-        /// <param name="recipe"></param>
-        public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
-        {
-            sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().RegisterEnchantingRecipe(recipe);
-        }
-        /// <summary>
-        /// Returns a request font file from ModData/krpgenchantment/fonts, downloads it if possible, or null if it doesn't exist
-        /// </summary>
-        /// <param name="fName"></param>
-        /// <returns></returns>
-        public SKTypeface LoadCustomFont(string fName)
-        {
-            // Path to the font file in the ModData folder
-            string fontPath = System.IO.Path.Combine(cApi.GetOrCreateDataPath(System.IO.Path.Combine("ModData", "krpgenchantment", "fonts")), fName);
-
-            // Download the file to the client's ModData if it doesn't exist
-            if (!File.Exists(fontPath))
-            {
-                cApi.World.Logger.Warning("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
-                cApi.World.Logger.Event("[KRPGEnchantment] Copying font file to path: {0}.", fontPath);
-
-                try
-                {
-                    using (var client = new HttpClient())
-                    {
-                        using (var s = client.GetStreamAsync("http://kronos-gaming.net/downloads/files/" + fName))
-                        {
-                            using (var fs = new FileStream(fontPath, FileMode.OpenOrCreate))
-                            {
-                                s.Result.CopyTo(fs);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    cApi.World.Logger.Error("[KRPGEnchantment] Failed to download custom font: {0}", e.Message);
-                    return null;
-                }
-            }
-            // Check if the font file was created and bail if not
-            if (!File.Exists(fontPath))
-            {
-                cApi.World.Logger.Error("[KRPGEnchantment] Font file not found at path: {0}.", fontPath);
-                return null;
-            }
-
-            try
-            {
-                // Load the custom font using SkiaSharp
-                using (var fontStream = File.OpenRead(fontPath))
-                {
-                    SKTypeface customTypeface = SKTypeface.FromStream(fontStream);
-                    if (customTypeface != null)
-                    {
-                        // api.World.Logger.Notification("Custom font successfully loaded from: " + fontPath);
-                        return customTypeface;
-                    }
-                    else
-                    {
-                        cApi.World.Logger.Error("[KRPGEnchantment] Failed to create SKTypeface from the font file.");
-                        return null;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                cApi.World.Logger.Error("[KRPGEnchantment] Failed to load custom font: " + e.Message);
-                return null;
-            }
-        }
+        #region Registration and Loading        
         /// <summary>
         /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <param name="rSlot"></param>
         /// <returns></returns>
-        public List<EnchantingRecipe> GetValidEnchantingRecipes(ItemSlot inSlot, ItemSlot rSlot)
-        {
-            if (inSlot.Empty || rSlot.Empty) return null;
-
-            List<EnchantingRecipe> recipes = new List<EnchantingRecipe>();
-            var enchantingRecipes = Api.EnchantAccessor().GetEnchantingRecipes();
-            if (enchantingRecipes != null)
-            {
-                foreach (EnchantingRecipe rec in enchantingRecipes)
-                {
-                    if (rec.Enabled && rec.Matches(Api, inSlot, rSlot))
-                    {
-                        recipes.Add(rec.Clone());
-                    }
-                }
-                if (recipes.Count > 0)
-                    return recipes;
-                else
-                    return null;
-            }
-            else
-                Api.Logger.Error("[KRPGEnchantment] EnchantingRecipe Registry could not be found! Please report error to author.");
-            return null;
-        }
+        // public List<EnchantingRecipe> GetValidEnchantingRecipes(ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        // {
+        //     return api.ModLoader.GetModSystem<EnchantingRecipeSystem>().GetValidEnchantingRecipes(inSlot, rSlot);
+        // }
         /// <summary>
         /// List of all loaded Enchanting Recipes
         /// </summary>
@@ -538,93 +338,21 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
-        public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
+        public Dictionary<string, Enchantment> GetEnchantmentRegistry()
+        { 
+            return Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().EnchantmentRegistry;
+        }
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="enchantClass"></param>
         /// <param name="configLocation"></param>
         /// <param name="t"></param>
-        public bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t)
+        /// <returns></returns>
+        public bool RegisterEnchantmentClass(ICoreServerAPI api, string enchantClass, string configLocation, Type t)
         {
-            if (EnchantingConfigLoader.Config.Debug == true)
-                sApi.Logger.VerboseDebug("[KRPGEnchantment] Attempting to RegisterEnchantmentClass.");
-            if (enchantClass == null || configLocation == null || t.BaseType != typeof(Enchantment))
-            {
-                sApi.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing registration information.");
-                return false;
-            }
-            try
-            {
-                // Register the Enchantment Class
-                this.EnchantCodeToTypeMapping[enchantClass] = t;
-                // Create a new instance & assign registered class name
-                var enchant = CreateEnchantment(enchantClass);
-                // Setup the Config
-                EnchantmentProperties props = sApi.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
-                if (props != null)
-                {
-                    enchant.Initialize(props);
-                }
-                else
-                {
-                    props = new EnchantmentProperties()
-                    {
-                        Enabled = enchant.Enabled,
-                        Code = enchant.Code,
-                        LoreCode = enchant.LoreCode,
-                        LoreChapterID = enchant.LoreChapterID,
-                        MaxTier = enchant.MaxTier,
-                        Modifiers = enchant.Modifiers
-                    };
-                    
-                    sApi.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
-                }
-                // Add to the Registry
-                EnchantmentRegistry.Add(enchantClass, enchant);
-
-                if (EnchantingConfigLoader.Config.Debug == true)
-                    sApi.World.Logger.VerboseDebug("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", enchantClass);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                sApi.Logger.Error("[KRPGEnchantment] Error loading Enchantment Class: {0}", e);
-                return false;
-            }
-        }
-        private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
-        private Type GetEnchantmentClass(string enchantClass)
-        {
-            Type val = null;
-            this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out val);
-            return val;
-        }
-        private Enchantment CreateEnchantment(string enchantClass)
-        {
-            Type enchantType;
-            if (enchantClass == null || !this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out enchantType))
-            {
-                throw new Exception("[KRPGEnchantment] Don't know how to instantiate enchantment of class '" + enchantClass + "' did you forget to register a mapping?");
-            }
-            Enchantment result;
-            try
-            {
-                result = (Enchantment)Activator.CreateInstance(enchantType, new object[1] { Api });
-                result.ClassName = enchantClass;
-            }
-            catch (Exception exception)
-            {
-                DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(39, 2);
-                defaultInterpolatedStringHandler.AppendLiteral("[KRPGEnchantment] Error on instantiating enchantment class '");
-                defaultInterpolatedStringHandler.AppendFormatted(enchantClass);
-                defaultInterpolatedStringHandler.AppendLiteral("':\n");
-                defaultInterpolatedStringHandler.AppendFormatted<Exception>(exception);
-                throw new Exception(defaultInterpolatedStringHandler.ToStringAndClear(), exception);
-            }
-
-            return result;
+            return api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().RegisterEnchantmentClass(enchantClass, configLocation, t);
         }
         #endregion
     }

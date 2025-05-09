@@ -10,11 +10,14 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
+using Vintagestory.API.Config;
 
 namespace KRPGLib.Enchantment
 {
     public class ResistHealEnchantment : Enchantment
     {
+        // string DamageResist { get { return Attributes.GetString("DamageResist", "heal"); } }
+        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "heal"); } }
         float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
         public ResistHealEnchantment(ICoreAPI api) : base(api)
@@ -26,25 +29,28 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-resistheal";
             LoreChapterID = 14;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetString("DamageResist", "heal");
+            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new Dictionary<string, object>()
             {
                 { "DamageResist", "heal"}, { "PowerMultiplier", 0.1 }
             };
         }
-        public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());
 
-            if (DamageResist.Contains(enchant.Type.ToString()))
+            if (DamageResist.Contains(enchant.Type.ToString()) && parameters.ContainsKey("damage") == true)
             {
                 float resist = enchant.Power * PowerMultiplier;
-                float dmg = MathF.Min(((1 - resist) * (float)damage), 0);
-                damage = dmg;
+                float dmg = MathF.Min(((1 - resist) * (float)parameters["damage"]), 0);
+                parameters["damage"] = dmg;
             }
 
             if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.VerboseDebug("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", damage, slot.Itemstack.GetName());
+                Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to item {2}.", Lang.Get(Code), parameters["damage"], enchant.SourceStack.GetName());
         }
     }
 }

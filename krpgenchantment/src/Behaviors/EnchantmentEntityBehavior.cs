@@ -235,7 +235,7 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
-                Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+                Dictionary<string, int> enchants = Api.GetEnchantments(itemslot.Itemstack);
                 if (enchants != null)
                 {
 
@@ -245,7 +245,8 @@ namespace KRPGLib.Enchantment
                     else
                         handled = EnumHandling.Handled;
 
-                    TryEnchantments(byEntity, itemslot.Itemstack);
+                    
+                    // TryEnchantments(byEntity, itemslot.Itemstack);
                 }
             }
             else
@@ -259,19 +260,19 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="byEntity"></param>
         /// <param name="stack"></param>
-        public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
-        {
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(stack);
-            if (enchants != null)
-            {
-                foreach (KeyValuePair<string, int> pair in enchants)
-                {
-                    bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
-                    if (didEnchant != true)
-                        Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but nothing to do or it failed.", pair.Key, pair.Value);
-                }
-            }
-        }
+        // public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
+        // {
+        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(stack);
+        //     if (enchants != null)
+        //     {
+        //         foreach (KeyValuePair<string, int> pair in enchants)
+        //         {
+        //             bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
+        //             if (didEnchant != true)
+        //                 Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but nothing to do or it failed.", pair.Key, pair.Value);
+        //         }
+        //     }
+        // }
         /// <summary>
         /// Generic Enchantment processing.
         /// </summary>
@@ -371,7 +372,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = sApi.GetEnchantments(inv[i].Itemstack);
                             int rPower = 0;
                             if (source.Type == EnumDamageType.Electricity)
                                 rPower += enchants.GetValueOrDefault(EnumEnchantments.resistelectricity.ToString(), 0);
@@ -1102,7 +1103,7 @@ namespace KRPGLib.Enchantment
             if (slot.Empty)
                 return;
 
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = sApi.GetEnchantments(slot.Itemstack);
             if (enchants.Count < 1) return;
 
             int power = 0;

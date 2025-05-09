@@ -17,7 +17,8 @@ namespace KRPGLib.Enchantment
 {
     public class ChillingEnchantment : Enchantment
     {
-        public float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", -10); } }
+        // public float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", -10); } }
+        float PowerMultiplier { get { return (float)(double)Modifiers.GetValueOrDefault("PowerMultiplier", -10.00); } }
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -27,9 +28,11 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-chilling";
             LoreChapterID = 0;
             MaxTier = 5;
-            Modifiers = new Dictionary<string, object>() { { "PowerMultiplier", -10 } };
+            // Attributes = new TreeAttribute();
+            // Attributes.SetFloat("PowerMultiplier", -10);
+            Modifiers = new Dictionary<string, object>() { { "PowerMultiplier", -10.00 } };
         }
-        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a chilling enchantment.", enchant.TargetEntity.GetName());

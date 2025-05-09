@@ -16,6 +16,9 @@ namespace KRPGLib.Enchantment
 {
     public class LightningEnchantment : Enchantment
     {
+        // int Delay { get { return Attributes.GetInt("Delay", 500); } }
+        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.5f); } }
+        // int MaxBonusStrikes { get { return Attributes.GetInt("MaxBonusStrikes", 1); } }
         int Delay { get { return (int)Modifiers.GetValueOrDefault("Delay", 500); } }
         float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.5f); } }
         int MaxBonusStrikes { get { return (int)Modifiers.GetValueOrDefault("MaxBonusStrikes", 1); } }
@@ -30,6 +33,10 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetInt("Delay", 500);
+            // Attributes.SetFloat("PowerMultiplier", 0.5f);
+            // Attributes.SetInt("MaxBonusStrikes", 1);
             Modifiers = new Dictionary<string, object>()
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }
@@ -41,7 +48,7 @@ namespace KRPGLib.Enchantment
 
             Api.World.RegisterGameTickListener(SpawnLightning, Delay);
         }
-        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Lightning enchantment.", enchant.TargetEntity.GetName());
@@ -68,7 +75,8 @@ namespace KRPGLib.Enchantment
 
 
             if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.VerboseDebug("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", damage, slot.Itemstack.GetName());
+                Api.Logger.Event("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", 
+                    (float)parameters["damage"], enchant.SourceStack.GetName());
         }
         private void SpawnLightning(float dt)
         {

@@ -18,6 +18,9 @@ namespace KRPGLib.Enchantment
     public class DamageEnchantment : Enchantment
     {
         EnumDamageType DamageType { get { return EnumDamageType.BluntAttack; } }
+        //string DamageResist { get { return Attributes.GetString("DamageResist", "resistfire"); } }
+        //int MaxDamage { get { return Attributes.GetInt("MaxDamage", 3); } }
+        //float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistfire"); } }
         int MaxDamage { get { return (int)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
         float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
@@ -31,13 +34,19 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-damage";
             LoreChapterID = -1;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetString("DamageResist", "resistfire");
+            // Attributes.SetInt("MaxDamage", 3);
+            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new Dictionary<string, object>()
             {
                 { "DamageResist", "resistfire" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
             };
         }
-        public override void OnAttack(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
 
@@ -80,7 +89,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = sApi.GetEnchantments(inv[i].Itemstack);
                             int rPower = enchants.GetValueOrDefault(DamageResist, 0);
                             resist += rPower * 0.1f;
                         }
@@ -92,7 +101,7 @@ namespace KRPGLib.Enchantment
                 // IInventory inv = agent?.GearInventory;
             }
 
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            
             // Apply Damage
             if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))
             {

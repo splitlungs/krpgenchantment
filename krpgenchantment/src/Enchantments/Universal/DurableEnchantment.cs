@@ -10,11 +10,13 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
+using Vintagestory.API.Config;
 
 namespace KRPGLib.Enchantment
 {
     public class DurableEnchantment : Enchantment
     {
+        // double PowerMultiplier { get { return Attributes.GetDouble("PowerMultiplier", 0.10d); } }
         double PowerMultiplier { get { return (double)Modifiers.GetValueOrDefault("PowerMultiplier", 0.10d); } }
         public DurableEnchantment(ICoreAPI api) : base(api)
         {
@@ -25,9 +27,11 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-durable";
             LoreChapterID = 1;
             MaxTier = 5;
+            // Attributes = new TreeAttribute();
+            // Attributes.SetDouble("PowerMultiplier", 0.10);
             Modifiers = new Dictionary<string, object> { { "PowerMultiplier", 0.10d } };
         }
-        public override void OnHit(EnchantmentSource enchant, ItemSlot slot, ref float? damage)
+        public override void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());
@@ -35,9 +39,9 @@ namespace KRPGLib.Enchantment
             double roll = Api.World.Rand.NextDouble() + 0.01;
             double bonus = enchant.Power * PowerMultiplier;
             if ((roll + bonus) >= (1.00 - bonus))
-                damage = 0;
+                parameters["damage"] = 0;
             if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.VerboseDebug("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", damage, slot.Itemstack.GetName());
+                Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to item {2}.", Lang.Get(Code), parameters["damage"], enchant.SourceStack.GetName());
         }
     }
 }
