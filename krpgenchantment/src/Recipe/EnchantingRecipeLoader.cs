@@ -152,14 +152,14 @@ namespace KRPGLib.Enchantment
                 foreach (EnchantingRecipe subRecipe in subRecipes)
                 {
                     if (!subRecipe.ResolveIngredients(sApi.World)) continue;
-                    sApi.RegisterEnchantingRecipe(subRecipe);
+                    sApi.EnchantAccessor().RegisterEnchantingRecipe(subRecipe);
                 }
 
             }
             else
             {
                 if (!recipe.ResolveIngredients(sApi.World)) return;
-                sApi.RegisterEnchantingRecipe(recipe);
+                sApi.EnchantAccessor().RegisterEnchantingRecipe(recipe);
             }
 
         }

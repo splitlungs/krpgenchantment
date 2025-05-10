@@ -38,7 +38,7 @@ namespace KRPGLib.Enchantment
         public static void Postfix(EntityProjectile __instance, Entity entity)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-            entity.Api.TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);
+            entity.Api.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);
 
             // Is it a valid target?
             // var eeb = entity.GetBehavior<EnchantmentEntityBehavior>();

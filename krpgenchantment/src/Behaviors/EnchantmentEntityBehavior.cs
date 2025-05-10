@@ -77,9 +77,9 @@ namespace KRPGLib.Enchantment
             
             Api = entity.Api as ICoreAPI;
             sApi = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>().sApi;
-            weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
+            // weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
 
-            ConfigParticles();
+            // ConfigParticles();
 
             // sApi.World.RegisterGameTickListener(TickPassiveParticles, 500);
         }
@@ -228,6 +228,7 @@ namespace KRPGLib.Enchantment
             base.OnEntityReceiveDamage(damageSource, ref damage);
         }
         */
+        /*
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
@@ -260,19 +261,19 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="byEntity"></param>
         /// <param name="stack"></param>
-        // public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
-        // {
-        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(stack);
-        //     if (enchants != null)
-        //     {
-        //         foreach (KeyValuePair<string, int> pair in enchants)
-        //         {
-        //             bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
-        //             if (didEnchant != true)
-        //                 Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but nothing to do or it failed.", pair.Key, pair.Value);
-        //         }
-        //     }
-        // }
+        public void TryEnchantments(EntityAgent byEntity, ItemStack stack)
+        {
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(stack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    bool didEnchant = TryEnchantment(byEntity, pair.Key, pair.Value, stack);
+                    if (didEnchant != true)
+                        Api.Logger.Warning("[KRPGEnchantment] Tried enchantment {0} {1}, but nothing to do or it failed.", pair.Key, pair.Value);
+                }
+            }
+        }
         /// <summary>
         /// Generic Enchantment processing.
         /// </summary>
@@ -1270,6 +1271,7 @@ namespace KRPGLib.Enchantment
 
 
         }
+        */
         #endregion
     }
 }

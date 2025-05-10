@@ -89,7 +89,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = sApi.GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
                             int rPower = enchants.GetValueOrDefault(DamageResist, 0);
                             resist += rPower * 0.1f;
                         }

@@ -37,7 +37,7 @@ namespace KRPGLib.Enchantment
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (Api.GetEnchantments(slot.Itemstack) == null)
+            if (Api.EnchantAccessor().GetEnchantments(slot.Itemstack) == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged event, but could not find Enchantments to try.");
@@ -45,7 +45,7 @@ namespace KRPGLib.Enchantment
             }
 
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
-            bool didEnchantments = Api.TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            bool didEnchantments = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
             damage = (float)parameters["damage"];
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
@@ -55,7 +55,7 @@ namespace KRPGLib.Enchantment
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
-            if (Api.GetEnchantments(weaponStack) == null)
+            if (Api.EnchantAccessor().GetEnchantments(weaponStack) == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnRangedDamaged event, but could not find Enchantments to try.");
@@ -63,7 +63,7 @@ namespace KRPGLib.Enchantment
             }
 
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
-            bool didEnchantments = Api.TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            bool didEnchantments = Api.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, ref parameters);
             damage = (float)parameters["damage"];
 
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)

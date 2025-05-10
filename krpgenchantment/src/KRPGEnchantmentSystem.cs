@@ -22,41 +22,50 @@ namespace KRPGLib.Enchantment
     public class KRPGEnchantmentSystem : ModSystem
     {
         public ICoreAPI Api;
-        public ICoreServerAPI sApi;
         public ICoreClientAPI cApi;
+        public ICoreServerAPI sApi;
         public IWorldAccessor world;
-        public static EnchantAccessor EnchantmentAccessor { get; private set; } = null!;
+        /// <summary>
+        /// Primary API for all Enchantment tasks
+        /// </summary>
+        public EnchantmentAccessor EnchantAccessor { get; private set; }
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
-        public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
-        private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
+        // public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
+        // private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
         private static Harmony harmony;
         private COSystem combatOverhaul;
         private KRPGWandsSystem krpgWands;
 
         #region ModSystem & Setup
-        public override void AssetsLoaded(ICoreAPI api)
-        {
-            if (!(api is ICoreServerAPI sapi)) return;
-            this.sApi = sapi;
-        }
+        // public override void AssetsLoaded(ICoreAPI api)
+        // {
+        //     if (!(api is ICoreServerAPI sapi)) return;
+        //     this.sApi = sapi;
+        // }
         public override void StartPre(ICoreAPI api)
         {
             base.StartPre(api);
-            EnchantmentAccessor = new EnchantAccessor();
-            EnchantmentRegistry = new Dictionary<string, Enchantment>();
+            Api = api;
+            cApi = api as ICoreClientAPI;
+            sApi = api as ICoreServerAPI;
+            EnchantAccessor = new EnchantmentAccessor();
+            EnchantAccessor.Api = api;
+            EnchantAccessor.cApi = cApi;
+            EnchantAccessor.sApi = sApi;
+            EnchantAccessor.EnchantmentRegistry = new Dictionary<string, Enchantment>();
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
             base.StartClientSide(api);
             cApi = api;
-            EnchantmentAccessor.cApi = cApi;
+            EnchantAccessor.cApi = api;
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
-            EnchantmentAccessor.sApi = sApi;
+            EnchantAccessor.sApi = api;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
         }
@@ -87,7 +96,7 @@ namespace KRPGLib.Enchantment
         {
             base.Start(api);
             Api = api;
-            EnchantmentAccessor.Api = Api;
+            EnchantAccessor.Api = api;
 
             api.RegisterCollectibleBehaviorClass("ReagentBehavior", typeof(ReagentBehavior));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
@@ -121,6 +130,7 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Enchantments
+        /*
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
         /// </summary>
@@ -343,6 +353,10 @@ namespace KRPGLib.Enchantment
             {
                 enchants.Add(pair.Key, (int)pair.Value.GetValue());
             }
+            // Throw null if we failed to get anything
+            if (enchants.Count <= 0) return null;
+            return enchants;
+
             // foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
             // {
             //     IEnchantment enc = pair.Value;
@@ -354,10 +368,6 @@ namespace KRPGLib.Enchantment
             //         enchants.Add(enc.Code, ePower); 
             //     }
             // }
-
-            // Throw null if we failed to get anything
-            if (enchants.Count <= 0) return null;
-            return enchants;
         }
         #endregion
         #region GUI
@@ -427,6 +437,8 @@ namespace KRPGLib.Enchantment
                 return null;
             }
         }
+        */
         #endregion
+
     }
 }

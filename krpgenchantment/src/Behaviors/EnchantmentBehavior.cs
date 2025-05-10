@@ -201,8 +201,8 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void GetAttributes(ItemSlot inSlot)
         {
-            Enchantments = Api.GetEnchantments(inSlot.Itemstack);
-            Enchantable = Api.IsEnchantable(inSlot);
+            Enchantments = Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
+            Enchantable = Api.EnchantAccessor().IsEnchantable(inSlot);
         }
         /// <summary>
         /// Sets all Enchantment data to ItemStack's Attributes
@@ -221,7 +221,7 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine("Test");
-            Dictionary<string, int> enchants = world.Api.GetEnchantments(inSlot.Itemstack);
+            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
@@ -234,10 +234,10 @@ namespace KRPGLib.Enchantment
             handling = EnumHandling.Handled;
 
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
-            if (aimSelf == 1 && byEntity.Api.GetEnchantments(slot.Itemstack) != null)
+            if (aimSelf == 1 && byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack) != null)
             {
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
-                bool didEnchantments = byEntity.Api.TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
+                bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
 
                 // byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack);
             }

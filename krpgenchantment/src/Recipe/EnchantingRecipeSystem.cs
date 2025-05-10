@@ -31,6 +31,11 @@ namespace KRPGLib.Enchantment
         /// List of all loaded enchanting recipes
         /// </summary>
         public List<EnchantingRecipe> EnchantingRecipes = new List<EnchantingRecipe>();
+        /// <summary>
+        /// Registers the provided EnchantingRecipe to the server.
+        /// </summary>
+        /// <param name="recipe"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
         {
             if (!canRegister)
@@ -40,7 +45,7 @@ namespace KRPGLib.Enchantment
             // If one of the Enchantments is included in the recipe's output, we disable it.
             foreach (var ench in recipe.Enchantments)
             {
-                IEnchantment enchant = Api.GetEnchantment(ench.Key);
+                IEnchantment enchant = Api.EnchantAccessor().GetEnchantment(ench.Key);
                 if (enchant?.Enabled != true) recipe.Enabled = false;
                 if (EnchantingConfigLoader.Config.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Enchanting Recipe {0} set Enabled to {1} because it contains Enchantment {2} with value of {3}.", recipe.Name, recipe.Enabled, enchant.Code, recipe.Enabled);

@@ -34,10 +34,10 @@ namespace KRPGLib.Enchantment
         }
         public void OnProjectileDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (Api.GetEnchantments(slot.Itemstack) == null) return;
+            if (Api.EnchantAccessor().GetEnchantments(slot.Itemstack) == null) return;
 
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
-            bool didEnchants = Api.TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            bool didEnchants = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
             damage = (float)parameters["damage"];
 
             // if (!target.HasBehavior<EnchantmentEntityBehavior>())

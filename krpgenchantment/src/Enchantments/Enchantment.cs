@@ -165,6 +165,67 @@ namespace KRPGLib.Enchantment
             ConfigParticles();
         }
 
+        public virtual ItemStack TryEnchantItem(EnchantingRecipe recipe, ItemStack inStack, int qty, int enchantPower)
+        {
+            if (recipe == null || inStack == null) return null;
+
+            // Setup a new ItemStack
+            ItemStack outStack = inStack.Clone();
+            // Setup Quantity
+            outStack.StackSize = qty;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inStack.GetName(), outStack.StackSize);
+
+            int power = enchantPower;
+            ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
+            ITreeAttribute active = tree?.GetOrAddTreeAttribute("active");
+            // Apply Enchantments
+            foreach (KeyValuePair<string, int> enchant in recipe.Enchantments)
+            {
+                // Overwrite Healing
+                if (enchant.Key == EnumEnchantments.healing.ToString())
+                {
+                    active.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    active.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    active.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
+                }
+                // Overwrite Alternate Damage
+                else if (enchant.Key == EnumEnchantments.flaming.ToString() || enchant.Key == EnumEnchantments.frost.ToString()
+                    || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
+                    )
+                    tree.SetInt(EnumEnchantments.healing.ToString(), 0);
+
+                // Write Enchant
+                tree.SetInt(enchant.Key, power);
+            }
+            // Limit damage enchants.
+            int maxDE = EnchantingConfigLoader.Config.MaxDamageEnchants;
+            if (maxDE >= 0)
+            {
+                int numDmgEnchants = 0;
+                if (active.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
+                if (active.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
+                if (numDmgEnchants > maxDE)
+                {
+                    int roll = Api.World.Rand.Next(1, 5);
+                    if (roll == 1) active.SetInt(EnumEnchantments.flaming.ToString(), 0);
+                    else if (roll == 2) active.SetInt(EnumEnchantments.frost.ToString(), 0);
+                    else if (roll == 3) active.SetInt(EnumEnchantments.harming.ToString(), 0);
+                    else if (roll == 4) active.SetInt(EnumEnchantments.shocking.ToString(), 0);
+                }
+            }
+
+            tree.MergeTree(active);
+            tree.RemoveAttribute("latentEnchantTime");
+            tree.RemoveAttribute("latentEnchants");
+            outStack.Attributes.MergeTree(tree);
+            return outStack;
+        }
+
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
