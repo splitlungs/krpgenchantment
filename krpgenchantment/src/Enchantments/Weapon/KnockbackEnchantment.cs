@@ -16,7 +16,7 @@ namespace KRPGLib.Enchantment
     public class KnockbackEnchantment : Enchantment
     {
         // double PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 20); } }
-        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 20); } }
+        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 20.00)); } }
         public KnockbackEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -28,7 +28,7 @@ namespace KRPGLib.Enchantment
             MaxTier = 5;
             // Attributes = new TreeAttribute();
             // Attributes.SetDouble("PowerMultiplier", 20);
-            Modifiers = new Dictionary<string, object>() { {"PowerMultiplier", 20 } };
+            Modifiers = new Dictionary<string, object>() { {"PowerMultiplier", 20.00 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
         {

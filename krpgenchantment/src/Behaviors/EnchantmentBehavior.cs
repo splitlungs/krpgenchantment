@@ -225,7 +225,7 @@ namespace KRPGLib.Enchantment
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
-                    dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key.ToString()) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
+                    dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
             }
         }
         

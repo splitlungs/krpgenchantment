@@ -63,7 +63,10 @@ namespace KRPGLib.Enchantment
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
-                    if (Config.MaxDamageEnchants != -1) tempConfig.MaxDamageEnchants = Config.MaxDamageEnchants;
+
+                    if (Config.MaxEnchantsByCategory?.Count > 0) tempConfig.MaxEnchantsByCategory = Config.MaxEnchantsByCategory;
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("Damage")) 
+                        tempConfig.MaxEnchantsByCategory.Add("Damage", -1);
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
@@ -72,6 +75,14 @@ namespace KRPGLib.Enchantment
                         tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
                     if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                         tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
+
+                    if (Config.ReagentPotentialTiers?.Count > 0) tempConfig.ReagentPotentialTiers = Config.ReagentPotentialTiers;
+                    if (!Config.ReagentPotentialTiers.ContainsKey("low"))
+                        tempConfig.ReagentPotentialTiers.Add("low", 2);
+                    if (!Config.ReagentPotentialTiers.ContainsKey("medium"))
+                        tempConfig.ReagentPotentialTiers.Add("medium", 3);
+                    if (!Config.ReagentPotentialTiers.ContainsKey("high"))
+                        tempConfig.ReagentPotentialTiers.Add("high", 5);
 
                     if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
                     if (!Config.CustomPatches.ContainsKey("AncientArmory"))

@@ -20,8 +20,8 @@ namespace KRPGLib.Enchantment
         // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.5f); } }
         // int MaxBonusStrikes { get { return Attributes.GetInt("MaxBonusStrikes", 1); } }
         int Delay { get { return (int)Modifiers.GetValueOrDefault("Delay", 500); } }
-        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.5f); } }
-        int MaxBonusStrikes { get { return (int)Modifiers.GetValueOrDefault("MaxBonusStrikes", 1); } }
+        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 0.5f)); } }
+        int MaxBonusStrikes { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("MaxBonusStrikes", 1)); } }
         ICoreServerAPI sApi;
         WeatherSystemServer weatherSystem;
         public LightningEnchantment(ICoreAPI api) : base(api)

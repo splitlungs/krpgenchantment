@@ -22,15 +22,15 @@ namespace KRPGLib.Enchantment
         // int MaxDamage { get { return Attributes.GetInt("MaxDamage", 3); } }
         // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistfrost"); } }
-        int MaxDamage { get { return (int)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
-        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
+        int MaxDamage { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("MaxDamage", 3)); } }
+        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 0.10f)); } }
 
         public FrostEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
             Code = "frost";
-            Category = "Weapon";
+            Category = "Damage";
             LoreCode = "enchantment-frost";
             LoreChapterID = 3;
             MaxTier = 5;
@@ -40,7 +40,7 @@ namespace KRPGLib.Enchantment
             // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new Dictionary<string, object>()
             {
-                { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
+                { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
         }
         public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)

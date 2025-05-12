@@ -21,7 +21,10 @@ namespace KRPGLib.Enchantment
         public double EnchantTimeOverride = -1d;
         public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
-        public int MaxDamageEnchants = -1;
+        public Dictionary<string, int> MaxEnchantsByCategory = new Dictionary<string, int>()
+        {
+            { "Damage", -1 }
+        };
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>()
         {
             { "game:gem-emerald-rough", 1 },
@@ -56,29 +59,6 @@ namespace KRPGLib.Enchantment
             { "Swordz", true },
             { "Tonwexp-Neue", true }
         };
-        // Lore Configuration
-        // public Dictionary<string, int> LoreIDs = new Dictionary<string, int>()
-        // {
-        //     { "enchantment-chilling", 0 },
-        //     { "enchantment-durable", 1 },
-        //     { "enchantment-flaming", 2 },
-        //     { "enchantment-frost", 3 },
-        //     { "enchantment-harming", 4 },
-        //     { "enchantment-healing", 5 },
-        //     { "enchantment-igniting", 6 },
-        //     { "enchantment-knockback", 7 },
-        //     { "enchantment-lightning", 8 },
-        //     { "enchantment-pit", 9 },
-        //     { "enchantment-protection", 10 },
-        //     { "enchantment-resistelectric", 11 },
-        //     { "enchantment-resistelectricity", 11 },
-        //     { "enchantment-resistfire", 12 },
-        //     { "enchantment-resistfrost", 13 },
-        //     { "enchantment-resistheal", 14 },
-        //     { "enchantment-resistinjury", 15 },
-        //     { "enchantment-resistpoison", 16 },
-        //     { "enchantment-shocking", 17 }
-        // };
         // Deboog
         public bool Debug = false;
         // Version
@@ -96,14 +76,13 @@ namespace KRPGLib.Enchantment
         {
             if (config != null) 
             {
-                // DisabledEnchants = new List<string>();
-                // DisabledEnchants = config.DisabledEnchants;
-                // if (config.MaxEnchantTier >= 0) MaxEnchantTier = config.MaxEnchantTier;
                 if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
                 if (config.EnchantTimeOverride >= 0) EnchantTimeOverride = config.EnchantTimeOverride;
                 if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;
                 if (config.MaxLatentEnchants != 3) MaxLatentEnchants = config.MaxLatentEnchants;
-                if (config.MaxDamageEnchants != -1) MaxDamageEnchants = config.MaxDamageEnchants;
+                
+                if (!config.MaxEnchantsByCategory.ContainsKey("Damage"))
+                    MaxEnchantsByCategory.Add("Damage", -1);
 
                 if (config.ValidReagents?.Count > 0) ValidReagents = config.ValidReagents;
                 if (!config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
@@ -112,6 +91,14 @@ namespace KRPGLib.Enchantment
                     ValidReagents.Add("game:gem-diamond-rough", 1);
                 if (!config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                     ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
+
+                if (config.ReagentPotentialTiers?.Count > 0) ReagentPotentialTiers = config.ReagentPotentialTiers;
+                if (!config.ReagentPotentialTiers.ContainsKey("low"))
+                    ReagentPotentialTiers.Add("low", 2);
+                if (!config.ReagentPotentialTiers.ContainsKey("medium"))
+                    ReagentPotentialTiers.Add("medium", 3);
+                if (!config.ReagentPotentialTiers.ContainsKey("high"))
+                    ReagentPotentialTiers.Add("high", 5);
 
                 if (config.CustomPatches?.Count > 0) CustomPatches = config.CustomPatches;
                 if (!config.CustomPatches.ContainsKey("AncientArmory"))

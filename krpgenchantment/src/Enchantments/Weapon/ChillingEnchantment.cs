@@ -18,7 +18,7 @@ namespace KRPGLib.Enchantment
     public class ChillingEnchantment : Enchantment
     {
         // public float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", -10); } }
-        float PowerMultiplier { get { return (float)(double)Modifiers.GetValueOrDefault("PowerMultiplier", -10.00); } }
+        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", -10.00)); } }
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

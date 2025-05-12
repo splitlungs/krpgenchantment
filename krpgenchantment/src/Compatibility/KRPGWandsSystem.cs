@@ -20,13 +20,12 @@ namespace KRPGLib.Enchantment
         ICoreServerAPI sApi;
         public void StartServerSide(ICoreAPI api)
         {
-            if (api.Side != EnumAppSide.Server) return;
+            if (!(api is ICoreServerAPI sapi)) return;
 
             Api = api;
-            sApi = (ICoreServerAPI)api;
+            sApi = sapi;
 
-
-            KRPGWandsMod WandsMod = sApi.ModLoader.GetModSystem<KRPGWandsMod>();
+            KRPGWandsMod WandsMod = sapi.ModLoader.GetModSystem<KRPGWandsMod>();
             if (WandsMod != null)
             {
                 WandsMod.OnDealWandDamage += OnProjectileDamaged;
@@ -34,34 +33,11 @@ namespace KRPGLib.Enchantment
         }
         public void OnProjectileDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (Api.EnchantAccessor().GetEnchantments(slot.Itemstack) == null) return;
+            if (sApi?.EnchantAccessor()?.GetEnchantments(slot?.Itemstack) == null) return;
 
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
             bool didEnchants = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
             damage = (float)parameters["damage"];
-
-            // if (!target.HasBehavior<EnchantmentEntityBehavior>())
-            //     return;
-            // 
-            // EnchantmentEntityBehavior eeb = target.GetBehavior<EnchantmentEntityBehavior>();
-            // eeb.TryEnchantments(damageSource.CauseEntity as EntityAgent, slot.Itemstack);
-
-            // Manual Healing check to overwrite damage
-            // Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(slot.Itemstack);
-            // if (enchants != null)
-            // {
-            //     if (enchants.ContainsKey("healing"))
-            //         damage = 0;
-            // 
-            //     foreach (KeyValuePair<string, int> keyValuePair in enchants) {
-            //         float amountf = 1f;
-            //         EnchantmentSource enchant = new EnchantmentSource() { Trigger = "OnAttack", Code = keyValuePair.Key, Power = keyValuePair.Value };
-            //         object[] parameters = new object[1] { amountf };
-            //         bool didEnchantment = sApi.EnchantAccessor().DoEnchantment(enchant, slot, ref parameters);
-            //         if (didEnchantment != true)
-            //             return;
-            //     }
-            // }
         }
     }
 }

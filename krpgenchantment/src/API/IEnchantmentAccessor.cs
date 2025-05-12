@@ -20,7 +20,24 @@ namespace KRPGLib.Enchantment.API
     public interface IEnchantmentAccessor
     {
         #region Assessments
+        /// <summary>
+        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// </summary>
+        /// <param name="enchantCode"></param>
+        /// <returns></returns>
         IEnchantment GetEnchantment(string enchantCode);
+        /// <summary>
+        /// Returns the number of Enchantments in the EnchantmentRegistry that match the provided category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        int GetEnchantCategoryCount(string category);
+        /// <summary>
+        /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        List<string> GetEnchantmentsInCategory(string category);
         /// <summary>
         /// Returns all Enchantments in the ItemStack's Attributes or null if none are found.
         /// </summary>

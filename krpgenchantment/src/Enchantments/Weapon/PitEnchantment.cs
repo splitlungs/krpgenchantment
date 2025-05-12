@@ -17,8 +17,8 @@ namespace KRPGLib.Enchantment
     {
         // float MulXZ { get { return Attributes.GetFloat("MulXZ", 0.5f); } }
         // float MulY { get { return Attributes.GetFloat("MulY", 1f); } }
-        float MulXZ { get { return (float)Convert.ToSingle(Modifiers.TryGetValue("MulXZ")); } }
-        float MulY { get { return (float)(double)Modifiers.GetValueOrDefault("MulY", 1.0); } }
+        float MulXZ { get { return Convert.ToSingle(Modifiers.TryGetValue("MulXZ")); } }
+        float MulY { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("MulY", 1.00)); } }
 
         public PitEnchantment(ICoreAPI api) : base(api)
         {
@@ -34,7 +34,7 @@ namespace KRPGLib.Enchantment
             // Attributes.SetFloat("MulY", 1f);
             Modifiers = new Dictionary<string, object>()
             {
-                { "MulXZ", 0.5 }, {"MulY", 1.0 }
+                { "MulXZ", 0.50 }, {"MulY", 1.00 }
             };
         }
         public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)

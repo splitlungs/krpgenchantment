@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Vintagestory.API.Config;
 using static System.Net.Mime.MediaTypeNames;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -65,11 +66,11 @@ namespace KRPGLib.Enchantment
                     {
                         Enabled = enchant.Enabled,
                         Code = enchant.Code,
+                        Category = enchant.Category,
                         LoreCode = enchant.LoreCode,
                         LoreChapterID = enchant.LoreChapterID,
                         MaxTier = enchant.MaxTier,
                         Modifiers = enchant.Modifiers
-                        // Attributes = enchant.Attributes.Clone()
                     };
 
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
@@ -142,9 +143,49 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Assessments
+        /// <summary>
+        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// </summary>
+        /// <param name="enchantCode"></param>
+        /// <returns></returns>
         public IEnchantment GetEnchantment(string enchantCode)
         {
             return EnchantmentRegistry.GetValueOrDefault(enchantCode, null);
+        }
+        /// <summary>
+        /// Returns the number of Enchantments in the EnchantmentRegistry that match the provided category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public int GetEnchantCategoryCount(string category)
+        {
+            int count = 0;
+            foreach (KeyValuePair<string, Enchantment> enchant in EnchantmentRegistry)
+            {
+                if (GetEnchantment(enchant.Key)?.Category?.ToLower() == category)
+                    count++;
+            }
+            return count;
+        }
+        /// <summary>
+        /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public List<string> GetEnchantmentsInCategory(string category)
+        {
+            List<string> s = new List<string>();
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                IEnchantment enchant = Api.EnchantAccessor().GetEnchantment(pair.Key);
+                if (enchant == null) continue;
+                if (enchant.Category.ToLower() == category)
+                {
+                    s.Add(enchant.Code);
+                }
+            }
+            if (s.Count <= 0) return null;
+            return s;
         }
         /// <summary>
         /// Returns all Enchantments in the ItemStack's Attributes or null if none are found.
@@ -154,20 +195,36 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, int> GetEnchantments(ItemStack itemStack)
         {
             if (EnchantingConfigLoader.Config.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Attempting to GetEnchantments on {0}", itemStack.GetName());
-
+                Api.Logger.Event("[KRPGEnchantment] Attempting to GetEnchantments on {0}", itemStack.GetName());
+            // Get Attributes
             ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null)
                 return null;
-            ITreeAttribute active = tree?.GetTreeAttribute("active");
-            if (active == null)
-                return null;
-
-            // Get Enchantments
-            Dictionary<string, int> enchants = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, IAttribute> pair in active)
+            // Convert 0.6.x enchantments to 0.7.x "active" string. This will be removed in a later release.
+            string oldActive = null;
+            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
             {
-                enchants.Add(pair.Key, (int)pair.Value.GetValue());
+                int power = tree.GetInt(val.ToString());
+                if (power > 0)
+                {
+                    oldActive += val.ToString() + ":" + power + ";";
+                    tree.SetInt(val.ToString(), 0);
+                }
+            }
+            if (oldActive != null) tree.SetString("active", oldActive);
+            // Get Active Enchantments string
+            string active = tree.GetString("active", null);
+            if (active == null) return null;
+            // Convert Active Enchantments string to Dictionary
+            string[] activeStrings = active.Split(";",StringSplitOptions.RemoveEmptyEntries);
+            Dictionary<string, int> enchants = new Dictionary<string, int>();
+            foreach (string s in activeStrings)
+            {
+                string[] aa = s.Split(":");
+                if (EnchantingConfigLoader.Config.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1}.", aa[0], aa[1]);
+                enchants.Add(aa[0], Convert.ToInt32(aa[1]));
+
             }
             // Throw null if we failed to get anything
             if (enchants.Count <= 0) return null;

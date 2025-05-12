@@ -22,7 +22,6 @@ namespace KRPGLib.Enchantment
     /// </summary>
     public class EnchantmentsLoader : ModSystem
     {
-        ICoreServerAPI sApi;
         public override double ExecuteOrder()
         {
             // It's important to load after EnchantmentAccessor, but before EnchantmentRecipes loads. 0.1 - 0.9 is valid.
@@ -37,7 +36,6 @@ namespace KRPGLib.Enchantment
         public override void AssetsLoaded(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
-            this.sApi = sapi;
 
             // Make sure each value is unique when registering your enchantment class, so as to prevent conflicts when adding your own Enchantments.
             // Prefix it with something like "mymod-myenchant" as the className.

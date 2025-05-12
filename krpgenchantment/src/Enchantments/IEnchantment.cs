@@ -36,6 +36,13 @@ namespace KRPGLib.Enchantment.API
         // Used to manage generic ticks. You still have to register your tick method with the API.
         Dictionary<long, EnchantTick> TickRegistry { get; set; }
         void Initialize(EnchantmentProperties properties);
+        /// <summary>
+        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// </summary>
+        /// <param name="inStack"></param>
+        /// <param name="enchantPower"></param>
+        /// <returns></returns>
+        bool TryEnchantItem(ref ItemStack inStack, int enchantPower);
         #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.

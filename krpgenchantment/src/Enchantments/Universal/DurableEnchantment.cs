@@ -17,7 +17,7 @@ namespace KRPGLib.Enchantment
     public class DurableEnchantment : Enchantment
     {
         // double PowerMultiplier { get { return Attributes.GetDouble("PowerMultiplier", 0.10d); } }
-        double PowerMultiplier { get { return (double)Modifiers.GetValueOrDefault("PowerMultiplier", 0.10d); } }
+        double PowerMultiplier { get { return Convert.ToDouble(Modifiers.GetValueOrDefault("PowerMultiplier", 0.10d)); } }
         public DurableEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

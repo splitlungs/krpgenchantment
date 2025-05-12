@@ -22,15 +22,15 @@ namespace KRPGLib.Enchantment
         // int MaxDamage { get { return Attributes.GetInt("MaxDamage", 3); } }
         // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistfire"); } }
-        int MaxDamage { get { return (int)(long)Modifiers.GetValueOrDefault("MaxDamage", 3); } }
-        float PowerMultiplier { get { return (float)(double)Modifiers.GetValueOrDefault("PowerMultiplier", 0.10f); } }
+        int MaxDamage { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("MaxDamage", 3)); } }
+        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 0.10f)); } }
 
         public FlamingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
             Code = "flaming";
-            Category = "Weapon";
+            Category = "Damage";
             LoreCode = "enchantment-flaming";
             LoreChapterID = 2;
             MaxTier = 5;

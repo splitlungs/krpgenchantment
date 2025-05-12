@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using KRPGLib.Enchantment.API;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
@@ -101,17 +103,9 @@ namespace KRPGLib.Enchantment
         /// <param name="inSlot"></param>
         /// <param name="rSlot"></param>
         /// <returns></returns>
-        public ItemStack OutStack(ICoreAPI api, ItemSlot inSlot, ItemSlot rSlot)
+        public ItemStack OutStack(ICoreServerAPI api, ItemSlot inSlot, ItemSlot rSlot)
         {
             if (inSlot.Empty || rSlot.Empty) return null;
-
-            // Setup a new ItemStack
-            ItemStack outStack = inSlot.Itemstack.Clone();
-            // Setup Quantity
-            outStack.StackSize = IngredientQuantity(inSlot);
-
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
 
             // Setup Reagent Override
             bool rOverride = false;
@@ -135,54 +129,30 @@ namespace KRPGLib.Enchantment
             {
                 api.Logger.Warning("[KRPGEnchantment] Could not get Config override for reagent potential.");
             }
-            // Dictionary<string, int> curEnchants = api.GetEnchantments(inSlot);
-            ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
-            ITreeAttribute active = tree?.GetOrAddTreeAttribute("active");
-            // Apply Enchantments
+
+            // Setup a new ItemStack
+            ItemStack outStack = inSlot.Itemstack.Clone();
+            // Setup Quantity
+            outStack.StackSize = IngredientQuantity(inSlot);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+
             foreach (KeyValuePair<string, int> enchant in Enchantments)
             {
-                // Overwrite Healing
-                if (enchant.Key == EnumEnchantments.healing.ToString())
-                {
-                    active.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    active.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    active.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
-                }
-                // Overwrite Alternate Damage
-                else if (enchant.Key == EnumEnchantments.flaming.ToString() || enchant.Key == EnumEnchantments.frost.ToString() 
-                    || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
-                    )
-                    tree.SetInt(EnumEnchantments.healing.ToString(), 0);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Attempting to write {0}: {1} to item.", enchant.Key, enchant.Value);
                 // Re-roll if the recipe limits max power
-                if (rOverride)
-                    power = enchant.Value;
-                // Write Enchant
-                tree.SetInt(enchant.Key, power);
-            }
-            // Limit damage enchants.
-            int maxDE = EnchantingConfigLoader.Config.MaxDamageEnchants;
-            if (maxDE >= 0)
-            {
-                int numDmgEnchants = 0;
-                if (active.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
-                if (numDmgEnchants > maxDE)
-                {
-                    int roll = api.World.Rand.Next(1, 5);
-                    if (roll == 1) active.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    else if (roll == 2) active.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    else if (roll == 3) active.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    else if (roll == 4) active.SetInt(EnumEnchantments.shocking.ToString(), 0);
-                }
+                if (rOverride) power = enchant.Value;
+                IEnchantment ench = api.EnchantAccessor().GetEnchantment(enchant.Key);
+                if (ench == null) continue;
+                bool didEnchant = false;
+                if (ench.Enabled == true) 
+                    didEnchant = ench.TryEnchantItem(ref outStack, power);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
             }
 
-            tree.MergeTree(active);
-            tree.RemoveAttribute("latentEnchantTime");
-            tree.RemoveAttribute("latentEnchants");
-            outStack.Attributes.MergeTree(tree);
             return outStack;
         }
 

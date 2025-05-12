@@ -19,8 +19,8 @@ namespace KRPGLib.Enchantment
     {
         // int TickMultiplier { get { return Attributes.GetInt("TickMultiplier", 1); } }
         // int TickDuration { get { return Attributes.GetInt("TickDuration", 12500); } }
-        int TickMultiplier { get { return (int)(long)Modifiers.GetValueOrDefault("TickMultiplier", 1); } }
-        int TickDuration { get { return (int)(long)Modifiers.GetValueOrDefault("TickDuration", 12500); } }
+        int TickMultiplier { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("TickMultiplier", 1)); } }
+        int TickDuration { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("TickDuration", 12500)); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

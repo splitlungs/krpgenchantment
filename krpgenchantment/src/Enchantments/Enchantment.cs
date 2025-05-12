@@ -14,6 +14,7 @@ using System.IO;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
+using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
@@ -26,7 +27,7 @@ namespace KRPGLib.Enchantment
         public bool Enabled = true;
         // How the Enchantment is referenced in code
         public string Code = "enchantment";
-        // Used to sort the configs currently
+        // Used for organizing the types of enchantments. Limited in the Config file
         public string Category = "Universal";
         // The code used to lookup the enchantment's Lore in the lang file
         public string LoreCode = "enchantment-lore";
@@ -123,7 +124,7 @@ namespace KRPGLib.Enchantment
         public bool Enabled { get; set; }
         // How the Enchantment is referenced in code
         public string Code { get; set; }
-        // Used to sort the configs currently
+        // Used for organizing the types of enchantments. Limited in the Config file
         public string Category { get; set; }
         // The code used to lookup the enchantment's Lore in the lang file
         public string LoreCode { get; set; }
@@ -164,68 +165,89 @@ namespace KRPGLib.Enchantment
             if (TickRegistry == null) TickRegistry = new Dictionary<long, EnchantTick>();
             ConfigParticles();
         }
-
-        public virtual ItemStack TryEnchantItem(EnchantingRecipe recipe, ItemStack inStack, int qty, int enchantPower)
+        /// <summary>
+        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// </summary>
+        /// <param name="inStack"></param>
+        /// <param name="enchantPower"></param>
+        /// <returns></returns>
+        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower)
         {
-            if (recipe == null || inStack == null) return null;
-
-            // Setup a new ItemStack
-            ItemStack outStack = inStack.Clone();
-            // Setup Quantity
-            outStack.StackSize = qty;
+            if (inStack == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inStack.GetName(), outStack.StackSize);
+                Api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
 
-            int power = enchantPower;
-            ITreeAttribute tree = outStack.Attributes?.GetOrAddTreeAttribute("enchantments");
-            ITreeAttribute active = tree?.GetOrAddTreeAttribute("active");
-            // Apply Enchantments
-            foreach (KeyValuePair<string, int> enchant in recipe.Enchantments)
+            // Setup Enchants
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inStack);
+            if (enchants != null)
             {
-                // Overwrite Healing
-                if (enchant.Key == EnumEnchantments.healing.ToString())
-                {
-                    active.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    active.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    active.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    tree.SetInt(EnumEnchantments.shocking.ToString(), 0);
-                }
-                // Overwrite Alternate Damage
-                else if (enchant.Key == EnumEnchantments.flaming.ToString() || enchant.Key == EnumEnchantments.frost.ToString()
-                    || enchant.Key == EnumEnchantments.harming.ToString() || enchant.Key == EnumEnchantments.shocking.ToString()
-                    )
-                    tree.SetInt(EnumEnchantments.healing.ToString(), 0);
-
-                // Write Enchant
-                tree.SetInt(enchant.Key, power);
+                OverwriteHealOrDamage(ref enchants);
+                LimitEnchantCategory(ref enchants);
             }
-            // Limit damage enchants.
-            int maxDE = EnchantingConfigLoader.Config.MaxDamageEnchants;
-            if (maxDE >= 0)
+            else
+                enchants = new Dictionary<string, int>();
+            // Write Enchant
+            enchants.Add(Code, enchantPower);
+            string enchantString = "";
+            foreach (KeyValuePair<string, int> pair in enchants)
             {
-                int numDmgEnchants = 0;
-                if (active.GetInt(EnumEnchantments.flaming.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.frost.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.harming.ToString(), 0) > 0) numDmgEnchants++;
-                if (active.GetInt(EnumEnchantments.shocking.ToString(), 0) > 0) numDmgEnchants++;
-                if (numDmgEnchants > maxDE)
-                {
-                    int roll = Api.World.Rand.Next(1, 5);
-                    if (roll == 1) active.SetInt(EnumEnchantments.flaming.ToString(), 0);
-                    else if (roll == 2) active.SetInt(EnumEnchantments.frost.ToString(), 0);
-                    else if (roll == 3) active.SetInt(EnumEnchantments.harming.ToString(), 0);
-                    else if (roll == 4) active.SetInt(EnumEnchantments.shocking.ToString(), 0);
-                }
+                enchantString += pair.Key + ":" + pair.Value + ";";
             }
-
-            tree.MergeTree(active);
+            ITreeAttribute tree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            tree.SetString("active", enchantString);
             tree.RemoveAttribute("latentEnchantTime");
             tree.RemoveAttribute("latentEnchants");
-            outStack.Attributes.MergeTree(tree);
-            return outStack;
-        }
+            inStack.Attributes.MergeTree(tree);
 
+            return true;
+
+        }
+        /// <summary>
+        /// Overwrites "Healing" or a "Damage" category enchant
+        /// </summary>
+        /// <param name="enchants"></param>
+        public virtual void OverwriteHealOrDamage(ref Dictionary<string, int> enchants)
+        {
+            List<string> damageEnchants = Api.EnchantAccessor().GetEnchantmentsInCategory("damage");
+            if (damageEnchants != null)
+            {
+                // Overwrite Healing
+                if (Code == "healing")
+                {
+                    foreach (string s in damageEnchants)
+                        if (enchants.ContainsKey(s)) enchants.Remove(s);
+                }
+                // Overwrite Alternate Damage
+                else if (damageEnchants.Contains(Code))
+                    enchants.Remove("healing");
+            }
+        }
+        /// <summary>
+        /// Removes a random Enchantment of a type as limited by MaxEnchantsByCategory in the main config file.
+        /// </summary>
+        /// <param name="enchants"></param>
+        public virtual void LimitEnchantCategory(ref Dictionary<string, int> enchants)
+        {
+            foreach (KeyValuePair<string, int> pair1 in EnchantingConfigLoader.Config.MaxEnchantsByCategory)
+            {
+                List<string> categoryEnchants = Api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
+                if (categoryEnchants != null && pair1.Value >= 0)
+                {
+                    List<string> activeEnchants = new List<string>();
+                    foreach (KeyValuePair<string, int> pair2 in enchants)
+                    {
+                        if (categoryEnchants.Contains(pair2.Key))
+                            activeEnchants.Add(pair2.Key);
+                    }
+                    while (activeEnchants.Count >= pair1.Value)
+                    {
+                        int roll = Api.World.Rand.Next(0, activeEnchants.Count);
+                        enchants.Remove(activeEnchants[roll]);
+                    }
+                }
+            }
+        }
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
@@ -247,7 +269,6 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Error("[KRPGEnchantment] Error attempting to trigger an Enchantment: {0}", ex);
             }
         }
-
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>

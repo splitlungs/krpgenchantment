@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "damage";
-            Category = "Weapon";
+            Category = "Damage";
             LoreCode = "enchantment-damage";
             LoreChapterID = -1;
             MaxTier = 5;
