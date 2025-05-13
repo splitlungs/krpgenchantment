@@ -17,8 +17,8 @@ namespace KRPGLib.Enchantment
     {
         // string DamageResist { get { return Attributes.GetString("DamageResist", "blunt;piercing;slashing"); } }
         // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
-        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "fire"); } }
-        float PowerMultiplier { get { return (float)Modifiers.GetValueOrDefault("PowerMultiplier", 0.1f); } }
+        string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
+        float PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
         public DamageResistEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -31,12 +31,12 @@ namespace KRPGLib.Enchantment
             // Attributes = new TreeAttribute();
             // Attributes.SetString("DamageResist", "blunt;piercing;slashing");
             // Attributes.SetFloat("PowerMultiplier", 0.1f);
-            Modifiers = new Dictionary<string, object>()
+            Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }
             };
         }
-        public override void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());

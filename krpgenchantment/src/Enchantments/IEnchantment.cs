@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment.API
         // The maximum functional Power of an Enchantment
         int MaxTier { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
-        Dictionary<string, object> Modifiers { get; set; }
+        EnchantModifiers Modifiers { get; set; }
         // Configured in struct, assigned by config file
         // ITreeAttribute Attributes { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
@@ -49,17 +49,24 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        void OnTrigger(EnchantmentSource enchant, ref Dictionary<string, object>? parameters);
+        void OnTrigger(EnchantmentSource enchant, ref EnchantModifiers? parameters);
         #nullable disable
+        /// <summary>
+        /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
+        /// </summary>
+        /// <param name="enchant"></param>
+        void OnTrigger(EnchantmentSource enchant);
         /// <summary>
         /// Triggered from an enchanted item when it successfully attacks an entity.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters);
-        void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters);
-        void OnToggle(EnchantmentSource enchant);
-        void OnStart(EnchantmentSource enchant);
-        void OnEnd(EnchantmentSource enchant);
+        void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Triggered when an entity wearing an enchanted item is successfully attacked.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters);
     }
 }

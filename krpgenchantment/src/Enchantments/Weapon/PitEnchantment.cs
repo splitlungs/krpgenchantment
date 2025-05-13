@@ -15,11 +15,8 @@ namespace KRPGLib.Enchantment
 {
     public class PitEnchantment : Enchantment
     {
-        // float MulXZ { get { return Attributes.GetFloat("MulXZ", 0.5f); } }
-        // float MulY { get { return Attributes.GetFloat("MulY", 1f); } }
-        float MulXZ { get { return Convert.ToSingle(Modifiers.TryGetValue("MulXZ")); } }
-        float MulY { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("MulY", 1.00)); } }
-
+        float MulXZ { get { return Modifiers.GetFloat("MulXZ"); } }
+        float MulY { get { return Modifiers.GetFloat("MulY"); } }
         public PitEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -29,15 +26,12 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-pit";
             LoreChapterID = 9;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetFloat("MulXZ", 0.5f);
-            // Attributes.SetFloat("MulY", 1f);
-            Modifiers = new Dictionary<string, object>()
+            Modifiers = new EnchantModifiers()
             {
                 { "MulXZ", 0.50 }, {"MulY", 1.00 }
             };
         }
-        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             BlockPos bpos = enchant.TargetEntity.SidedPos.AsBlockPos;
             List<Vec3d> pitArea = new List<Vec3d>();

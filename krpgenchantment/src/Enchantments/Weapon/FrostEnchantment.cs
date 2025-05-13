@@ -18,13 +18,9 @@ namespace KRPGLib.Enchantment
     public class FrostEnchantment : Enchantment
     {
         EnumDamageType DamageType { get { return EnumDamageType.Frost; } }
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "resistfrost"); } }
-        // int MaxDamage { get { return Attributes.GetInt("MaxDamage", 3); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
-        string DamageResist { get { return (string)Modifiers.GetValueOrDefault("DamageResist", "resistfrost"); } }
-        int MaxDamage { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("MaxDamage", 3)); } }
-        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 0.10f)); } }
-
+        string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
+        int MaxDamage { get { return Modifiers.GetInt("MaxDamage"); } }
+        float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public FrostEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -34,43 +30,107 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-frost";
             LoreChapterID = 3;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "resistfrost");
-            // Attributes.SetInt("MaxDamage", 3);
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
-            Modifiers = new Dictionary<string, object>()
+            Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
         }
-        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void ConfigParticles()
         {
+            ParticleProps = new AdvancedParticleProperties[3];
+            ParticleProps[0] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+            {
+                NatFloat.createUniform(0.2f, 0.05f),
+                NatFloat.createUniform(0.5f, 0.1f),
+                NatFloat.createUniform(0.2f, 0.05f)
+            },
+                Size = NatFloat.createUniform(0.25f, 0f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
+                SelfPropelled = true
+            };
+            ParticleProps[1] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+            {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+            },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f),
+                NatFloat.createUniform(0f, 0.02f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                VertexFlags = 128,
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
+                LifeLength = NatFloat.createUniform(0.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad
+            };
+            ParticleProps[2] = new AdvancedParticleProperties
+            {
+                HsvaColor = new NatFloat[4]
+                {
+                NatFloat.createUniform(128f, 0f),
+                NatFloat.createUniform(128f, 20f),
+                NatFloat.createUniform(255f, 50f),
+                NatFloat.createUniform(255f, 0f)
+                },
+                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
+                GravityEffect = NatFloat.createUniform(0f, 0f),
+                Velocity = new NatFloat[3]
+                {
+                NatFloat.createUniform(0f, 0.05f),
+                NatFloat.createUniform(0.2f, 0.3f),
+                NatFloat.createUniform(0f, 0.05f)
+                },
+                Size = NatFloat.createUniform(0.3f, 0.05f),
+                Quantity = NatFloat.createUniform(0.25f, 0f),
+                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
+                LifeLength = NatFloat.createUniform(1.5f, 0f),
+                ParticleModel = EnumParticleModel.Quad,
+                SelfPropelled = true
+            };
+        }
+        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
 
-            // Configure Damage
-            // EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
+            // Check if it has HP first, since we have to address this directly.
+            EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
+            if (hp == null) return;
 
+            // Configure Damage
             DamageSource source = enchant.ToDamageSource();
             source.Type = DamageType;
-
-            // if (byEntity != null)
-            // {
-            //     source.CauseEntity = byEntity;
-            //     source.SourceEntity = byEntity;
-            // }
-            // if (stack != null)
-            //     source.DamageTier = stack.Collectible.ToolTier;
-
             float dmg = 0;
-
             for (int i = 1; i <= enchant.Power; i++)
             {
-                dmg += Api.World.Rand.Next(MaxDamage +1);
+                dmg += Api.World.Rand.Next(MaxDamage + 1);
                 dmg += Api.World.Rand.NextSingle();
                 dmg += enchant.Power * PowerMultiplier;
             }
-            
+
             // Apply Defenses
             if (enchant.TargetEntity is IPlayer player)
             {
@@ -87,7 +147,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
                             int rPower = enchants.GetValueOrDefault(DamageResist, 0);
                             resist += rPower * 0.1f;
                         }
@@ -95,11 +155,8 @@ namespace KRPGLib.Enchantment
                     resist = 1 - resist;
                     dmg = Math.Max(0f, dmg * resist);
                 }
-                // IInventory inv = player.InventoryManager.GetOwnInventory("character");
-                // IInventory inv = agent?.GearInventory;
             }
 
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
             // Apply Damage
             if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))
             {
@@ -108,11 +165,7 @@ namespace KRPGLib.Enchantment
 
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
-                bool didDamage = enchant.TargetEntity.ReceiveDamage(source, dmg);
-                if (didDamage != true)
-                    Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, enchant.TargetEntity.GetName());
-
-                // hp.OnEntityReceiveDamage(source, ref dmg);
+                hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
                 GenerateParticles(enchant.TargetEntity, source.Type, dmg);
@@ -127,11 +180,7 @@ namespace KRPGLib.Enchantment
 
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
-                enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>().OnEntityReceiveDamage(source, ref dmg);
-                // if (didDamage != true)
-                //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
-
-                // hp.OnEntityReceiveDamage(source, ref dmg);
+                hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
                 GenerateParticles(enchant.TargetEntity, source.Type, dmg);
@@ -141,7 +190,6 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Warning("[KRPGEnchantment] Tried to deal {0} damage to {1}, but it should not receive damage!", dmg, enchant.TargetEntity.GetName());
             }
-
         }
     }
 }

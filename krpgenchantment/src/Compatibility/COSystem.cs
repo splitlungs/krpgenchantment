@@ -44,9 +44,9 @@ namespace KRPGLib.Enchantment
                 return;
             }
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
             bool didEnchantments = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
-            damage = (float)parameters["damage"];
+            damage = parameters.GetFloat("damage");
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
@@ -62,9 +62,9 @@ namespace KRPGLib.Enchantment
                 return;
             }
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", damage } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
             bool didEnchantments = Api.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, ref parameters);
-            damage = (float)parameters["damage"];
+            damage = parameters.GetFloat("damage");
 
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");

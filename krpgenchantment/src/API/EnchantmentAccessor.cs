@@ -33,8 +33,10 @@ namespace KRPGLib.Enchantment
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
         public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
+        /// <summary>
+        /// Used in CreateEnchantment(), as configured by RegisterEnchantmentClass().
+        /// </summary>
         private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
-        public Dictionary<long, EnchantTick> TickRegistry { get; set; }
 
         #region Registration
         /// <summary>
@@ -250,14 +252,7 @@ namespace KRPGLib.Enchantment
                 if (lEnchants != null)
                 {
                     foreach (string str in lEnchants)
-                    {
-                        // Temporary measure to resolve enchantment-resistelectric bug
-                        if (str == "krpgenchantment:enchantment-resistelectric")
-                        {
-                            string s = str + "ity";
-                        }
                         enchants.Add(str);
-                    }
                 }
                 if (enchants?.Count < EnchantingConfigLoader.Config?.MaxLatentEnchants)
                     enchants = null;
@@ -510,7 +505,7 @@ namespace KRPGLib.Enchantment
         /// <param name="targetEntity"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters)
+        public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
@@ -518,9 +513,6 @@ namespace KRPGLib.Enchantment
             Dictionary<string, int> enchants = GetEnchantments(slot.Itemstack);
             if (enchants != null)
             {
-                if (enchants.ContainsKey("healing") && parameters?.ContainsKey("damage") == true)
-                    parameters["damage"] = 0;
-
                 foreach (KeyValuePair<string, int> pair in enchants)
                 {
                     IEnchantment enc = GetEnchantment(pair.Key);
@@ -541,8 +533,7 @@ namespace KRPGLib.Enchantment
                         CauseEntity = byEntity,
                         TargetEntity = targetEntity
                     };
-
-                    enc.OnTrigger(enchant, ref parameters);
+                    enc.OnTrigger(enchant);
                 }
                 return true;
             }
@@ -551,13 +542,13 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="slot"></param>
+        /// <param name="stack"></param>
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters)
+        public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
@@ -586,7 +577,100 @@ namespace KRPGLib.Enchantment
                         TargetEntity = targetEntity
                     };
 
-                    enc.OnTrigger(enchant, ref parameters);
+                    enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            Dictionary<string, int> enchants = GetEnchantments(slot.Itemstack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceStack = slot.Itemstack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity
+                    };
+                    if (parameters != null)
+                        enc.OnTrigger(enchant, ref parameters);
+                    else
+                        enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            Dictionary<string, int> enchants = GetEnchantments(stack);
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceStack = stack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity
+                    };
+
+                    if (parameters != null)
+                        enc.OnTrigger(enchant, ref parameters);
+                    else
+                        enc.OnTrigger(enchant);
                 }
                 return true;
             }
@@ -598,7 +682,7 @@ namespace KRPGLib.Enchantment
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool TryEnchantment(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public bool TryEnchantment(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (GetEnchantment(enchant.Code)?.Enabled != true)
                 return false;

@@ -14,6 +14,7 @@ using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.ServerMods.NoObf;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
@@ -82,6 +83,33 @@ namespace KRPGLib.Enchantment
             // ConfigParticles();
 
             // sApi.World.RegisterGameTickListener(TickPassiveParticles, 500);
+        }
+        public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
+        {
+            if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
+                // Get Enchantments
+                Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+                if (enchants != null)
+                {
+
+                    // Should avoid default during healing
+                    if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                        handled = EnumHandling.PreventDefault;
+                    else
+                        handled = EnumHandling.Handled;
+
+                    EnchantModifiers parameters = new EnchantModifiers();
+                    Api.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
+                }
+            }
+            else
+            {
+                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+            }
+            base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }
         /*
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)

@@ -17,7 +17,7 @@ namespace KRPGLib.Enchantment
     public class DurableEnchantment : Enchantment
     {
         // double PowerMultiplier { get { return Attributes.GetDouble("PowerMultiplier", 0.10d); } }
-        double PowerMultiplier { get { return Convert.ToDouble(Modifiers.GetValueOrDefault("PowerMultiplier", 0.10d)); } }
+        double PowerMultiplier { get { return Modifiers.GetDouble("PowerMultiplier"); } }
         public DurableEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -29,9 +29,9 @@ namespace KRPGLib.Enchantment
             MaxTier = 5;
             // Attributes = new TreeAttribute();
             // Attributes.SetDouble("PowerMultiplier", 0.10);
-            Modifiers = new Dictionary<string, object> { { "PowerMultiplier", 0.10d } };
+            Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
         }
-        public override void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());

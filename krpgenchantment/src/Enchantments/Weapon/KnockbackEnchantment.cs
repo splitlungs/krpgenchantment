@@ -15,8 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class KnockbackEnchantment : Enchantment
     {
-        // double PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 20); } }
-        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 20.00)); } }
+        float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public KnockbackEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -26,11 +25,9 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-knockback";
             LoreChapterID = 7;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetDouble("PowerMultiplier", 20);
-            Modifiers = new Dictionary<string, object>() { {"PowerMultiplier", 20.00 } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 20.00 } };
         }
-        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Knockback enchantment.", enchant.TargetEntity.GetName());

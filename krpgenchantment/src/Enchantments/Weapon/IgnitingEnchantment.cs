@@ -17,30 +17,24 @@ namespace KRPGLib.Enchantment
 {
     public class IgnitingEnchantment : Enchantment
     {
-        // int TickMultiplier { get { return Attributes.GetInt("TickMultiplier", 1); } }
-        // int TickDuration { get { return Attributes.GetInt("TickDuration", 12500); } }
-        int TickMultiplier { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("TickMultiplier", 1)); } }
-        int TickDuration { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("TickDuration", 12500)); } }
+        int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
+        long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
             Code = "igniting";
-            Category = "Weapon";
+            Category = "Tick";
             LoreCode = "enchantment-igniting";
             LoreChapterID = 6;
             MaxTier = 5;
-            Modifiers = new Dictionary<string, object>()
+            Modifiers = new EnchantModifiers()
             {
                 {"TickMultiplier", 1 }, {"TickDuration", 12500 }
             };
-            // Attributes = new TreeAttribute();
-            // Attributes.SetInt("TickMultiplier", 1);
-            // Attributes.SetInt("TickDuration", 12500);
-
             Api.World.RegisterGameTickListener(IgniteTick, 1000);
         }
-        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Igniting enchantment.", enchant.TargetEntity.GetName());
@@ -50,30 +44,42 @@ namespace KRPGLib.Enchantment
                 TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = tickMax;
             else
             {
-                EnchantTick eTick = new EnchantTick() { TicksRemaining = tickMax, TickTimeStart = Api.World.Calendar.ElapsedSeconds, LastTickTime = 0 };
+                enchant.TargetEntity.Ignite();
+                EnchantTick eTick = new EnchantTick() { TicksRemaining = tickMax, LastTickTime = Api.World.ElapsedMilliseconds };
                 TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
             }
         }
-
         /// <summary>
         /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.
         /// </summary>
-        /// <param name="power"></param>
-        private void IgniteTick(float dt)
+        public void IgniteTick(float dt)
         {
-            foreach (KeyValuePair<long, EnchantTick> keyValuePair in TickRegistry) 
+            foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry) 
             {
-                if (keyValuePair.Value.TicksRemaining > 0 && (keyValuePair.Value.LastTickTime - keyValuePair.Value.TickTimeStart) >= TickDuration)
+                long curDur = Api.World.ElapsedMilliseconds - pair.Value.LastTickTime;
+                if (pair.Value.TicksRemaining > 0 && curDur >= TickDuration)
                 {
-                    Entity entity = Api.World.GetEntityById(keyValuePair.Key);
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Igniting enchantment is performing an Ignite Tick on {0}.", pair.Key);
+                    Entity entity = Api.World.GetEntityById(pair.Key);
+                    if (entity == null)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Igniting enchantment Ticked a null entity. Removing from TickRegistry.");
+                        TickRegistry[pair.Key].Dispose();
+                        TickRegistry.Remove(pair.Key);
+                        continue;
+                    }
                     entity.Ignite();
-                    int ticks = keyValuePair.Value.TicksRemaining - 1;
-                    TickRegistry[keyValuePair.Key].TicksRemaining = ticks;
-                    keyValuePair.Value.LastTickTime = Api.World.ElapsedMilliseconds;
+                    TickRegistry[pair.Key].TicksRemaining = TickRegistry[pair.Key].TicksRemaining--;
+                    pair.Value.LastTickTime = Api.World.ElapsedMilliseconds;
                 }
-                else
+                else if (pair.Value.TicksRemaining <= 0)
                 {
-                    TickRegistry.Remove(keyValuePair.Key);
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Igniting enchantment finished Ticking for {0}.", pair.Key);
+                    TickRegistry[pair.Key].Dispose();
+                    TickRegistry.Remove(pair.Key);
                 }
             }
         }

@@ -16,12 +16,9 @@ namespace KRPGLib.Enchantment
 {
     public class LightningEnchantment : Enchantment
     {
-        // int Delay { get { return Attributes.GetInt("Delay", 500); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.5f); } }
-        // int MaxBonusStrikes { get { return Attributes.GetInt("MaxBonusStrikes", 1); } }
-        int Delay { get { return (int)Modifiers.GetValueOrDefault("Delay", 500); } }
-        float PowerMultiplier { get { return Convert.ToSingle(Modifiers.GetValueOrDefault("PowerMultiplier", 0.5f)); } }
-        int MaxBonusStrikes { get { return Convert.ToInt32(Modifiers.GetValueOrDefault("MaxBonusStrikes", 1)); } }
+        long Delay { get { return Modifiers.GetLong("Delay"); } }
+        float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        int MaxBonusStrikes { get { return Modifiers.GetInt("MaxBonusStrikes"); } }
         ICoreServerAPI sApi;
         WeatherSystemServer weatherSystem;
         public LightningEnchantment(ICoreAPI api) : base(api)
@@ -29,26 +26,20 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "lightning";
-            Category = "Weapon";
+            Category = "Tick";
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetInt("Delay", 500);
-            // Attributes.SetFloat("PowerMultiplier", 0.5f);
-            // Attributes.SetInt("MaxBonusStrikes", 1);
-            Modifiers = new Dictionary<string, object>()
+            Modifiers = new EnchantModifiers()
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }
             };
 
-            sApi = (ICoreServerAPI)Api;
+            sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
-            TickRegistry = new Dictionary<long, EnchantTick>();
-
-            Api.World.RegisterGameTickListener(SpawnLightning, Delay);
+            Api.World.RegisterGameTickListener(SpawnLightning, 500);
         }
-        public override void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Lightning enchantment.", enchant.TargetEntity.GetName());
@@ -60,43 +51,53 @@ namespace KRPGLib.Enchantment
             }
             else if (enchant.Power == 1)
             {
-                EnchantTick tick = new EnchantTick() { LastTickTime = 0, TicksRemaining = enchant.Power, TickTimeStart = Api.World.Calendar.ElapsedSeconds };
+                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, TicksRemaining = enchant.Power };
                 TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
             }
             else if (enchant.Power > 1)
             {
                 int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                 int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                EnchantTick tick = new EnchantTick() { LastTickTime = 0, TicksRemaining = roll, TickTimeStart = Api.World.Calendar.ElapsedSeconds };
+                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, TicksRemaining = roll };
                 TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
             }
             else
                 Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", enchant.TargetEntity.EntityId);
-
-
-            if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", 
-                    (float)parameters["damage"], enchant.SourceStack.GetName());
         }
         private void SpawnLightning(float dt)
         {
             if (weatherSystem == null)
                 return;
 
-            foreach (KeyValuePair<long, EnchantTick> keyValuePair in TickRegistry)
+            foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry)
             {
-                if (keyValuePair.Value.TicksRemaining > 0)
+                long curDur = Api.World.ElapsedMilliseconds - pair.Value.LastTickTime;
+                if (pair.Value.TicksRemaining > 0 && curDur >= Delay)
                 {
-                    Entity entity = sApi.World.GetEntityById(keyValuePair.Key);
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Lightning enchantment is performing an Lightning Tick on {0}.", pair.Key);
+                    Entity entity = Api.World.GetEntityById(pair.Key);
+                    if (entity == null)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Lightning enchantment Ticked a null entity. Removing from TickRegistry.");
+                        TickRegistry[pair.Key].Dispose();
+                        TickRegistry.Remove(pair.Key);
+                        continue;
+                    }
                     // double xDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
                     // double zDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
-                    Vec3d offSet = new Vec3d(Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble(), 0, Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble());
+                    Vec3d offSet = 
+                        new Vec3d(Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble(), 0, Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble());
                     weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ + offSet);
-                    TickRegistry[keyValuePair.Key].TicksRemaining--;
+                    TickRegistry[pair.Key].TicksRemaining--;
                 }
-                else
+                else if (pair.Value.TicksRemaining <= 0)
                 {
-                    TickRegistry.Remove(keyValuePair.Key);
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Lightning enchantment finished Ticking for {0}.", pair.Key);
+                    TickRegistry[pair.Key].Dispose();
+                    TickRegistry.Remove(pair.Key);
                 }
             }
         }

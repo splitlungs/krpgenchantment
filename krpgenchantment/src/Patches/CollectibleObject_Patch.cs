@@ -27,7 +27,6 @@ namespace KRPGLib.Enchantment
                 return true;
             
             int durable = enchants.GetValueOrDefault("durable", 0);
-            
             if (durable > 0)
             {
                 EnchantmentSource enchant = new EnchantmentSource() { 
@@ -35,41 +34,13 @@ namespace KRPGLib.Enchantment
                     Trigger = "OnHit", 
                     Code = "durable", 
                     Power = durable };
-                Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", amount } };
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", amount } };
                 bool didEnchantment = world.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
                 if (didEnchantment != true)
                     return true;
-            
-                // if (didEnchantment != false)
-                //     amount = (int)amountf;
-                // 
-                // int roll = world.Rand.Next(10);
-                // if (roll + durable + 1 >= 10)
-                //     amount = 0;
             }
-
-            // Dictionary<string, object> parameters = new Dictionary<string, object>() { { "damage", amount } };
-            // bool didEnchants = world.Api.EnchantAccessor().TryEnchantment(itemslot, "OnHit", byEntity, byEntity, ref parameters);
-            // amount = (int)parameters["damage"];
 
             return true;
         }
-
-        // [HarmonyPatch(typeof(CollectibleObject), "OnLoadedNative")]
-        // public static void Postfix(CollectibleObject __instance, ICoreAPI api)
-        // {
-        // 
-        //     api.Logger.Event("[KRPGEnchantment] Attempting to add Enchantment Behavior to CO.");
-        //     EnchantmentBehavior eb = new EnchantmentBehavior(__instance);
-        //     __instance.CollectibleBehaviors.AddToArray(eb);
-        // 
-        //     if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(__instance.Code.ToShortString()))
-        //     {
-        //         api.Logger.Event("[KRPGEnchantment] Attempting to add Reagent Behavior to CO.");
-        //         ReagentBehavior rb = new ReagentBehavior(__instance);
-        //         rb.Quantity = EnchantingConfigLoader.Config.ValidReagents[__instance.Code.ToShortString()];
-        //         __instance.CollectibleBehaviors.AddToArray(rb);
-        //     }
-        // }
     }
 }

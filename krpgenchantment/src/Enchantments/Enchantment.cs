@@ -36,9 +36,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier = 5;
         // Configurable JSON multiplier for effects
-        public Dictionary<string, object> Modifiers;
-        // Configured in struct, assigned by config file
-        // public ITreeAttribute Attributes;
+        public EnchantModifiers Modifiers;
         public EnchantmentProperties Clone()
         {
             return CloneTo<EnchantmentProperties>();
@@ -55,7 +53,6 @@ namespace KRPGLib.Enchantment
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
                 Modifiers = Modifiers
-                // Attributes = Attributes
             };
 
             return val;
@@ -68,11 +65,6 @@ namespace KRPGLib.Enchantment
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
-            // writer.Write(Attributes != null);
-            // if (Attributes != null)
-            // {
-            //     Attributes.ToBytes(writer);
-            // }
             writer.Write(Modifiers.Count);
             foreach (KeyValuePair<string, object> enchant in Modifiers)
             {
@@ -88,12 +80,8 @@ namespace KRPGLib.Enchantment
             LoreCode = reader.ReadString();
             LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
-            // if (reader.ReadBoolean())
-            // {
-            //     Attributes.FromBytes(reader);
-            // }
             int length = reader.ReadInt32();
-            Modifiers = new Dictionary<string, object>();
+            Modifiers = new EnchantModifiers();
             for (int i = 0; i < length; i++)
             {
                 string key = reader.ReadString();
@@ -104,12 +92,18 @@ namespace KRPGLib.Enchantment
     /// <summary>
     /// Generic for creating Tick Registries
     /// </summary>
-    public class EnchantTick
+    public class EnchantTick : IDisposable
     {
         public long TargetID;
         public int TicksRemaining;
-        public long TickTimeStart;
         public long LastTickTime;
+
+        public void Dispose()
+        {
+            TargetID = 0;
+            TicksRemaining = 0;
+            LastTickTime = 0;
+        }
     }
     /// <summary>
     /// Base class for an Enchantment.
@@ -133,9 +127,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
-        public Dictionary<string, object> Modifiers { get; set; }
-        // Configured in struct, assigned by config file
-        // public ITreeAttribute Attributes { get; set; }
+        public EnchantModifiers Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
         public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
@@ -161,8 +153,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = properties.LoreChapterID;
             MaxTier = properties.MaxTier;
             Modifiers = properties.Modifiers;
-            // Attributes = properties.Attributes.Clone();
-            if (TickRegistry == null) TickRegistry = new Dictionary<long, EnchantTick>();
+            TickRegistry = new Dictionary<long, EnchantTick>();
             ConfigParticles();
         }
         /// <summary>
@@ -248,43 +239,53 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
+        #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnTrigger(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public virtual void OnTrigger(EnchantmentSource enchant, ref EnchantModifiers? parameters)
         {
             try
             {
-                MethodInfo meth = this.GetType().GetMethod(enchant.Trigger,
+                MethodInfo? meth = this.GetType().GetMethod(enchant.Trigger,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
                 if (parameters != null)
-                    meth.Invoke(this, new object[2] { enchant, parameters });
+                    meth?.Invoke(this, new object[2] { enchant, parameters });
                 else
-                    meth.Invoke(this, new object[1] { enchant });
+                    meth?.Invoke(this, new object[1] { enchant });
             }
             catch(Exception ex) 
             {
                 Api.Logger.Error("[KRPGEnchantment] Error attempting to trigger an Enchantment: {0}", ex);
             }
         }
+        #nullable disable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        // public virtual void OnTrigger(EnchantmentSource enchant, ItemStack stack)
-        // {
-        //     MethodInfo meth = this.GetType().GetMethod(enchant.Trigger, BindingFlags.Instance);
-        //     meth?.Invoke(this, new object[2] { enchant, stack });
-        // }
+        public virtual void OnTrigger(EnchantmentSource enchant)
+        {
+            try
+            {
+                MethodInfo meth = this.GetType().GetMethod(enchant.Trigger,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                meth.Invoke(this, new object[1] { enchant });
+            }
+            catch (Exception ex)
+            {
+                Api.Logger.Error("[KRPGEnchantment] Error attempting to trigger an Enchantment: {0}", ex);
+            }
+        }
         /// <summary>
         /// Triggered from an enchanted item when it successfully attacks an entity.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnAttack(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public virtual void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
         }
@@ -293,40 +294,19 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnHit(EnchantmentSource enchant, ref Dictionary<string, object> parameters)
+        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
         }
 
-        /// <summary>
-        /// Triggered when an enchanted item is interacted with.
-        /// </summary>
-        /// <param name="enchant"></param>
-        public virtual void OnToggle(EnchantmentSource enchant)
-        {
-        
-        }
-        public virtual void OnStart(EnchantmentSource enchant)
-        {
-        
-        }
-        public virtual void OnEnd(EnchantmentSource enchant)
-        {
-        
-        }
-
-        protected static AdvancedParticleProperties[] HealParticleProps;
-        protected static AdvancedParticleProperties[] FireParticleProps;
-        protected static AdvancedParticleProperties[] FrostParticleProps;
-        protected static AdvancedParticleProperties[] InjuryParticleProps;
-        protected static AdvancedParticleProperties[] ElectricParticleProps;
+        protected AdvancedParticleProperties[] ParticleProps;
         protected static AdvancedParticleProperties[] PoisonParticleProps;
         protected bool resetLightHsv;
 
-        private void ConfigParticles()
+        public virtual void ConfigParticles()
         {
-            FireParticleProps = new AdvancedParticleProperties[3];
-            FireParticleProps[0] = new AdvancedParticleProperties
+            ParticleProps = new AdvancedParticleProperties[3];
+            ParticleProps[0] = new AdvancedParticleProperties
             {
                 HsvaColor = new NatFloat[4]
             {
@@ -348,7 +328,7 @@ namespace KRPGLib.Enchantment
                 SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
                 SelfPropelled = true
             };
-            FireParticleProps[1] = new AdvancedParticleProperties
+            ParticleProps[1] = new AdvancedParticleProperties
             {
                 HsvaColor = new NatFloat[4]
                 {
@@ -372,7 +352,7 @@ namespace KRPGLib.Enchantment
                 LifeLength = NatFloat.createUniform(0.5f, 0f),
                 ParticleModel = EnumParticleModel.Quad
             };
-            FireParticleProps[2] = new AdvancedParticleProperties
+            ParticleProps[2] = new AdvancedParticleProperties
             {
                 HsvaColor = new NatFloat[4]
                 {
@@ -380,294 +360,6 @@ namespace KRPGLib.Enchantment
                 NatFloat.createUniform(0f, 0f),
                 NatFloat.createUniform(40f, 30f),
                 NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            HealParticleProps = new AdvancedParticleProperties[3];
-            HealParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 10f),
-                NatFloat.createUniform(200f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            HealParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 10f),
-                NatFloat.createUniform(200f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            HealParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 00f),
-                NatFloat.createUniform(255f, 20f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            FrostParticleProps = new AdvancedParticleProperties[3];
-            FrostParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            FrostParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            FrostParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            ElectricParticleProps = new AdvancedParticleProperties[3];
-            ElectricParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.5f, 0.05f),
-                NatFloat.createUniform(0.75f, 0.1f),
-                NatFloat.createUniform(0.5f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ElectricParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ElectricParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.3f),
-                NatFloat.createUniform(0.2f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            InjuryParticleProps = new AdvancedParticleProperties[3];
-            InjuryParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            InjuryParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            InjuryParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
                 },
                 OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
                 GravityEffect = NatFloat.createUniform(0f, 0f),
@@ -757,14 +449,14 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
-        protected virtual void GenerateParticles(Entity entity, EnumDamageType damageType, float damage)
+        public virtual void GenerateParticles(Entity entity, EnumDamageType damageType, float damage)
         {
-            int power = (int)Math.Ceiling(damage);
+            int power = (int)MathF.Ceiling(damage);
 
             if (damageType == EnumDamageType.Fire)
             {
-                int num = Math.Min(FireParticleProps.Length - 1, Api.World.Rand.Next(FireParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -785,8 +477,8 @@ namespace KRPGLib.Enchantment
             }
             if (damageType == EnumDamageType.Frost)
             {
-                int num = Math.Min(FrostParticleProps.Length - 1, Api.World.Rand.Next(FrostParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
+                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -807,8 +499,8 @@ namespace KRPGLib.Enchantment
             }
             if (damageType == EnumDamageType.Electricity)
             {
-                int num = Math.Min(ElectricParticleProps.Length - 1, Api.World.Rand.Next(ElectricParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ElectricParticleProps[num];
+                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -829,8 +521,8 @@ namespace KRPGLib.Enchantment
             }
             if (damageType == EnumDamageType.Heal)
             {
-                int num = Math.Min(HealParticleProps.Length - 1, Api.World.Rand.Next(HealParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
+                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -851,8 +543,8 @@ namespace KRPGLib.Enchantment
             }
             if (damageType == EnumDamageType.Injury)
             {
-                int num = Math.Min(InjuryParticleProps.Length - 1, Api.World.Rand.Next(InjuryParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
+                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;

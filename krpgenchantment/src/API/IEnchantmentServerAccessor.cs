@@ -92,34 +92,5 @@ namespace KRPGLib.Enchantment.API
         /// <returns></returns>
         bool CanReadEnchant(string player, string enchantName);
         #endregion
-        #region Actions
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters);
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref Dictionary<string, object> parameters);
-        /// <summary>
-        /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantment(EnchantmentSource enchant, ref Dictionary<string, object> parameters);
-        #endregion
     }
 }

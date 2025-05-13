@@ -15,6 +15,7 @@ using HarmonyLib;
 using System.Xml.Linq;
 using Vintagestory.API.Server;
 using Cairo;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KRPGLib.Enchantment
 {
@@ -236,7 +237,7 @@ namespace KRPGLib.Enchantment
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
             if (aimSelf == 1 && byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack) != null)
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
 
                 // byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack);

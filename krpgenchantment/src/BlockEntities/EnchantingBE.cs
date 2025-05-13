@@ -681,10 +681,10 @@ namespace KRPGLib.Enchantment
                     CurrentRecipe = null;
                     SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
-                    // ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    bool assed = Api.EnchantAccessor().AssessItem(InputSlot, ReagentSlot);
+                    ICoreServerAPI sApi = Api as ICoreServerAPI;
+                    bool assed = sApi.EnchantAccessor().AssessItem(InputSlot, ReagentSlot);
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        if (!assed) Api.Logger.Warning("[KRPGEnchantment] EnchantingTable could not Assess an item!");
+                        if (!assed) sApi.Logger.Warning("[KRPGEnchantment] EnchantingTable could not Assess an item!");
                 }
                 UpdateEnchantingState();
                 UpdateReaders();
