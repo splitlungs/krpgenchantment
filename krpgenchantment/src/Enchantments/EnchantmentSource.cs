@@ -19,6 +19,28 @@ namespace KRPGLib.Enchantment
         public Entity TargetEntity;
         // Location where an Enchantment should affect
         public BlockPos TargetPos;
+        public EnchantmentSource Clone()
+        {
+            return new EnchantmentSource()
+            {
+                Trigger = Trigger,
+                Code = Code,
+                Power = Power,
+                SourceStack = SourceStack,
+                TargetEntity = TargetEntity,
+                TargetPos = TargetPos,
+                Source = Source,
+                Type = Type,
+                HitPosition = HitPosition,
+                SourceEntity = SourceEntity,
+                CauseEntity = CauseEntity,
+                SourceBlock = SourceBlock,
+                SourcePos = SourcePos,
+                DamageTier = DamageTier,
+                KnockbackStrength = KnockbackStrength,
+                YDirKnockbackDiv = YDirKnockbackDiv
+            };
+        }
         /// <summary>
         /// Create a valid DamageSource from this EnchantmentSource.
         /// </summary>

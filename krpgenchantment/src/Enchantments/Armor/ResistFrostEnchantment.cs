@@ -16,8 +16,6 @@ namespace KRPGLib.Enchantment
 {
     public class ResistFrostEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "frost"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistFrostEnchantment(ICoreAPI api) : base(api)
@@ -25,13 +23,10 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "resistfrost";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistfrost";
             LoreChapterID = 13;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "frost");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "frost"}, { "PowerMultiplier", 0.1 }

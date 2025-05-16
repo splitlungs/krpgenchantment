@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "harming";
-            Category = "Damage";
+            Category = "DamageTarget";
             LoreCode = "enchantment-harming";
             LoreChapterID = 4;
             MaxTier = 5;

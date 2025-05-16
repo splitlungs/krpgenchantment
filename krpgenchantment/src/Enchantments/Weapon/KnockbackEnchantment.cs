@@ -21,7 +21,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "knockback";
-            Category = "Weapon";
+            Category = "ControlTarget";
             LoreCode = "enchantment-knockback";
             LoreChapterID = 7;
             MaxTier = 5;

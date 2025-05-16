@@ -16,8 +16,6 @@ namespace KRPGLib.Enchantment
 {
     public class ResistInjuryEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "injury"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistInjuryEnchantment(ICoreAPI api) : base(api)
@@ -25,13 +23,10 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "resistinjury";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistinjury";
             LoreChapterID = 15;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "injury");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "injury"}, { "PowerMultiplier", 0.1 }

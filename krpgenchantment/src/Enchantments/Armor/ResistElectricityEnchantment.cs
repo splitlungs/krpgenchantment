@@ -16,8 +16,6 @@ namespace KRPGLib.Enchantment
 {
     public class ResistElectricityEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "electricity"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistElectricityEnchantment(ICoreAPI api) : base(api)
@@ -25,13 +23,10 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "resistelectricity";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistelectricity";
             LoreChapterID = 11;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "electricity");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             { 
                 { "DamageResist", "electricity"}, { "PowerMultiplier", 0.1 } 

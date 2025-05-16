@@ -21,34 +21,15 @@ namespace KRPGLib.Enchantment
     public class ItemBow_Patch
     {
         [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
-        public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, 
+            EntitySelection entitySel)
         {
-            // Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
-            // if (enchants == null)
-            // {
-            //     // byEntity.Api.Logger.Event("A bow was fired, but no enchantments were on it.");
-            //     return;
-            // }
-            // 
-            // foreach (KeyValuePair<string, int> keyValuePair in enchants)
-            // {
-            //     EnchantmentSource enchant = new EnchantmentSource() { 
-            //         SourceStack = slot.Itemstack,
-            //         Trigger = "OnAttack", 
-            //         Code = keyValuePair.Key, 
-            //         Power = keyValuePair.Value };
-            //     Dictionary<string, object> parameters = new Dictionary<string, object>();
-            //     byEntity.Api.EnchantAccessor().TryEnchantments(enchant, byEntity,  ref parameters);
-            // }
-            // string enchantString = byEntity.Api.World.Calendar.ElapsedSeconds.ToString() + ";";
-            // foreach (KeyValuePair<string, int> keyValuePair in enchants)
-            // {
-            //     enchantString += keyValuePair.Key + ";" + keyValuePair.Value.ToString() + ";";
-            // }
-            // byEntity.WatchedAttributes.SetString("pendingRangedEnchants", enchantString);
-    
-            // byEntity.Api.Logger.Event("pendingRangedEnchants is {0}", enchantString);
-    
+            if (slot.Empty || byEntity == null || 
+                byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack) == null) 
+                return;
+
+            byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack);
+            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.Api.World.ElapsedMilliseconds);
         }
     }
 }

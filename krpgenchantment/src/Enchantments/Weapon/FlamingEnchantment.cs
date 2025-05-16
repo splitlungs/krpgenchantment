@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "flaming";
-            Category = "Damage";
+            Category = "DamageTarget";
             LoreCode = "enchantment-flaming";
             LoreChapterID = 2;
             MaxTier = 5;

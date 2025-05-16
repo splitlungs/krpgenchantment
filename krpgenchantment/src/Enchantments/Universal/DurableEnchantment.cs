@@ -16,8 +16,11 @@ namespace KRPGLib.Enchantment
 {
     public class DurableEnchantment : Enchantment
     {
-        // double PowerMultiplier { get { return Attributes.GetDouble("PowerMultiplier", 0.10d); } }
         double PowerMultiplier { get { return Modifiers.GetDouble("PowerMultiplier"); } }
+        /// <summary>
+        /// Rolls a % chance to negate item damage.
+        /// </summary>
+        /// <param name="api"></param>
         public DurableEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -27,8 +30,6 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-durable";
             LoreChapterID = 1;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetDouble("PowerMultiplier", 0.10);
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)

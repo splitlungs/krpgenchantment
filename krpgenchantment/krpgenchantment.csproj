@@ -149,7 +149,6 @@
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\game-ammo.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\game-armor.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
   <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />

@@ -16,8 +16,6 @@ namespace KRPGLib.Enchantment
 {
     public class ResistFireEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "fire"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistFireEnchantment(ICoreAPI api) : base(api)
@@ -25,13 +23,10 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "resistfire";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistfire";
             LoreChapterID = 12;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "fire");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }

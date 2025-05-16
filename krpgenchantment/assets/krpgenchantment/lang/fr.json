@@ -17,6 +17,7 @@
   "enchantment-lightning": "Call Lightning",
   "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
+  "enchantment-poison": "Poison",
   "enchantment-protection": "Protection",
   "enchantment-resistelectric": "Resist Electricity",
   "enchantment-resistelectricity": "Resist Electricity",
@@ -74,6 +75,7 @@
   "lore-enchantment-resistinjury": "16. Resist Harming",
   "lore-enchantment-resistpoison": "17. Resist Poison",
   "lore-enchantment-shocking": "18. Shocking",
+  "lore-enchantment-poison": "19. Poison",
 
   "krpgenchantment:lore-enchantment-title": "Enchanter's Manual",
   "krpgenchantment:lore-enchantment-chilling": "1. Chilling",
@@ -95,6 +97,7 @@
   "krpgenchantment:lore-enchantment-resistinjury": "16. Resist Harming",
   "krpgenchantment:lore-enchantment-resistpoison": "17. Resist Poison",
   "krpgenchantment:lore-enchantment-shocking": "18. Shocking",
+  "krpgenchantment:lore-enchantment-poison": "19. Poison",
 
   "craftinginfo-enchanting-title": "Enchanting",
   "craftinginfo-enchanting-text": "<strong>Enchantement</strong><br> <br>Pour commencer à enchanter, vous aurez besoin d'une <a href=\"handbook://block-krpgenchantment:enchanting-table\">Table d'enchantement</a>. <br>Une fois que vous avez votre Table d'enchantement, vous devrez placer un certain nombre de réactifs et un objet cible pour l'enchantement. Par défaut, un réactif valide serait un certain nombre de pierres précieuses, comme l'émeraude, le péridot ou le diamant. <br><br>Seuls certains objets peuvent être enchantés. En général, les outils de mauvaise qualité ou en pierre ne peuvent pas contenir d'enchantement. Par défaut, la force de l'enchantement est aléatoire, basée sur la valeur potentielle du réactif. La plupart des enchantements prennent 1 heure en jeu pour être enchantes, mais cela peut varier. <br><br>Vous pouvez trouver des détails sur les enchantements sur le <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",

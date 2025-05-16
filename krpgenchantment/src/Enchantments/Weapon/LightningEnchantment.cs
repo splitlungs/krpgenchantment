@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "lightning";
-            Category = "Tick";
+            Category = "DamageArea";
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
@@ -47,18 +47,22 @@ namespace KRPGLib.Enchantment
             // Refresh ticks if needed
             if (TickRegistry.ContainsKey(enchant.TargetEntity.EntityId))
             {
-                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = enchant.Power;
+                int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
+                int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
+                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = roll;
+                TickRegistry[enchant.TargetEntity.EntityId].Source = enchant.Clone();
             }
             else if (enchant.Power == 1)
             {
-                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, TicksRemaining = enchant.Power };
+                EnchantTick tick = 
+                    new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = enchant.Power };
                 TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
             }
             else if (enchant.Power > 1)
             {
                 int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                 int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, TicksRemaining = roll };
+                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = roll };
                 TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
             }
             else

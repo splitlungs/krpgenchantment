@@ -16,6 +16,7 @@ using KRPGLib.Enchantment.API;
 using SkiaSharp;
 using System.Net.Http;
 using Vintagestory.API.Datastructures;
+using System.Linq;
 
 namespace KRPGLib.Enchantment
 {
@@ -29,21 +30,30 @@ namespace KRPGLib.Enchantment
         /// Primary API for all Enchantment tasks
         /// </summary>
         public EnchantmentAccessor EnchantAccessor { get; private set; }
-        /// <summary>
-        /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
-        /// </summary>
-        // public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
-        // private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
         private static Harmony harmony;
         private COSystem combatOverhaul;
         private KRPGWandsSystem krpgWands;
 
-        #region ModSystem & Setup
-        // public override void AssetsLoaded(ICoreAPI api)
-        // {
-        //     if (!(api is ICoreServerAPI sapi)) return;
-        //     this.sApi = sapi;
-        // }
+        public override void AssetsFinalize(ICoreAPI api)
+        {
+            base.AssetsFinalize(api);
+
+            // Setup ENchantment Behaviors on ALL collectibles
+            foreach (CollectibleObject obj in api.World.Collectibles)
+            {
+                bool foundEB = false;
+                foreach (var behavior in obj.CollectibleBehaviors)
+                {
+                    if (behavior.GetType() == typeof(EnchantmentBehavior))
+                        foundEB = true;
+                }
+                if (!foundEB)
+                {
+                    EnchantmentBehavior eb = new EnchantmentBehavior(obj);
+                    obj.CollectibleBehaviors = obj.CollectibleBehaviors.Append(eb).ToArray();
+                }
+            }
+        }
         public override void StartPre(ICoreAPI api)
         {
             base.StartPre(api);
@@ -66,8 +76,8 @@ namespace KRPGLib.Enchantment
         {
             sApi = api;
             EnchantAccessor.sApi = api;
-            sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
             RegisterCompatibility();
+            // sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
         private void RegisterCompatibility()
         {
@@ -83,14 +93,6 @@ namespace KRPGLib.Enchantment
                 krpgWands = new KRPGWandsSystem();
                 krpgWands.StartServerSide(Api);
             }
-        }
-        public void RegisterPlayerEEB(IServerPlayer byPlayer)
-        {
-            EnchantmentEntityBehavior eb = byPlayer.Entity.GetBehavior<EnchantmentEntityBehavior>();
-            if (eb != null)
-                eb.RegisterPlayer(byPlayer);
-            else
-                sApi.Logger.Warning("[KRPGEnchantment] No EnchantmentEntityBehavior found on Player {0}.", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {
@@ -128,6 +130,5 @@ namespace KRPGLib.Enchantment
         {
             harmony?.UnpatchAll("KRPGEnchantmentPatch");
         }
-        #endregion
     }
 }

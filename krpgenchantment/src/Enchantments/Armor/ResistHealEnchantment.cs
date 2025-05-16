@@ -16,8 +16,6 @@ namespace KRPGLib.Enchantment
 {
     public class ResistHealEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "heal"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistHealEnchantment(ICoreAPI api) : base(api)
@@ -25,13 +23,10 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "resistheal";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistheal";
             LoreChapterID = 14;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "heal");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "heal"}, { "PowerMultiplier", 0.1 }

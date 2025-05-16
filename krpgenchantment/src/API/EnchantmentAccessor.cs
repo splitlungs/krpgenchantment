@@ -196,8 +196,8 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public Dictionary<string, int> GetEnchantments(ItemStack itemStack)
         {
-            if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to GetEnchantments on {0}", itemStack.GetName());
+            // if (EnchantingConfigLoader.Config.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] Attempting to GetEnchantments on {0}", itemStack.GetName());
             // Get Attributes
             ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null)
@@ -224,9 +224,8 @@ namespace KRPGLib.Enchantment
             {
                 string[] aa = s.Split(":");
                 if (EnchantingConfigLoader.Config.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1}.", aa[0], aa[1]);
+                    Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1} on {2}.", aa[0], aa[1], itemStack.GetName());
                 enchants.Add(aa[0], Convert.ToInt32(aa[1]));
-
             }
             // Throw null if we failed to get anything
             if (enchants.Count <= 0) return null;

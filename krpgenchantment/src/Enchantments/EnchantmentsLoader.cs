@@ -35,6 +35,7 @@ namespace KRPGLib.Enchantment
         }
         public override void AssetsLoaded(ICoreAPI api)
         {
+            // We should only load on the Server
             if (!(api is ICoreServerAPI sapi)) return;
 
             // Make sure each value is unique when registering your enchantment class, so as to prevent conflicts when adding your own Enchantments.
@@ -51,6 +52,7 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("knockback", "Weapon/knockback.json", typeof(KnockbackEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("lightning", "Weapon/lightning.json", typeof(LightningEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("pit", "Weapon/pit.json", typeof(PitEnchantment)) == true) count++;
+            if (sapi.EnchantAccessor().RegisterEnchantmentClass("poison", "Weapon/poison.json", typeof(PoisonEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("protection", "Armor/protection.json", typeof(ProtectionEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistelectricity", "Armor/resistelectricity.json", typeof(ResistElectricityEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfire", "Armor/resistfire.json", typeof(ResistFireEnchantment)) == true) count++;
@@ -59,7 +61,7 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistinjury", "Armor/resistinjury.json", typeof(ResistInjuryEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistpoison", "Armor/resistpoison.json", typeof(ResistPoisonEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("shocking", "Weapon/shocking.json", typeof(ShockingEnchantment)) == true) count++;
-
+            // You should modify the notification to your mod
             sapi.Logger.Notification("[KRPGEnchantment] Registered {0} Enchantment classes to the EnchantmentRegistry.", count);
         }
     }

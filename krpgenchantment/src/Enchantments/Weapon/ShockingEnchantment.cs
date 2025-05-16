@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "shocking";
-            Category = "Damage";
+            Category = "DamageTarget";
             LoreCode = "enchantment-shocking";
             LoreChapterID = 17;
             MaxTier = 5;

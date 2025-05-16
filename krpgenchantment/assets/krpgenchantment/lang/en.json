@@ -15,8 +15,8 @@
   "enchantment-igniting": "Igniting",
   "enchantment-knockback": "Knockback",
   "enchantment-lightning": "Call Lightning",
-  "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
+  "enchantment-poison": "Poison",
   "enchantment-protection": "Protection",
   "enchantment-resistelectric": "Resist Electricity",
   "enchantment-resistelectricity": "Resist Electricity",
@@ -25,6 +25,7 @@
   "enchantment-resistheal": "Resist Healing",
   "enchantment-resistinjury": "Resist Harming",
   "enchantment-resistpoison": "Resist Poison",
+  "enchantment-shocking": "Shocking",
 
   "1": "I",
   "2": "II",
@@ -74,6 +75,7 @@
   "lore-enchantment-resistinjury": "16. Resist Harming",
   "lore-enchantment-resistpoison": "17. Resist Poison",
   "lore-enchantment-shocking": "18. Shocking",
+  "lore-enchantment-poison": "19. Poison",
 
   "krpgenchantment:lore-enchantment-title": "Enchanter's Manual",
   "krpgenchantment:lore-enchantment-chilling": "1. Chilling",
@@ -95,6 +97,7 @@
   "krpgenchantment:lore-enchantment-resistinjury": "16. Resist Harming",
   "krpgenchantment:lore-enchantment-resistpoison": "17. Resist Poison",
   "krpgenchantment:lore-enchantment-shocking": "18. Shocking",
+  "krpgenchantment:lore-enchantment-poison": "19. Poison",
 
   "craftinginfo-enchanting-title": "Enchanting",
   "craftinginfo-enchanting-text": "<strong>Enchanting</strong><br> <br>To begin enchanting, you will need an <a href=\"handbook://block-krpgenchantment:enchanting-table\">Enchanting Table</a>. <br>Once you have your Enchanting Table, you will need to place a number of reagents and a target item for the enchantment. By default, a valid reagent would by a number of gemstones, like emerald, peridot, or diamond. <br><br>Only certain items may be enchanted. Typically, low quality or stone tools cannot hold an enchantment. By default, the strength of the enchantment is random, based off the Potential value of the reagent. Most enchantments take 1 in-game hour to enchant, but can vary. <br><br>You can find details on enchantments on the <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",

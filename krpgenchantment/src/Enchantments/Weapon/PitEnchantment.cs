@@ -22,7 +22,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "pit";
-            Category = "Weapon";
+            Category = "ControlArea";
             LoreCode = "enchantment-pit";
             LoreChapterID = 9;
             MaxTier = 5;

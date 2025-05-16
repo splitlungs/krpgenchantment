@@ -25,14 +25,14 @@ namespace KRPGLib.Enchantment
             Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
-            
+
             int durable = enchants.GetValueOrDefault("durable", 0);
             if (durable > 0)
             {
-                EnchantmentSource enchant = new EnchantmentSource() { 
-                    SourceStack = itemslot.Itemstack, 
-                    Trigger = "OnHit", 
-                    Code = "durable", 
+                EnchantmentSource enchant = new EnchantmentSource() {
+                    SourceStack = itemslot.Itemstack,
+                    Trigger = "OnHit",
+                    Code = "durable",
                     Power = durable };
                 EnchantModifiers parameters = new EnchantModifiers() { { "damage", amount } };
                 bool didEnchantment = world.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);

@@ -58,15 +58,26 @@ namespace KRPGLib.Enchantment
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
-                    // if (Config.MaxEnchantTier >= 0) tempConfig.MaxEnchantTier = Config.MaxEnchantTier;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
 
                     if (Config.MaxEnchantsByCategory?.Count > 0) tempConfig.MaxEnchantsByCategory = Config.MaxEnchantsByCategory;
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("Damage")) 
-                        tempConfig.MaxEnchantsByCategory.Add("Damage", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
+                        tempConfig.MaxEnchantsByCategory.Add("ControlArea", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("ControlTarget"))
+                        tempConfig.MaxEnchantsByCategory.Add("ControlTarget", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageArea")) 
+                        tempConfig.MaxEnchantsByCategory.Add("DamageArea", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageTarget"))
+                        tempConfig.MaxEnchantsByCategory.Add("DamageTarget", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageTick"))
+                        tempConfig.MaxEnchantsByCategory.Add("DamageTick", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("ResistDamage"))
+                        tempConfig.MaxEnchantsByCategory.Add("ResistDamage", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("Universal"))
+                        tempConfig.MaxEnchantsByCategory.Add("Universal", -1);
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
@@ -117,8 +128,6 @@ namespace KRPGLib.Enchantment
                         tempConfig.CustomPatches.Add("Swordz", true);
                     if (!Config.CustomPatches.ContainsKey("Tonwexp-Neue"))
                         tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
-
-                    // Config.LoreIDs = tempConfig.LoreIDs;
 
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;

@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "healing";
-            Category = "Damage";
+            Category = "HealTarget";
             LoreCode = "enchantment-healing";
             LoreChapterID = 5;
             MaxTier = 5;

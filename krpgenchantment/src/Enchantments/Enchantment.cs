@@ -94,13 +94,13 @@ namespace KRPGLib.Enchantment
     /// </summary>
     public class EnchantTick : IDisposable
     {
-        public long TargetID;
+        public EnchantmentSource Source;
         public int TicksRemaining;
         public long LastTickTime;
 
         public void Dispose()
         {
-            TargetID = 0;
+            Source = null;
             TicksRemaining = 0;
             LastTickTime = 0;
         }
@@ -451,6 +451,9 @@ namespace KRPGLib.Enchantment
         }
         public virtual void GenerateParticles(Entity entity, EnumDamageType damageType, float damage)
         {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+
             int power = (int)MathF.Ceiling(damage);
 
             if (damageType == EnumDamageType.Fire)

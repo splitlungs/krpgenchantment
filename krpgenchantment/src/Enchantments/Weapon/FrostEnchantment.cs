@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "frost";
-            Category = "Damage";
+            Category = "DamageTarget";
             LoreCode = "enchantment-frost";
             LoreChapterID = 3;
             MaxTier = 5;

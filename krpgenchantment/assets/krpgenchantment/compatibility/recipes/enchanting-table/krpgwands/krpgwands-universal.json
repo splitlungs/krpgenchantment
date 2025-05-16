@@ -140,6 +140,20 @@
     }
   },
   {
+    "name": "enchantment-poison",
+    "processingHours": 1,
+    "ingredients": {
+      "wand": {
+        "type": "item",
+        "code": "krpgwands:wand-*-*",
+        "quantity": 1
+      }
+    },
+    "enchantments": {
+      "poison": 5
+    }
+  },
+  {
     "name": "enchantment-shocking",
     "processingHours": 1,
     "ingredients": {

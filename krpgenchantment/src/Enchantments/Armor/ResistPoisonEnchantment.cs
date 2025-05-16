@@ -16,22 +16,21 @@ namespace KRPGLib.Enchantment
 {
     public class ResistPoisonEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "poison"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="api"></param>
         public ResistPoisonEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
             Code = "resistpoison";
-            Category = "Armor";
+            Category = "ResistDamage";
             LoreCode = "enchantment-resistpoison";
             LoreChapterID = 16;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "poison");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "poison"}, { "PowerMultiplier", 0.1 }

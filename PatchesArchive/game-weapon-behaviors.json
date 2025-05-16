@@ -13,20 +13,20 @@
     ],
     "side": "server"
   },
-  {
-    "op": "addmerge",
-    "file": "game:itemtypes/tool/blade.json",
-    "path": "/behaviors",
-    "value": [
-      {
-        "name": "EnchantmentBehavior",
-        "properties": {
-          "enchantable": true
-        }
-      }
-    ],
-    "side": "server"
-  },
+  // {
+  //   "op": "addmerge",
+  //   "file": "game:itemtypes/tool/blade.json",
+  //   "path": "/behaviors",
+  //   "value": [
+  //     {
+  //       "name": "EnchantmentBehavior",
+  //       "properties": {
+  //         "enchantable": true
+  //       }
+  //     }
+  //   ],
+  //   "side": "server"
+  // },
   {
     "op": "addmerge",
     "file": "game:itemtypes/tool/bow.json",

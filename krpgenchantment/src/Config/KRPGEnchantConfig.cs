@@ -13,17 +13,20 @@ namespace KRPGLib.Enchantment
 {
     public class KRPGEnchantConfig
     {
-        // Global Options
-        // public List<string> DisabledEnchants = new List<string>();
-        // public int MaxEnchantTier = 5;
-        public int MaxEnchantsPerItem = 4;
         // Recipe config.
+        public int MaxEnchantsPerItem = 4;
         public double EnchantTimeOverride = -1d;
         public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
         public Dictionary<string, int> MaxEnchantsByCategory = new Dictionary<string, int>()
         {
-            { "Damage", -1 }
+            { "ControlArea", -1 },
+            { "ControlTarget", -1 },
+            { "DamageArea", -1 },
+            { "DamageTarget", -1 },
+            { "DamageTick", -1 },
+            { "ResistDamage", -1 },
+            { "Universal", -1 }
         };
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>()
         {
@@ -133,8 +136,6 @@ namespace KRPGLib.Enchantment
                     CustomPatches.Add("Swordz", true);
                 if (!config.CustomPatches.ContainsKey("Tonwexp-Neue"))
                     CustomPatches.Add("Tonwexp-Neue", true);
-
-                // config.LoreIDs = LoreIDs;
 
                 if (config.Debug == true) Debug = true;
                 

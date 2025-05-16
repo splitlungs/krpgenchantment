@@ -11,37 +11,16 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using System.Reflection;
 using HarmonyLib;
+using KRPGLib.Enchantment.API;
 // using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Vintagestory.API.Server;
 using Cairo;
 using static System.Net.Mime.MediaTypeNames;
+using System.Reflection.Metadata;
 
 namespace KRPGLib.Enchantment
 {
-    /// <summary>
-    /// Holds all Enchantment data from JSON
-    /// </summary>
-    // public class EnchantmentProperties
-    // {
-    //     public Dictionary<string, int> Enchants;
-    // 
-    //     public bool Enchantable = false;
-    // 
-    //     /// <summary>
-    //     /// Returns a copy.
-    //     /// </summary>
-    //     /// <returns></returns>
-    //     public EnchantmentProperties Clone()
-    //     {
-    //         return new EnchantmentProperties()
-    //         {
-    //             Enchants = Enchants,
-    //             Enchantable = Enchantable
-    //         };
-    //     }
-    // }
-
     public class EnchantmentBehavior : CollectibleBehavior
     {
         #region Data
@@ -49,13 +28,11 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
-        // public EnchantmentProperties EnchantProps { get; protected set; }
         public Dictionary<string, int> Enchantments = new Dictionary<string, int>();
         public bool Enchantable = false;
 
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
-            // this.EnchantProps = new EnchantmentProperties();
         }
         public override void OnLoaded(ICoreAPI api)
         {
@@ -172,7 +149,6 @@ namespace KRPGLib.Enchantment
         public override void Initialize(JsonObject properties)
         {
             base.Initialize(properties);
-            // EnchantProps = properties.AsObject<EnchantmentProperties>(null, collObj.Code.Domain);
         }
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
@@ -217,11 +193,11 @@ namespace KRPGLib.Enchantment
                 itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
             itemStack.Attributes.MergeTree(tree);
         }
-
+        
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-            dsc.AppendLine("Test");
+
             Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
@@ -229,9 +205,31 @@ namespace KRPGLib.Enchantment
                     dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
             }
         }
-        
+        // public override void OnHeldAttackStop(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
+        // {
+        //     if (entitySel == null || entitySel.Entity == null || byEntity == null || slot == null || slot.Empty) return;
+        // 
+        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
+        //     if (enchants == null) return;
+        // 
+        //     // Should avoid default during healing
+        //     if (enchants.ContainsKey("healing"))
+        //         handling = EnumHandling.PreventDefault;
+        //     else
+        //         handling = EnumHandling.Handled;
+        // 
+        //     EnchantModifiers parameters = new EnchantModifiers();
+        //     bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, entitySel.Entity, ref parameters);
+        //     if (!didEnchantments)
+        //         Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", slot.Itemstack.GetName());
+        // 
+        //     base.OnHeldAttackStop(secondsPassed, slot, byEntity, blockSelection, entitySel, ref handling);
+        // }
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
+            // Specific use on self for KRPG Wands
+            if (secondsUsed < 1 || slot.Itemstack.Collectible.Class != "WandItem") return;
+
             handling = EnumHandling.Handled;
 
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
@@ -239,8 +237,6 @@ namespace KRPGLib.Enchantment
             {
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
-
-                // byEntity.GetBehavior<EnchantmentEntityBehavior>()?.TryEnchantments(byEntity, slot.Itemstack);
             }
 
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)

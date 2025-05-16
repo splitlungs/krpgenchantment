@@ -19,20 +19,27 @@ namespace KRPGLib.Enchantment
     {
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
+        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
             Code = "igniting";
-            Category = "Tick";
+            Category = "DamageTick";
             LoreCode = "enchantment-igniting";
             LoreChapterID = 6;
             MaxTier = 5;
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 1 }, {"TickDuration", 12500 }
+                {"TickMultiplier", 1 }, {"TickDuration", 12500 }, {"TickFrequency", 500 }
             };
-            Api.World.RegisterGameTickListener(IgniteTick, 1000);
+            Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
+        }
+        public override void Initialize(EnchantmentProperties properties)
+        {
+            base.Initialize(properties);
+            // We let the config initialize before registering the Tick Listener
+            Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -41,13 +48,19 @@ namespace KRPGLib.Enchantment
 
             int tickMax = enchant.Power * TickMultiplier;
             if (TickRegistry.ContainsKey(enchant.TargetEntity.EntityId))
-                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = tickMax;
-            else
             {
-                enchant.TargetEntity.Ignite();
-                EnchantTick eTick = new EnchantTick() { TicksRemaining = tickMax, LastTickTime = Api.World.ElapsedMilliseconds };
-                TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
+                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = tickMax;
+                TickRegistry[enchant.TargetEntity.EntityId].Source = enchant.Clone();
             }
+            else if (tickMax > 1)
+            {
+                EnchantTick eTick =
+                    new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
+                TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
+                enchant.TargetEntity.Ignite();
+            }
+            else
+                enchant.TargetEntity.Ignite();
         }
         /// <summary>
         /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.
