@@ -41,6 +41,14 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="recipe"></param>
         void RegisterEnchantingRecipe(EnchantingRecipe recipe);
+        /// <summary>
+        /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
+        /// <param name="enchantments"></param>
+        /// <returns></returns>
+        ItemStack EnchantItem(ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments);
         #endregion
         #region Assessments
         IEnchantment GetEnchantment(string enchantCode);

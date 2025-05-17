@@ -17,7 +17,6 @@ namespace KRPGLib.Enchantment
 {
     public class ChillingEnchantment : Enchantment
     {
-        // public float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", -10); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
@@ -28,8 +27,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-chilling";
             LoreChapterID = 0;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetFloat("PowerMultiplier", -10);
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers() { { "PowerMultiplier", -10.00 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)

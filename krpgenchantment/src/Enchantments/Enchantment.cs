@@ -35,6 +35,8 @@ namespace KRPGLib.Enchantment
         public int LoreChapterID = 0;
         // The maximum functional Power of an Enchantment
         public int MaxTier = 5;
+        // The EnumTool types in string format which can receive this enchantment
+        public string[] ValidToolTypes = new string[0];
         // Configurable JSON multiplier for effects
         public EnchantModifiers Modifiers;
         public EnchantmentProperties Clone()
@@ -52,6 +54,7 @@ namespace KRPGLib.Enchantment
                 LoreCode = LoreCode,
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
+                ValidToolTypes = ValidToolTypes,
                 Modifiers = Modifiers
             };
 
@@ -65,6 +68,9 @@ namespace KRPGLib.Enchantment
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
+            writer.Write(ValidToolTypes.Length);
+            foreach (string s in ValidToolTypes)
+                writer.Write(s);
             writer.Write(Modifiers.Count);
             foreach (KeyValuePair<string, object> enchant in Modifiers)
             {
@@ -81,8 +87,14 @@ namespace KRPGLib.Enchantment
             LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
             int length = reader.ReadInt32();
-            Modifiers = new EnchantModifiers();
+            ValidToolTypes = new string[length];
             for (int i = 0; i < length; i++)
+            {
+                ValidToolTypes[i] = reader.ReadString();
+            }
+            int count = reader.ReadInt32();
+            Modifiers = new EnchantModifiers();
+            for (int i = 0; i < count; i++)
             {
                 string key = reader.ReadString();
                 Modifiers[key] = reader.ReadString();
@@ -126,6 +138,8 @@ namespace KRPGLib.Enchantment
         public int LoreChapterID { get; set; }
         // The maximum functional Power of an Enchantment
         public int MaxTier { get; set; }
+        // The EnumTool types in string format which can receive this enchantment
+        public string[] ValidToolTypes { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
@@ -152,6 +166,7 @@ namespace KRPGLib.Enchantment
             LoreCode = properties.LoreCode;
             LoreChapterID = properties.LoreChapterID;
             MaxTier = properties.MaxTier;
+            ValidToolTypes = properties.ValidToolTypes;
             Modifiers = properties.Modifiers;
             TickRegistry = new Dictionary<long, EnchantTick>();
             ConfigParticles();

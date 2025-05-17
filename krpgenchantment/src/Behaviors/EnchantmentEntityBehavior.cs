@@ -83,7 +83,6 @@ namespace KRPGLib.Enchantment
                 Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
                 if (enchants != null)
                 {
-        
                     // Should avoid default during healing
                     if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
                         handled = EnumHandling.PreventDefault;
@@ -93,10 +92,6 @@ namespace KRPGLib.Enchantment
                     EnchantModifiers parameters = new EnchantModifiers();
                     byEntity.Api.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
                 }
-            }
-            else
-            {
-                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
             }
             base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }

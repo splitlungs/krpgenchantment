@@ -27,6 +27,9 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-resistinjury";
             LoreChapterID = 15;
             MaxTier = 5;
+            ValidToolTypes = new string[4] {
+                "Head", "Body", "Legs",
+                "Shield" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "injury"}, { "PowerMultiplier", 0.1 }

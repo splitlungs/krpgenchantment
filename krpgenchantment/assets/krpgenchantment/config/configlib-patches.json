@@ -1,18 +1,11 @@
 {
   "version": 0,
-  "file": "KRPGEnchantment_Config.json",
+  "file": "KRPGEnchantment/KRPGEnchantment_Config.json",
   "patches": {},
   "settings": [
     {
       "type": "separator",
       "title": "KRPGEnchantmentSettings"
-    },
-    {
-      "code": "MaxEnchantTier",
-      "comment": "MaxEnchantTierComment",
-      "type": "integer",
-      "clientSide": false,
-      "default": 5
     },
     {
       "code": "EnchantTimeOverride",
@@ -31,13 +24,6 @@
     {
       "code": "MaxLatentEnchants",
       "comment": "MaxLatentEnchantsComment",
-      "type": "integer",
-      "clientSide": false,
-      "default": 3
-    },
-    {
-      "code": "MaxDamageEnchants",
-      "comment": "MaxDamageEnchantsComment",
       "type": "integer",
       "clientSide": false,
       "default": 3

@@ -27,6 +27,9 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-resistfrost";
             LoreChapterID = 13;
             MaxTier = 5;
+            ValidToolTypes = new string[4] {
+                "Head", "Body", "Legs",
+                "Shield" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "frost"}, { "PowerMultiplier", 0.1 }

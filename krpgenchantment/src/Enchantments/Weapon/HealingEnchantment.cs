@@ -30,6 +30,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-healing";
             LoreChapterID = 5;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "resistheal" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }

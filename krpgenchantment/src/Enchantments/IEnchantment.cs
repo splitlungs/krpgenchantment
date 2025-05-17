@@ -27,6 +27,8 @@ namespace KRPGLib.Enchantment.API
         string LoreCode { get; set; }
         // The ID of the chapter in the Lore config file
         int LoreChapterID { get; set; }
+        // The EnumTool types in string format which can receive this enchantment
+        public string[] ValidToolTypes { get; set; }
         // The maximum functional Power of an Enchantment
         int MaxTier { get; set; }
         // Similar to "Attributes". You can set your own serializable values here

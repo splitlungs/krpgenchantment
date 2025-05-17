@@ -17,8 +17,10 @@ namespace KRPGLib.Enchantment
     public class LightningEnchantment : Enchantment
     {
         long Delay { get { return Modifiers.GetLong("Delay"); } }
+        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         int MaxBonusStrikes { get { return Modifiers.GetInt("MaxBonusStrikes"); } }
+        int EffectRadius { get { return Modifiers.GetInt("EffectRadius"); } }
         ICoreServerAPI sApi;
         WeatherSystemServer weatherSystem;
         public LightningEnchantment(ICoreAPI api) : base(api)
@@ -30,14 +32,24 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             { 
-                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }
+                {"Delay", 500 }, {"TickFrequency", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
             };
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
-            Api.World.RegisterGameTickListener(SpawnLightning, 500);
+            Api.World.RegisterGameTickListener(SpawnLightning, TickFrequency);
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -89,10 +101,9 @@ namespace KRPGLib.Enchantment
                         TickRegistry.Remove(pair.Key);
                         continue;
                     }
-                    // double xDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
-                    // double zDelta = Api.World.Rand.Next(0, 5) + Api.World.Rand.NextDouble();
                     Vec3d offSet = 
-                        new Vec3d(Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble(), 0, Api.World.Rand.Next(-4, 5) + Api.World.Rand.NextDouble());
+                        new Vec3d(Api.World.Rand.Next(-EffectRadius, EffectRadius+1) + Api.World.Rand.NextDouble(), 0, 
+                        Api.World.Rand.Next(-EffectRadius, EffectRadius+1) + Api.World.Rand.NextDouble());
                     weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ + offSet);
                     TickRegistry[pair.Key].TicksRemaining--;
                 }

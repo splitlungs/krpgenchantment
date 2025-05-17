@@ -25,6 +25,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-knockback";
             LoreChapterID = 7;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 20.00 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)

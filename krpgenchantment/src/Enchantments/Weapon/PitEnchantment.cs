@@ -17,6 +17,7 @@ namespace KRPGLib.Enchantment
     {
         float MulXZ { get { return Modifiers.GetFloat("MulXZ"); } }
         float MulY { get { return Modifiers.GetFloat("MulY"); } }
+        protected IServerAPI sApi;
         public PitEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -26,10 +27,21 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-pit";
             LoreChapterID = 9;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             {
                 { "MulXZ", 0.50 }, {"MulY", 1.00 }
             };
+            sApi = Api as IServerAPI;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -48,17 +60,22 @@ namespace KRPGLib.Enchantment
                     }
                 }
             }
-
+            IPlayer player = enchant.CauseEntity as IPlayer;
             for (int i = 0; i < pitArea.Count; i++)
             {
                 BlockPos ipos = bpos;
                 ipos.Set(pitArea[i]);
+                LandClaim[] claims = Api.World.Claims.Get(ipos);
+                if (claims != null)
+                {
+                    if (Api.World.Claims.TestAccess(player, ipos, EnumBlockAccessFlags.BuildOrBreak) == EnumWorldAccessResponse.NoPrivilege)
+                        continue;
+                }
                 Block block = Api.World.BlockAccessor.GetBlock(ipos);
                 if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
                     || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
                 {
-                    // if (Api.World.Claims.TestAccess(enchant.SourceEntity as IServerPlayer, ipos, EnumBlockAccessFlags.BuildOrBreak) != EnumWorldAccessResponse.Granted) continue;
-                    Api.World.BlockAccessor.BreakBlock(ipos, enchant.CauseEntity as IPlayer);
+                    Api.World.BlockAccessor.BreakBlock(ipos, player);
                 }
             }
 

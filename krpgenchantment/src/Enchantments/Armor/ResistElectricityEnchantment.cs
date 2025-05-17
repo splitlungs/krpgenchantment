@@ -27,6 +27,9 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-resistelectricity";
             LoreChapterID = 11;
             MaxTier = 5;
+            ValidToolTypes = new string[4] {
+                "Head", "Body", "Legs",
+                "Shield" };
             Modifiers = new EnchantModifiers()
             { 
                 { "DamageResist", "electricity"}, { "PowerMultiplier", 0.1 } 

@@ -27,6 +27,9 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-resistfire";
             LoreChapterID = 12;
             MaxTier = 5;
+            ValidToolTypes = new string[4] {
+                "Head", "Body", "Legs",
+                "Shield" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }

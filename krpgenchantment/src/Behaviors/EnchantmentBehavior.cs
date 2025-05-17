@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         public Dictionary<string, int> Enchantments = new Dictionary<string, int>();
         public bool Enchantable = false;
-
+        public bool IsReagent = false;
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
         }
@@ -238,7 +238,7 @@ namespace KRPGLib.Enchantment
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
             }
-
+            
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)
             {
                 return;

@@ -31,6 +31,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-poison";
             LoreChapterID = 18;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             {
                 {"TickMultiplier", 6 }, {"TickDuration", 1000 },  {"TickFrequency", 1000 }, {"DamageMultiplier", 0.1}

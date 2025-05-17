@@ -30,6 +30,19 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-durable";
             LoreChapterID = 1;
             MaxTier = 5;
+            ValidToolTypes = new string[35] {
+                "Head", "Body", "Legs",
+                "Shield",
+                "Chisel", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)

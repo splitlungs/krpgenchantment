@@ -41,15 +41,19 @@ namespace KRPGLib.Enchantment
             // Setup ENchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)
             {
+                bool foundRB = false;
+                if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(obj.Code)) foundRB = true;
                 bool foundEB = false;
                 foreach (var behavior in obj.CollectibleBehaviors)
                 {
                     if (behavior.GetType() == typeof(EnchantmentBehavior))
                         foundEB = true;
+                    if (foundRB == true) ((EnchantmentBehavior)behavior).IsReagent = true;
                 }
                 if (!foundEB)
                 {
                     EnchantmentBehavior eb = new EnchantmentBehavior(obj);
+                    if (foundRB == true) eb.IsReagent = true;
                     obj.CollectibleBehaviors = obj.CollectibleBehaviors.Append(eb).ToArray();
                 }
             }

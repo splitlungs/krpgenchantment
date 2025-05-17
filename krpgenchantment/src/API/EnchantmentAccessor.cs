@@ -143,6 +143,87 @@ namespace KRPGLib.Enchantment
         {
             sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().RegisterEnchantingRecipe(recipe);
         }
+        /// <summary>
+        /// Returns a List of Enchantments that can be written to the ItemStack, or null if something went wrong.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        public List<string> GetValidEnchantments(ItemSlot inSlot)
+        {
+            if (inSlot.Empty) return null;
+            List<string> enchants = new List<string>();
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                IEnchantment ench = GetEnchantment(pair.Key);
+                if (ench?.Enabled != true) continue;
+
+                string toolType = inSlot.Itemstack.Collectible.Tool.Value.ToString().ToLower();
+                
+                // if (inSlot.Itemstack.Class.GetType() == typeof(ItemWearable))
+            }
+
+            return enchants;
+        }
+        /// <summary>
+        /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
+        /// <param name="enchantments"></param>
+        /// <returns></returns>
+        public ItemStack EnchantItem(ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments)
+        {
+            if (inSlot.Empty || rSlot.Empty) return null;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Attempting to Enchant an {0} with {1}.", inSlot.Itemstack.GetName(), rSlot.Itemstack.GetName());
+            
+            // Check Reagent Quantity
+            int rQty = 0;
+            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            {
+                int qty = EnchantingConfigLoader.Config.ValidReagents.TryGetValue(rSlot.Itemstack.Collectible.Code.ToString().ToLower());
+                if (qty > 0) rQty = qty;
+            }
+            if (rQty < 0) return null;
+            // Get Reagent Potential
+            ITreeAttribute tree = rSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            string rPot = tree.GetString("potoential");
+            if (rPot == null) return null;
+            int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPot);
+            if (maxPot <= 0) return null;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Setting Max Potential to {0}.", maxPot);
+            
+            // Get Input Type
+            var toolType = inSlot.Itemstack.Collectible.Tool;
+            if (toolType == null) return null;
+
+            // Setup a new ItemStack
+            ItemStack outStack = inSlot.Itemstack.Clone();
+            // Setup Quantity
+            outStack.StackSize = inSlot.StackSize;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Setting OutStack {0} quantity to {1}", inSlot.Itemstack.GetName(), outStack.StackSize);
+
+            // Try to write the Enchantments
+            foreach (KeyValuePair<string, int> enchant in enchantments)
+            {
+                // Get the Enchantment first & check if it's Enabled before we do anything
+                IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(enchant.Key);
+                if (ench == null || ench?.Enabled != true) continue;
+                // Use provided Power or roll with reagent.
+                int power = enchant.Value;
+                if (power > 0) power = Api.World.Rand.Next(1, maxPot + 1);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    sApi.Logger.Event("[KRPGEnchantment] Attempting to write {0}: {1} to item.", enchant.Key, enchant.Value);
+                // Try to Enchant the item
+                bool didEnchant = ench.TryEnchantItem(ref outStack, power);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    sApi.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
+            }
+
+            return outStack;
+        }
         #endregion
         #region Assessments
         /// <summary>

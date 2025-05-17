@@ -12,6 +12,9 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
+using Cairo.Freetype;
+using CombatOverhaul.Implementations;
+using System.Diagnostics.Metrics;
 
 namespace KRPGLib.Enchantment
 {
@@ -31,6 +34,22 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-damage";
             LoreChapterID = -1;
             MaxTier = 5;
+            // We should limit which types are allowed and not use all of these
+            ValidToolTypes = new string[37] {
+                "Container",
+                "Accessory",
+                "Head", "Body", "Legs",
+                "Shield",
+                "Chisel", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "resistfire" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }

@@ -30,6 +30,16 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-frost";
             LoreChapterID = 3;
             MaxTier = 5;
+            ValidToolTypes = new string[19] {
+                "Knife", "Axe",
+                "Club", "Sword",
+                "Spear",
+                "Bow", "Sling",
+                "Drill",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Javelin",
+                "Crossbow", "Firearm",
+                "Wand" };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
