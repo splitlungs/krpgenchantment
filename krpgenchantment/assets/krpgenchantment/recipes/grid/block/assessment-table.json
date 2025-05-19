@@ -1,0 +1,42 @@
+{
+  "ingredientPattern": "WTW,HNS,WBW",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "W": {
+      "type": "block",
+      "code": "game:plank-*",
+      "quanityt": 1
+    },
+    "T": {
+      "type": "item",
+      "code": "game:gear-temporal",
+      "quanityt": 1
+    },
+    "B": {
+      "type": "block",
+      "code": "game:bookshelf-*",
+      "quanityt": 1
+    },
+    "N": {
+      "type": "item",
+      "code": "game:metalnailsandstrips-*",
+      "quantity": 1
+    },
+    "H": {
+      "type": "item",
+      "code": "game:hammer-*",
+      "isTool": true
+    },
+    "S": {
+      "type": "item",
+      "code": "game:saw-*",
+      "isTool": true
+    }
+  },
+  "output": {
+    "type": "block",
+    "code": "krpgenchantment:assessment-table",
+    "quantity": 1
+  }
+}

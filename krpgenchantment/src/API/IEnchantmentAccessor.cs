@@ -67,7 +67,7 @@ namespace KRPGLib.Enchantment.API
         /// <param name="player"></param>
         /// <param name="recipe"></param>
         /// <returns></returns>
-        bool CanReadEnchant(string player, EnchantingRecipe recipe);
+        // bool CanReadEnchant(string player, EnchantingRecipe recipe);
         /// <summary>
         /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
         /// </summary>

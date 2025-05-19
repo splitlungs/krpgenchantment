@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -18,6 +19,8 @@ using Vintagestory.API.Config;
 using static System.Net.Mime.MediaTypeNames;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Util;
+using CombatOverhaul.Armor;
+using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
@@ -72,6 +75,7 @@ namespace KRPGLib.Enchantment
                         LoreCode = enchant.LoreCode,
                         LoreChapterID = enchant.LoreChapterID,
                         MaxTier = enchant.MaxTier,
+                        ValidToolTypes = enchant.ValidToolTypes,
                         Modifiers = enchant.Modifiers
                     };
 
@@ -124,7 +128,9 @@ namespace KRPGLib.Enchantment
             return result;
         }
         #endregion
-        #region Recipes
+        #region Enchanting
+        /*
+        [Obsolete]
         /// <summary>
         /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
         /// </summary>
@@ -135,6 +141,7 @@ namespace KRPGLib.Enchantment
         {
             return sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().GetValidEnchantingRecipes(inSlot, rSlot);
         }
+        [Obsolete]
         /// <summary>
         /// Registers the provided EnchantingRecipe to the server.
         /// </summary>
@@ -143,6 +150,7 @@ namespace KRPGLib.Enchantment
         {
             sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().RegisterEnchantingRecipe(recipe);
         }
+        */
         /// <summary>
         /// Returns a List of Enchantments that can be written to the ItemStack, or null if something went wrong.
         /// </summary>
@@ -156,13 +164,112 @@ namespace KRPGLib.Enchantment
             {
                 IEnchantment ench = GetEnchantment(pair.Key);
                 if (ench?.Enabled != true) continue;
-
-                string toolType = inSlot.Itemstack.Collectible.Tool.Value.ToString().ToLower();
-                
-                // if (inSlot.Itemstack.Class.GetType() == typeof(ItemWearable))
+                // Check the item's type vs the Enchantment's type
+                string toolType = GetToolType(inSlot.Itemstack);
+                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
+                // Write to the List if it passed
+                enchants.Add(pair.Key);
             }
 
             return enchants;
+        }
+        /// <summary>
+        /// Returns true if the provided Input and Reagent can accept the provided Enchantment code.
+        /// </summary>
+        /// <param name="inStack"></param>
+        /// <param name="rStack"></param>
+        /// <param name="enchant"></param>
+        /// <returns></returns>
+        public bool CanEnchant(ItemStack inStack, ItemStack rStack, string enchant)
+        {
+            if (inStack == null || rStack == null || enchant == null) return false;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can be Enchanted with {1}.", inStack.GetName(), rStack.GetName());
+
+            // Check against Max Enchantments Config option
+            int maxEnchants = EnchantingConfigLoader.Config.MaxEnchantsPerItem;
+            Dictionary<string, int> enchantments = sApi.EnchantAccessor().GetEnchantments(inStack);
+            if (enchantments != null && maxEnchants >= 0 && enchantments.Count >= maxEnchants)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] {0} has too may Enchantments: {1}.", inStack.GetName(), enchantments.Count);
+                return false;
+            }
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} has {1} enchantments out of {2}.", inStack.GetName(), enchantments?.Count, maxEnchants);
+
+            // Check Reagent Quantity
+            int rQty = 0;
+            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            {
+                if (pair.Key.ToLower() != rStack.Collectible.Code.ToString().ToLower()) continue;
+                rQty = pair.Value;
+            }
+            if (rQty < 0) return false;
+
+            // Get Reagent Potential
+            int maxPot = GetReagentPotential(rStack);
+            if (maxPot <= 0) return false;
+
+            // Get Input Type
+            string toolType = GetToolType(inStack);
+            if (toolType == null) return false;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Input type is {0}.", toolType);
+            // Check against Enchantment
+            IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(enchant);
+            if (ench == null || ench?.Enabled != true) return false;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Enchantment {0} is Enabled.", enchant);
+            // Check the item's type vs the Enchantment's type
+            if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) return false;
+            
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Enchant Check passed.", enchant);
+            return true;
+        }
+        /// <summary>
+        /// Returns the maximum tier enchantment a Reagent can power. Returns 0 if Potential is not found.
+        /// </summary>
+        /// <param name="reagent"></param>
+        /// <returns></returns>
+        public int GetReagentPotential(ItemStack reagent)
+        {
+            int maxPot = 0;
+            ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
+            string rPot = tree.GetString("potential");
+            string rPotOG = reagent.Attributes.GetString("potential");
+            if (rPot == null && rPotOG == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Potential value.", reagent.GetName());
+                return 0;
+            }
+            // Enchantment Potential Overrides
+            if (rPot != null && rPotOG == null)
+            {
+                maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPot);
+                if (maxPot <= 0)
+                {
+                    Api.Logger.Error("[KRPGEnchantment] Reagent Potential {0} does not a value in the Config!", rPot);
+                    return 0;
+                }
+            }
+            // Or fall back to default VS Potential values
+            else if (rPotOG != null && rPot == null)
+            {
+                maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPotOG);
+                if (maxPot <= 0)
+                {
+                    Api.Logger.Error("[KRPGEnchantment] Reagent Potential {0} does not a value in the Config!", rPotOG);
+                    return 0;
+                }
+            }
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Reagent Max Potential is {0}", maxPot);
+
+            return maxPot;
         }
         /// <summary>
         /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
@@ -176,26 +283,17 @@ namespace KRPGLib.Enchantment
             if (inSlot.Empty || rSlot.Empty) return null;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 sApi.Logger.Event("[KRPGEnchantment] Attempting to Enchant an {0} with {1}.", inSlot.Itemstack.GetName(), rSlot.Itemstack.GetName());
-            
+
             // Check Reagent Quantity
-            int rQty = 0;
-            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
-            {
-                int qty = EnchantingConfigLoader.Config.ValidReagents.TryGetValue(rSlot.Itemstack.Collectible.Code.ToString().ToLower());
-                if (qty > 0) rQty = qty;
-            }
-            if (rQty < 0) return null;
+            // int rQty = GetReagentQuantity(rSlot.Itemstack);
+
             // Get Reagent Potential
-            ITreeAttribute tree = rSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
-            string rPot = tree.GetString("potoential");
-            if (rPot == null) return null;
-            int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPot);
-            if (maxPot <= 0) return null;
+            int maxPot = GetReagentPotential(rSlot.Itemstack);
             if (EnchantingConfigLoader.Config?.Debug == true)
                 sApi.Logger.Event("[KRPGEnchantment] Setting Max Potential to {0}.", maxPot);
             
             // Get Input Type
-            var toolType = inSlot.Itemstack.Collectible.Tool;
+            var toolType = GetToolType(inSlot.Itemstack);
             if (toolType == null) return null;
 
             // Setup a new ItemStack
@@ -211,9 +309,11 @@ namespace KRPGLib.Enchantment
                 // Get the Enchantment first & check if it's Enabled before we do anything
                 IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(enchant.Key);
                 if (ench == null || ench?.Enabled != true) continue;
+                // Check the item's type vs the Enchantment's type
+                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
                 // Use provided Power or roll with reagent.
                 int power = enchant.Value;
-                if (power > 0) power = Api.World.Rand.Next(1, maxPot + 1);
+                if (power <= 0) power = Api.World.Rand.Next(1, maxPot + 1);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     sApi.Logger.Event("[KRPGEnchantment] Attempting to write {0}: {1} to item.", enchant.Key, enchant.Value);
                 // Try to Enchant the item
@@ -223,6 +323,45 @@ namespace KRPGLib.Enchantment
             }
 
             return outStack;
+        }
+        /// <summary>
+        /// Returns the quantity of a provided Reagent, as set in the Config under ValidReagents. Set to 0 to disable Reagent consumption. Returns -1 if nothing is found.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <returns></returns>
+        public int GetReagentQuantity(ItemStack stack)
+        {
+            // Check Reagent Quantity
+            int rQty = 0;
+            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            {
+                if (pair.Key.ToLower() != stack.Collectible.Code.ToString().ToLower()) continue;
+                rQty = pair.Value;
+            }
+            if (rQty < 0) return -1;
+            return rQty;
+        }
+        /// <summary>
+        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns null if none can be found.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <returns></returns>
+        public string GetToolType(ItemStack stack)
+        {
+            // Block
+            if (stack.Class == EnumItemClass.Block) return "block";
+            // Tool or Weapon
+            string s = null;
+            s = stack.Collectible.Tool?.ToString().ToLower();
+            if (s != null) return s;
+            // Wearables
+            s = stack.Attributes.GetString("clothescategory");
+            if (s != null) return s.ToLower();
+            // Class fallback - Disabled for now, since it should reject improperly setup items
+            // s = stack.Collectible.Class?.ToLower();
+            // if (s != null) return s;
+
+            return null;
         }
         #endregion
         #region Assessments
@@ -422,20 +561,22 @@ namespace KRPGLib.Enchantment
                 Api.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
-            List<EnchantingRecipe> recipes = GetValidEnchantingRecipes(inSlot, rSlot);
-            if (recipes == null) return false;
+            List<string> enchants = GetValidEnchantments(inSlot);
+            if (enchants == null) return false;
+            // List<EnchantingRecipe> recipes = GetValidEnchantingRecipes(inSlot, rSlot);
+            // if (recipes == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] {0} valid recipes found.", recipes.Count);
+                Api.World.Logger.Event("[KRPGEnchantment] {0} valid enchantments found.", enchants.Count);
 
             // Create a string with a random selection of EnchantingRecipes
             string str = null;
             for (int i = 0; i < mle; i++)
             {
-                int rNum = Api.World.Rand.Next(recipes.Count);
-                var er = recipes[rNum].Clone();
+                int rNum = Api.World.Rand.Next(enchants.Count);
+                var er = enchants[rNum];
                 if (er != null)
-                    str += er.Name.ToShortString() + ";";
+                    str += er + ";";
                 else
                     Api.World.Logger.Warning("[KRPGEnchantment] ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
             }
@@ -507,37 +648,37 @@ namespace KRPGLib.Enchantment
         /// <param name="player"></param>
         /// <param name="recipe"></param>
         /// <returns></returns>
-        public bool CanReadEnchant(string player, EnchantingRecipe recipe)
-        {
-            if (player != null && recipe != null)
-            {
-                string enchant = recipe.Name.ToShortString();
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchant);
-
-                string[] text = enchant.Split(":");
-                string enchantCode = text[1].Replace("enchantment-", "");
-
-                IEnchantment enchantment = GetEnchantment(enchantCode);
-
-                if (enchantment.Enabled != true)
-                    return false;
-                int id = enchantment.LoreChapterID;
-                ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
-                if (journal == null)
-                {
-                    Api.Logger.Error("[KRPGEnchantment] Could not find ModJournal!");
-                    return false;
-                }
-                bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Can {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
-                return canRead;
-            }
-
-            Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
-            return false;
-        }
+        // public bool CanReadEnchant(string player, EnchantingRecipe recipe)
+        // {
+        //     if (player != null && recipe != null)
+        //     {
+        //         string enchant = recipe.Name.ToShortString();
+        //         if (EnchantingConfigLoader.Config?.Debug == true)
+        //             Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchant);
+        // 
+        //         string[] text = enchant.Split(":");
+        //         string enchantCode = text[1].Replace("enchantment-", "");
+        // 
+        //         IEnchantment enchantment = GetEnchantment(enchantCode);
+        // 
+        //         if (enchantment.Enabled != true)
+        //             return false;
+        //         int id = enchantment.LoreChapterID;
+        //         ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
+        //         if (journal == null)
+        //         {
+        //             Api.Logger.Error("[KRPGEnchantment] Could not find ModJournal!");
+        //             return false;
+        //         }
+        //         bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
+        //         if (EnchantingConfigLoader.Config?.Debug == true)
+        //             Api.Logger.Event("[KRPGEnchantment] Can {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, "lore-" + text[1], canRead);
+        //         return canRead;
+        //     }
+        // 
+        //     Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
+        //     return false;
+        // }
         /// <summary>
         /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
         /// </summary>
@@ -551,10 +692,10 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchantName);
 
-                string[] text = enchantName.Split(":");
-                string enchantCode = text[1].Replace("enchantment-", "");
+                // string[] text = enchantName.Split(":");
+                // string enchantCode = text[1].Replace("enchantment-", "");
 
-                IEnchantment enchantment = GetEnchantment(enchantCode);
+                IEnchantment enchantment = GetEnchantment(enchantName);
 
                 if (enchantment.Enabled != true)
                     return false;
@@ -567,7 +708,7 @@ namespace KRPGLib.Enchantment
                 }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, text[1], canRead);
+                    Api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, enchantName, canRead);
                 return canRead;
             }
 

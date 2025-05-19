@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-chilling";
             LoreChapterID = 0;
             MaxTier = 5;
-            ValidToolTypes = new string[19] {
+            ValidToolTypes = new List<string>() {
                 "Knife", "Axe",
                 "Club", "Sword",
                 "Spear",

@@ -37,7 +37,7 @@ namespace KRPGLib.Enchantment
             if (!(api is ICoreServerAPI sapi)) return;
             this.sApi = sapi;
 
-            LoadEnchantingRecipes();
+            // LoadEnchantingRecipes();
         }
 
         public void ReloadEnchantingRecipes()
@@ -46,6 +46,7 @@ namespace KRPGLib.Enchantment
             sApi.World.Logger.Warning("[KRPGEnchantment] Reloading KRPG Enchantment Recipes!");
         }
 
+        /*
         public void LoadEnchantingRecipes()
         {
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
@@ -95,7 +96,8 @@ namespace KRPGLib.Enchantment
             //     // return;
             // }
         }
-
+        */
+        /*
         public void LoadRecipe(AssetLocation loc, EnchantingRecipe recipe)
         {
             if (!recipe.Enabled) return;
@@ -152,16 +154,17 @@ namespace KRPGLib.Enchantment
                 foreach (EnchantingRecipe subRecipe in subRecipes)
                 {
                     if (!subRecipe.ResolveIngredients(sApi.World)) continue;
-                    sApi.EnchantAccessor().RegisterEnchantingRecipe(subRecipe);
+                    // sApi.EnchantAccessor().RegisterEnchantingRecipe(subRecipe);
                 }
 
             }
             else
             {
                 if (!recipe.ResolveIngredients(sApi.World)) return;
-                sApi.EnchantAccessor().RegisterEnchantingRecipe(recipe);
+                // sApi.EnchantAccessor().RegisterEnchantingRecipe(recipe);
             }
 
         }
+        */
     }
 }

@@ -36,7 +36,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier = 5;
         // The EnumTool types in string format which can receive this enchantment
-        public string[] ValidToolTypes = new string[0];
+        public List<string> ValidToolTypes = new List<string>();
         // Configurable JSON multiplier for effects
         public EnchantModifiers Modifiers;
         public EnchantmentProperties Clone()
@@ -68,7 +68,7 @@ namespace KRPGLib.Enchantment
             writer.Write(LoreCode);
             writer.Write(LoreChapterID);
             writer.Write(MaxTier);
-            writer.Write(ValidToolTypes.Length);
+            writer.Write(ValidToolTypes.Count);
             foreach (string s in ValidToolTypes)
                 writer.Write(s);
             writer.Write(Modifiers.Count);
@@ -86,15 +86,15 @@ namespace KRPGLib.Enchantment
             LoreCode = reader.ReadString();
             LoreChapterID = reader.ReadInt32();
             MaxTier = reader.ReadInt32();
-            int length = reader.ReadInt32();
-            ValidToolTypes = new string[length];
-            for (int i = 0; i < length; i++)
+            int count1 = reader.ReadInt32();
+            ValidToolTypes = new List<string>();
+            for (int i = 0; i < count1; i++)
             {
                 ValidToolTypes[i] = reader.ReadString();
             }
-            int count = reader.ReadInt32();
+            int count2 = reader.ReadInt32();
             Modifiers = new EnchantModifiers();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count2; i++)
             {
                 string key = reader.ReadString();
                 Modifiers[key] = reader.ReadString();
@@ -139,7 +139,7 @@ namespace KRPGLib.Enchantment
         // The maximum functional Power of an Enchantment
         public int MaxTier { get; set; }
         // The EnumTool types in string format which can receive this enchantment
-        public string[] ValidToolTypes { get; set; }
+        public List<string> ValidToolTypes { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
@@ -194,7 +194,7 @@ namespace KRPGLib.Enchantment
             else
                 enchants = new Dictionary<string, int>();
             // Write Enchant
-            enchants.Add(Code, enchantPower);
+            enchants.Add(Code.ToLower(), enchantPower);
             string enchantString = "";
             foreach (KeyValuePair<string, int> pair in enchants)
             {

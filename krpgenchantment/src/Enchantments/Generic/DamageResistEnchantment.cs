@@ -15,8 +15,6 @@ namespace KRPGLib.Enchantment
 {
     public class DamageResistEnchantment : Enchantment
     {
-        // string DamageResist { get { return Attributes.GetString("DamageResist", "blunt;piercing;slashing"); } }
-        // float PowerMultiplier { get { return Attributes.GetFloat("PowerMultiplier", 0.1f); } }
         string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         float PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
         public DamageResistEnchantment(ICoreAPI api) : base(api)
@@ -28,9 +26,11 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-damageresist";
             LoreChapterID = -1;
             MaxTier = 5;
-            // Attributes = new TreeAttribute();
-            // Attributes.SetString("DamageResist", "blunt;piercing;slashing");
-            // Attributes.SetFloat("PowerMultiplier", 0.1f);
+            ValidToolTypes = new List<string>()
+            {
+                "ArmorHead", "ArmorBody", "ArmorLegs",
+                "Shield"
+            };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }

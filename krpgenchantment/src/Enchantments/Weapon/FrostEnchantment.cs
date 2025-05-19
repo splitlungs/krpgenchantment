@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-frost";
             LoreChapterID = 3;
             MaxTier = 5;
-            ValidToolTypes = new string[19] {
+            ValidToolTypes = new List<string>() {
                 "Knife", "Axe",
                 "Club", "Sword",
                 "Spear",

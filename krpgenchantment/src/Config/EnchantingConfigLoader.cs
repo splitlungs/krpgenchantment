@@ -59,7 +59,7 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
-                    if (Config.EnchantTimeOverride >= 0) tempConfig.EnchantTimeOverride = Config.EnchantTimeOverride;
+                    if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
 
@@ -95,39 +95,39 @@ namespace KRPGLib.Enchantment
                     if (!Config.ReagentPotentialTiers.ContainsKey("high"))
                         tempConfig.ReagentPotentialTiers.Add("high", 5);
 
-                    if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
-                    if (!Config.CustomPatches.ContainsKey("AncientArmory"))
-                        tempConfig.CustomPatches.Add("AncientArmory", true);
-                    if (!Config.CustomPatches.ContainsKey("Armory"))
-                        tempConfig.CustomPatches.Add("Armory", true);
-                    if (!Config.CustomPatches.ContainsKey("CANJewelry"))
-                        tempConfig.CustomPatches.Add("CANJewelry", true);
-                    if (!Config.CustomPatches.ContainsKey("CombatOverhaul"))
-                        tempConfig.CustomPatches.Add("CombatOverhaul", true);
-                    if (!Config.CustomPatches.ContainsKey("ElectricityAddon"))
-                        tempConfig.CustomPatches.Add("ElectricityAddon", true);
-                    if (!Config.CustomPatches.ContainsKey("KRPGWands"))
-                        tempConfig.CustomPatches.Add("KRPGWands", true);
-                    if (!Config.CustomPatches.ContainsKey("LitBrig"))
-                        tempConfig.CustomPatches.Add("LitBrig", true);
-                    if (!Config.CustomPatches.ContainsKey("MaltiezCrossbows"))
-                        tempConfig.CustomPatches.Add("MaltiezFirearms", true);
-                    if (!Config.CustomPatches.ContainsKey("MaltiezFirearms"))
-                        tempConfig.CustomPatches.Add("MaltiezCrossbows", true);
-                    if (!Config.CustomPatches.ContainsKey("NDLChiselPick"))
-                        tempConfig.CustomPatches.Add("NDLChiselPick", true);
-                    if (!Config.CustomPatches.ContainsKey("Paxel"))
-                        tempConfig.CustomPatches.Add("Paxel", true);
-                    if (!Config.CustomPatches.ContainsKey("RustboundMagic"))
-                        tempConfig.CustomPatches.Add("RustboundMagic", true);
-                    if (!Config.CustomPatches.ContainsKey("ScrapBlocks"))
-                        tempConfig.CustomPatches.Add("ScrapBlocks", true);
-                    if (!Config.CustomPatches.ContainsKey("SpearExpantion"))
-                        tempConfig.CustomPatches.Add("SpearExpantion", true);
-                    if (!Config.CustomPatches.ContainsKey("Swordz"))
-                        tempConfig.CustomPatches.Add("Swordz", true);
-                    if (!Config.CustomPatches.ContainsKey("Tonwexp-Neue"))
-                        tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
+                    // if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
+                    // if (!Config.CustomPatches.ContainsKey("AncientArmory"))
+                    //     tempConfig.CustomPatches.Add("AncientArmory", true);
+                    // if (!Config.CustomPatches.ContainsKey("Armory"))
+                    //     tempConfig.CustomPatches.Add("Armory", true);
+                    // if (!Config.CustomPatches.ContainsKey("CANJewelry"))
+                    //     tempConfig.CustomPatches.Add("CANJewelry", true);
+                    // if (!Config.CustomPatches.ContainsKey("CombatOverhaul"))
+                    //     tempConfig.CustomPatches.Add("CombatOverhaul", true);
+                    // if (!Config.CustomPatches.ContainsKey("ElectricityAddon"))
+                    //     tempConfig.CustomPatches.Add("ElectricityAddon", true);
+                    // if (!Config.CustomPatches.ContainsKey("KRPGWands"))
+                    //     tempConfig.CustomPatches.Add("KRPGWands", true);
+                    // if (!Config.CustomPatches.ContainsKey("LitBrig"))
+                    //     tempConfig.CustomPatches.Add("LitBrig", true);
+                    // if (!Config.CustomPatches.ContainsKey("MaltiezCrossbows"))
+                    //     tempConfig.CustomPatches.Add("MaltiezFirearms", true);
+                    // if (!Config.CustomPatches.ContainsKey("MaltiezFirearms"))
+                    //     tempConfig.CustomPatches.Add("MaltiezCrossbows", true);
+                    // if (!Config.CustomPatches.ContainsKey("NDLChiselPick"))
+                    //     tempConfig.CustomPatches.Add("NDLChiselPick", true);
+                    // if (!Config.CustomPatches.ContainsKey("Paxel"))
+                    //     tempConfig.CustomPatches.Add("Paxel", true);
+                    // if (!Config.CustomPatches.ContainsKey("RustboundMagic"))
+                    //     tempConfig.CustomPatches.Add("RustboundMagic", true);
+                    // if (!Config.CustomPatches.ContainsKey("ScrapBlocks"))
+                    //     tempConfig.CustomPatches.Add("ScrapBlocks", true);
+                    // if (!Config.CustomPatches.ContainsKey("SpearExpantion"))
+                    //     tempConfig.CustomPatches.Add("SpearExpantion", true);
+                    // if (!Config.CustomPatches.ContainsKey("Swordz"))
+                    //     tempConfig.CustomPatches.Add("Swordz", true);
+                    // if (!Config.CustomPatches.ContainsKey("Tonwexp-Neue"))
+                    //     tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
 
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;

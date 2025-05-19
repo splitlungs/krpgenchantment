@@ -1,7 +1,7 @@
 {
   "code": "assessment-table",
   "class": "AssessmentBlock",
-  "enabled": false,
+  "enabled": true,
   "entityClass": "AssessmentBE",
   "maxStackSize": 1,
   "maxSlotStackSize": 2,
@@ -33,7 +33,7 @@
     "terrain": [ "*" ],
     "construction": [ "*" ]
   },
-  "shape": { "base": "krpgenchantment:block/enchanting-table" },
+  "shape": { "base": "krpgenchantment:block/assessment-table" },
   "replaceable": 90,
   "requiredMiningTier": 0,
   "fertility": 0,

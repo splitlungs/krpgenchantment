@@ -139,25 +139,7 @@
   <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\trader.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\axe-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-chilling-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-igniting-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-knockback-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-lightning-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\blade-pit-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\game-armor.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-chilling-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-igniting-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-lightning-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\knife-pit-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\paxel\paxel-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-harming-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-healing-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\enchanting-table\spear-knockback-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-bearded-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-daneaxe-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-nadziak-tier-1.json" />
@@ -175,6 +157,8 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\krpgwands\wand-tier-1.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\block\assessment-table.json" />
+  <None Remove="assets\krpgenchantment\shapes\block\assessment-table.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>

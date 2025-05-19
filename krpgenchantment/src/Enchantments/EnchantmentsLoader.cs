@@ -25,7 +25,6 @@ namespace KRPGLib.Enchantment
         public override double ExecuteOrder()
         {
             // It's important to load after EnchantmentAccessor, but before EnchantmentRecipes loads. 0.1 - 0.9 is valid.
-            // Enchanting Recipes load at 1.0
             return 0.1;
         }
         public override bool ShouldLoad(EnumAppSide side)

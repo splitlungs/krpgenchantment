@@ -17,7 +17,7 @@ using System.Globalization;
 
 namespace KRPGLib.Enchantment
 {
-    public class EnchantingBE : BlockEntityOpenableContainer
+    public class AssessmentBE : BlockEntityOpenableContainer
     {
         // Config
         public int MsEnchantTick = 1000;
@@ -25,82 +25,16 @@ namespace KRPGLib.Enchantment
         public AssetLocation EnchantSound;
         private long SoundTickListener;
         // Sync'd with client
-        EnchantingInventory inventory;
+        AssessmentInventory inventory;
         public bool NowEnchanting = false;
         public double InputEnchantTime;
-        public int SelectedEnchant = -1;
-        public Dictionary<string, bool> Readers = new Dictionary<string, bool>();
+        // public int SelectedEnchant = -1;
+        // public Dictionary<string, bool> Readers = new Dictionary<string, bool>();
         // Internal use
-        public EnchantingTableGui clientDialog;
+        public AssessmentTableGui clientDialog;
         // public EnchantingRecipe CurrentRecipe;
         public string CurrentEnchantment;
         int nowOutputFace;
-        #region Candles
-        int QuantityCandles = 5;
-        internal Vec3f[] candleWickPositions = new Vec3f[5]
-        {
-            new Vec3f(7.8f, 2f, 8.8f),
-            new Vec3f(12.8f, 6f, 12.8f),
-            new Vec3f(11.8f, 4f, 6.8f),
-            new Vec3f(1.8f, 1f, 12.8f),
-            new Vec3f(6.8f, 4f, 13.8f)
-        };
-        private Vec3f[][] candleWickPositionsByRot = new Vec3f[4][];
-        internal void initRotations()
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                Matrixf matrixf = new Matrixf();
-                matrixf.Translate(0.5f, 0.5f, 0.5f);
-                matrixf.RotateYDeg(i * 90);
-                matrixf.Translate(-0.5f, -0.5f, -0.5f);
-                Vec3f[] array = (candleWickPositionsByRot[i] = new Vec3f[candleWickPositions.Length]);
-                for (int j = 0; j < array.Length; j++)
-                {
-                    Vec4f vec4f = matrixf.TransformVector(new Vec4f(candleWickPositions[j].X / 16f, candleWickPositions[j].Y / 16f, candleWickPositions[j].Z / 16f, 1f));
-                    array[j] = new Vec3f(vec4f.X, vec4f.Y, vec4f.Z);
-                }
-            }
-        }
-        public static AdvancedParticleProperties[] ParticleProperties = new AdvancedParticleProperties[0];
-
-        public static SimpleParticleProperties particle = new SimpleParticleProperties(
-                    1, 1,
-                    ColorUtil.ColorFromRgba(220, 220, 220, 50),
-                    new Vec3d(),
-                    new Vec3d(),
-                    new Vec3f(-0.25f, 0.1f, -0.25f),
-                    new Vec3f(0.25f, 0.1f, 0.25f),
-                    1.5f,
-                    -0.075f,
-                    0.25f,
-                    0.25f,
-                    EnumParticleModel.Quad
-                );
-        public void OnAsyncClientParticleTick(IAsyncParticleManager manager, BlockPos pos, float windAffectednessAtPos, float secondsTicking)
-        {
-            if (ParticleProperties == null || ParticleProperties.Length == 0)
-            {
-                return;
-            }
-
-            int num = GameMath.MurmurHash3Mod(pos.X, pos.Y, pos.Z, 4);
-            Vec3f[] array = candleWickPositionsByRot[num];
-            for (int i = 0; i < ParticleProperties.Length; i++)
-            {
-                AdvancedParticleProperties advancedParticleProperties = ParticleProperties[i];
-                advancedParticleProperties.WindAffectednesAtPos = windAffectednessAtPos;
-                for (int j = 0; j < QuantityCandles; j++)
-                {
-                    Vec3f vec3f = array[j];
-                    advancedParticleProperties.basePos.X = (float)pos.X + vec3f.X;
-                    advancedParticleProperties.basePos.Y = (float)pos.Y + vec3f.Y;
-                    advancedParticleProperties.basePos.Z = (float)pos.Z + vec3f.Z;
-                    manager.Spawn(advancedParticleProperties);
-                }
-            }
-        }
-        #endregion
         #region Getters
         public string Material
         {
@@ -108,7 +42,7 @@ namespace KRPGLib.Enchantment
         }
         public virtual string DialogTitle
         {
-            get { return Lang.Get("krpgenchantment:block-enchanting-table"); }
+            get { return Lang.Get("krpgenchantment:block-assessment-table"); }
         }
         public override string InventoryClassName
         {
@@ -135,9 +69,9 @@ namespace KRPGLib.Enchantment
         {
             get { return inventory[2]; }
         }
-        public EnchantingBE()
+        public AssessmentBE()
         {
-            inventory = new EnchantingInventory(null, null, this);
+            inventory = new AssessmentInventory(null, null, this);
             inventory.SlotModified += OnSlotModified;
         }
         /// <summary>
@@ -335,34 +269,34 @@ namespace KRPGLib.Enchantment
 
             if (Api.Side == EnumAppSide.Server)
             {
-                if (!NowEnchanting && CanEnchant && SelectedEnchant >= 0)
-                {
-                    InputEnchantTime = Api.World.Calendar.TotalHours;
-                    // CurrentRecipe.ResolveIngredients(Api.World);
-
-                    foreach (KeyValuePair<string, bool> keyValuePair in Readers)
-                    {
-                        if (Api.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment) == true)
-                            Readers[keyValuePair.Key] = true;
-                        else
-                            Readers[keyValuePair.Key] = false;
-                    }
-                    NowEnchanting = true;
-                    ToggleAmbientSounds(true);
-                }
-                else
-                {
-                    NowEnchanting = false;
-                    CurrentEnchantment = null;
-                    // CurrentRecipe = null;
-                    SelectedEnchant = -1;
-                    InputEnchantTime = 0;
-                    foreach(KeyValuePair<string, bool> keyValuePair in Readers)
-                    {
-                        Readers[keyValuePair.Key] = false;
-                    }
-                    ToggleAmbientSounds(false);
-                }
+                // if (!NowEnchanting && CanEnchant && SelectedEnchant >= 0)
+                // {
+                //     InputEnchantTime = Api.World.Calendar.TotalHours;
+                //     // CurrentRecipe.ResolveIngredients(Api.World);
+                // 
+                //     foreach (KeyValuePair<string, bool> keyValuePair in Readers)
+                //     {
+                //         if (Api.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment) == true)
+                //             Readers[keyValuePair.Key] = true;
+                //         else
+                //             Readers[keyValuePair.Key] = false;
+                //     }
+                //     NowEnchanting = true;
+                //     ToggleAmbientSounds(true);
+                // }
+                // else
+                // {
+                //     NowEnchanting = false;
+                //     CurrentEnchantment = null;
+                //     // CurrentRecipe = null;
+                //     SelectedEnchant = -1;
+                //     InputEnchantTime = 0;
+                //     foreach(KeyValuePair<string, bool> keyValuePair in Readers)
+                //     {
+                //         Readers[keyValuePair.Key] = false;
+                //     }
+                //     ToggleAmbientSounds(false);
+                // }
             }
 
             MarkDirty();
@@ -403,7 +337,7 @@ namespace KRPGLib.Enchantment
                 return;
 
             Api.World.PlaySoundAt(EnchantSound, Pos, 0, null, false, 12, 0.75f);
-            Api.World.SpawnParticles(particle);
+            // Api.World.SpawnParticles(particle);
         }
         protected ILoadedSound ambientSound;
         public virtual float SoundLevel => 0.66f;
@@ -454,46 +388,46 @@ namespace KRPGLib.Enchantment
             }
             NowEnchanting = tree.GetBool("nowEnchanting");
             InputEnchantTime = tree.GetDouble("inputEnchantTime");
-            SelectedEnchant = tree.GetInt("selectedEnchant");
-            Readers = new Dictionary<string, bool>();
-            string readerString = tree.GetString("readers");
-            if (readerString != null)
-            {
-                string[] readers = readerString.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                foreach (string s in readers)
-                {
-                    string[] keyval = s.Split(":");
-                    if (keyval[1] == "1")
-                        Readers.Add(keyval[0], true);
-                    else
-                        Readers.Add(keyval[0], false);
-                }
-            }
+            // SelectedEnchant = tree.GetInt("selectedEnchant");
+            // Readers = new Dictionary<string, bool>();
+            // string readerString = tree.GetString("readers");
+            // if (readerString != null)
+            // {
+            //     string[] readers = readerString.Split(";", StringSplitOptions.RemoveEmptyEntries);
+            //     foreach (string s in readers)
+            //     {
+            //         string[] keyval = s.Split(":");
+            //         if (keyval[1] == "1")
+            //             Readers.Add(keyval[0], true);
+            //         else
+            //             Readers.Add(keyval[0], false);
+            //     }
+            // }
 
             // Update the GUI after sync from server
             if (clientDialog != null)
             {
                 // Update GUI Enchanting List
-                clientDialog?.UpdateEnchantList(LatentEnchants, LatentEnchantsEncrypted);
+                // clientDialog?.UpdateEnchantList(LatentEnchants, LatentEnchantsEncrypted);
                 
                 // Update main GUI
-                double hours = 0;
-                bool canRead = false;
-                if (SelectedEnchant >= 0 && NowEnchanting == true)
-                {
-                    hours = Api.World.Calendar.TotalHours - InputEnchantTime;
-
-                    ICoreClientAPI capi = Api as ICoreClientAPI;
-                    string player = capi.World.Player.PlayerUID;
-                    if (Readers.TryGetValue(player, out var value))
-                        canRead = Readers[player];
-
-                    // if (canRead == true)
-                    //     Api.Logger.Event("Load. {0} can read the CurrentRecipe!", capi.World.Player.PlayerName);
-                    // else
-                    //     Api.Logger.Event("Load. {0} cannot read the CurrentRecipe!", capi.World.Player.PlayerName);
-                }
-                clientDialog?.Update(hours, MaxEnchantTime, NowEnchanting, OutputText, SelectedEnchant, canRead);
+                // double hours = 0;
+                // bool canRead = false;
+                // if (SelectedEnchant >= 0 && NowEnchanting == true)
+                // {
+                //     hours = Api.World.Calendar.TotalHours - InputEnchantTime;
+                // 
+                //     ICoreClientAPI capi = Api as ICoreClientAPI;
+                //     string player = capi.World.Player.PlayerUID;
+                //     if (Readers.TryGetValue(player, out var value))
+                //         canRead = Readers[player];
+                // 
+                //     // if (canRead == true)
+                //     //     Api.Logger.Event("Load. {0} can read the CurrentRecipe!", capi.World.Player.PlayerName);
+                //     // else
+                //     //     Api.Logger.Event("Load. {0} cannot read the CurrentRecipe!", capi.World.Player.PlayerName);
+                // }
+                // clientDialog?.Update(hours, MaxEnchantTime, NowEnchanting, OutputText, SelectedEnchant, canRead);
             }
         }
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -504,20 +438,20 @@ namespace KRPGLib.Enchantment
             tree["inventory"] = invtree;
             tree.SetBool("nowEnchanting", NowEnchanting);
             tree.SetDouble("inputEnchantTime", InputEnchantTime);
-            tree.SetInt("selectedEnchant", SelectedEnchant);
-            string readers = null;
-            if (Readers != null)
-            {
-                foreach (KeyValuePair<string, bool> keyValuePair in Readers)
-                {
-                    // 0 = False, 1 = True
-                    int val = 0;
-                    if (keyValuePair.Value == true) val = 1;
-                    readers += keyValuePair.Key + ":" + val + ";";
-                    // Api.Logger.Event("Save. Adding a reader {0} with value of {1}.", keyValuePair.Key, val);
-                }
-            }
-            tree.SetString("readers", readers);
+            // tree.SetInt("selectedEnchant", SelectedEnchant);
+            // string readers = null;
+            // if (Readers != null)
+            // {
+            //     foreach (KeyValuePair<string, bool> keyValuePair in Readers)
+            //     {
+            //         // 0 = False, 1 = True
+            //         int val = 0;
+            //         if (keyValuePair.Value == true) val = 1;
+            //         readers += keyValuePair.Key + ":" + val + ";";
+            //         // Api.Logger.Event("Save. Adding a reader {0} with value of {1}.", keyValuePair.Key, val);
+            //     }
+            // }
+            // tree.SetString("readers", readers);
         }
         #endregion
         #region Events
@@ -527,19 +461,19 @@ namespace KRPGLib.Enchantment
             if (Api.Side == EnumAppSide.Server)
             {
                 // Prepare them for the translator
-                if (clientDialog != null && Readers.ContainsKey(byPlayer.PlayerUID))
-                {
-                    Readers.Remove(byPlayer.PlayerUID);
-                    if (EnchantingConfigLoader.Config.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Server received RClick. Removing player {0} from Readers list.", byPlayer.PlayerUID);
-                }
-                else if (clientDialog == null && !Readers.ContainsKey(byPlayer.PlayerUID))
-                {
-                    bool canRead = Api.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment);
-                    Readers.Add(byPlayer.PlayerUID, canRead);
-                    if (EnchantingConfigLoader.Config.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Server received RClick. Adding player {0} from Readers list with value of {1}.", byPlayer.PlayerUID, canRead);
-                }
+                // if (clientDialog != null && Readers.ContainsKey(byPlayer.PlayerUID))
+                // {
+                //     Readers.Remove(byPlayer.PlayerUID);
+                //     if (EnchantingConfigLoader.Config.Debug == true)
+                //         Api.Logger.Event("[KRPGEnchantment] Server received RClick. Removing player {0} from Readers list.", byPlayer.PlayerUID);
+                // }
+                // else if (clientDialog == null && !Readers.ContainsKey(byPlayer.PlayerUID))
+                // {
+                //     bool canRead = Api.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment);
+                //     Readers.Add(byPlayer.PlayerUID, canRead);
+                //     if (EnchantingConfigLoader.Config.Debug == true)
+                //         Api.Logger.Event("[KRPGEnchantment] Server received RClick. Adding player {0} from Readers list with value of {1}.", byPlayer.PlayerUID, canRead);
+                // }
             }
             // Setup the GUI for the client
             if (Api.Side == EnumAppSide.Client)
@@ -570,12 +504,12 @@ namespace KRPGLib.Enchantment
                     outputText = OutputText,
                     inputEnchantTime = hours,
                     nowEnchanting = NowEnchanting,
-                    selectedEnchant = SelectedEnchant,
+                    // selectedEnchant = SelectedEnchant,
                     enchantNames = LatentEnchants,
                     enchantNamesEncrypted = LatentEnchantsEncrypted,
                     rowCount = EnchantRowCount
                 };
-                clientDialog = new EnchantingTableGui(DialogTitle, Inventory, Pos, capi, config);
+                clientDialog = new AssessmentTableGui(DialogTitle, Inventory, Pos, capi, config);
                 clientDialog.OnClosed += () =>
                 {
                     clientDialog = null;
@@ -599,40 +533,41 @@ namespace KRPGLib.Enchantment
         {
             base.OnReceivedClientPacket(player, packetid, data);
 
+            /*
             // Player modified a Slot or clicked an Enchant button
             if (packetid == 1337 && Api.Side == EnumAppSide.Server)
             {
                 EnchantingGuiPacket packet = SerializerUtil.Deserialize<EnchantingGuiPacket>(data);
-                SelectedEnchant = packet.SelectedEnchant;
+                // SelectedEnchant = packet.SelectedEnchant;
                 CurrentEnchantment = null;
                 // CurrentRecipe = null;
                 // Set the selected latent enchant if it's valid, or un-set them if not
                 if (SelectedEnchant >= 0 && LatentEnchants != null)
                 {
                     // Find and assign a Current Enchantment
-                    ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(InputSlot);
-                    if (enchants == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Warning("[KRPGEnchantment] Could not Get Valid Enchantments for {0}.", InputSlot.Itemstack.GetName());
-                    }
-                    foreach (string s in enchants)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Event("[KRPGEnchantment] Checking if {0} can be assigned as CurrentEnchantment.", s);
-                        bool canEnchant = sApi.EnchantAccessor().CanEnchant(InputSlot.Itemstack, ReagentSlot.Itemstack, s);
-                        bool matches = LatentEnchants[SelectedEnchant].Equals(s, StringComparison.OrdinalIgnoreCase);
-                        if (matches == true && canEnchant == true) 
-                            CurrentEnchantment = s; 
-                    }
-                    // Remove button selection if Current Recipe is not found
-                    if (CurrentEnchantment == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentEnchantment.", SelectedEnchant);
-                        SelectedEnchant = -1;
-                    }
+                    // ICoreServerAPI sApi = Api as ICoreServerAPI;
+                    // List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(InputSlot);
+                    // if (enchants == null)
+                    // {
+                    //     if (EnchantingConfigLoader.Config?.Debug == true)
+                    //         Api.World.Logger.Warning("[KRPGEnchantment] Could not Get Valid Enchantments for {0}.", InputSlot.Itemstack.GetName());
+                    // }
+                    // foreach (string s in enchants)
+                    // {
+                    //     if (EnchantingConfigLoader.Config?.Debug == true)
+                    //         Api.World.Logger.Event("[KRPGEnchantment] Checking if {0} can be assigned as CurrentEnchantment.", s);
+                    //     bool canEnchant = sApi.EnchantAccessor().CanEnchant(InputSlot.Itemstack, ReagentSlot.Itemstack, s);
+                    //     bool matches = LatentEnchants[SelectedEnchant].Equals(s, StringComparison.OrdinalIgnoreCase);
+                    //     if (matches == true && canEnchant == true) 
+                    //         CurrentEnchantment = s; 
+                    // }
+                    // // Remove button selection if Current Recipe is not found
+                    // if (CurrentEnchantment == null)
+                    // {
+                    //     if (EnchantingConfigLoader.Config?.Debug == true)
+                    //         Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentEnchantment.", SelectedEnchant);
+                    //     SelectedEnchant = -1;
+                    // }
 
                     // List<EnchantingRecipe> recipes = sApi.EnchantAccessor().GetValidEnchantingRecipes(InputSlot, ReagentSlot);
                     // foreach (EnchantingRecipe er in recipes)
@@ -680,30 +615,31 @@ namespace KRPGLib.Enchantment
                 if (Readers.ContainsKey(player.PlayerUID))
                     Readers.Remove(player.PlayerUID);
             }
+            */
             // Sync back to the client
             MarkDirty();
         }
         /// <summary>
         /// Checks all readers in the list if they can read the Current Enchantment. Call this before calling clientDialog.Update()
         /// </summary>
-        void UpdateReaders()
-        {
-            if (CurrentEnchantment != null && Api.Side == EnumAppSide.Server)
-            {
-                foreach (KeyValuePair<string, bool> pair in Readers)
-                {
-                    // ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    Api.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment);
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<string, bool> pair in Readers)
-                {
-                    Readers[pair.Key] = false;
-                }
-            }
-        }
+        // void UpdateReaders()
+        // {
+        //     if (CurrentEnchantment != null && Api.Side == EnumAppSide.Server)
+        //     {
+        //         foreach (KeyValuePair<string, bool> pair in Readers)
+        //         {
+        //             // ICoreServerAPI sApi = Api as ICoreServerAPI;
+        //             Api.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         foreach (KeyValuePair<string, bool> pair in Readers)
+        //         {
+        //             Readers[pair.Key] = false;
+        //         }
+        //     }
+        // }
         private void OnSlotModified(int slotid)
         {
             if (Api.Side == EnumAppSide.Server)
@@ -715,15 +651,15 @@ namespace KRPGLib.Enchantment
                     NowEnchanting = false;
                     CurrentEnchantment = null;
                     // CurrentRecipe = null;
-                    SelectedEnchant = -1;
+                    // SelectedEnchant = -1;
                     InputEnchantTime = 0.0d;
                     ICoreServerAPI sApi = Api as ICoreServerAPI;
                     bool assed = sApi.EnchantAccessor().AssessItem(InputSlot, ReagentSlot);
                     if (EnchantingConfigLoader.Config?.Debug == true)
                         if (!assed) sApi.Logger.Warning("[KRPGEnchantment] Enchanting Table could not Assess an item!");
                 }
-                UpdateEnchantingState();
-                UpdateReaders();
+                // UpdateEnchantingState();
+                // UpdateReaders();
                 MarkDirty();
             }
         }
@@ -752,7 +688,7 @@ namespace KRPGLib.Enchantment
             clientDialog?.TryClose();
             clientDialog?.Dispose();
             clientDialog = null;
-            Readers.Clear();
+            // Readers.Clear();
         }
         #endregion
     }

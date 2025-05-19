@@ -30,8 +30,8 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-durable";
             LoreChapterID = 1;
             MaxTier = 5;
-            ValidToolTypes = new string[35] {
-                "Head", "Body", "Legs",
+            ValidToolTypes = new List<string>() {
+                "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield",
                 "Chisel", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
                 "Knife", "Axe",

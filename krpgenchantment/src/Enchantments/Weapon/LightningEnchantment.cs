@@ -32,7 +32,7 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-lightning";
             LoreChapterID = 8;
             MaxTier = 5;
-            ValidToolTypes = new string[19] {
+            ValidToolTypes = new List<string>() {
                 "Knife", "Axe",
                 "Club", "Sword",
                 "Spear",

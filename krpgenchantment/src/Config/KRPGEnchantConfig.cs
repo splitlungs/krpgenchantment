@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
     {
         // Recipe config.
         public int MaxEnchantsPerItem = 4;
-        public double EnchantTimeOverride = -1d;
+        public double EnchantTimeHours = 1d;
         public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
         public Dictionary<string, int> MaxEnchantsByCategory = new Dictionary<string, int>()
@@ -40,28 +40,28 @@ namespace KRPGLib.Enchantment
             { "medium", 3 },
             { "high", 5 }
         };
-        // Compatibility patch list
-        public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>()
-        {
-            { "AncientArmory", true },
-            { "Armory", true },
-            { "BlackguardAdditions", true },
-            { "CANJewelry", true },
-            { "CombatOverhaul", true },
-            { "ElectricityAddon", true },
-            { "ForlornAdditions", true },
-            { "KRPGWands", true },
-            { "LitBrig", true },
-            { "MaltiezCrossbows", true },
-            { "MaltiezFirearms", true },
-            { "NDLChiselPick", true },
-            { "Paxel", true },
-            { "RustboundMagic", true },
-            { "ScrapBlocks", true },
-            { "SpearExpantion", true },
-            { "Swordz", true },
-            { "Tonwexp-Neue", true }
-        };
+        // Compatibility patch list - Obsolete
+        // public Dictionary<string, bool> CustomPatches = new Dictionary<string, bool>()
+        // {
+        //     { "AncientArmory", true },
+        //     { "Armory", true },
+        //     { "BlackguardAdditions", true },
+        //     { "CANJewelry", true },
+        //     { "CombatOverhaul", true },
+        //     { "ElectricityAddon", true },
+        //     { "ForlornAdditions", true },
+        //     { "KRPGWands", true },
+        //     { "LitBrig", true },
+        //     { "MaltiezCrossbows", true },
+        //     { "MaltiezFirearms", true },
+        //     { "NDLChiselPick", true },
+        //     { "Paxel", true },
+        //     { "RustboundMagic", true },
+        //     { "ScrapBlocks", true },
+        //     { "SpearExpantion", true },
+        //     { "Swordz", true },
+        //     { "Tonwexp-Neue", true }
+        // };
         // Deboog
         public bool Debug = false;
         // Version
@@ -80,7 +80,7 @@ namespace KRPGLib.Enchantment
             if (config != null) 
             {
                 if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
-                if (config.EnchantTimeOverride >= 0) EnchantTimeOverride = config.EnchantTimeOverride;
+                if (config.EnchantTimeHours != 1) EnchantTimeHours = config.EnchantTimeHours;
                 if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;
                 if (config.MaxLatentEnchants != 3) MaxLatentEnchants = config.MaxLatentEnchants;
                 
@@ -103,39 +103,39 @@ namespace KRPGLib.Enchantment
                 if (!config.ReagentPotentialTiers.ContainsKey("high"))
                     ReagentPotentialTiers.Add("high", 5);
 
-                if (config.CustomPatches?.Count > 0) CustomPatches = config.CustomPatches;
-                if (!config.CustomPatches.ContainsKey("AncientArmory"))
-                    CustomPatches.Add("AncientArmory", true);
-                if (!config.CustomPatches.ContainsKey("Armory"))
-                    CustomPatches.Add("Armory", true);
-                if (!config.CustomPatches.ContainsKey("CANJewelry"))
-                    CustomPatches.Add("CANJewelry", true);
-                if (!config.CustomPatches.ContainsKey("CombatOverhaul"))
-                    CustomPatches.Add("CombatOverhaul", true);
-                if (!config.CustomPatches.ContainsKey("ElectricityAddon"))
-                    CustomPatches.Add("ElectricityAddon", true);
-                if (!config.CustomPatches.ContainsKey("KRPGWands"))
-                    CustomPatches.Add("KRPGWands", true);
-                if (!config.CustomPatches.ContainsKey("LitBrig"))
-                    CustomPatches.Add("LitBrig", true);
-                if (!config.CustomPatches.ContainsKey("MaltiezCrossbows"))
-                    CustomPatches.Add("MaltiezFirearms", true);
-                if (!config.CustomPatches.ContainsKey("MaltiezFirearms"))
-                    CustomPatches.Add("MaltiezCrossbows", true);
-                if (!config.CustomPatches.ContainsKey("NDLChiselPick"))
-                    CustomPatches.Add("NDLChiselPick", true);
-                if (!config.CustomPatches.ContainsKey("Paxel"))
-                    CustomPatches.Add("Paxel", true);
-                if (!config.CustomPatches.ContainsKey("RustboundMagic"))
-                    CustomPatches.Add("RustboundMagic", true);
-                if (!config.CustomPatches.ContainsKey("ScrapBlocks"))
-                    CustomPatches.Add("ScrapBlocks", true);
-                if (!config.CustomPatches.ContainsKey("SpearExpantion"))
-                    CustomPatches.Add("SpearExpantion", true);
-                if (!config.CustomPatches.ContainsKey("Swordz"))
-                    CustomPatches.Add("Swordz", true);
-                if (!config.CustomPatches.ContainsKey("Tonwexp-Neue"))
-                    CustomPatches.Add("Tonwexp-Neue", true);
+                // if (config.CustomPatches?.Count > 0) CustomPatches = config.CustomPatches;
+                // if (!config.CustomPatches.ContainsKey("AncientArmory"))
+                //     CustomPatches.Add("AncientArmory", true);
+                // if (!config.CustomPatches.ContainsKey("Armory"))
+                //     CustomPatches.Add("Armory", true);
+                // if (!config.CustomPatches.ContainsKey("CANJewelry"))
+                //     CustomPatches.Add("CANJewelry", true);
+                // if (!config.CustomPatches.ContainsKey("CombatOverhaul"))
+                //     CustomPatches.Add("CombatOverhaul", true);
+                // if (!config.CustomPatches.ContainsKey("ElectricityAddon"))
+                //     CustomPatches.Add("ElectricityAddon", true);
+                // if (!config.CustomPatches.ContainsKey("KRPGWands"))
+                //     CustomPatches.Add("KRPGWands", true);
+                // if (!config.CustomPatches.ContainsKey("LitBrig"))
+                //     CustomPatches.Add("LitBrig", true);
+                // if (!config.CustomPatches.ContainsKey("MaltiezCrossbows"))
+                //     CustomPatches.Add("MaltiezFirearms", true);
+                // if (!config.CustomPatches.ContainsKey("MaltiezFirearms"))
+                //     CustomPatches.Add("MaltiezCrossbows", true);
+                // if (!config.CustomPatches.ContainsKey("NDLChiselPick"))
+                //     CustomPatches.Add("NDLChiselPick", true);
+                // if (!config.CustomPatches.ContainsKey("Paxel"))
+                //     CustomPatches.Add("Paxel", true);
+                // if (!config.CustomPatches.ContainsKey("RustboundMagic"))
+                //     CustomPatches.Add("RustboundMagic", true);
+                // if (!config.CustomPatches.ContainsKey("ScrapBlocks"))
+                //     CustomPatches.Add("ScrapBlocks", true);
+                // if (!config.CustomPatches.ContainsKey("SpearExpantion"))
+                //     CustomPatches.Add("SpearExpantion", true);
+                // if (!config.CustomPatches.ContainsKey("Swordz"))
+                //     CustomPatches.Add("Swordz", true);
+                // if (!config.CustomPatches.ContainsKey("Tonwexp-Neue"))
+                //     CustomPatches.Add("Tonwexp-Neue", true);
 
                 if (config.Debug == true) Debug = true;
                 

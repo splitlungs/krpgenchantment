@@ -18,6 +18,7 @@ using Vintagestory.GameContent.Mechanics;
 namespace KRPGLib.Enchantment
 {
     #region Recipe
+    [Obsolete]
     public class EnchantingRecipe : IByteSerializable
     {
         /// <summary>

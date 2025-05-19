@@ -28,8 +28,8 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-protection";
             LoreChapterID = 10;
             MaxTier = 5;
-            ValidToolTypes = new string[4] {
-                "Head", "Body", "Legs",
+            ValidToolTypes = new List<string> {
+                "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield" };
             Modifiers = new EnchantModifiers()
             { 

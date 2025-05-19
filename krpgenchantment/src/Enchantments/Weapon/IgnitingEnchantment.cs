@@ -29,7 +29,7 @@ namespace KRPGLib.Enchantment
             LoreCode = "enchantment-igniting";
             LoreChapterID = 6;
             MaxTier = 5;
-            ValidToolTypes = new string[19] {
+            ValidToolTypes = new List<string>() {
                 "Knife", "Axe",
                 "Club", "Sword",
                 "Spear",
