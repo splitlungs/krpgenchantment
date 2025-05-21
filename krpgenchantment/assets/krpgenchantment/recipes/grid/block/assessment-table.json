@@ -15,8 +15,12 @@
     },
     "B": {
       "type": "block",
-      "code": "game:bookshelf-*",
-      "quanityt": 1
+      "code": "game:bookshelf",
+      "quanityt": 1,
+      "attributes": {
+        "type": "1row1col",
+        "material": "oak"
+      }
     },
     "N": {
       "type": "item",

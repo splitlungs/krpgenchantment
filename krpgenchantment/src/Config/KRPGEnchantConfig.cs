@@ -15,6 +15,7 @@ namespace KRPGLib.Enchantment
     {
         // Recipe config.
         public int MaxEnchantsPerItem = 4;
+        public double AssessReagentHours = 30;
         public double EnchantTimeHours = 1d;
         public double LatentEnchantResetDays = 7d;
         public int MaxLatentEnchants = 3;
@@ -80,6 +81,7 @@ namespace KRPGLib.Enchantment
             if (config != null) 
             {
                 if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
+                if (config.AssessReagentHours != 1) AssessReagentHours = config.AssessReagentHours;
                 if (config.EnchantTimeHours != 1) EnchantTimeHours = config.EnchantTimeHours;
                 if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;
                 if (config.MaxLatentEnchants != 3) MaxLatentEnchants = config.MaxLatentEnchants;

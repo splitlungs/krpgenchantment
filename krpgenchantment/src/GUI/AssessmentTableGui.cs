@@ -8,36 +8,61 @@ using Vintagestory.API.MathTools;
 using Cairo;
 using Vintagestory.API.Config;
 using Vintagestory.API.Util;
+using System.Reflection;
 
 namespace KRPGLib.Enchantment
 {
     public class AssessmentTableGui : GuiDialogBlockEntity
     {
         #region Setup
-        public override string ToggleKeyCombinationCode => "enchantingtablegui";
+        public override string ToggleKeyCombinationCode => "assessmenttablegui";
 
-        // public SKTypeface customTypeface;
-        public EnchantingGuiConfig Config;
+        // Gear
+        public bool IsAssessing = false;
+        public double MaxTime;
+        public double InputTime;
+        private float displayedFillPercent = 0f;
+        private double rotationTimeAccum = 0f;
+        private long tickListenerId;
+        private double lastFrameTime;
+        double rotationSpeed = 30.0; // Seconds per full rotation
+        // double baseColorSpeed = 0.001;
+        // double maxColorSpeed = 0.1;
+        // double colorSpeed = 165; // Hue change
+        float lerpSpeed = 0.1f; // Fade
 
         // Set GUI Element Bounds sizing
-        int inputWidth = 480;
-        int inputHeight = 180;
-        int insetWidth = 220;
-        int insetHeight = 180;
-        int insetDepth = 3;
-        int rowHeight = 48;
+        int inputWidth = 300;
+        int inputHeight = 300;
 
-        public AssessmentTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi, EnchantingGuiConfig config) 
+        // private double[] HsvToRgb(double h, double s, double v)
+        // {
+        //     h = h % 1.0;  // Wrap hue around [0,1]
+        //     int i = (int)(h * 6);
+        //     double f = h * 6 - i;
+        //     double p = v * (1 - s);
+        //     double q = v * (1 - f * s);
+        //     double t = v * (1 - (1 - f) * s);
+        // 
+        //     switch (i % 6)
+        //     {
+        //         case 0: return new double[] { v, t, p };
+        //         case 1: return new double[] { q, v, p };
+        //         case 2: return new double[] { p, v, t };
+        //         case 3: return new double[] { p, q, v };
+        //         case 4: return new double[] { t, p, v };
+        //         case 5: return new double[] { v, p, q };
+        //         default: return new double[] { 1, 1, 1 }; // fallback
+        //     }
+        // }
+
+        public AssessmentTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi) 
             : base(DialogTitle, Inventory, BlockEntityPosition, capi)
         {
             if (IsDuplicate) return;
 
             this.capi = capi;
-            Config = config.Clone();
-            // customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
             SetupDialog();
-
-            // capi.World.Player.InventoryManager.OpenInventory(Inventory);
         }
 
         public void SetupDialog()
@@ -50,53 +75,27 @@ namespace KRPGLib.Enchantment
                 hoveredSlot = null;
 
             // 2. Sanitize data
-            // Get our font. Internet required if first time
-            // if (customTypeface == null)
-            //     customTypeface = capi.EnchantAccessor().LoadCustomFont(Config.customFont);
-            // Create a new List of Latent Enchants if none found or malformed
-            if (Config.enchantNamesEncrypted == null)
-            {
-                Config.enchantNamesEncrypted = new List<string>();
-                for (int i = 0; i < Config.rowCount; i++)
-                    Config.enchantNamesEncrypted.Add("");
-            }
-            else if (Config.enchantNamesEncrypted.Count != Config.rowCount)
-            {
-                Config.enchantNamesEncrypted = new List<string>();
-                for (int i = 0; i < Config.rowCount; i++)
-                    Config.enchantNamesEncrypted.Add("");
-            }
 
             // 3. Set bounds
-            ElementBounds temporalSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, 30 + 45, 6, 1);
-            temporalSlotBounds.fixedHeight += 10;
-            double top = temporalSlotBounds.fixedHeight + temporalSlotBounds.fixedY;
-            ElementBounds arrowBounds = ElementBounds.Fixed(0, top - 30, 200, 90);
-            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, top, 1, 1);
-            // ElementBounds outputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 153, top, 1, 1);
-            // ElementBounds enchantButton = ElementBounds.Fixed(145, 90, 64, 24);
             // Auto-sized dialog at the center of the screen
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
             // Bounds of the main Dialog
-            ElementBounds inputBounds = ElementBounds.Fixed(10, GuiStyle.TitleBarHeight -20, inputWidth, inputHeight);
-            // Bounds of main inset for scrolling content in the GUI
-            ElementBounds enchantListBounds = ElementBounds.Fixed(inputWidth - insetWidth, GuiStyle.TitleBarHeight, insetWidth, insetHeight);
-            ElementBounds scrollbarBounds = enchantListBounds.RightCopy().WithFixedWidth(20);
-            // Create child elements bounds for within the inset
-            ElementBounds clipBounds = enchantListBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
-            ElementBounds containerBounds = enchantListBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
-            ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
+            ElementBounds inputBounds = ElementBounds.Fixed(0, GuiStyle.TitleBarHeight, inputWidth, inputHeight);
+            // Bounds of the dynamic background
+            ElementBounds gearBounds = ElementBounds.Fixed(0, 0, 300, 300);
+            // Bounds of the inputs
+            ElementBounds temporalSlot1Bounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterTop, 0, 20, 1, 1);
+            ElementBounds temporalSlot2Bounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterMiddle, -120, 0, 1, 1);
+            ElementBounds temporalSlot3Bounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterMiddle, 120, 0, 1, 1);
+            ElementBounds temporalSlot4Bounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterBottom, -80, -20, 1, 1);
+            ElementBounds temporalSlot5Bounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterBottom, 80, -20, 1, 1);
+            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.CenterMiddle, 0, 0, 1, 1);
 
             // Dialog background bounds
             ElementBounds bgBounds = ElementBounds.Fill
                 .WithFixedPadding(GuiStyle.ElementToDialogPadding)
                 .WithSizing(ElementSizing.FitToChildren)
-                .WithChildren(inputBounds, enchantListBounds, scrollbarBounds);
-
-            // 4. Enchanting Recipe Data
-            string ot = Lang.Get("krpgenchantment:krpg-assessment-enchant-prefix");
-            if (Config.outputText != null)
-            { ot = Config.outputText; }
+                .WithChildren(inputBounds);
 
             // 5. Create GUI with fixed bounds for each element
             ClearComposers();
@@ -105,217 +104,110 @@ namespace KRPGLib.Enchantment
                 .AddDialogTitleBar(DialogTitle, OnTitleBarCloseClicked)
                 // 5a. Create GUI for Input
                 .BeginChildElements(inputBounds)
-                    // .AddToggleButton(Lang.Get("krpgenchantment:krpg-enchant"), CairoFont.WhiteDetailText().WithOrientation(EnumTextOrientation.Left), onEnchantToggle, enchantButton, "enchantToggle")
-                    .AddDynamicCustomDraw(arrowBounds, OnBgDraw, "symbolDrawer")
-                    .AddDynamicText(ot, CairoFont.WhiteSmallText().WithOrientation(EnumTextOrientation.Left), ElementBounds.Fixed(0, 30, 210, 45), "outputText")
+                    .AddDynamicCustomDraw(gearBounds, OnRenderGearGradient, "symbolDrawer")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 0 }, inputSlotBounds, "inputSlot")
-                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 1 }, temporalSlotBounds, "temporalSlot")
-                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 2 }, temporalSlotBounds, "temporalSlot")
-                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 3 }, temporalSlotBounds, "temporalSlot")
-                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 4 }, temporalSlotBounds, "temporalSlot")
-                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 5 }, temporalSlotBounds, "temporalSlot")
+                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 1 }, temporalSlot1Bounds, "temporalSlot1")
+                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 2 }, temporalSlot2Bounds, "temporalSlot2")
+                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 3 }, temporalSlot3Bounds, "temporalSlot3")
+                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 4 }, temporalSlot4Bounds, "temporalSlot4")
+                    .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 5 }, temporalSlot5Bounds, "temporalSlot5")
                 .EndChildElements();
-                // 5b. Create GUI for Enchant List
-                // .BeginChildElements()
-                //     .AddInset(enchantListBounds, insetDepth)
-                //     .BeginClip(clipBounds)
-                //         .AddContainer(containerBounds, "scroll-content")
-                //     .EndClip()
-                //     .AddVerticalScrollbar(OnNewScrollbarValue, scrollbarBounds, "scrollbar")
-                // .EndChildElements();
-
-            // 6. Fill the container
-            // GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-            // for (int i = 0; i < Config.rowCount; i++)
-            // {
-            //     scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
-            //     if (Config.selectedEnchant != -1 && i == Config.selectedEnchant && Config.enchantNamesEncrypted[i] != "")
-            //     {
-            //         // capi.Logger.Warning("Found matching SkiaToggleButton. Attempting to set as the selectedEnchant.");
-            //         SkiaToggleButtonGuiElement button = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
-            //         button.SetValue(true);
-            //     }
-            //     // SingleComposer.AddAutoSizeHoverText("TEST", CairoFont.WhiteMediumText(), 1, containerRowBounds, "enchant" + i);
-            //     containerRowBounds = containerRowBounds.BelowCopy();
-            // }
-
+            
             // 7. Compose
             SingleComposer.Compose();
-
-            // 8. After composing dialog, update dynamic elements
-            if (Config.canRead == true && Config.nowEnchanting == true)
-                Config.outputText += Lang.Get(Config.enchantNames[Config.selectedEnchant]);
-            SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText);
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            // lastRedrawMs = capi.ElapsedMilliseconds;
 
             if (hoveredSlot != null)
             {
                 SingleComposer.OnMouseMove(new MouseEvent(capi.Input.MouseX, capi.Input.MouseY));
             }
-
-            // 9. After composing dialog, need to set the scrolling area heights to enable scroll behavior
-            float scrollVisibleHeight = (float)clipBounds.fixedHeight;
-            float scrollTotalHeight = rowHeight * Config.rowCount;
-            SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
-        /*
-        /// <summary>
-        /// Updates the SkiaToggleButtons only if Config.nowEnchanting is false. Be sure to ReCompose separately. 
-        /// </summary>
-        /// <param name="enchants"></param>
-        public void UpdateEnchantList(List<string> enchants, List<string> enchantsEncrypted)
+        public void Update(double inputTime, double maxTime, bool isAssessing)
         {
-            // Don't change while we're enchanting. Be sure to set this first, or else it will fail to update
-            if (Config.nowEnchanting == true) return;
-            // Create a new List of Latent Enchants if none found or malformed
-            if (enchants == null || enchantsEncrypted == null)
-            {
-                Config.enchantNames = new List<string>();
-                Config.enchantNamesEncrypted = new List<string>();
-                for (int i = 0; i < Config.rowCount; i++)
-                {
-                    Config.enchantNames.Add("");
-                    Config.enchantNamesEncrypted.Add("");
-                }
-            }
-            else if (enchants.Count != Config.rowCount || enchantsEncrypted.Count != Config.rowCount)
-            {
-                Config.enchantNames = new List<string>();
-                Config.enchantNamesEncrypted = new List<string>();
-                for (int i = 0; i < Config.rowCount; i++)
-                {
-                    Config.enchantNames.Add("");
-                    Config.enchantNamesEncrypted.Add("");
-                }
-            }
-            else
-            {
-                Config.enchantNames = enchants;
-                Config.enchantNamesEncrypted = enchantsEncrypted;
-            }
-
-            // Clean and Refill the Container
-            GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-            for (int i = 0; i < Config.rowCount; i++)
-            {
-                var element = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
-                // Make new buttons if needed, or config with existing values
-                if (element == null)
-                {
-                    ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
-                    for (int j = 0; j < i; i++)
-                        containerRowBounds = containerRowBounds.BelowCopy();
-                    scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
-                }
-                else
-                {
-                    element.textToRender = Config.enchantNamesEncrypted[i];
-                    element.Toggleable = true;
-                    
-                }
-                // Set toggle if it should be selected
-                if (Config.selectedEnchant == i)
-                    element.SetValue(true);
-                else
-                    element.SetValue(false);
-            }
-            SingleComposer.ReCompose();
+            IsAssessing = isAssessing;
+            InputTime = inputTime;
+            MaxTime = maxTime;
         }
-        */
-        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, bool canRead)
+
+        private void OnTickFrame(float dt)
         {
-            this.Config.outputText = outputText;
-            this.Config.inputEnchantTime = inputProcessTime;
-            this.Config.maxEnchantTime = maxProcessTime;
-            this.Config.nowEnchanting = isEnchanting;
-            this.Config.selectedEnchant = selected;
-            this.Config.canRead = canRead;
+            if (!IsAssessing) return;
 
-            if (!IsOpened()) return;
+            double now = capi.ElapsedMilliseconds / 1000.0;
+            double deltaTime = now - lastFrameTime;
+            lastFrameTime = now;
 
-            if (canRead == true)
+            rotationTimeAccum += deltaTime;
+
+            float targetFill = (float)(MaxTime > 0 ? Math.Clamp(InputTime / MaxTime, 0, 1) : 0);
+            displayedFillPercent += (targetFill - displayedFillPercent) * (float)(lerpSpeed * deltaTime);
+
+            if (IsOpened())
             {
-                string[] strings = Config.enchantNames[selected].Split(":");
-                string s = outputText + Lang.Get("krpgenchantment:" + strings[1]);
-                Config.outputText = s;
+                SingleComposer.GetCustomDraw("symbolDrawer")?.Redraw();
             }
-
-            // capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
-            SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            SingleComposer.ReCompose();
         }
+
         #endregion
         #region Events
-        private void OnNewScrollbarValue(float value)
+        private void OnRenderGearGradient(Context cr, ImageSurface surface, ElementBounds bounds)
         {
-            ElementBounds bounds = SingleComposer.GetContainer("scroll-content").Bounds;
-            bounds.fixedY = 5 - value;
-            bounds.CalcWorldBounds();
-        }
-        private void OnSelectEnchant(bool state, int index)
-        {
-            GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
-            for (int i = 0; i < scrollArea.Elements.Count; i++)
-            {
-                SkiaToggleButtonGuiElement skiaButton = scrollArea.Elements[i] as SkiaToggleButtonGuiElement;
-                // Button is the one clicked AND is NOT depressed
-                if (skiaButton.ButtonID == index && Config.selectedEnchant == index)
-                    Config.selectedEnchant = -1;
-                // Button IS the one clicked
-                else if (skiaButton.ButtonID == index && Config.selectedEnchant == -1)
-                    Config.selectedEnchant = index;
-                else
-                    skiaButton.SetValue(false);
-            }
-            // if (Config.selectedEnchant == index)
-            //     Config.selectedEnchant = -1;
-            // else
-            //     Config.selectedEnchant = index;
-            Config.inputEnchantTime = 0;
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            // Click
-            capi.Gui.PlaySound("toggleswitch");
-            // Notify the table which one we clicked
-            EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
-            byte[] data = SerializerUtil.Serialize(packet);
-            // EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
-            capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1337, data);
-        }
-        private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
-        {
-            double top = 30;
+            if (!IsAssessing) return;
 
-            // Arrow Right
-            ctx.Save();
-            Matrix m = ctx.Matrix;
-            m.Translate(GuiElement.scaled(63), GuiElement.scaled(top + 2));
-            m.Scale(GuiElement.scaled(0.6), GuiElement.scaled(0.6));
-            ctx.Matrix = m;
-            capi.Gui.Icons.DrawArrowRight(ctx, 2);
+            cr.Save();
 
-            double dx = Config.inputEnchantTime / Config.maxEnchantTime;
+            // Step 1: Clear the previous draw to prevent flickering
+            cr.SetSourceRGBA(0, 0, 0, 0);
+            cr.Operator = Operator.Source;
+            cr.Paint();
+            cr.Operator = Operator.Over;
 
-            ctx.Rectangle(GuiElement.scaled(5), 0, GuiElement.scaled(125 * dx), GuiElement.scaled(100));
-            ctx.Clip();
-            LinearGradient gradient = new LinearGradient(0, 0, GuiElement.scaled(200), 0);
-            gradient.AddColorStop(0, new Color(0, 0.4, 0, 1));
-            gradient.AddColorStop(1, new Color(0.2, 0.6, 0.2, 1));
-            ctx.SetSource(gradient);
-            capi.Gui.Icons.DrawArrowRight(ctx, 0, false, false);
-            gradient.Dispose();
-            ctx.Restore();
+            // Step 2: Use interpolated fill percent for alpha and rotation
+            float fillPercent = displayedFillPercent;
+            double alpha = Math.Clamp(fillPercent, 0, 1);
+
+            double centerX = bounds.OuterWidth / 2.0;
+            double centerY = bounds.OuterHeight / 2.0;
+
+            double angleRadians = (rotationTimeAccum / rotationSpeed) * 2 * Math.PI;
+
+            cr.Translate(centerX, centerY);
+            cr.Rotate(angleRadians);
+
+            // double[] rgba = new double[] { 0.7, 0.4, 1.0, alpha }; // Purple
+            double[] rgba = new double[] { 0.2, 0.7, 0.5, alpha }; // Aquamarine tEmPoRaL
+            // double speedFactor = baseColorSpeed + (maxColorSpeed - baseColorSpeed) * fillPercent;
+
+            // double hue = (rotationTimeAccum / 8.0) % 1.0;
+            // double hue = (rotationTimeAccum * speedFactor) % 1.0;
+
+            // double[] rgb = HsvToRgb(hue, 1.0, 1.0);
+            // double[] rgb = HsvToRgb(colorSpeed, 1.0, 1.0);
+            // double[] rgba = new double[] { rgb[0], rgb[1], rgb[2], alpha };
+
+            int x = -(int)(bounds.OuterWidth / 2);
+            int y = -(int)(bounds.OuterHeight / 2);
+            float w = (float)bounds.OuterWidth;
+            float h = (float)bounds.OuterHeight;
+
+            capi.Gui.Icons.DrawVSGear(
+                cr,
+                surface,
+                x, y,
+                w, h,
+                rgba
+            );
+
+            cr.Restore();
         }
+
         public void OnInventorySlotModified(int slotid)
         {
             // Notify the table which one we clicked
-            Config.selectedEnchant = -1;
-            Config.inputEnchantTime = 0;
-            EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
-            byte[] data = SerializerUtil.Serialize(packet);
-            // EnchantingBE enchanter = capi.World.BlockAccessor.GetBlockEntity(BlockEntityPosition) as EnchantingBE;
-            capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1337, data);
+            // Config.selectedEnchant = -1;
+            // Config.inputEnchantTime = 0;
+            // EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
+            // byte[] data = SerializerUtil.Serialize(packet);
+            // capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1337, data);
         }
         private void SendInvPacket(object packet)
         {
@@ -328,25 +220,30 @@ namespace KRPGLib.Enchantment
         public override void OnGuiOpened()
         {
             base.OnGuiOpened();
-            Inventory.SlotModified += OnInventorySlotModified;
+            // Inventory.SlotModified += OnInventorySlotModified;
+
+            lastFrameTime = capi.ElapsedMilliseconds / 1000.0;
+            // Roughly 60 FPS, SUPPOSEDLY. If you believe the machines.
+            tickListenerId = capi.World.RegisterGameTickListener(OnTickFrame, 16);
         }
 
         public override void OnGuiClosed()
         {
-            Inventory.SlotModified -= OnInventorySlotModified;
+            // Inventory.SlotModified -= OnInventorySlotModified;
 
             SingleComposer.GetSlotGrid("inputSlot").OnGuiClosed(capi);
-            SingleComposer.GetSlotGrid("outputSlot").OnGuiClosed(capi); 
-            SingleComposer.GetSlotGrid("reagentSlot").OnGuiClosed(capi);
+            SingleComposer.GetSlotGrid("temporalSlot1").OnGuiClosed(capi); 
+            SingleComposer.GetSlotGrid("temporalSlot2").OnGuiClosed(capi);
+            SingleComposer.GetSlotGrid("temporalSlot3").OnGuiClosed(capi);
+            SingleComposer.GetSlotGrid("temporalSlot4").OnGuiClosed(capi);
+            SingleComposer.GetSlotGrid("temporalSlot5").OnGuiClosed(capi);
 
-            // Notify the table to remove us from the Readers list
-            capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1338);
+            capi.World.UnregisterGameTickListener(tickListenerId);
 
             base.OnGuiClosed();
         }
         public override void Dispose()
         {
-            // customTypeface.Dispose();
             base.Dispose();
             TryClose();
         }

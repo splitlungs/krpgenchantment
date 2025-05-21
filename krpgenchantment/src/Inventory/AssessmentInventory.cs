@@ -16,7 +16,7 @@ namespace KRPGLib.Enchantment
         AssessmentBE bEntity;
         public AssessmentInventory(int quantitySlots, string invId, ICoreAPI api, NewSlotDelegate onNewSlot = null) : base(invId, api)
         {
-            // enchanter = eTable;
+            // bEntity = eTable;
             // slot 0 = Input Item
             // slot 1 - 5: Temporal Item
             slots = GenEmptySlots(quantitySlots);
@@ -26,7 +26,7 @@ namespace KRPGLib.Enchantment
             bEntity = eTable;
             // slot 0 = Input Item
             // slot 1 - 5: Temporal Item
-            slots = GenEmptySlots(3);
+            slots = GenEmptySlots(6);
         }
         public override int Count
         {
@@ -72,7 +72,7 @@ namespace KRPGLib.Enchantment
 
         public ItemSlotAssessmentInput(InventoryBase inventory, AssessmentBE assessmentTable, int itemNumber) : base(inventory)
         {
-            // MaxSlotStackSize = 1;
+            MaxSlotStackSize = 1;
             bEntity = assessmentTable;
             stackNum = itemNumber;
         }
@@ -85,7 +85,12 @@ namespace KRPGLib.Enchantment
         {
             // if (bEntity.invLocked) return false;
 
-            return base.CanHold(sourceSlot);
+            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            {
+                if (sourceSlot.Itemstack.Collectible.Code == pair.Key) return true;
+            }
+
+            return false;
         }
         public override bool CanTake()
         {
@@ -156,9 +161,14 @@ namespace KRPGLib.Enchantment
             bEntity = assessmentTable;
             stackNum = itemNumber;
         }
-        public override bool CanHold(ItemSlot slot)
+        public override bool CanHold(ItemSlot sourceSlot)
         {
-            return base.CanHold(slot);
+            // if (bEntity.invLocked) return false;
+
+            if (sourceSlot.Itemstack.Collectible.Code != "game:gear-temporal")
+                return false;
+
+            return base.CanHold(sourceSlot);
         }
         public override bool CanTake()
         {
