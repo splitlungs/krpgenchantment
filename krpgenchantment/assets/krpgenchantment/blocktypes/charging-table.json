@@ -1,8 +1,8 @@
 {
-  "code": "assessment-table",
-  "class": "AssessmentBlock",
+  "code": "charging-table",
+  "class": "ChargingBlock",
   "enabled": true,
-  "entityClass": "AssessmentBE",
+  "entityClass": "ChargingBE",
   "maxStackSize": 1,
   "maxSlotStackSize": 2,
   "behaviors": [
@@ -33,7 +33,7 @@
     "terrain": [ "*" ],
     "construction": [ "*" ]
   },
-  "shape": { "base": "krpgenchantment:block/assessment-table" },
+  "shape": { "base": "krpgenchantment:block/charging-table" },
   "replaceable": 90,
   "requiredMiningTier": 0,
   "fertility": 0,

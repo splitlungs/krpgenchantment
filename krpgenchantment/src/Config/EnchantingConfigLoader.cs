@@ -58,8 +58,8 @@ namespace KRPGLib.Enchantment
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
+                    // Enchant Config
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
-                    if (Config.AssessReagentHours != 1) tempConfig.AssessReagentHours = Config.AssessReagentHours;
                     if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
@@ -79,56 +79,19 @@ namespace KRPGLib.Enchantment
                         tempConfig.MaxEnchantsByCategory.Add("ResistDamage", -1);
                     if (!Config.MaxEnchantsByCategory.ContainsKey("Universal"))
                         tempConfig.MaxEnchantsByCategory.Add("Universal", -1);
+                    // ReagentConfig
+                    if (Config.LegacyReagentPotential == true) tempConfig.LegacyReagentPotential = true;
+                    if (Config.ChargeReagentHours != 1) tempConfig.ChargeReagentHours = Config.ChargeReagentHours;
+                    if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
+                    if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
-                    if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("game:gem-diamond-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
-
-                    if (Config.ReagentPotentialTiers?.Count > 0) tempConfig.ReagentPotentialTiers = Config.ReagentPotentialTiers;
-                    if (!Config.ReagentPotentialTiers.ContainsKey("low"))
-                        tempConfig.ReagentPotentialTiers.Add("low", 2);
-                    if (!Config.ReagentPotentialTiers.ContainsKey("medium"))
-                        tempConfig.ReagentPotentialTiers.Add("medium", 3);
-                    if (!Config.ReagentPotentialTiers.ContainsKey("high"))
-                        tempConfig.ReagentPotentialTiers.Add("high", 5);
-
-                    // if (Config.CustomPatches?.Count > 0) tempConfig.CustomPatches = Config.CustomPatches;
-                    // if (!Config.CustomPatches.ContainsKey("AncientArmory"))
-                    //     tempConfig.CustomPatches.Add("AncientArmory", true);
-                    // if (!Config.CustomPatches.ContainsKey("Armory"))
-                    //     tempConfig.CustomPatches.Add("Armory", true);
-                    // if (!Config.CustomPatches.ContainsKey("CANJewelry"))
-                    //     tempConfig.CustomPatches.Add("CANJewelry", true);
-                    // if (!Config.CustomPatches.ContainsKey("CombatOverhaul"))
-                    //     tempConfig.CustomPatches.Add("CombatOverhaul", true);
-                    // if (!Config.CustomPatches.ContainsKey("ElectricityAddon"))
-                    //     tempConfig.CustomPatches.Add("ElectricityAddon", true);
-                    // if (!Config.CustomPatches.ContainsKey("KRPGWands"))
-                    //     tempConfig.CustomPatches.Add("KRPGWands", true);
-                    // if (!Config.CustomPatches.ContainsKey("LitBrig"))
-                    //     tempConfig.CustomPatches.Add("LitBrig", true);
-                    // if (!Config.CustomPatches.ContainsKey("MaltiezCrossbows"))
-                    //     tempConfig.CustomPatches.Add("MaltiezFirearms", true);
-                    // if (!Config.CustomPatches.ContainsKey("MaltiezFirearms"))
-                    //     tempConfig.CustomPatches.Add("MaltiezCrossbows", true);
-                    // if (!Config.CustomPatches.ContainsKey("NDLChiselPick"))
-                    //     tempConfig.CustomPatches.Add("NDLChiselPick", true);
-                    // if (!Config.CustomPatches.ContainsKey("Paxel"))
-                    //     tempConfig.CustomPatches.Add("Paxel", true);
-                    // if (!Config.CustomPatches.ContainsKey("RustboundMagic"))
-                    //     tempConfig.CustomPatches.Add("RustboundMagic", true);
-                    // if (!Config.CustomPatches.ContainsKey("ScrapBlocks"))
-                    //     tempConfig.CustomPatches.Add("ScrapBlocks", true);
-                    // if (!Config.CustomPatches.ContainsKey("SpearExpantion"))
-                    //     tempConfig.CustomPatches.Add("SpearExpantion", true);
-                    // if (!Config.CustomPatches.ContainsKey("Swordz"))
-                    //     tempConfig.CustomPatches.Add("Swordz", true);
-                    // if (!Config.CustomPatches.ContainsKey("Tonwexp-Neue"))
-                    //     tempConfig.CustomPatches.Add("Tonwexp-Neue", true);
+                    if (!Config.ValidReagents.ContainsKey("gem-emerald-rough"))
+                        tempConfig.ValidReagents.Add("gem-emerald-rough", 1);
+                    if (!Config.ValidReagents.ContainsKey("gem-diamond-rough"))
+                        tempConfig.ValidReagents.Add("gem-diamond-rough", 1);
+                    if (!Config.ValidReagents.ContainsKey("gem-olivine_peridot-rough"))
+                        tempConfig.ValidReagents.Add("gem-olivine_peridot-rough", 1);
 
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;

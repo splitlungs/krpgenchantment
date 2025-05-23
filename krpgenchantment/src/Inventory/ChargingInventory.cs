@@ -9,19 +9,19 @@ using Vintagestory.API.MathTools;
 namespace KRPGLib.Enchantment
 {
     #region Inventory
-    public class AssessmentInventory : InventoryBase, ISlotProvider
+    public class ChargingInventory : InventoryBase, ISlotProvider
     {
         ItemSlot[] slots;
         public ItemSlot[] Slots { get { return slots; } }
-        AssessmentBE bEntity;
-        public AssessmentInventory(int quantitySlots, string invId, ICoreAPI api, NewSlotDelegate onNewSlot = null) : base(invId, api)
+        ChargingBE bEntity;
+        public ChargingInventory(int quantitySlots, string invId, ICoreAPI api, NewSlotDelegate onNewSlot = null) : base(invId, api)
         {
             // bEntity = eTable;
             // slot 0 = Input Item
             // slot 1 - 5: Temporal Item
             slots = GenEmptySlots(quantitySlots);
         }
-        public AssessmentInventory(string inventoryID, ICoreAPI api, AssessmentBE eTable) : base(inventoryID, api)
+        public ChargingInventory(string inventoryID, ICoreAPI api, ChargingBE eTable) : base(inventoryID, api)
         {
             bEntity = eTable;
             // slot 0 = Input Item
@@ -67,16 +67,16 @@ namespace KRPGLib.Enchantment
     #region Slots
     public class ItemSlotAssessmentInput : ItemSlot
     {
-        AssessmentBE bEntity;
+        ChargingBE bEntity;
         int stackNum;
 
-        public ItemSlotAssessmentInput(InventoryBase inventory, AssessmentBE assessmentTable, int itemNumber) : base(inventory)
+        public ItemSlotAssessmentInput(InventoryBase inventory, ChargingBE assessmentTable, int itemNumber) : base(inventory)
         {
             MaxSlotStackSize = 1;
             bEntity = assessmentTable;
             stackNum = itemNumber;
         }
-        public void Set(AssessmentBE assessmentTable, int num)
+        public void Set(ChargingBE assessmentTable, int num)
         {
             bEntity = assessmentTable;
             stackNum = num;
@@ -154,9 +154,9 @@ namespace KRPGLib.Enchantment
     }
     public class ItemSlotTemporalInput : ItemSlot
     {
-        AssessmentBE bEntity;
+        ChargingBE bEntity;
         int stackNum;
-        public ItemSlotTemporalInput(InventoryBase inventory, AssessmentBE assessmentTable, int itemNumber) : base(inventory)
+        public ItemSlotTemporalInput(InventoryBase inventory, ChargingBE assessmentTable, int itemNumber) : base(inventory)
         {
             bEntity = assessmentTable;
             stackNum = itemNumber;

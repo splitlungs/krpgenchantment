@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace KRPGLib.Enchantment
 {
-    public class AssessmentTableGui : GuiDialogBlockEntity
+    public class ChargingTableGui : GuiDialogBlockEntity
     {
         #region Setup
         public override string ToggleKeyCombinationCode => "assessmenttablegui";
@@ -56,7 +56,7 @@ namespace KRPGLib.Enchantment
         //     }
         // }
 
-        public AssessmentTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi) 
+        public ChargingTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi) 
             : base(DialogTitle, Inventory, BlockEntityPosition, capi)
         {
             if (IsDuplicate) return;
@@ -132,7 +132,7 @@ namespace KRPGLib.Enchantment
         {
             if (!IsAssessing) return;
 
-            double now = capi.ElapsedMilliseconds / 1000.0;
+            double now = capi.World.Calendar.ElapsedSeconds;
             double deltaTime = now - lastFrameTime;
             lastFrameTime = now;
 
@@ -222,7 +222,7 @@ namespace KRPGLib.Enchantment
             base.OnGuiOpened();
             // Inventory.SlotModified += OnInventorySlotModified;
 
-            lastFrameTime = capi.ElapsedMilliseconds / 1000.0;
+            lastFrameTime = capi.World.Calendar.ElapsedSeconds;
             // Roughly 60 FPS, SUPPOSEDLY. If you believe the machines.
             tickListenerId = capi.World.RegisterGameTickListener(OnTickFrame, 16);
         }

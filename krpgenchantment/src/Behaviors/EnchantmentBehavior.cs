@@ -198,12 +198,22 @@ namespace KRPGLib.Enchantment
         {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
+            // Enchantments
             Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
                     dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
             }
+
+            // Reagents
+            // int p = Api.EnchantAccessor().AssessReagent(stack);
+            if (!EnchantingConfigLoader.Config.ValidReagents.ContainsKey(collObj.Code)) return;
+            ITreeAttribute tree = inSlot.Itemstack.Attributes?.GetOrAddTreeAttribute("enchantments");
+            if (tree == null) return;
+            int p = tree.GetInt("charge");
+            dsc.Append("<font color=\"" + Enum.GetName(typeof(EnchantColors), p) + "\">" + Lang.Get("krpgenchantment:reagent-charge-prefix") + p);
+            if (!EnchantingConfigLoader.Config.ValidReagents.ContainsKey(collObj.Code)) return;
         }
         // public override void OnHeldAttackStop(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
         // {

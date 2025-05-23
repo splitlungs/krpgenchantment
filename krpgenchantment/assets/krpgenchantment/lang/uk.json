@@ -4,7 +4,8 @@
 
   "krpg-enchant": "Зачарувати",
   "enchantable": "Зачарований",
-  "reagent-potential": "Power",
+  "reagent-charge-prefix": "заряд: ",
+  "block-charging-table": "Реагент заряд зачарування",
 
   "enchantment-chilling": "Охолодження",
   "enchantment-durable": "Міцний",

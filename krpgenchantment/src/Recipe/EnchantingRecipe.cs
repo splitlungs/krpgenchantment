@@ -121,7 +121,8 @@ namespace KRPGLib.Enchantment
                 // ITreeAttribute rTree = rSlot.Itemstack.Attributes?.GetOrAddTreeAttribute("enchantments");
                 // int maxPot = rTree.GetInt("potential");
                 string pot = rSlot.Itemstack.Attributes?.GetString("potential", "low").ToLower();
-                int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers[pot];
+                // int maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers[pot];
+                int maxPot = 5; // temporarily overridden for deprecation
                 power = api.World.Rand.Next(1, maxPot + 1);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Setting Power to {0} out of {1}, with Potential {2}.", power, maxPot, maxPot);

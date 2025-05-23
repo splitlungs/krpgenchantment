@@ -209,7 +209,7 @@ namespace KRPGLib.Enchantment
             if (rQty < 0) return false;
 
             // Get Reagent Potential
-            int maxPot = GetReagentPotential(rStack);
+            int maxPot = GetReagentChargeOrPotential(rStack);
             if (maxPot <= 0) return false;
 
             // Get Input Type
@@ -230,44 +230,65 @@ namespace KRPGLib.Enchantment
             return true;
         }
         /// <summary>
-        /// Returns the maximum tier enchantment a Reagent can power. Returns 0 if Potential is not found.
+        /// Returns the maximum tier enchantment a Reagent can power. Checks for Charge first, then Potential. Returns 0 if none is found.
         /// </summary>
         /// <param name="reagent"></param>
         /// <returns></returns>
-        public int GetReagentPotential(ItemStack reagent)
+        public int GetReagentChargeOrPotential(ItemStack reagent)
+        {
+            ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
+            int rPot = tree.GetInt("charge", 0);
+            string rPotOG = reagent.Attributes.GetString("potential");
+            if (rPot == 0 && rPotOG == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge or Potential value.", reagent.GetName());
+                return 0;
+            }
+            // Fall back to default VS Potential values if enabled in config
+            if (EnchantingConfigLoader.Config?.LegacyReagentPotential == true && rPotOG != null)
+            {
+                switch (rPotOG.ToLower())
+                {
+                    case "low": { return 2; }
+                    case "medium": { return 3; }
+                    case "high": { return 5; }
+                    default:
+                        {
+                            Api.Logger.Error("[KRPGEnchantment] Reagent Potential {0} is not valid! Disable 'LegacyReagentPotential' in the config if you aren't sure why you're seeing this.", rPotOG);
+                            return 0;
+                        }
+                }
+            }
+            // 1.0.x style Charge values
+            if (rPot != 0)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", rPot);
+                return rPot;
+            }
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} does not have a reagent charge or potential value.", reagent.GetName());
+            return 0;
+        }
+        /// <summary>
+        /// Returns the maximum tier enchantment a Reagent can power. Returns 0 if not found.
+        /// </summary>
+        /// <param name="reagent"></param>
+        /// <returns></returns>
+        public int GetReagentCharge(ItemStack reagent)
         {
             int maxPot = 0;
             ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
-            string rPot = tree.GetString("potential");
-            string rPotOG = reagent.Attributes.GetString("potential");
-            if (rPot == null && rPotOG == null)
+            int rPot = tree.GetInt("charge");
+            if (rPot == 0)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Potential value.", reagent.GetName());
+                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
                 return 0;
             }
-            // Enchantment Potential Overrides
-            if (rPot != null && rPotOG == null)
-            {
-                maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPot);
-                if (maxPot <= 0)
-                {
-                    Api.Logger.Error("[KRPGEnchantment] Reagent Potential {0} does not a value in the Config!", rPot);
-                    return 0;
-                }
-            }
-            // Or fall back to default VS Potential values
-            else if (rPotOG != null && rPot == null)
-            {
-                maxPot = EnchantingConfigLoader.Config.ReagentPotentialTiers.TryGetValue(rPotOG);
-                if (maxPot <= 0)
-                {
-                    Api.Logger.Error("[KRPGEnchantment] Reagent Potential {0} does not a value in the Config!", rPotOG);
-                    return 0;
-                }
-            }
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Reagent Max Potential is {0}", maxPot);
+                Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
 
             return maxPot;
         }
@@ -288,7 +309,7 @@ namespace KRPGLib.Enchantment
             // int rQty = GetReagentQuantity(rSlot.Itemstack);
 
             // Get Reagent Potential
-            int maxPot = GetReagentPotential(rSlot.Itemstack);
+            int maxPot = GetReagentChargeOrPotential(rSlot.Itemstack);
             if (EnchantingConfigLoader.Config?.Debug == true)
                 sApi.Logger.Event("[KRPGEnchantment] Setting Max Potential to {0}.", maxPot);
             
@@ -610,35 +631,37 @@ namespace KRPGLib.Enchantment
             return true;
         }
         /// <summary>
-        /// Call to assign a EnchantPotential attribute to an item. Returns 0 if it is not valid.
+        /// Call to assign a reagent charge attribute to an item. Returns the value assigned or 0 if it is not valid.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public int AssessReagent(ItemStack stack)
+        public int SetReagentCharge(ref ItemStack inStack, int numGears)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Attempting to Assess a {0}.", stack.GetName());
+                Api.World.Logger.Event("[KRPGEnchantment] Attempting to set a charge to {0}.", inStack.GetName());
             // Check if we can actually access Attributes
-            ITreeAttribute tree = stack?.Attributes?.GetOrAddTreeAttribute("enchantments");
+            ITreeAttribute tree = inStack?.Attributes?.GetOrAddTreeAttribute("enchantments");
             if (tree == null)
                 return 0;
             // Return an existing Potential or roll a new one
-            int p = tree.GetInt("potential");
-            if (p != 0)
+            int power = 0;
+            // Set Charge attribute, based on config
+            string s = inStack.Collectible.Code;
+            if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(s) == true)
             {
-                int power = 0;
-                // Attempt to roll a random Potential based on Config
-                if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(stack.Collectible.Code))
-                {
-                    power = Api.World.Rand.Next(6);
-                }
-                // Write back to Attributes
-                tree.SetInt("potential", power);
-                stack.Attributes?.MergeTree(tree);
-                // Return for convenience
-                return power;
+                float mul = EnchantingConfigLoader.Config.ChargePerGear;
+                int maxPower = EnchantingConfigLoader.Config.MaxReagentCharge;
+                int p = (int)MathF.Floor(numGears * mul);
+                power = Math.Min(p, maxPower);
+
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.World.Logger.Event("[KRPGEnchantment] {0} is a ValidReagent and is being assigned a Charge of {1}.", inStack.GetName(), power);
             }
-            return p;
+            // Write back to Attributes
+            tree.SetInt("charge", power);
+            inStack.Attributes?.MergeTree(tree);
+            // Return for convenience
+            return power;
         }
         #endregion
         #region Lore

@@ -106,11 +106,11 @@ namespace KRPGLib.Enchantment.API
         /// <returns></returns>
         bool AssessItem(ItemSlot inSlot, ItemSlot rSlot);
         /// <summary>
-        /// Call to assign a EnchantPotential attribute to an item. Returns 0 if it is not valid.
+        /// Call to assign a reagent charge attribute to an item. Returns the value assigned or 0 if it is not valid.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        int AssessReagent(ItemStack stack);
+        int SetReagentCharge(ref ItemStack stack, int numGears);
         #endregion
         #region Lore
         /// <summary>

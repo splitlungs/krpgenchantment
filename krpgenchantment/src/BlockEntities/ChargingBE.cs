@@ -14,10 +14,11 @@ using Vintagestory.API.Util;
 using System.Data;
 using Vintagestory.API.Common.Entities;
 using System.Globalization;
+using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
-    public class AssessmentBE : BlockEntityOpenableContainer
+    public class ChargingBE : BlockEntityOpenableContainer
     {
         // Config
         public int MsAssessTick = 1000;
@@ -25,15 +26,12 @@ namespace KRPGLib.Enchantment
         public AssetLocation EnchantSound;
         private long SoundTickListener;
         // Sync'd with client
-        AssessmentInventory inventory;
-        public bool IsAssessing = false;
+        ChargingInventory inventory;
+        public bool IsCharging = false;
         public double InputTime = 0;
         public double Delay = 3000;
-        // public int SelectedEnchant = -1;
-        // public Dictionary<string, bool> Readers = new Dictionary<string, bool>();
         // Internal use
-        public AssessmentTableGui clientDialog;
-        // public EnchantingRecipe CurrentRecipe;
+        public ChargingTableGui clientDialog;
         public string CurrentEnchantment;
         int nowOutputFace;
         #region Getters
@@ -43,7 +41,7 @@ namespace KRPGLib.Enchantment
         }
         public virtual string DialogTitle
         {
-            get { return Lang.Get("krpgenchantment:block-assessment-table"); }
+            get { return Lang.Get("krpgenchantment:block-charging-table"); }
         }
         public override string InventoryClassName
         {
@@ -57,69 +55,18 @@ namespace KRPGLib.Enchantment
         {
             get { return inventory[0]; }
         }
-        public ItemSlot OutputSlot
+        public ItemSlot[] ReagentSlots
         {
-            get { return inventory[1]; }
-        }
-        public ItemStack OutputStack
-        {
-            get;
-            private set;
-        }
-        public ItemSlot ReagentSlot
-        {
-            get { return inventory[2]; }
+            get { return inventory.Slots.Skip(1).ToArray(); }
         }
         public ItemSlot GetReagentSlot(int slot)
         {
             return inventory[slot];
         }
-        public AssessmentBE()
+        public ChargingBE()
         {
-            inventory = new AssessmentInventory(null, null, this);
+            inventory = new ChargingInventory(null, null, this);
             inventory.SlotModified += OnSlotModified;
-        }
-        /// <summary>
-        /// Returns True if an ItemStack in Slot has any Enchantments. Always returns false for Client.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <returns></returns>
-        public bool isEnchanted(ItemSlot slot)
-        {
-            if (Api.Side == EnumAppSide.Client || slot.Itemstack == null) return false;
-            
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
-
-            if (enchants != null) return true;
-
-            return false;
-        }
-        private bool CanEnchant
-        {
-            get
-            {
-                ICoreServerAPI sApi = Api as ICoreServerAPI;
-                if (!sApi.EnchantAccessor().CanEnchant(InputSlot.Itemstack, ReagentSlot.Itemstack, CurrentEnchantment)) return false;
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Current Enchantment {0} Matches ingredients.", CurrentEnchantment);
-                return true;
-            }
-        }
-        /// <summary>
-        /// Can be overriden from EnchantingRecipeConfig. Default 7 days.
-        /// </summary>
-        /// <returns></returns>
-        public double LatentEnchantResetTime
-        {
-            get { return GetLatentEnchantResetTime(); }
-        }
-        private double GetLatentEnchantResetTime()
-        {
-            // Return override first
-            if (EnchantingConfigLoader.Config?.LatentEnchantResetDays != null)
-                return EnchantingConfigLoader.Config.LatentEnchantResetDays;
-            // Fall back to 7 days
-            return 7.0d;
         }
         public bool ReagentSlotsEmpty
         {
@@ -128,66 +75,29 @@ namespace KRPGLib.Enchantment
         private bool GetReagentSlotsEmpty()
         {
             bool foundItems = true;
-            foreach (ItemSlot slot in inventory.Slots)
+            for(int i = 1; i < inventory.Slots.Length; i++)
             {
-                if (!slot.Empty) return false;
+                if (!inventory.Slots[i].Empty) return false;
             }
             return foundItems;
-        }
-        /// <summary>
-        /// Returns a list of LatentEnchants, unencrypted, with domain
-        /// </summary>
-        public List<string> LatentEnchants
-        {
-            get { return Api.EnchantAccessor().GetLatentEnchants(InputSlot, false); }
-        }
-        /// <summary>
-        /// Returns a list of LatentEnchants, encrypted, 8 characters
-        /// </summary>
-        public List<string> LatentEnchantsEncrypted
-        {
-            get { return Api.EnchantAccessor().GetLatentEnchants(InputSlot, true); }
-        }
-        /// <summary>
-        /// Returns default 3 if not set in the config file
-        /// </summary>
-        public int EnchantRowCount
-        {
-            get
-            {
-                if (EnchantingConfigLoader.Config?.MaxLatentEnchants != null) return EnchantingConfigLoader.Config.MaxLatentEnchants;
-                else return 3;
-            }
         }
         /// <summary>
         /// Gets the current recipe's processing time in in-game hours.
         /// </summary>
         /// <returns></returns>
-        public double MaxAssessmentTime
+        public double MaxChargeTime
         {
-            get { return GetMaxAssessmentTime(); }
+            get { return GetMaxChargeTime(); }
         }
-        private double GetMaxAssessmentTime()
+        private double GetMaxChargeTime()
         {
             double eto = -0.1d;
             // Return override first
-            if (EnchantingConfigLoader.Config?.AssessReagentHours != null)
-                eto = EnchantingConfigLoader.Config.AssessReagentHours;
+            if (EnchantingConfigLoader.Config?.ChargeReagentHours != null)
+                eto = EnchantingConfigLoader.Config.ChargeReagentHours;
             if (eto >= 0d)
                 return eto;
             return 1d;
-        }
-        /// <summary>
-        /// Gets Name of Matching Enchanting Recipe with Enchanter Prefix
-        /// </summary>
-        /// <returns></returns>
-        public string OutputText
-        {
-            get { return GetOutputText(); }
-        }
-        private string GetOutputText()
-        {
-            return Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
         }
         #endregion
         #region Main
@@ -200,7 +110,7 @@ namespace KRPGLib.Enchantment
 
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(TickAssessment, MsAssessTick);
+                RegisterGameTickListener(TickCharge, MsAssessTick);
             }
             if (api.Side == EnumAppSide.Client)
             {
@@ -208,87 +118,69 @@ namespace KRPGLib.Enchantment
             }
         }
         /// <summary>
-        /// Called by the EnchantingBE to write the CurrentRecipe to the InputSlot's Itemstack
+        /// Called by the ChargingBE to write the InputSlot's EnchantPotential value
         /// </summary>
-        private void enchantInput()
+        private void chargeInput()
         {
+            if (Api.Side != EnumAppSide.Server) return;
+
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Attempting to enchant an item.");
+                Api.World.Logger.Event("[KRPGEnchantment] Attempting to charge a reagent: {0}.", InputSlot.Itemstack.Collectible.Code);
             ICoreServerAPI sApi = Api as ICoreServerAPI;
-            ItemStack outStack = sApi.EnchantAccessor().EnchantItem(InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
-
-            if (OutputSlot.Empty)
+            ItemStack outStack = InputSlot.Itemstack.Clone();
+            int tGears = 0;
+            for(int i = 1; i < inventory.Slots.Length; i++)
             {
-                OutputSlot.Itemstack = outStack;
-            }
-            else
-            {
-                int mergableQuantity = OutputSlot.Itemstack.Collectible.GetMergableQuantity(OutputSlot.Itemstack, outStack, EnumMergePriority.AutoMerge);
-                if (mergableQuantity > 0)
-                {
-                    OutputSlot.Itemstack.StackSize += outStack.StackSize;
-                }
-                else
-                {
-                    BlockFacing face = BlockFacing.HORIZONTALS[nowOutputFace];
-                    nowOutputFace = (nowOutputFace + 1) % 4;
+                if (inventory.Slots[i].Empty) continue;
 
-                    Block block = Api.World.BlockAccessor.GetBlock(this.Pos.AddCopy(face));
-                    if (block.Replaceable < 6000) return;
-                    Api.World.SpawnItemEntity(outStack, this.Pos.ToVec3d().Add(0.5 + face.Normalf.X * 0.7, 0.75, 0.5 + face.Normalf.Z * 0.7), new Vec3d(face.Normalf.X * 0.02f, 0, face.Normalf.Z * 0.02f));
+                if (inventory.Slots[i].Itemstack.Collectible.Code.Equals("gear-temporal"))
+                {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.World.Logger.Event("[KRPGEnchantment] Temporal Gear has been found while attempting to charge a reagent");
+                    tGears++;
+                    inventory.Slots[i].TakeOutWhole();
+                    inventory.Slots[i].MarkDirty();
                 }
             }
+            int power = sApi.EnchantAccessor().SetReagentCharge(ref outStack, tGears);
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Echanted Output {0} has a quantity of {1}", outStack.GetName(), outStack.StackSize);
-            int rQty = sApi.EnchantAccessor().GetReagentQuantity(ReagentSlot.Itemstack);
-            ReagentSlot.TakeOut(rQty);
-            InputSlot.TakeOutWhole();
-            ReagentSlot.MarkDirty();
+                Api.World.Logger.Event("[KRPGEnchantment] Charged Reagent Output {0} has a power of {1}", outStack.GetName(), power);
+
+            InputSlot.Itemstack = outStack.Clone();
             InputSlot.MarkDirty();
-            OutputSlot.MarkDirty();
-        }
-        /// <summary>
-        /// Smart toggle to enable EnchantInput() ticks. Sets appropriate values to true or false if CanEnchant. Be sure to MarkDirty() after to sync with clients
-        /// </summary>
-        private void UpdateEnchantingState()
-        {
-            if (Api.World == null) return;
-
-            if (Api.Side == EnumAppSide.Server)
-            {
-            }
-
             MarkDirty();
+
         }
         /// <summary>
         /// Upkeep method for the Enchanting Table. Runs every 1000ms.
         /// </summary>
         /// <param name="dt"></param>
-        private void TickAssessment(float dt)
+        private void TickCharge(float dt)
         {
             if (InputSlot.Empty || ReagentSlotsEmpty == true)
                 return;
             
             // Meets conditions to start Assment
-            if (!IsAssessing)
+            if (!IsCharging && !InputSlot.Empty && !ReagentSlotsEmpty)
             {
                 InputTime = Api.World.Calendar.ElapsedHours;
-                IsAssessing = true;
+                IsCharging = true;
             }
-            else if (IsAssessing)
+            else if (IsCharging == true)
             {
                 double elapsedTime = Api.World.Calendar.ElapsedHours - InputTime;
-                if (elapsedTime >= MaxAssessmentTime)
+                if (elapsedTime >= MaxChargeTime)
                 {
+                    chargeInput();
                     InputTime = 0;
-                    IsAssessing = false;
+                    IsCharging = false;
                 }
             }
             MarkDirty();
         }
         private void TickSounds(float dt)
         {
-            if (!IsAssessing || Api.Side != EnumAppSide.Client)
+            if (!IsCharging || Api.Side != EnumAppSide.Client)
                 return;
 
             Api.World.PlaySoundAt(EnchantSound, Pos, 0, null, false, 12, SoundLevel);
@@ -340,13 +232,13 @@ namespace KRPGLib.Enchantment
             {
                 Inventory.AfterBlocksLoaded(Api.World);
             }
-            InputTime = tree.GetDouble("inputEnchantTime");
-            IsAssessing = tree.GetBool("isAssessing");
+            InputTime = tree.GetDouble("inputTime");
+            IsCharging = tree.GetBool("isCharging");
 
             if (clientDialog != null)
             {
                 double elapsed = Api.World.Calendar.ElapsedHours - InputTime;
-                clientDialog?.Update(elapsed, MaxAssessmentTime, IsAssessing);
+                clientDialog?.Update(elapsed, MaxChargeTime, IsCharging);
             }
         }
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -355,8 +247,8 @@ namespace KRPGLib.Enchantment
             ITreeAttribute invtree = new TreeAttribute();
             Inventory.ToTreeAttributes(invtree);
             tree["inventory"] = invtree;
-            tree.SetDouble("inputEnchantTime", InputTime);
-            tree.SetBool("isAssessing", IsAssessing);
+            tree.SetDouble("inputTime", InputTime);
+            tree.SetBool("isCharging", IsCharging);
         }
         #endregion
         #region Events
@@ -383,11 +275,11 @@ namespace KRPGLib.Enchantment
             if (clientDialog == null)
             {
                 double hours = 0d;
-                if (CurrentEnchantment != null && IsAssessing)
+                if (CurrentEnchantment != null && IsCharging)
                     hours = Api.World.Calendar.TotalHours - InputTime;
 
                 ICoreClientAPI capi = Api as ICoreClientAPI;
-                clientDialog = new AssessmentTableGui(DialogTitle, Inventory, Pos, capi);
+                clientDialog = new ChargingTableGui(DialogTitle, Inventory, Pos, capi);
                 clientDialog.OnClosed += () =>
                 {
                     clientDialog = null;
@@ -419,7 +311,7 @@ namespace KRPGLib.Enchantment
             if (Api.Side == EnumAppSide.Server)
             {
                 // Stop 
-                IsAssessing = false;
+                IsCharging = false;
                 InputTime = 0.0d;
                 MarkDirty();
             }

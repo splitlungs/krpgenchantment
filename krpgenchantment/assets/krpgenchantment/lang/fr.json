@@ -1,10 +1,11 @@
 {
-  "block-enchanting-table": "Enchanting Table",
+  "block-enchanting-table": "Enchanting Tableau",
   "krpg-enchanter-enchant-prefix": "Enchantment: ",
 
   "krpg-enchant": "Enchant",
   "enchantable": "Enchantable",
-  "reagent-potential": "Pouvoir",
+  "reagent-charge-prefix": "Chargement: ",
+  "block-charging-table": "Reagent Chargement Tableau",
 
   "enchantment-chilling": "Chilling",
   "enchantment-durable": "Durable",

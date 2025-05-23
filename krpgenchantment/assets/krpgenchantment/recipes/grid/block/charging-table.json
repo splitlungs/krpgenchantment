@@ -40,7 +40,7 @@
   },
   "output": {
     "type": "block",
-    "code": "krpgenchantment:assessment-table",
+    "code": "krpgenchantment:charging-table",
     "quantity": 1
   }
 }

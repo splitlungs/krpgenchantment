@@ -4,7 +4,7 @@ using Vintagestory.API.Common;
 
 namespace KRPGLib.Enchantment
 {
-    public class AssessmentBlock : Block
+    public class ChargingBlock : Block
     {
         ICoreAPI Api;
 

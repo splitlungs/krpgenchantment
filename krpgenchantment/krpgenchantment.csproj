@@ -111,7 +111,7 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\krpgenchantment\blocktypes\assessment-table.json" />
+  <None Remove="assets\krpgenchantment\blocktypes\charging-table.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-universal.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-weapon.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-2.json" />
@@ -157,8 +157,8 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\krpgwands\wand-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\block\assessment-table.json" />
-  <None Remove="assets\krpgenchantment\shapes\block\assessment-table.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\block\charging-table.json" />
+  <None Remove="assets\krpgenchantment\shapes\block\charging-table.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>

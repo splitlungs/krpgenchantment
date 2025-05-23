@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace KRPGLib.Enchantment
 {
+    /*
     public class ReagentBehavior : CollectibleBehavior
     {
         public ICoreAPI Api;
@@ -63,4 +64,5 @@ namespace KRPGLib.Enchantment
             ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantingPotential");
         }
     }
+    */
 }
