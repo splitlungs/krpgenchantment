@@ -35,9 +35,9 @@ namespace KRPGLib.Enchantment
         public float ChargePerGear = 1.00f;
         public Dictionary<string, int> ValidReagents = new Dictionary<string, int>()
         {
-            { "gem-emerald-rough", 1 },
-            { "gem-diamond-rough", 1 },
-            { "gem-olivine_peridot-rough", 1 }
+            { "game:gem-emerald-rough", 1 },
+            { "game:gem-diamond-rough", 1 },
+            { "game:gem-olivine_peridot-rough", 1 }
         };
         // Deboog
         public bool Debug = false;
@@ -83,12 +83,12 @@ namespace KRPGLib.Enchantment
                 if (config.ChargePerGear != 1.00) ChargePerGear = config.ChargePerGear;
 
                 if (config.ValidReagents?.Count > 0) ValidReagents = config.ValidReagents;
-                if (!config.ValidReagents.ContainsKey("gem-emerald-rough"))
-                    ValidReagents.Add("gem-emerald-rough", 1);
-                if (!config.ValidReagents.ContainsKey("gem-diamond-rough"))
-                    ValidReagents.Add("gem-diamond-rough", 1);
-                if (!config.ValidReagents.ContainsKey("gem-olivine_peridot-rough"))
-                    ValidReagents.Add("gem-olivine_peridot-rough", 1);
+                if (!config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
+                    ValidReagents.Add("game:gem-emerald-rough", 1);
+                if (!config.ValidReagents.ContainsKey("game:gem-diamond-rough"))
+                    ValidReagents.Add("game:gem-diamond-rough", 1);
+                if (!config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
+                    ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
 
                 if (config.Debug == true) Debug = true;
                 

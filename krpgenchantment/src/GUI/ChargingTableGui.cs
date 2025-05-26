@@ -17,44 +17,48 @@ namespace KRPGLib.Enchantment
         #region Setup
         public override string ToggleKeyCombinationCode => "assessmenttablegui";
 
-        // Gear
+        // Primary GUI Element Bounds sizing
+        int inputWidth = 300;
+        int inputHeight = 300;
+        // BlockEntity Data
         public bool IsAssessing = false;
         public double MaxTime;
         public double InputTime;
+        // Gear
         private float displayedFillPercent = 0f;
         private double rotationTimeAccum = 0f;
         private long tickListenerId;
         private double lastFrameTime;
-        double rotationSpeed = 30.0; // Seconds per full rotation
-        // double baseColorSpeed = 0.001;
-        // double maxColorSpeed = 0.1;
-        // double colorSpeed = 165; // Hue change
-        float lerpSpeed = 0.1f; // Fade
-
-        // Set GUI Element Bounds sizing
-        int inputWidth = 300;
-        int inputHeight = 300;
-
-        // private double[] HsvToRgb(double h, double s, double v)
-        // {
-        //     h = h % 1.0;  // Wrap hue around [0,1]
-        //     int i = (int)(h * 6);
-        //     double f = h * 6 - i;
-        //     double p = v * (1 - s);
-        //     double q = v * (1 - f * s);
-        //     double t = v * (1 - (1 - f) * s);
-        // 
-        //     switch (i % 6)
-        //     {
-        //         case 0: return new double[] { v, t, p };
-        //         case 1: return new double[] { q, v, p };
-        //         case 2: return new double[] { p, v, t };
-        //         case 3: return new double[] { p, q, v };
-        //         case 4: return new double[] { t, p, v };
-        //         case 5: return new double[] { v, p, q };
-        //         default: return new double[] { 1, 1, 1 }; // fallback
-        //     }
-        // }
+        // Seconds per full rotation
+        double rotationSpeed = 30.0;
+        // Fade
+        float lerpSpeed = 0.1f;
+        // Hue change - Disabled for now
+        /*
+        double baseColorSpeed = 0.001;
+        double maxColorSpeed = 0.1;
+        double colorSpeed = 165; 
+        private double[] HsvToRgb(double h, double s, double v)
+        {
+            h = h % 1.0;  // Wrap hue around [0,1]
+            int i = (int)(h * 6);
+            double f = h * 6 - i;
+            double p = v * (1 - s);
+            double q = v * (1 - f * s);
+            double t = v * (1 - (1 - f) * s);
+        
+            switch (i % 6)
+            {
+                case 0: return new double[] { v, t, p };
+                case 1: return new double[] { q, v, p };
+                case 2: return new double[] { p, v, t };
+                case 3: return new double[] { p, q, v };
+                case 4: return new double[] { t, p, v };
+                case 5: return new double[] { v, p, q };
+                default: return new double[] { 1, 1, 1 }; // fallback
+            }
+        }
+        */
 
         public ChargingTableGui(string DialogTitle, InventoryBase Inventory, BlockPos BlockEntityPosition, ICoreClientAPI capi) 
             : base(DialogTitle, Inventory, BlockEntityPosition, capi)
@@ -121,6 +125,8 @@ namespace KRPGLib.Enchantment
                 SingleComposer.OnMouseMove(new MouseEvent(capi.Input.MouseX, capi.Input.MouseY));
             }
         }
+        #endregion
+        #region Events
         public void Update(double inputTime, double maxTime, bool isAssessing)
         {
             IsAssessing = isAssessing;
@@ -130,7 +136,13 @@ namespace KRPGLib.Enchantment
 
         private void OnTickFrame(float dt)
         {
-            if (!IsAssessing) return;
+            if (!IsAssessing)
+            {
+                rotationTimeAccum = 0;
+                displayedFillPercent = 0;
+                SingleComposer.GetCustomDraw("symbolDrawer")?.Redraw();
+                return;
+            }
 
             double now = capi.World.Calendar.ElapsedSeconds;
             double deltaTime = now - lastFrameTime;
@@ -146,49 +158,48 @@ namespace KRPGLib.Enchantment
                 SingleComposer.GetCustomDraw("symbolDrawer")?.Redraw();
             }
         }
-
-        #endregion
-        #region Events
         private void OnRenderGearGradient(Context cr, ImageSurface surface, ElementBounds bounds)
         {
-            if (!IsAssessing) return;
-
+            // 0. Get state of GUI Render
             cr.Save();
 
-            // Step 1: Clear the previous draw to prevent flickering
+            // 1. Clear the previous draw to prevent flickering
             cr.SetSourceRGBA(0, 0, 0, 0);
             cr.Operator = Operator.Source;
             cr.Paint();
             cr.Operator = Operator.Over;
 
-            // Step 2: Use interpolated fill percent for alpha and rotation
+            // 2. Use interpolated fill percent for alpha and rotation
             float fillPercent = displayedFillPercent;
             double alpha = Math.Clamp(fillPercent, 0, 1);
-
             double centerX = bounds.OuterWidth / 2.0;
             double centerY = bounds.OuterHeight / 2.0;
-
             double angleRadians = (rotationTimeAccum / rotationSpeed) * 2 * Math.PI;
-
             cr.Translate(centerX, centerY);
             cr.Rotate(angleRadians);
 
+            // 3. Configure Color
+            // Single Colors
             // double[] rgba = new double[] { 0.7, 0.4, 1.0, alpha }; // Purple
             double[] rgba = new double[] { 0.2, 0.7, 0.5, alpha }; // Aquamarine tEmPoRaL
-            // double speedFactor = baseColorSpeed + (maxColorSpeed - baseColorSpeed) * fillPercent;
+            
+            // Hue Change - Based on progress - Disabled for now
+            /*
+            double speedFactor = baseColorSpeed + (maxColorSpeed - baseColorSpeed) * fillPercent;
+            double hue = (rotationTimeAccum / 8.0) % 1.0;
+            double hue = (rotationTimeAccum * speedFactor) % 1.0;
+            double[] rgb = HsvToRgb(hue, 1.0, 1.0);
+            double[] rgb = HsvToRgb(colorSpeed, 1.0, 1.0);
+            double[] rgba = new double[] { rgb[0], rgb[1], rgb[2], alpha };
+            */
 
-            // double hue = (rotationTimeAccum / 8.0) % 1.0;
-            // double hue = (rotationTimeAccum * speedFactor) % 1.0;
-
-            // double[] rgb = HsvToRgb(hue, 1.0, 1.0);
-            // double[] rgb = HsvToRgb(colorSpeed, 1.0, 1.0);
-            // double[] rgba = new double[] { rgb[0], rgb[1], rgb[2], alpha };
-
+            // 4. Configure Bounds
             int x = -(int)(bounds.OuterWidth / 2);
             int y = -(int)(bounds.OuterHeight / 2);
             float w = (float)bounds.OuterWidth;
             float h = (float)bounds.OuterHeight;
 
+            // 5. Render object
             capi.Gui.Icons.DrawVSGear(
                 cr,
                 surface,
@@ -197,17 +208,8 @@ namespace KRPGLib.Enchantment
                 rgba
             );
 
+            // 6. Write to cairo pipeline
             cr.Restore();
-        }
-
-        public void OnInventorySlotModified(int slotid)
-        {
-            // Notify the table which one we clicked
-            // Config.selectedEnchant = -1;
-            // Config.inputEnchantTime = 0;
-            // EnchantingGuiPacket packet = new EnchantingGuiPacket() { SelectedEnchant = Config.selectedEnchant };
-            // byte[] data = SerializerUtil.Serialize(packet);
-            // capi.Network.SendBlockEntityPacket(BlockEntityPosition, 1337, data);
         }
         private void SendInvPacket(object packet)
         {
@@ -220,7 +222,6 @@ namespace KRPGLib.Enchantment
         public override void OnGuiOpened()
         {
             base.OnGuiOpened();
-            // Inventory.SlotModified += OnInventorySlotModified;
 
             lastFrameTime = capi.World.Calendar.ElapsedSeconds;
             // Roughly 60 FPS, SUPPOSEDLY. If you believe the machines.
@@ -229,8 +230,6 @@ namespace KRPGLib.Enchantment
 
         public override void OnGuiClosed()
         {
-            // Inventory.SlotModified -= OnInventorySlotModified;
-
             SingleComposer.GetSlotGrid("inputSlot").OnGuiClosed(capi);
             SingleComposer.GetSlotGrid("temporalSlot1").OnGuiClosed(capi); 
             SingleComposer.GetSlotGrid("temporalSlot2").OnGuiClosed(capi);

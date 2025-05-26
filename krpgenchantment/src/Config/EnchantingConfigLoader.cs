@@ -86,12 +86,12 @@ namespace KRPGLib.Enchantment
                     if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
-                    if (!Config.ValidReagents.ContainsKey("gem-emerald-rough"))
-                        tempConfig.ValidReagents.Add("gem-emerald-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("gem-diamond-rough"))
-                        tempConfig.ValidReagents.Add("gem-diamond-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("gem-olivine_peridot-rough"))
-                        tempConfig.ValidReagents.Add("gem-olivine_peridot-rough", 1);
+                    if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 1);
+                    if (!Config.ValidReagents.ContainsKey("game:gem-diamond-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
+                    if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
+                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
 
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;

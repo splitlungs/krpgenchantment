@@ -133,7 +133,7 @@ namespace KRPGLib.Enchantment
             {
                 if (inventory.Slots[i].Empty) continue;
 
-                if (inventory.Slots[i].Itemstack.Collectible.Code.Equals("gear-temporal"))
+                if (inventory.Slots[i].Itemstack.Collectible.Code.Equals("game:gear-temporal"))
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
                         Api.World.Logger.Event("[KRPGEnchantment] Temporal Gear has been found while attempting to charge a reagent");
@@ -187,42 +187,42 @@ namespace KRPGLib.Enchantment
         }
         protected ILoadedSound ambientSound;
         public virtual float SoundLevel => 0.66f;
-        public void ToggleAmbientSounds(bool on)
-        {
-            if (Api.Side != EnumAppSide.Client)
-            {
-                // Api.Logger.Event("Tried to toggle ambient enchanter sound, but was not client side.");
-                return;
-            }
-
-            if (on)
-            {
-                if (ambientSound == null || !ambientSound.IsPlaying)
-                {
-                    ambientSound = ((IClientWorldAccessor)Api.World).LoadSound(new SoundParams
-                    {
-                        Location = EnchantSound,
-                        ShouldLoop = true,
-                        Position = Pos.ToVec3f().Add(0.5f, 0.25f, 0.5f),
-                        DisposeOnFinish = false,
-                        Volume = SoundLevel
-                    });
-                    if (ambientSound != null)
-                    {
-                        ambientSound.Start();
-                        ambientSound.PlaybackPosition = ambientSound.SoundLengthSeconds * (float)Api.World.Rand.NextDouble();
-                    }
-                }
-            }
-            else
-            {
-                ambientSound?.Stop();
-                ambientSound?.Dispose();
-                ambientSound = null;
-            }
-            if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Toggled ambient enchanter sound for Enchanting Table: {0}.", Block.BlockId);
-        }
+        // public void ToggleAmbientSounds(bool on)
+        // {
+        //     if (Api.Side != EnumAppSide.Client)
+        //     {
+        //         // Api.Logger.Event("Tried to toggle ambient enchanter sound, but was not client side.");
+        //         return;
+        //     }
+        // 
+        //     if (on)
+        //     {
+        //         if (ambientSound == null || !ambientSound.IsPlaying)
+        //         {
+        //             ambientSound = ((IClientWorldAccessor)Api.World).LoadSound(new SoundParams
+        //             {
+        //                 Location = EnchantSound,
+        //                 ShouldLoop = true,
+        //                 Position = Pos.ToVec3f().Add(0.5f, 0.25f, 0.5f),
+        //                 DisposeOnFinish = false,
+        //                 Volume = SoundLevel
+        //             });
+        //             if (ambientSound != null)
+        //             {
+        //                 ambientSound.Start();
+        //                 ambientSound.PlaybackPosition = ambientSound.SoundLengthSeconds * (float)Api.World.Rand.NextDouble();
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         ambientSound?.Stop();
+        //         ambientSound?.Dispose();
+        //         ambientSound = null;
+        //     }
+        //     if (EnchantingConfigLoader.Config.Debug == true)
+        //         Api.Logger.Event("[KRPGEnchantment] Toggled ambient enchanter sound for Enchanting Table: {0}.", Block.BlockId);
+        // }
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
         {
             base.FromTreeAttributes(tree, worldForResolving);
@@ -275,7 +275,7 @@ namespace KRPGLib.Enchantment
             if (clientDialog == null)
             {
                 double hours = 0d;
-                if (CurrentEnchantment != null && IsCharging)
+                if (IsCharging)
                     hours = Api.World.Calendar.TotalHours - InputTime;
 
                 ICoreClientAPI capi = Api as ICoreClientAPI;
