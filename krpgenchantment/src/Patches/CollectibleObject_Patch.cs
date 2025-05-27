@@ -22,7 +22,9 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
         public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
         {
-            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+            if (world.Side != EnumAppSide.Server) return true;
+
+            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
 
@@ -31,11 +33,12 @@ namespace KRPGLib.Enchantment
             {
                 EnchantmentSource enchant = new EnchantmentSource() {
                     SourceStack = itemslot.Itemstack,
+                    TargetEntity = byEntity,
                     Trigger = "OnHit",
                     Code = "durable",
                     Power = durable };
-                EnchantModifiers parameters = new EnchantModifiers() { { "damage", amount } };
-                bool didEnchantment = world.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", (double)amount } };
+                bool didEnchantment = byEntity.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
                 if (didEnchantment != true)
                     return true;
             }

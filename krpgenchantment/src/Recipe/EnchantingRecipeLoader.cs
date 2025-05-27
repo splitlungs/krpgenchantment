@@ -16,6 +16,8 @@ using Vintagestory.API.Datastructures;
 
 namespace KRPGLib.Enchantment
 {
+    /*
+    [Obsolete]
     public class EnchantingRecipeLoader : ModSystem
     {
         ICoreServerAPI sApi;
@@ -46,7 +48,6 @@ namespace KRPGLib.Enchantment
             sApi.World.Logger.Warning("[KRPGEnchantment] Reloading KRPG Enchantment Recipes!");
         }
 
-        /*
         public void LoadEnchantingRecipes()
         {
             Dictionary<AssetLocation, JToken> files = sApi.Assets.GetMany<JToken>(sApi.Server.Logger, "recipes/enchanting-table", "krpgenchantment");
@@ -96,8 +97,7 @@ namespace KRPGLib.Enchantment
             //     // return;
             // }
         }
-        */
-        /*
+
         public void LoadRecipe(AssetLocation loc, EnchantingRecipe recipe)
         {
             if (!recipe.Enabled) return;
@@ -165,6 +165,6 @@ namespace KRPGLib.Enchantment
             }
 
         }
-        */
     }
+    */
 }

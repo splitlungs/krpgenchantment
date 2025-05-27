@@ -37,6 +37,8 @@ namespace KRPGLib.Enchantment
         public override void AssetsFinalize(ICoreAPI api)
         {
             base.AssetsFinalize(api);
+            
+            if (api.Side != EnumAppSide.Server) return;
 
             // Setup ENchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)

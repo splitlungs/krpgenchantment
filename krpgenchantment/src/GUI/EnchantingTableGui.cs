@@ -156,6 +156,29 @@ namespace KRPGLib.Enchantment
             float scrollTotalHeight = rowHeight * Config.rowCount;
             SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
+        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, bool canRead)
+        {
+            this.Config.outputText = outputText;
+            this.Config.inputEnchantTime = inputProcessTime;
+            this.Config.maxEnchantTime = maxProcessTime;
+            this.Config.nowEnchanting = isEnchanting;
+            this.Config.selectedEnchant = selected;
+            this.Config.canRead = canRead;
+
+            if (!IsOpened()) return;
+
+            if (canRead == true)
+            {
+                string[] strings = Config.enchantNames[selected].Split(":");
+                string s = outputText + Lang.Get("krpgenchantment:" + strings[1]);
+                Config.outputText = s;
+            }
+
+            // capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
+            SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
+            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
+            SingleComposer.ReCompose();
+        }
         /// <summary>
         /// Updates the SkiaToggleButtons only if Config.nowEnchanting is false. Be sure to ReCompose separately. 
         /// </summary>
@@ -218,29 +241,7 @@ namespace KRPGLib.Enchantment
             }
             SingleComposer.ReCompose();
         }
-        public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, bool canRead)
-        {
-            this.Config.outputText = outputText;
-            this.Config.inputEnchantTime = inputProcessTime;
-            this.Config.maxEnchantTime = maxProcessTime;
-            this.Config.nowEnchanting = isEnchanting;
-            this.Config.selectedEnchant = selected;
-            this.Config.canRead = canRead;
 
-            if (!IsOpened()) return;
-
-            if (canRead == true)
-            {
-                string[] strings = Config.enchantNames[selected].Split(":");
-                string s = outputText + Lang.Get("krpgenchantment:" + strings[1]);
-                Config.outputText = s;
-            }
-
-            // capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
-            SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
-            SingleComposer.ReCompose();
-        }
         #endregion
         #region Events
         private void OnNewScrollbarValue(float value)

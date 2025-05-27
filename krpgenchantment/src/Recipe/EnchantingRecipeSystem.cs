@@ -8,6 +8,8 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
+    /*
+    [Obsolete]
     public class EnchantingRecipeSystem : ModSystem
     {
         public static bool canRegister = true;
@@ -27,7 +29,7 @@ namespace KRPGLib.Enchantment
             // EnchantingRecipes = api.RegisterRecipeRegistry<RecipeRegistryGeneric<EnchantingRecipe>>("enchantingrecipes").Recipes;
             api.Logger.Notification("[KRPGEnchantment] Enchanting Recipe Registry started.");
         }
-        /*
+
         /// <summary>
         /// List of all loaded enchanting recipes
         /// </summary>
@@ -82,6 +84,6 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Error("[KRPGEnchantment] EnchantingRecipe Registry could not be found! Please report error to author.");
             return null;
         }
-        */
     }
+    */
 }

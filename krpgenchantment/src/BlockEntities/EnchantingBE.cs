@@ -362,6 +362,10 @@ namespace KRPGLib.Enchantment
                         Readers[keyValuePair.Key] = false;
                     }
                     ToggleAmbientSounds(false);
+                    if (clientDialog != null)
+                    {
+                        
+                    }
                 }
             }
 
@@ -472,10 +476,7 @@ namespace KRPGLib.Enchantment
 
             // Update the GUI after sync from server
             if (clientDialog != null)
-            {
-                // Update GUI Enchanting List
-                clientDialog?.UpdateEnchantList(LatentEnchants, LatentEnchantsEncrypted);
-                
+            {   
                 // Update main GUI
                 double hours = 0;
                 bool canRead = false;
@@ -494,6 +495,9 @@ namespace KRPGLib.Enchantment
                     //     Api.Logger.Event("Load. {0} cannot read the CurrentRecipe!", capi.World.Player.PlayerName);
                 }
                 clientDialog?.Update(hours, MaxEnchantTime, NowEnchanting, OutputText, SelectedEnchant, canRead);
+
+                // Update GUI Enchanting List
+                clientDialog?.UpdateEnchantList(LatentEnchants, LatentEnchantsEncrypted);
             }
         }
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -634,36 +638,39 @@ namespace KRPGLib.Enchantment
                         SelectedEnchant = -1;
                     }
 
-                    // List<EnchantingRecipe> recipes = sApi.EnchantAccessor().GetValidEnchantingRecipes(InputSlot, ReagentSlot);
-                    // foreach (EnchantingRecipe er in recipes)
-                    // {
-                    //     if (er.Name.ToShortString() == LatentEnchants[SelectedEnchant] && er.Matches(Api, InputSlot, ReagentSlot) != false)
-                    //         CurrentRecipe = er.Clone();
-                    // }
+                    // Enchanting Recipes - Obsolete
+                    /*
+                    List<EnchantingRecipe> recipes = sApi.EnchantAccessor().GetValidEnchantingRecipes(InputSlot, ReagentSlot);
+                    foreach (EnchantingRecipe er in recipes)
+                    {
+                        if (er.Name.ToShortString() == LatentEnchants[SelectedEnchant] && er.Matches(Api, InputSlot, ReagentSlot) != false)
+                            CurrentRecipe = er.Clone();
+                    }
 
-                    // Remove button selection if Current Recipe is not found
-                    // if (CurrentRecipe == null)
-                    // {
-                    //     if (EnchantingConfigLoader.Config?.Debug == true)
-                    //         Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentRecipe.", SelectedEnchant);
-                    //     SelectedEnchant = -1;
-                    // }
+                    Remove button selection if Current Recipe is not found
+                    if (CurrentRecipe == null)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentRecipe.", SelectedEnchant);
+                        SelectedEnchant = -1;
+                    }
 
-                    // List<EnchantingRecipe> recipes = Api.GetEnchantingRecipes();
-                    // if (recipes != null)
-                    // {
-                    //     foreach (EnchantingRecipe e in recipes)
-                    //     {
-                    //         if (e.Name.ToShortString() == LatentEnchants[SelectedEnchant])
-                    //         {
-                    //             CurrentRecipe = e.Clone();
-                    //             if (EnchantingConfigLoader.Config?.Debug == true)
-                    //                 Api.World.Logger.Event("[KRPGEnchantment] Found selected enchant in the registry. Setting {0} as CurrentRecipe.", e.Name);
-                    //         }
-                    //     }
-                    // }
-                    // else
-                    //     Api.World.Logger.Error("[KRPGEnchantment] Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
+                    List<EnchantingRecipe> recipes = Api.GetEnchantingRecipes();
+                    if (recipes != null)
+                    {
+                        foreach (EnchantingRecipe e in recipes)
+                        {
+                            if (e.Name.ToShortString() == LatentEnchants[SelectedEnchant])
+                            {
+                                CurrentRecipe = e.Clone();
+                                if (EnchantingConfigLoader.Config?.Debug == true)
+                                    Api.World.Logger.Event("[KRPGEnchantment] Found selected enchant in the registry. Setting {0} as CurrentRecipe.", e.Name);
+                            }
+                        }
+                    }
+                    else
+                        Api.World.Logger.Error("[KRPGEnchantment] Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
+                    */
                 }
                 else
                 {

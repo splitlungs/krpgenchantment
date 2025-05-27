@@ -464,8 +464,8 @@ namespace KRPGLib.Enchantment
             foreach (string s in activeStrings)
             {
                 string[] aa = s.Split(":");
-                if (EnchantingConfigLoader.Config.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1} on {2}.", aa[0], aa[1], itemStack.GetName());
+                // if (EnchantingConfigLoader.Config.Debug == true)
+                //     Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1} on {2}.", aa[0], aa[1], itemStack.GetName());
                 enchants.Add(aa[0], Convert.ToInt32(aa[1]));
             }
             // Throw null if we failed to get anything
@@ -549,17 +549,17 @@ namespace KRPGLib.Enchantment
         public bool AssessItem(ItemSlot inSlot, ItemSlot rSlot)
         {
             // Sanity check
-            if (Api.Side == EnumAppSide.Client || inSlot.Empty || rSlot.Empty) return false;
+            if (sApi.Side != EnumAppSide.Server || inSlot.Empty || rSlot.Empty) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
+                sApi.World.Logger.Event("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
-            double timeStamp = Api.World.Calendar.ElapsedDays;
+            double timeStamp = sApi.World.Calendar.ElapsedDays;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+                sApi.World.Logger.Event("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
 
             // Check the timestamp
             // 0 or less means re-assess every time
@@ -571,7 +571,7 @@ namespace KRPGLib.Enchantment
                 return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
+                sApi.World.Logger.Event("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
 
             // Check for override
             int mle = 3;
@@ -579,7 +579,7 @@ namespace KRPGLib.Enchantment
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
+                sApi.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
             List<string> enchants = GetValidEnchantments(inSlot);
@@ -588,18 +588,18 @@ namespace KRPGLib.Enchantment
             // if (recipes == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] {0} valid enchantments found.", enchants.Count);
+                sApi.World.Logger.Event("[KRPGEnchantment] {0} valid enchantments found.", enchants.Count);
 
-            // Create a string with a random selection of EnchantingRecipes
+            // Create a string with a random selection of Enchants
             string str = null;
             for (int i = 0; i < mle; i++)
             {
-                int rNum = Api.World.Rand.Next(enchants.Count);
+                int rNum = sApi.World.Rand.Next(enchants.Count);
                 var er = enchants[rNum];
                 if (er != null)
                     str += er + ";";
                 else
-                    Api.World.Logger.Warning("[KRPGEnchantment] ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
+                    sApi.World.Logger.Warning("[KRPGEnchantment] ValidRecipe element was null. Could not prep LatentEnchants string {0} to {1}.", i, inSlot.Itemstack.GetName());
             }
 
             // Write the assessment to attributes
@@ -611,14 +611,14 @@ namespace KRPGLib.Enchantment
                     for (int j = 0; j < 8; j++)
                     {
                         // ASCII characters 65 - 90
-                        int k = Api.World.Rand.Next(65, 90 + 1);
+                        int k = sApi.World.Rand.Next(65, 90 + 1);
                         strEnc += ((char)k).ToString();
                     }
                     strEnc += ";";
                 }
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.World.Logger.Event("[KRPGEnchantment] LatentEnchants string is {0}", str);
+                    sApi.World.Logger.Event("[KRPGEnchantment] LatentEnchants string is {0}", str);
 
                 tree.SetString("latentEnchants", str);
                 tree.SetString("latentEnchantsEncrypted", strEnc);
