@@ -264,7 +264,7 @@ namespace KRPGLib.Enchantment
         }
         private string GetOutputText()
         {
-            return Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix");
+            return new string (Lang.Get("krpgenchantment:krpg-enchanter-enchant-prefix"));
         }
         #endregion
         #region Main

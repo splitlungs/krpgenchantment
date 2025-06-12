@@ -160,15 +160,25 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void Initialize(EnchantmentProperties properties)
         {
-            Enabled = properties.Enabled;
-            Code = properties.Code;
-            Category = properties.Category;
-            LoreCode = properties.LoreCode;
-            LoreChapterID = properties.LoreChapterID;
-            MaxTier = properties.MaxTier;
-            ValidToolTypes = properties.ValidToolTypes;
-            Modifiers = properties.Modifiers;
+            if (properties.Enabled == true) Enabled = properties.Enabled;
+            else Enabled = false;
+            if (properties.Code != null) Code = properties.Code;
+            else Code = "enchantment-null";
+            if (properties.Category != null) Category = properties.Category;
+            else Category = "";
+            if (properties.LoreCode != null) LoreCode = properties.LoreCode;
+            else LoreCode = "";
+            if (properties.LoreChapterID >= 0) LoreChapterID = properties.LoreChapterID;
+            else LoreChapterID = -1;
+            if (properties.MaxTier >= 0) MaxTier = properties.MaxTier;
+            else MaxTier = 5;
+            if (properties.ValidToolTypes != null) ValidToolTypes = properties.ValidToolTypes;
+            else ValidToolTypes = new List<string>();
+            if (properties.Modifiers != null) Modifiers = properties.Modifiers;
+            else Modifiers = new EnchantModifiers();
+            
             TickRegistry = new Dictionary<long, EnchantTick>();
+
             ConfigParticles();
         }
         /// <summary>
@@ -193,8 +203,12 @@ namespace KRPGLib.Enchantment
             }
             else
                 enchants = new Dictionary<string, int>();
-            // Write Enchant
-            enchants.Add(Code.ToLower(), enchantPower);
+
+            // Write Enchant - Overwrite if it exists first
+            if (enchants.ContainsKey(Code.ToLower()))
+                enchants[Code.ToLower()] = enchantPower;
+            else 
+                enchants.Add(Code.ToLower(), enchantPower);
             string enchantString = "";
             foreach (KeyValuePair<string, int> pair in enchants)
             {
@@ -313,7 +327,15 @@ namespace KRPGLib.Enchantment
         {
         
         }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        /// <param name="eTick"></param>
+        public virtual void OnTick(float deltaTime, ref EnchantTick eTick)
+        {
 
+        }
         protected AdvancedParticleProperties[] ParticleProps;
         protected static AdvancedParticleProperties[] PoisonParticleProps;
         protected bool resetLightHsv;

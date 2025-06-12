@@ -17,9 +17,9 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
-            if (entity == null) return true;
+            if (__instance.Api.Side != EnumAppSide.Server || entity == null) return true;
 
-            if (__instance.ProjectileStack.Item.Tool == EnumTool.Spear)
+            if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetEnchantments(__instance.ProjectileStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
@@ -47,9 +47,9 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static void Postfix(EntityProjectile __instance, Entity entity)
         {
-            if (entity == null) return;
+            if (__instance.Api.Side != EnumAppSide.Server || entity == null) return;
 
-            if (__instance.ProjectileStack.Item.Tool == EnumTool.Spear)
+            if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchants = entity.Api.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);

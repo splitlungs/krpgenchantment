@@ -15,6 +15,9 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.ServerMods.NoObf;
 using static System.Net.Mime.MediaTypeNames;
+using KRPGLib.Enchantment.API;
+using System.Collections;
+using HarmonyLib;
 
 namespace KRPGLib.Enchantment
 {
@@ -28,12 +31,23 @@ namespace KRPGLib.Enchantment
         private EntityAgent agent;
         private IServerPlayer player = null;
 
+        public Dictionary<string, EnchantTick> TickRegistry;
+
         public bool IsPlayer { get { if (player != null) return true; return false; } }
+
+        public override void OnEntityDeath(DamageSource damageSourceForDeath)
+        {
+            base.OnEntityDeath(damageSourceForDeath);
+
+            KRPGEnchantmentSystem eSys = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
+            
+        }
 
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             Api = entity.Api;
             agent = entity as EntityAgent;
+            TickRegistry = new Dictionary<string, EnchantTick>();
             
             // if (agent != null)
             // {
@@ -98,6 +112,32 @@ namespace KRPGLib.Enchantment
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             base.OnEntityReceiveDamage(damageSource, ref damage);
+        }
+        public override void OnGameTick(float deltaTime)
+        {
+            base.OnGameTick(deltaTime);
+
+            if (Api.Side == EnumAppSide.Server && TickRegistry.Count > 0)
+            {
+                foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+                {
+                    int tr = pair.Value.TicksRemaining;
+                    if (tr > 0)
+                    {
+                        IEnchantment enchant = Api.EnchantAccessor().GetEnchantment(pair.Key);
+                        EnchantTick eTick = pair.Value;
+                        enchant.OnTick(deltaTime, ref eTick);
+                        TickRegistry[pair.Key] = eTick;
+                    }
+                    else
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Key);
+                        pair.Value.Dispose();
+                        TickRegistry.Remove(pair.Key);
+                    }
+                }
+            }
         }
     }
 }

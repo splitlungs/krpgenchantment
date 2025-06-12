@@ -70,5 +70,10 @@ namespace KRPGLib.Enchantment.API
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// </summary>
+        /// <param name="deltTime"></param>
+        void OnTick(float deltTime, ref EnchantTick eTick);
     }
 }

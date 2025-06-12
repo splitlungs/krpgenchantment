@@ -37,10 +37,13 @@ namespace KRPGLib.Enchantment
                     Trigger = "OnHit",
                     Code = "durable",
                     Power = durable };
-                EnchantModifiers parameters = new EnchantModifiers() { { "damage", (double)amount } };
+                int dmg = amount;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", (int)dmg } };
                 bool didEnchantment = byEntity.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
                 if (didEnchantment != true)
                     return true;
+                else
+                    amount = parameters.GetInt("damage");
             }
 
             return true;

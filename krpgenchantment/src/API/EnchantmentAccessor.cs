@@ -378,9 +378,12 @@ namespace KRPGLib.Enchantment
             // Wearables
             s = stack.Attributes.GetString("clothescategory");
             if (s != null) return s.ToLower();
-            // Class fallback - Disabled for now, since it should reject improperly setup items
-            // s = stack.Collectible.Class?.ToLower();
-            // if (s != null) return s;
+            // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
+            s = stack.Collectible?.Code;
+            if (s != null)
+            {
+                if (s.Contains("cleaver")) return "cleaver";
+            }
 
             return null;
         }
@@ -582,20 +585,23 @@ namespace KRPGLib.Enchantment
                 sApi.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
-            List<string> enchants = GetValidEnchantments(inSlot);
+            List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(inSlot);
             if (enchants == null) return false;
+            if (enchants.Count <= 0) return false;
             // List<EnchantingRecipe> recipes = GetValidEnchantingRecipes(inSlot, rSlot);
             // if (recipes == null) return false;
-
+            int eCount = enchants.Count;
             if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.Event("[KRPGEnchantment] {0} valid enchantments found.", enchants.Count);
+                sApi.World.Logger.Event("[KRPGEnchantment] {0} valid enchantments found.", eCount);
 
             // Create a string with a random selection of Enchants
             string str = null;
             for (int i = 0; i < mle; i++)
             {
-                int rNum = sApi.World.Rand.Next(enchants.Count);
-                var er = enchants[rNum];
+                int rNum = sApi.World.Rand.Next(eCount);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    sApi.Logger.Event("rNum is {0} and eCount is {1}", rNum, eCount);
+                string er = enchants[rNum];
                 if (er != null)
                     str += er + ";";
                 else

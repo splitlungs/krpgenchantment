@@ -50,7 +50,7 @@ namespace KRPGLib.Enchantment
         {
             base.Initialize(properties);
             // We let the config initialize before registering the Tick Listener
-            Api.World.RegisterGameTickListener(PoisonTick, TickFrequency);
+            // Api.World.RegisterGameTickListener(PoisonTick, TickFrequency);
         }
         public override void ConfigParticles()
         {
@@ -131,18 +131,19 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Poison enchantment.", enchant.TargetEntity.GetName());
 
-            int tickMax = enchant.Power * TickMultiplier;
+            int tickMax = (enchant.Power * TickMultiplier) -1;
+            EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
 
-            if (TickRegistry.ContainsKey(enchant.TargetEntity.EntityId))
+            if (eeb.TickRegistry.ContainsKey(Code))
             {
-                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = tickMax;
-                TickRegistry[enchant.TargetEntity.EntityId].Source = enchant.Clone();
+                eeb.TickRegistry[Code].TicksRemaining = tickMax;
+                eeb.TickRegistry[Code].Source = enchant.Clone();
             }
             else if (tickMax > 1)
             {
                 EnchantTick eTick = 
                     new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
-                TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
+                eeb.TickRegistry.Add(Code, eTick);
                 DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
             }
             else
@@ -193,50 +194,80 @@ namespace KRPGLib.Enchantment
                 Type = EnumDamageType.Injury
             };
             hp.OnEntityReceiveDamage(source, ref dmg);
+            // Particle
+            GenerateParticles(entity, EnumDamageType.Injury, dmg + 1);
             // entity.ReceiveDamage(source, dmg);
             // Hunger damage
             EntityBehaviorHunger hungy = entity.GetBehavior<EntityBehaviorHunger>();
             if (hungy == null) return;
             hungy.ConsumeSaturation(dmg * 100);
-            // Particle
-            GenerateParticles(entity, EnumDamageType.Injury, dmg);
+
         }
         /// <summary>
         /// Attempt to resist, then deal Poison effect. Power multiplies number of 1s refreshes.
         /// </summary>
-        public void PoisonTick(float dt)
+        public override void OnTick(float deltaTime, ref EnchantTick eTick)
         {
-            foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry) 
-            {
-                Entity entity = Api.World.GetEntityById(pair.Key);
-                long curDur = Api.World.ElapsedMilliseconds - pair.Value.LastTickTime;
-                if (pair.Value.TicksRemaining > 0 && curDur >= TickDuration)
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing an Poison Tick on {0}.", pair.Key);
-                    
-                    if (entity == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.Logger.Event("[KRPGEnchantment] Poison enchantment Ticked a null entity. Removing from TickRegistry.");
-                        TickRegistry[pair.Key].Dispose();
-                        TickRegistry.Remove(pair.Key);
-                        continue;
-                    }
+            long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
+            int tr = eTick.TicksRemaining;
 
-                    DealPoison(entity, pair.Value.Source.CauseEntity, pair.Value.Source.Power);
-                    TickRegistry[pair.Key].TicksRemaining = pair.Value.TicksRemaining--;
-                    pair.Value.LastTickTime = Api.World.ElapsedMilliseconds;
-                }
-                else if (pair.Value.TicksRemaining <= 0)
+            if (tr > 0 && curDur >= TickDuration)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing an Poison Tick on {0}.", eTick.Source.TargetEntity.GetName());
+                Entity entity = eTick.Source.TargetEntity;
+                if (entity == null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Poison enchantment finished Ticking for {0}.", pair.Key);
-                    TickRegistry[pair.Key].Dispose();
-                    TickRegistry.Remove(pair.Key);
+                        Api.Logger.Event("[KRPGEnchantment] Poison enchantment Ticked a null entity. Removing from TickRegistry.");
+                    eTick.Dispose();
+                    return;
                 }
+                DealPoison(entity, eTick.Source.CauseEntity, eTick.Source.Power);
+                eTick.TicksRemaining = tr - 1;
+                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
+            }
+            else if (tr <= 0)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment finished Ticking for {0}.", Code);
+                eTick.Dispose();
             }
         }
+
+        // public void PoisonTick(float dt)
+        // {
+        //     foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry) 
+        //     {
+        //         Entity entity = Api.World.GetEntityById(pair.Key);
+        //         long curDur = Api.World.ElapsedMilliseconds - pair.Value.LastTickTime;
+        //         if (pair.Value.TicksRemaining > 0 && curDur >= TickDuration)
+        //         {
+        //             if (EnchantingConfigLoader.Config?.Debug == true)
+        //                 Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing an Poison Tick on {0}.", pair.Key);
+        //             
+        //             if (entity == null)
+        //             {
+        //                 if (EnchantingConfigLoader.Config?.Debug == true)
+        //                     Api.Logger.Event("[KRPGEnchantment] Poison enchantment Ticked a null entity. Removing from TickRegistry.");
+        //                 TickRegistry[pair.Key].Dispose();
+        //                 TickRegistry.Remove(pair.Key);
+        //                 continue;
+        //             }
+        // 
+        //             DealPoison(entity, pair.Value.Source.CauseEntity, pair.Value.Source.Power);
+        //             TickRegistry[pair.Key].TicksRemaining = pair.Value.TicksRemaining--;
+        //             pair.Value.LastTickTime = Api.World.ElapsedMilliseconds;
+        //         }
+        //         else if (pair.Value.TicksRemaining <= 0)
+        //         {
+        //             if (EnchantingConfigLoader.Config?.Debug == true)
+        //                 Api.Logger.Event("[KRPGEnchantment] Poison enchantment finished Ticking for {0}.", pair.Key);
+        //             TickRegistry[pair.Key].Dispose();
+        //             TickRegistry.Remove(pair.Key);
+        //         }
+        //     }
+        // }
 
     }
 }

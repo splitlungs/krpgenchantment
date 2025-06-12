@@ -33,7 +33,7 @@ namespace KRPGLib.Enchantment
             ValidToolTypes = new List<string>() {
                 "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield",
-                "Chisel", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
+                "Chisel", "Cleaver", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
                 "Knife", "Axe",
                 "Club", "Sword",
                 "Spear",

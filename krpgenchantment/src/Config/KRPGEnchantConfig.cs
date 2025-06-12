@@ -25,6 +25,9 @@ namespace KRPGLib.Enchantment
             { "DamageArea", -1 },
             { "DamageTarget", -1 },
             { "DamageTick", -1 },
+            { "HealArea", -1 },
+            { "HealTarget", -1 },
+            { "HealTick", -1 },
             { "ResistDamage", -1 },
             { "Universal", -1 }
         };
@@ -64,18 +67,24 @@ namespace KRPGLib.Enchantment
 
                 if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
                     MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
-                if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                    MaxEnchantsByCategory.Add("ControlArea", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("ControlTarget"))
+                    MaxEnchantsByCategory.Add("ControlTarget", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("DamageArea"))
+                    MaxEnchantsByCategory.Add("DamageArea", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("DamageTarget"))
+                    MaxEnchantsByCategory.Add("DamageTarget", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("DamageTick"))
+                    MaxEnchantsByCategory.Add("DamageTick", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("HealArea"))
+                    MaxEnchantsByCategory.Add("HealArea", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("HealTarget"))
+                    MaxEnchantsByCategory.Add("HealTarget", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("HealTick"))
+                    MaxEnchantsByCategory.Add("HealTick", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("ResistDamage"))
+                    MaxEnchantsByCategory.Add("ResistDamage", -1);
+                if (!config.MaxEnchantsByCategory.ContainsKey("Universal"))
+                    MaxEnchantsByCategory.Add("Universal", -1);
                 // Reagent Config
                 if (config.LegacyReagentPotential == true) LegacyReagentPotential = true;
                 if (config.ChargeReagentHours != 1) ChargeReagentHours = config.ChargeReagentHours;

@@ -84,6 +84,7 @@ namespace KRPGLib.Enchantment
         public override bool CanHold(ItemSlot sourceSlot)
         {
             // if (bEntity.invLocked) return false;
+            if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
             foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
             {

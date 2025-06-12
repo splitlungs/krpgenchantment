@@ -75,6 +75,12 @@ namespace KRPGLib.Enchantment
                         tempConfig.MaxEnchantsByCategory.Add("DamageTarget", -1);
                     if (!Config.MaxEnchantsByCategory.ContainsKey("DamageTick"))
                         tempConfig.MaxEnchantsByCategory.Add("DamageTick", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealArea"))
+                        tempConfig.MaxEnchantsByCategory.Add("HealArea", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealTarget"))
+                        tempConfig.MaxEnchantsByCategory.Add("HealTarget", -1);
+                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealTick"))
+                        tempConfig.MaxEnchantsByCategory.Add("HealTick", -1);
                     if (!Config.MaxEnchantsByCategory.ContainsKey("ResistDamage"))
                         tempConfig.MaxEnchantsByCategory.Add("ResistDamage", -1);
                     if (!Config.MaxEnchantsByCategory.ContainsKey("Universal"))

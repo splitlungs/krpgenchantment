@@ -49,72 +49,75 @@ namespace KRPGLib.Enchantment
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
-            Api.World.RegisterGameTickListener(SpawnLightning, TickFrequency);
+            // Api.World.RegisterGameTickListener(SpawnLightning, TickFrequency);
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Lightning enchantment.", enchant.TargetEntity.GetName());
+            EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
 
             // Refresh ticks if needed
-            if (TickRegistry.ContainsKey(enchant.TargetEntity.EntityId))
+            if (eeb.TickRegistry.ContainsKey(Code))
             {
                 int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                 int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                TickRegistry[enchant.TargetEntity.EntityId].TicksRemaining = roll;
-                TickRegistry[enchant.TargetEntity.EntityId].Source = enchant.Clone();
+                eeb.TickRegistry[Code].TicksRemaining = roll;
+                eeb.TickRegistry[Code].Source = enchant.Clone();
             }
             else if (enchant.Power == 1)
             {
                 EnchantTick tick = 
                     new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = enchant.Power };
-                TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
+                eeb.TickRegistry.Add(Code, tick);
             }
             else if (enchant.Power > 1)
             {
                 int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                 int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
                 EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = roll };
-                TickRegistry.Add(enchant.TargetEntity.EntityId, tick);
+                eeb.TickRegistry.Add(Code, tick);
             }
             else
                 Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", enchant.TargetEntity.EntityId);
         }
-        private void SpawnLightning(float dt)
+        public override void OnTick(float deltaTime, ref EnchantTick eTick)
+        {
+            long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
+            int tr = eTick.TicksRemaining;
+
+            if (tr > 0 && curDur >= Delay)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Lightning enchantment is performing a Lightning Tick on {0}.", eTick.Source.TargetEntity.GetName());
+                Entity entity = eTick.Source.TargetEntity;
+                if (entity == null)
+                {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Lightning enchantment Ticked a null entity. Removing from TickRegistry.");
+                    eTick.Dispose();
+                    return;
+                }
+                SpawnLightning(eTick.Source.TargetEntity.SidedPos.XYZ);
+                eTick.TicksRemaining = tr - 1;
+                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
+            }
+            else if (tr <= 0)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Lightning enchantment finished Ticking for {0}.", Code);
+                eTick.Dispose();
+            }
+        }
+        private void SpawnLightning(Vec3d pos)
         {
             if (weatherSystem == null)
                 return;
 
-            foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry)
-            {
-                long curDur = Api.World.ElapsedMilliseconds - pair.Value.LastTickTime;
-                if (pair.Value.TicksRemaining > 0 && curDur >= Delay)
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Lightning enchantment is performing an Lightning Tick on {0}.", pair.Key);
-                    Entity entity = Api.World.GetEntityById(pair.Key);
-                    if (entity == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.Logger.Event("[KRPGEnchantment] Lightning enchantment Ticked a null entity. Removing from TickRegistry.");
-                        TickRegistry[pair.Key].Dispose();
-                        TickRegistry.Remove(pair.Key);
-                        continue;
-                    }
-                    Vec3d offSet = 
-                        new Vec3d(Api.World.Rand.Next(-EffectRadius, EffectRadius+1) + Api.World.Rand.NextDouble(), 0, 
-                        Api.World.Rand.Next(-EffectRadius, EffectRadius+1) + Api.World.Rand.NextDouble());
-                    weatherSystem.SpawnLightningFlash(entity.SidedPos.XYZ + offSet);
-                    TickRegistry[pair.Key].TicksRemaining--;
-                }
-                else if (pair.Value.TicksRemaining <= 0)
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Lightning enchantment finished Ticking for {0}.", pair.Key);
-                    TickRegistry[pair.Key].Dispose();
-                    TickRegistry.Remove(pair.Key);
-                }
-            }
+            Vec3d offSet =
+                    new Vec3d(Api.World.Rand.Next(-EffectRadius, EffectRadius + 1) + Api.World.Rand.NextDouble(), 0,
+                    Api.World.Rand.Next(-EffectRadius, EffectRadius + 1) + Api.World.Rand.NextDouble());
+            weatherSystem.SpawnLightningFlash(pos + offSet);
         }
     }
 }
