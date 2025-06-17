@@ -33,7 +33,7 @@ namespace KRPGLib.Enchantment
         }
         public void OnProjectileDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (sApi?.EnchantAccessor()?.GetEnchantments(slot?.Itemstack) == null) return;
+            if (sApi?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack) == null) return;
 
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
             bool didEnchants = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);

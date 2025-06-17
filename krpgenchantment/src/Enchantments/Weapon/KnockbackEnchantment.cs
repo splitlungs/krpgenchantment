@@ -10,6 +10,8 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
+using static System.Net.Mime.MediaTypeNames;
+using Vintagestory.API.Config;
 
 namespace KRPGLib.Enchantment
 {
@@ -35,22 +37,23 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 20.00 } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.00 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Knockback enchantment.", enchant.TargetEntity.GetName());
 
-            double weightedPower = enchant.Power * PowerMultiplier;
-            // EntityPos facing = entity.SidedPos.AheadCopy(0.1);
-            // entity.SidedPos.Motion.Mul(facing.X * -weightedPower, 1, facing.Z * -weightedPower);
-            enchant.TargetEntity.SidedPos.Motion.AddCopy(-weightedPower, 1, -weightedPower);
-            // Vec3d repulse = entity.ownPosRepulse;
+            float weightedPower = enchant.Power * PowerMultiplier;
 
-            if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", 
-                    (float)parameters["damage"], enchant.SourceStack.GetName());
+            // Get attacking direction
+            Vec3d pushDir = enchant.TargetEntity.Pos.XYZ - enchant.SourceEntity.Pos.XYZ;
+            pushDir.Y = 0;
+            pushDir.Normalize();
+            // Aplly motion with a little bit of lift
+            enchant.TargetEntity.SidedPos.Motion.X += pushDir.X * weightedPower;
+            enchant.TargetEntity.SidedPos.Motion.Y += 0.1;
+            enchant.TargetEntity.SidedPos.Motion.Z += pushDir.Z * weightedPower;
         }
     }
 }

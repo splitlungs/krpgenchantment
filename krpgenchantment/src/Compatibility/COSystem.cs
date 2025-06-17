@@ -37,7 +37,7 @@ namespace KRPGLib.Enchantment
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (Api?.EnchantAccessor()?.GetEnchantments(slot?.Itemstack) == null)
+            if (Api?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack) == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged event, but could not find Enchantments to try.");
@@ -55,7 +55,7 @@ namespace KRPGLib.Enchantment
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
-            if (Api?.EnchantAccessor()?.GetEnchantments(weaponStack) == null)
+            if (Api?.EnchantAccessor()?.GetActiveEnchantments(weaponStack) == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnRangedDamaged event, but could not find Enchantments to try.");

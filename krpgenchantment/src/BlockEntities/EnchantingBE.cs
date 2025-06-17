@@ -149,7 +149,7 @@ namespace KRPGLib.Enchantment
         {
             if (Api.Side == EnumAppSide.Client || slot.Itemstack == null) return false;
             
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack);
 
             if (enchants != null) return true;
 
@@ -167,7 +167,7 @@ namespace KRPGLib.Enchantment
                 // if (!CurrentRecipe.Matches(Api, InputSlot, ReagentSlot)) return false;
                 // if (CurrentEnchantment == null) return false;
                 // Get all Enchantments on the Input.
-                // Dictionary<string, int> enchantments = Api.EnchantAccessor().GetEnchantments(InputSlot.Itemstack);
+                // Dictionary<string, int> enchantments = Api.EnchantAccessor().GetActiveEnchantments(InputSlot.Itemstack);
                 // Should we allow more?
                 // if (enchantments != null && enchantments.Count >= EnchantingConfigLoader.Config.MaxEnchantsPerItem) return false;
                 // if (EnchantingConfigLoader.Config?.Debug == true)
@@ -290,9 +290,9 @@ namespace KRPGLib.Enchantment
         private void enchantInput()
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.World.Logger.Event("[KRPGEnchantment] Attempting to enchant an item.");
+                Api.World.Logger.Event("[KRPGEnchantment] Enchanting Table is attempting to enchant an item.");
             ICoreServerAPI sApi = Api as ICoreServerAPI;
-            ItemStack outStack = sApi.EnchantAccessor().EnchantItem(InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
+            ItemStack outStack = sApi.EnchantAccessor().EnchantItem(sApi, InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
             // ItemStack outStack = CurrentRecipe.OutStack(sApi, InputSlot, ReagentSlot).Clone();
             if (OutputSlot.Empty)
             {

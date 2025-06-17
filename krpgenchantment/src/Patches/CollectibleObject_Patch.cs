@@ -24,7 +24,7 @@ namespace KRPGLib.Enchantment
         {
             if (world.Side != EnumAppSide.Server) return true;
 
-            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
 

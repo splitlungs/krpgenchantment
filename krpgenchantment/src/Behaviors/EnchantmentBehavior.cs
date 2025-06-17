@@ -178,7 +178,7 @@ namespace KRPGLib.Enchantment
         /// <param name="itemStack"></param>
         public void GetAttributes(ItemSlot inSlot)
         {
-            Enchantments = Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
+            Enchantments = Api.EnchantAccessor().GetActiveEnchantments(inSlot.Itemstack);
             Enchantable = Api.EnchantAccessor().IsEnchantable(inSlot);
         }
         /// <summary>
@@ -199,7 +199,7 @@ namespace KRPGLib.Enchantment
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
             // Enchantments
-            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetEnchantments(inSlot.Itemstack);
+            Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetActiveEnchantments(inSlot.Itemstack);
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
@@ -220,7 +220,7 @@ namespace KRPGLib.Enchantment
         // {
         //     if (entitySel == null || entitySel.Entity == null || byEntity == null || slot == null || slot.Empty) return;
         // 
-        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(slot.Itemstack);
+        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack);
         //     if (enchants == null) return;
         // 
         //     // Should avoid default during healing
@@ -244,7 +244,7 @@ namespace KRPGLib.Enchantment
             handling = EnumHandling.Handled;
 
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
-            if (aimSelf == 1 && byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack) != null)
+            if (aimSelf == 1 && byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);

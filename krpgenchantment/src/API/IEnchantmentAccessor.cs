@@ -45,7 +45,7 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="itemStack"></param>
         /// <returns></returns>
-        Dictionary<string, int> GetEnchantments(ItemStack itemStack);
+        Dictionary<string, int> GetActiveEnchantments(ItemStack itemStack);
         /// <summary>
         /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
         /// </summary>

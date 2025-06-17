@@ -94,7 +94,7 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     byEntity.Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
                 // Get Enchantments
-                Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetEnchantments(itemslot.Itemstack);
+                Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
                 if (enchants != null)
                 {
                     // Should avoid default during healing

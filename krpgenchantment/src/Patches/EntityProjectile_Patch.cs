@@ -21,7 +21,7 @@ namespace KRPGLib.Enchantment
 
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
-                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetEnchantments(__instance.ProjectileStack);
+                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
 
                 // Item overrides Entity's Enchantment
@@ -34,7 +34,7 @@ namespace KRPGLib.Enchantment
                 ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
                 long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
                 if (weaponStack == null || (entity.Api.World.ElapsedMilliseconds - timestamp) > 6000) return true;
-                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetEnchantments(weaponStack);
+                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetActiveEnchantments(weaponStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
 
                 // Item overrides Entity's Enchantment

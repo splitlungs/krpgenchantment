@@ -143,7 +143,7 @@ namespace KRPGLib.Enchantment
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
         // Used to manage generic ticks. You still have to register your tick method with the API.
-        public Dictionary<long, EnchantTick> TickRegistry { get; set; }
+        // public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
         // public EnchantmentProperties Properties = new EnchantmentProperties();
         // Raw JSON of the Properties
@@ -177,8 +177,6 @@ namespace KRPGLib.Enchantment
             if (properties.Modifiers != null) Modifiers = properties.Modifiers;
             else Modifiers = new EnchantModifiers();
             
-            TickRegistry = new Dictionary<long, EnchantTick>();
-
             ConfigParticles();
         }
         /// <summary>
@@ -187,28 +185,28 @@ namespace KRPGLib.Enchantment
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
         /// <returns></returns>
-        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower)
+        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api)
         {
             if (inStack == null) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
+                api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
 
             // Setup Enchants
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inStack);
+            Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(inStack);
             if (enchants != null)
             {
-                OverwriteHealOrDamage(ref enchants);
-                LimitEnchantCategory(ref enchants);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments on it. Processing exceptions.", enchants.Count);
+                enchants = RemoveHealOrDamage(enchants);
+                enchants = LimitEnchantCategory(enchants);
+                enchants = RemoveExisting(enchants, enchantPower);
             }
             else
                 enchants = new Dictionary<string, int>();
 
-            // Write Enchant - Overwrite if it exists first
-            if (enchants.ContainsKey(Code.ToLower()))
-                enchants[Code.ToLower()] = enchantPower;
-            else 
-                enchants.Add(Code.ToLower(), enchantPower);
+            // Write the Enchantment
+            enchants.Add(Code, enchantPower);
             string enchantString = "";
             foreach (KeyValuePair<string, int> pair in enchants)
             {
@@ -227,31 +225,50 @@ namespace KRPGLib.Enchantment
         /// Overwrites "Healing" or a "Damage" category enchant
         /// </summary>
         /// <param name="enchants"></param>
-        public virtual void OverwriteHealOrDamage(ref Dictionary<string, int> enchants)
+        public virtual Dictionary<string, int> RemoveHealOrDamage(Dictionary<string, int> enchants)
         {
-            List<string> damageEnchants = Api.EnchantAccessor().GetEnchantmentsInCategory("damage");
-            if (damageEnchants != null)
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to overwrite heal/damage enchants.");
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            // TODO: Don't make these hard-coded. Maybe just search all categories for the word "damage"
+            List<string> damageEnchants = new List<string>();
+            List<string> areaEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageArea");
+            if (areaEnchants != null) damageEnchants.AddRange(areaEnchants);
+            List<string> targetEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageTarget");
+            if (targetEnchants != null) damageEnchants.AddRange(targetEnchants);
+            List<string> tickEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageTick");
+            if (tickEnchants != null) damageEnchants.AddRange(tickEnchants);
+
+            if (damageEnchants.Count > 0)
             {
+                Dictionary<string, int> enchants2 = enchants;
                 // Overwrite Healing
-                if (Code == "healing")
+                if (Code.Contains("healing"))
                 {
                     foreach (string s in damageEnchants)
-                        if (enchants.ContainsKey(s)) enchants.Remove(s);
+                        if (enchants2.ContainsKey(s)) enchants2.Remove(s);
                 }
                 // Overwrite Alternate Damage
                 else if (damageEnchants.Contains(Code))
-                    enchants.Remove("healing");
+                    enchants2.Remove("healing");
+
+                return enchants2;
             }
+            
+            return enchants;
         }
         /// <summary>
         /// Removes a random Enchantment of a type as limited by MaxEnchantsByCategory in the main config file.
         /// </summary>
         /// <param name="enchants"></param>
-        public virtual void LimitEnchantCategory(ref Dictionary<string, int> enchants)
+        public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants)
         {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
             foreach (KeyValuePair<string, int> pair1 in EnchantingConfigLoader.Config.MaxEnchantsByCategory)
             {
-                List<string> categoryEnchants = Api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
+                List<string> categoryEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
                 if (categoryEnchants != null && pair1.Value >= 0)
                 {
                     List<string> activeEnchants = new List<string>();
@@ -267,6 +284,20 @@ namespace KRPGLib.Enchantment
                     }
                 }
             }
+            return enchants;
+        }
+        /// <summary>
+        /// Overwrites "Healing" or a "Damage" category enchant
+        /// </summary>
+        /// <param name="enchants"></param>
+        public virtual Dictionary<string, int> RemoveExisting(Dictionary<string, int> enchants, int enchantPower)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing enchants");
+            // Write Enchant - Overwrite if it exists first
+            if (enchants.ContainsKey(Code)) enchants.Remove(Code);
+
+            return enchants;
         }
         #nullable enable
         /// <summary>

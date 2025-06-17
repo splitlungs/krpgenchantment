@@ -25,7 +25,7 @@ namespace KRPGLib.Enchantment
             EntitySelection entitySel)
         {
             if (slot.Empty || byEntity == null || 
-                byEntity.Api.EnchantAccessor().GetEnchantments(slot.Itemstack) == null) 
+                byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) == null) 
                 return;
 
             byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack);

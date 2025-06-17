@@ -70,7 +70,7 @@ namespace KRPGLib.Enchantment.API
         /// <param name="rSlot"></param>
         /// <param name="enchantments"></param>
         /// <returns></returns>
-        ItemStack EnchantItem(ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments);
+        ItemStack EnchantItem(ICoreServerAPI api, ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments);
         /// <summary>
         /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns null if none can be found.
         /// </summary>
@@ -85,7 +85,7 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="itemStack"></param>
         /// <returns></returns>
-        Dictionary<string, int> GetEnchantments(ItemStack itemStack);
+        Dictionary<string, int> GetActiveEnchantments(ItemStack itemStack);
         /// <summary>
         /// Returns a List of Latent Enchantments pending for the contained Itemstack or null if there are none.
         /// </summary>
@@ -111,6 +111,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="stack"></param>
         /// <returns></returns>
         int SetReagentCharge(ref ItemStack stack, int numGears);
+        /// <summary>
+        /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        List<string> GetEnchantmentsInCategory(string category);
         #endregion
         #region Lore
         /// <summary>

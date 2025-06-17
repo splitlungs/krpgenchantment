@@ -170,7 +170,7 @@ namespace KRPGLib.Enchantment
                     {
                         if (!inv[i].Empty)
                         {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetEnchantments(inv[i].Itemstack);
+                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(inv[i].Itemstack);
                             int rPower = enchants.GetValueOrDefault("resistpoison", 0);
                             resist += rPower * 0.1f;
                         }
