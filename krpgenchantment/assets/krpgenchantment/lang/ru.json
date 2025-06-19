@@ -4,7 +4,8 @@
 
   "krpg-enchant": "Зачаровать",
   "enchantable": "Зачарованый",
-  "reagent-potential": "Power",
+  "reagent-charge-prefix": "заряжать: ",
+  "block-charging-table": "Реагент заряжать зачарования",
 
   "enchantment-chilling": "Охлаждение",
   "enchantment-durable": "Прочный",
@@ -17,6 +18,7 @@
   "enchantment-lightning": "Вызвать Молнию",
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
+  "enchantment-poison": "Яд",
   "enchantment-protection": "Защита",
   "enchantment-resistelectric": "Сопротивление электричеству",
   "enchantment-resistelectricity": "Сопротивление электричеству",
@@ -74,6 +76,7 @@
   "lore-enchantment-resistinjury": "16. Сопротивление повреждениям",
   "lore-enchantment-resistpoison": "17. Сопротивление яду",
   "lore-enchantment-shocking": "18. Шок",
+  "lore-enchantment-poison": "19. Яд",
 
   "krpgenchantment:lore-enchantment-title": "Enchanter's Manual",
   "krpgenchantment:lore-enchantment-chilling": "1. Охлаждение",
@@ -95,6 +98,7 @@
   "krpgenchantment:lore-enchantment-resistinjury": "16. Сопротивление повреждениям",
   "krpgenchantment:lore-enchantment-resistpoison": "17. Сопротивление яду",
   "krpgenchantment:lore-enchantment-shocking": "18. Шок",
+  "krpgenchantment:lore-enchantment-poison": "19. Яд",
 
   "craftinginfo-enchanting-title": "Зачарование",
   "craftinginfo-enchanting-text": "<strong>Зачарование</strong><br> <br>Чтобы приступить к зачарованию, вам понадобится <a href=\"handbook://block-krpgenchantment:enchanting-table\">Стол зачарования</a>. <br>После того как вы получите Стол зачарования, вам нужно будет поместить в нее несколько реагентов и предмет, на который накладывается зачарование. По умолчанию в качестве реагента можно использовать несколько драгоценных камней, например изумруд, перидот или алмаз. <br><br>Зачаровать можно только определенные предметы. Как правило, низкокачественные или каменные инструменты не могут быть зачарованы. По умолчанию сила зачарования случайна и зависит от значения потенциала реагента. Большинство зачарований требуют 1 внутриигровой час для зачарования, но могут варьироваться. <br><br>Подробную информацию о чарах вы можете найти на <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Вики</a>.",
@@ -118,6 +122,14 @@
   "MaxDamageEnchantsComment": "Устанавливает количество чар урона, которые предмет может удерживать одновременно. Сюда входят Пламя, Мороз, Повреждения и Шок. -1 или меньше не является пределом.",
   "ValidReagents": "Действующие реагенты",
   "ValidReagentsComment": "Предмет и количество, необходимое для выполнения зачарования.",
+  "LegacyReagentPotential": "Потенциал устаревшего реагента",
+  "LegacyReagentPotentialComment": "Отключает новую систему мощности реагента в пользу значений «Потенциала» до версии 1.0.0 при определении максимального уровня зачарования, для которого можно использовать реагент.",
+  "ChargeReagentHours": "Часы работы реагента для зарядки",
+  "ChargeReagentHoursComment": "Устанавливает количество времени для выполнения заправки реагента в часах.",
+  "MaxReagentCharge": "Максимальный заряд реагента",
+  "MaxReagentChargeComment": "Устанавливает максимальный заряд, до которого можно зарядить реагент.",
+  "ChargePerGear": "Плата за передачу",
+  "ChargePerGearComment": "Устанавливает величину заряда, которую одна шестерня будет передавать реагенту в таблице зарядки.",
   "Debug": "Отлаживать",
   "DebugComment": "Включите для более подробного ведения журнала."
 }

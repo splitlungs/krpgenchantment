@@ -1,0 +1,31 @@
+[
+  {
+    "name": "enchantment-durable",
+    "processingHours": 1,
+    "ingredients": {
+      "armor": {
+        "type": "item",
+        "code": "blackguardadditions:armor-*-*-*"
+      },
+      "blackguardbow": {
+        "type": "item",
+        "code": "blackguardadditions:blackguardbow-*"
+      },
+      "claymore": {
+        "type": "item",
+        "code": "blackguardadditions:claymore"
+      },
+      "dagger": {
+        "type": "item",
+        "code": "blackguardadditions:dagger"
+      },
+      "warhammer": {
+        "type": "item",
+        "code": "blackguardadditions:warhammer"
+      }
+    },
+    "enchantments": {
+      "durable": 5
+    }
+  }
+]

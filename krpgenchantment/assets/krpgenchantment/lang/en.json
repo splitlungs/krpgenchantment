@@ -4,7 +4,8 @@
 
   "krpg-enchant": "Enchant",
   "enchantable": "Enchantable",
-  "reagent-potential": "Power",
+  "reagent-charge-prefix": "Charge: ",
+  "block-charging-table": "Reagent Charging Table",
 
   "enchantment-chilling": "Chilling",
   "enchantment-durable": "Durable",
@@ -15,8 +16,8 @@
   "enchantment-igniting": "Igniting",
   "enchantment-knockback": "Knockback",
   "enchantment-lightning": "Call Lightning",
-  "enchantment-shocking": "Shocking",
   "enchantment-pit": "Pit",
+  "enchantment-poison": "Poison",
   "enchantment-protection": "Protection",
   "enchantment-resistelectric": "Resist Electricity",
   "enchantment-resistelectricity": "Resist Electricity",
@@ -25,6 +26,7 @@
   "enchantment-resistheal": "Resist Healing",
   "enchantment-resistinjury": "Resist Harming",
   "enchantment-resistpoison": "Resist Poison",
+  "enchantment-shocking": "Shocking",
 
   "1": "I",
   "2": "II",
@@ -74,6 +76,7 @@
   "lore-enchantment-resistinjury": "16. Resist Harming",
   "lore-enchantment-resistpoison": "17. Resist Poison",
   "lore-enchantment-shocking": "18. Shocking",
+  "lore-enchantment-poison": "19. Poison",
 
   "krpgenchantment:lore-enchantment-title": "Enchanter's Manual",
   "krpgenchantment:lore-enchantment-chilling": "1. Chilling",
@@ -95,6 +98,7 @@
   "krpgenchantment:lore-enchantment-resistinjury": "16. Resist Harming",
   "krpgenchantment:lore-enchantment-resistpoison": "17. Resist Poison",
   "krpgenchantment:lore-enchantment-shocking": "18. Shocking",
+  "krpgenchantment:lore-enchantment-poison": "19. Poison",
 
   "craftinginfo-enchanting-title": "Enchanting",
   "craftinginfo-enchanting-text": "<strong>Enchanting</strong><br> <br>To begin enchanting, you will need an <a href=\"handbook://block-krpgenchantment:enchanting-table\">Enchanting Table</a>. <br>Once you have your Enchanting Table, you will need to place a number of reagents and a target item for the enchantment. By default, a valid reagent would by a number of gemstones, like emerald, peridot, or diamond. <br><br>Only certain items may be enchanted. Typically, low quality or stone tools cannot hold an enchantment. By default, the strength of the enchantment is random, based off the Potential value of the reagent. Most enchantments take 1 in-game hour to enchant, but can vary. <br><br>You can find details on enchantments on the <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",
@@ -118,6 +122,14 @@
   "MaxDamageEnchantsComment": "Sets the amount of Damage Enchantments an item can hold at a single time. This includes Flaming, Frost, Harming, and Shocking. -1 or less is no limit.",
   "ValidReagents": "Valid Reagents",
   "ValidReagentsComment": "Item and quantity required to perform an Enchantment.",
+  "LegacyReagentPotential": "Legacy Reagent Potential",
+  "LegacyReagentPotentialComment": "Disables the new Reagent Power system, in favor of the pre-1.0.0 'Potential' values when determining the max level enchantment a reagent can be used for.",
+  "ChargeReagentHours": "Charge Reagent Hours",
+  "ChargeReagentHoursComment": "Sets the amount of time to perform a reagent charge in hours.",
+  "MaxReagentCharge": "Maximum Reagent Charge",
+  "MaxReagentChargeComment": "Sets the maximum charge that a reagent can be charged to.",
+  "ChargePerGear": "Charge Per Gear",
+  "ChargePerGearComment": "Sets the amount of charge a single gear will provide to a reagent in the charging table.",
   "Debug": "Debug",
   "DebugComment": "Enable for more verbose logging."
 }

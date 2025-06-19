@@ -4,7 +4,8 @@
 
   "krpg-enchant": "Зачарувати",
   "enchantable": "Зачарований",
-  "reagent-potential": "Power",
+  "reagent-charge-prefix": "заряд: ",
+  "block-charging-table": "Реагент заряд зачарування",
 
   "enchantment-chilling": "Охолодження",
   "enchantment-durable": "Міцний",
@@ -17,6 +18,7 @@
   "enchantment-lightning": "Викликати Блискавку",
   "enchantment-shocking": "Шок",
   "enchantment-pit": "Яма",
+  "enchantment-poison": "Отрута",
   "enchantment-protection": "Захист",
   "enchantment-resistelectric": "Опір електриці",
   "enchantment-resistelectricity": "Опір електриці",
@@ -74,6 +76,7 @@
   "lore-enchantment-resistinjury": "16. Опір ушкодженням",
   "lore-enchantment-resistpoison": "17. Опір отрути",
   "lore-enchantment-shocking": "18. Шок",
+  "lore-enchantment-poison": "19. Отрута",
 
   "krpgenchantment:lore-enchantment-title": "Керівництво чарівника",
   "krpgenchantment:lore-enchantment-chilling": "1. Охлаждение",
@@ -95,6 +98,7 @@
   "krpgenchantment:lore-enchantment-resistinjury": "16. Опір ушкодженням",
   "krpgenchantment:lore-enchantment-resistpoison": "17. Опір отрути",
   "krpgenchantment:lore-enchantment-shocking": "18. Шок",
+  "krpgenchantment:lore-enchantment-poison": "19. Отрута",
 
   "craftinginfo-enchanting-title": "Зачарування",
   "craftinginfo-enchanting-text": "<strong>Зачарування</strong><br> <br>Щоб приступити до зачарування, вам знадобиться <a href=\"handbook://block-krpgenchantment:enchanting-table\">Стіл зачарування</a>. <br>Після того як ви отримаєте Зачарований стіл, вам потрібно буде помістити в неї кілька реагентів і предмет, на який накладається зачарування. За умовчанням як реагент можна використовувати кілька дорогоцінних каменів, наприклад смарагд, перидот або алмаз. <br><br>Зачарувати можна лише певні предмети. Як правило, низькоякісні чи кам'яні інструменти не можуть бути зачаровані. За замовчуванням сила зачарування є випадковою і залежить від значення потенціалу реагенту. Більшість зачарувань вимагають 1 внутрішньоігрову годину для зачарування, але можуть змінюватись. <br><br>Детальну інформацію про чари ви можете знайти на <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Вики</a>.",
@@ -118,6 +122,14 @@
   "MaxDamageEnchantsComment": "Встановлює кількість зачарувань шкоди, які може містити предмет за один раз. Сюди входять полум’я, мороз, шкода та шок. -1 або менше не обмеження.",
   "ValidReagents": "Реагенти, що діють",
   "ValidReagentsComment": "Предмет і кількість, необхідне виконання зачарування.",
+  "LegacyReagentPotential": "Потенціал застарілого реагенту",
+  "LegacyReagentPotentialComment": "Вимикає нову систему «Сили реагентів» на користь значень «Потенціалу» версії до версії 1.0.0 під час визначення максимального рівня зачарувань, для яких можна використовувати реагент.",
+  "ChargeReagentHours": "Години зарядки реагенту",
+  "ChargeReagentHoursComment": "Встановлює час виконання заправки реагентом у годинах.",
+  "MaxReagentCharge": "Максимальне завантаження реагенту",
+  "MaxReagentChargeComment": "Встановлює максимальний заряд, до якого можна зарядити реагент.",
+  "ChargePerGear": "Заряд за передачу",
+  "ChargePerGearComment": "Встановлює кількість заряду, який одна шестерня забезпечить реагенту в таблиці заряджання.",
   "Debug": "Налагодження",
   "DebugComment": "Увімкніть для більш детального журналювання."
 }
