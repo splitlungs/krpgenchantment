@@ -339,10 +339,10 @@ namespace KRPGLib.Enchantment
                 {
                     InputEnchantTime = Api.World.Calendar.TotalHours;
                     // CurrentRecipe.ResolveIngredients(Api.World);
-
+                    ICoreServerAPI sApi = Api as ICoreServerAPI;
                     foreach (KeyValuePair<string, bool> keyValuePair in Readers)
                     {
-                        if (Api.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment) == true)
+                        if (sApi.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment) == true)
                             Readers[keyValuePair.Key] = true;
                         else
                             Readers[keyValuePair.Key] = false;
@@ -530,6 +530,7 @@ namespace KRPGLib.Enchantment
             if (blockSel.SelectionBoxIndex == 1) return false;
             if (Api.Side == EnumAppSide.Server)
             {
+                ICoreServerAPI sApi = Api as ICoreServerAPI;
                 // Prepare them for the translator
                 if (clientDialog != null && Readers.ContainsKey(byPlayer.PlayerUID))
                 {
@@ -539,7 +540,7 @@ namespace KRPGLib.Enchantment
                 }
                 else if (clientDialog == null && !Readers.ContainsKey(byPlayer.PlayerUID))
                 {
-                    bool canRead = Api.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment);
+                    bool canRead = sApi.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment);
                     Readers.Add(byPlayer.PlayerUID, canRead);
                     if (EnchantingConfigLoader.Config.Debug == true)
                         Api.Logger.Event("[KRPGEnchantment] Server received RClick. Adding player {0} from Readers list with value of {1}.", byPlayer.PlayerUID, canRead);
@@ -684,8 +685,7 @@ namespace KRPGLib.Enchantment
             if (packetid == 1338)
             {
                 // Attempt to remove player from Readers list
-                if (Readers.ContainsKey(player.PlayerUID))
-                    Readers.Remove(player.PlayerUID);
+                Readers.Remove(player.PlayerUID);
             }
             // Sync back to the client
             MarkDirty();
@@ -699,8 +699,8 @@ namespace KRPGLib.Enchantment
             {
                 foreach (KeyValuePair<string, bool> pair in Readers)
                 {
-                    // ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    Api.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment);
+                    ICoreServerAPI sApi = Api as ICoreServerAPI;
+                    sApi.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment);
                 }
             }
             else

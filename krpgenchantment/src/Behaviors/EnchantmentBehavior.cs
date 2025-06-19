@@ -25,6 +25,7 @@ namespace KRPGLib.Enchantment
     {
         #region Data
         public ICoreAPI Api;
+        public ICoreServerAPI sApi;
         /// <summary>
         /// Class for storing default enchantment configuration. Do not save your active enchantments here.
         /// </summary>
@@ -38,7 +39,7 @@ namespace KRPGLib.Enchantment
         {
             base.OnLoaded(api);
             Api = api;
-
+            sApi = api as ICoreServerAPI;
             // Particles - Not Working Yet
             // ConfigParticles();
         }
@@ -244,10 +245,10 @@ namespace KRPGLib.Enchantment
             handling = EnumHandling.Handled;
 
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
-            if (aimSelf == 1 && byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
+            if (aimSelf == 1 && Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchantments = byEntity.Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
+                bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
             }
             
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)

@@ -122,6 +122,14 @@
   "MaxDamageEnchantsComment": "Sets the amount of Damage Enchantments an item can hold at a single time. This includes Flaming, Frost, Harming, and Shocking. -1 or less is no limit.",
   "ValidReagents": "Valid Reagents",
   "ValidReagentsComment": "Item and quantity required to perform an Enchantment.",
+  "LegacyReagentPotential": "Legacy Reagent Potential",
+  "LegacyReagentPotentialComment": "Disables the new Reagent Power system, in favor of the pre-1.0.0 'Potential' values when determining the max level enchantment a reagent can be used for.",
+  "ChargeReagentHours": "Charge Reagent Hours",
+  "ChargeReagentHoursComment": "Sets the amount of time to perform a reagent charge in hours.",
+  "MaxReagentCharge": "Maximum Reagent Charge",
+  "MaxReagentChargeComment": "Sets the maximum charge that a reagent can be charged to.",
+  "ChargePerGear": "Charge Per Gear",
+  "ChargePerGearComment": "Sets the amount of charge a single gear will provide to a reagent in the charging table.",
   "Debug": "Debug",
   "DebugComment": "Enable for more verbose logging."
 }

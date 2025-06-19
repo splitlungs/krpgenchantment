@@ -38,14 +38,15 @@ namespace KRPGLib.Enchantment
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
             base.OnEntityDeath(damageSourceForDeath);
-
-            KRPGEnchantmentSystem eSys = Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
             
+            // TODO: Make a way to check if the ticks should be cleared on death or not.
+            TickRegistry.Clear();
         }
 
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             Api = entity.Api;
+            sApi = entity.Api as ICoreServerAPI;
             agent = entity as EntityAgent;
             TickRegistry = new Dictionary<string, EnchantTick>();
             
@@ -104,7 +105,7 @@ namespace KRPGLib.Enchantment
                         handled = EnumHandling.Handled;
         
                     EnchantModifiers parameters = new EnchantModifiers();
-                    byEntity.Api.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
+                    sApi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
                 }
             }
             base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
@@ -124,7 +125,7 @@ namespace KRPGLib.Enchantment
                     int tr = pair.Value.TicksRemaining;
                     if (tr > 0)
                     {
-                        IEnchantment enchant = Api.EnchantAccessor().GetEnchantment(pair.Key);
+                        IEnchantment enchant = sApi.EnchantAccessor().GetEnchantment(pair.Key);
                         EnchantTick eTick = pair.Value;
                         enchant.OnTick(deltaTime, ref eTick);
                         TickRegistry[pair.Key] = eTick;

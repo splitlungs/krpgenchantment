@@ -122,6 +122,14 @@
   "MaxDamageEnchantsComment": "Définit la quantité d'enchantements de dégâts qu'un objet peut contenir en une seule fois. Cela inclut les enchantements Flamboyants, Givrants, Nuisibles et Électrocutants. -1 ou moins signifie qu'il n'y a pas de limite.",
   "ValidReagents": "Réactifs valides",
   "ValidReagentsComment": "Objet et quantité requis pour effectuer un enchantement.",
+  "LegacyReagentPotential": "Potentiel des réactifs hérités",
+  "LegacyReagentPotentialComment": "Désactive le nouveau système de puissance des réactifs, en faveur des valeurs « Potentiel » antérieures à la version 1.0.0 lors de la détermination du niveau d'enchantement maximal pour lequel un réactif peut être utilisé.",
+  "ChargeReagentHours": "Heures de charge du réactif",
+  "ChargeReagentHoursComment": "Définit la durée nécessaire pour effectuer une charge de réactif en heures.",
+  "MaxReagentCharge": "Charge maximale de réactif",
+  "MaxReagentChargeComment": "Définit la charge maximale à laquelle un réactif peut être chargé.",
+  "ChargePerGear": "Charge par vitesse",
+  "ChargePerGearComment": "Définit la quantité de charge qu'un seul engrenage fournira à un réactif dans la table de charge.",
   "Debug": "Déboguer",
   "DebugComment": "Activer pour une journalisation plus détaillée."
 }

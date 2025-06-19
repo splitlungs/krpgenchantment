@@ -17,7 +17,8 @@ namespace KRPGLib.Enchantment
 {
     public class KnockbackEnchantment : Enchantment
     {
-        float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        float HorizontalMultiplier { get { return Modifiers.GetFloat("HorizontalMultiplier"); } }
+        float VerticalMultiplier { get { return Modifiers.GetFloat("VerticalMultiplier"); } }
         public KnockbackEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -37,23 +38,24 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.00 } };
+            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 0.10 },  { "VerticalMultiplier", 0.025 } };
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Knockback enchantment.", enchant.TargetEntity.GetName());
 
-            float weightedPower = enchant.Power * PowerMultiplier;
+            float hPower = enchant.Power * HorizontalMultiplier;
+            float vPower = enchant.Power * VerticalMultiplier;
 
             // Get attacking direction
             Vec3d pushDir = enchant.TargetEntity.Pos.XYZ - enchant.SourceEntity.Pos.XYZ;
             pushDir.Y = 0;
             pushDir.Normalize();
             // Aplly motion with a little bit of lift
-            enchant.TargetEntity.SidedPos.Motion.X += pushDir.X * weightedPower;
-            enchant.TargetEntity.SidedPos.Motion.Y += 0.1;
-            enchant.TargetEntity.SidedPos.Motion.Z += pushDir.Z * weightedPower;
+            enchant.TargetEntity.SidedPos.Motion.X += pushDir.X * hPower;
+            enchant.TargetEntity.SidedPos.Motion.Y += vPower;
+            enchant.TargetEntity.SidedPos.Motion.Z += pushDir.Z * hPower;
         }
     }
 }

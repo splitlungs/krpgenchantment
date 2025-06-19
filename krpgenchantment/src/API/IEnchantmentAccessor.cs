@@ -21,13 +21,7 @@ namespace KRPGLib.Enchantment.API
     /// </summary>
     public interface IEnchantmentAccessor
     {
-        #region Assessments
-        /// <summary>
-        /// Returns the Enchantment Interface from the EnchantmentRegistry.
-        /// </summary>
-        /// <param name="enchantCode"></param>
-        /// <returns></returns>
-        IEnchantment GetEnchantment(string enchantCode);
+        #region Getters
         /// <summary>
         /// Returns the number of Enchantments in the EnchantmentRegistry that match the provided category.
         /// </summary>
@@ -59,71 +53,6 @@ namespace KRPGLib.Enchantment.API
         /// <param name="inSlot"></param>
         /// <returns></returns>
         bool IsEnchantable(ItemSlot inSlot);
-        #endregion
-        #region Lore
-        /// <summary>
-        /// Returns true if the given player can decrypt the enchant.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="recipe"></param>
-        /// <returns></returns>
-        // bool CanReadEnchant(string player, EnchantingRecipe recipe);
-        /// <summary>
-        /// Returns true if the given player can decrypt the enchant. enchantName must be in the format of an AssetLocation.Name.ToShortString() (Ex: "domain:enchant-name")
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="enchantName"></param>
-        /// <returns></returns>
-        bool CanReadEnchant(string player, string enchantName);
-        #endregion
-        #region Actions
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity);
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="stack"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity);
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
-        /// <summary>
-        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="stack"></param>
-        /// <param name="trigger"></param>
-        /// <param name="byEntity"></param>
-        /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
-        /// <summary>
-        /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
-        /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        bool TryEnchantment(EnchantmentSource enchant, ref EnchantModifiers parameters);
         #endregion
     }
 }

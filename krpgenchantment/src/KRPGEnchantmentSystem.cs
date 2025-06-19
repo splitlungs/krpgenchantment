@@ -59,6 +59,8 @@ namespace KRPGLib.Enchantment
                     obj.CollectibleBehaviors = obj.CollectibleBehaviors.Append(eb).ToArray();
                 }
             }
+            sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
+            Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment behaviors loaded.");
         }
         public override void StartPre(ICoreAPI api)
         {

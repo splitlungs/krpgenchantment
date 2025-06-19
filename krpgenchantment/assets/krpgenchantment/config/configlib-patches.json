@@ -29,10 +29,38 @@
       "default": 3
     },
     {
+      "code": "LegacyReagentPotential",
+      "comment": "LegacyReagentPotentialComment",
+      "type": "bool",
+      "clientSide": false,
+      "default": false
+    },
+    {
+      "code": "ChargeReagentHours",
+      "comment": "ChargeReagentHoursComment",
+      "type": "float",
+      "clientSide": false,
+      "default": 1.0
+    },
+    {
+      "code": "MaxReagentCharge",
+      "comment": "MaxReagentChargeComment",
+      "type": "integer",
+      "clientSide": false,
+      "default": 5
+    },
+    {
+      "code": "ChargePerGear",
+      "comment": "ChargePerGearComment",
+      "type": "float",
+      "clientSide": false,
+      "default": 1.0
+    },
+    {
       "code": "Debug",
       "comment": "DebugComment",
       "type": "bool",
-      "clientSide": true,
+      "clientSide": false,
       "default": false
     }
   ]

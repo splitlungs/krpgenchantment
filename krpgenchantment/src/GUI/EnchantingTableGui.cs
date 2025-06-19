@@ -169,12 +169,12 @@ namespace KRPGLib.Enchantment
 
             if (canRead == true)
             {
-                string[] strings = Config.enchantNames[selected].Split(":");
-                string s = outputText + Lang.Get("krpgenchantment:" + strings[1]);
+                // string[] strings = Config.enchantNames[selected].Split(":");
+                string s = outputText + Lang.Get("krpgenchantment:enchantment-" + Config.enchantNames[selected]);
                 Config.outputText = s;
             }
 
-            // capi.World.Logger.Event("Attempting to write OutputText: {0}", Config.outputText);
+            // capi.World.Logger.Event("[KRPGEnchantment] Attempting to write OutputText: {0}", Config.outputText);
             SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
             // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             SingleComposer.ReCompose();

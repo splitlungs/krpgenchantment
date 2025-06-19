@@ -10,6 +10,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
@@ -45,13 +46,19 @@ namespace KRPGLib.Enchantment
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Pit enchantment.", enchant.TargetEntity.GetName());
+
             BlockPos bpos = enchant.TargetEntity.SidedPos.AsBlockPos;
             List<Vec3d> pitArea = new List<Vec3d>();
-            for (int x = 0; x <= MulXZ; x++)
+
+            float mulxz = MulXZ * enchant.Power;
+            float muly = MulY * enchant.Power;
+            for (int x = 0; x <= mulxz; x++)
             {
-                for (int y = 0; y <= MulY; y++)
+                for (int y = 0; y <= muly; y++)
                 {
-                    for (int z = 0; z <= MulXZ; z++)
+                    for (int z = 0; z <= mulxz; z++)
                     {
                         pitArea.Add(new Vec3d(bpos.X + x, bpos.Y - y, bpos.Z + z));
                         pitArea.Add(new Vec3d(bpos.X - x, bpos.Y - y, bpos.Z - z));
@@ -60,25 +67,42 @@ namespace KRPGLib.Enchantment
                     }
                 }
             }
-            IPlayer player = enchant.CauseEntity as IPlayer;
-            for (int i = 0; i < pitArea.Count; i++)
+            Entity entity = enchant.GetCauseEntity();
+            IPlayer player = null;
+            if (entity is EntityPlayer ep)
             {
-                BlockPos ipos = bpos;
-                ipos.Set(pitArea[i]);
-                LandClaim[] claims = Api.World.Claims.Get(ipos);
-                if (claims != null)
-                {
-                    if (Api.World.Claims.TestAccess(player, ipos, EnumBlockAccessFlags.BuildOrBreak) == EnumWorldAccessResponse.NoPrivilege)
-                        continue;
-                }
-                Block block = Api.World.BlockAccessor.GetBlock(ipos);
-                if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
-                    || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
-                {
-                    Api.World.BlockAccessor.BreakBlock(ipos, player);
-                }
+                player = Api?.World.PlayerByUid(ep.PlayerUID);
             }
 
+            for (int i = 0; i < pitArea.Count; i++)
+            {
+                // Check for claims
+                BlockPos ipos = bpos;
+                ipos.Set(pitArea[i]);
+
+                LandClaim[] claims = Api.World.Claims.Get(ipos);
+                bool denied = false;
+                if (player != null)
+                {
+                    foreach (LandClaim lc in claims)
+                    {
+                        var response = lc.TestPlayerAccess(player, EnumBlockAccessFlags.BuildOrBreak);
+                        if (response < EnumPlayerAccessResult.OkOwner)
+                            denied = true;
+                    }
+                    if (denied != false) continue;
+                }
+                // Break the block only if claim check passed
+                if (denied == false)
+                {
+                    Block block = Api.World.BlockAccessor.GetBlock(ipos);
+                    if (block.BlockMaterial == EnumBlockMaterial.Gravel || block.BlockMaterial == EnumBlockMaterial.Soil
+                        || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Plant)
+                    {
+                        Api.World.BlockAccessor.BreakBlock(ipos, player);
+                    }
+                }
+            }
         }
     }
 }

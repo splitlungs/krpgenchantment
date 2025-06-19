@@ -24,6 +24,7 @@ namespace KRPGLib.Enchantment
         {
             if (world.Side != EnumAppSide.Server) return true;
 
+            ICoreServerAPI sApi = world.Api as ICoreServerAPI;
             Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants == null)
                 return true;
@@ -39,7 +40,7 @@ namespace KRPGLib.Enchantment
                     Power = durable };
                 int dmg = amount;
                 EnchantModifiers parameters = new EnchantModifiers() { { "damage", (int)dmg } };
-                bool didEnchantment = byEntity.Api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+                bool didEnchantment = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
                 if (didEnchantment != true)
                     return true;
                 else

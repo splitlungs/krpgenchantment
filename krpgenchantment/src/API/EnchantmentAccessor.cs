@@ -717,7 +717,6 @@ namespace KRPGLib.Enchantment
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity)
         {
@@ -745,7 +744,8 @@ namespace KRPGLib.Enchantment
                         Power = pair.Value,
                         SourceEntity = byEntity,
                         CauseEntity = byEntity,
-                        TargetEntity = targetEntity
+                        TargetEntity = targetEntity,
+                        DamageTier = pair.Value
                     };
                     enc.OnTrigger(enchant);
                 }
@@ -760,7 +760,6 @@ namespace KRPGLib.Enchantment
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity)
         {
@@ -788,7 +787,8 @@ namespace KRPGLib.Enchantment
                         Power = pair.Value,
                         SourceEntity = byEntity,
                         CauseEntity = byEntity,
-                        TargetEntity = targetEntity
+                        TargetEntity = targetEntity,
+                        DamageTier = pair.Value
                     };
 
                     enc.OnTrigger(enchant);

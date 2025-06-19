@@ -36,7 +36,7 @@ namespace KRPGLib.Enchantment
             if (sApi?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack) == null) return;
 
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchants = Api.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
+            bool didEnchants = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
             damage = parameters.GetFloat("damage");
         }
     }

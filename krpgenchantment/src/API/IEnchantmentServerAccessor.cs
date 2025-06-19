@@ -28,21 +28,62 @@ namespace KRPGLib.Enchantment.API
         /// <param name="t"></param>
         bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
         #endregion
-        #region Recipes
-        /*
+        #region Actions
         /// <summary>
-        /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="inSlot"></param>
-        /// <param name="rSlot"></param>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
-        List<EnchantingRecipe> GetValidEnchantingRecipes(ItemSlot inSlot, ItemSlot rSlot);
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity);
         /// <summary>
-        /// Registers the provided EnchantingRecipe to the server.
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
-        /// <param name="recipe"></param>
-        void RegisterEnchantingRecipe(EnchantingRecipe recipe);
-        */
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        bool TryEnchantment(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        #endregion
+        #region Getters
+        /// <summary>
+        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// </summary>
+        /// <param name="enchantCode"></param>
+        /// <returns></returns>
+        IEnchantment GetEnchantment(string enchantCode);
         /// <summary>
         /// Returns a List of Enchantments that can be written to the ItemStack, or null if something went wrong.
         /// </summary>
@@ -79,7 +120,6 @@ namespace KRPGLib.Enchantment.API
         string GetToolType(ItemStack stack);
         #endregion
         #region Assessments
-        IEnchantment GetEnchantment(string enchantCode);
         /// <summary>
         /// Returns all Enchantments in the ItemStack's Attributes or null if none are found.
         /// </summary>

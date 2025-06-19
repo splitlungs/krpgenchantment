@@ -19,9 +19,10 @@ namespace KRPGLib.Enchantment
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return true;
 
+            ICoreServerAPI sApi = __instance.Api as ICoreServerAPI;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
-                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
+                Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
 
                 // Item overrides Entity's Enchantment
@@ -34,7 +35,7 @@ namespace KRPGLib.Enchantment
                 ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
                 long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
                 if (weaponStack == null || (entity.Api.World.ElapsedMilliseconds - timestamp) > 6000) return true;
-                Dictionary<string, int> enchants = entity.Api.EnchantAccessor().GetActiveEnchantments(weaponStack);
+                Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments(weaponStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
 
                 // Item overrides Entity's Enchantment
@@ -49,10 +50,11 @@ namespace KRPGLib.Enchantment
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return;
 
+            ICoreServerAPI sApi = __instance.Api as ICoreServerAPI;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = entity.Api.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);
                 if (!didEnchants)
                     entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
@@ -64,7 +66,7 @@ namespace KRPGLib.Enchantment
                 if (weaponStack == null || (entity.Api.World.ElapsedMilliseconds - timestamp) > 6000) return;
 
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = entity.Api.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", __instance, entity, ref parameters);
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", __instance, entity, ref parameters);
                 if (!didEnchants)
                     entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", weaponStack.GetName());
 
