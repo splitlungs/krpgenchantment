@@ -8,8 +8,8 @@
       "title": "KRPGEnchantmentSettings"
     },
     {
-      "code": "EnchantTimeOverride",
-      "comment": "EnchantTimeOverrideComment",
+      "code": "EnchantTimeHours",
+      "comment": "EnchantTimeHoursComment",
       "type": "float",
       "clientSide": false,
       "default": -1.0

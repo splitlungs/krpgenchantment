@@ -99,18 +99,6 @@ namespace KRPGLib.Enchantment
                 krpgWands = new KRPGWandsSystem();
                 krpgWands.StartServerSide(Api);
             }
-            // if (EnchantingConfigLoader.Config?.CustomPatches.GetValueOrDefault("CombatOverhaul", false) == true
-            // && sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
-            // {
-            //     combatOverhaul = new COSystem();
-            //     combatOverhaul.StartServerSide(Api);
-            // }
-            // if (EnchantingConfigLoader.Config?.CustomPatches.GetValueOrDefault("KRPGWands", false) == true
-            //     && sApi.ModLoader.IsModEnabled("krpgwands") == true)
-            // {
-            //     krpgWands = new KRPGWandsSystem();
-            //     krpgWands.StartServerSide(Api);
-            // }
         }
         public override void Start(ICoreAPI api)
         {
@@ -118,7 +106,6 @@ namespace KRPGLib.Enchantment
             Api = api;
             EnchantAccessor.Api = api;
 
-            // api.RegisterCollectibleBehaviorClass("ReagentBehavior", typeof(ReagentBehavior));
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("ChargingBlock", typeof(ChargingBlock));
