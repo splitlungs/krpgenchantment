@@ -118,25 +118,24 @@ namespace KRPGLib.Enchantment
         {
             base.OnGameTick(deltaTime);
 
-            if (Api.Side == EnumAppSide.Server && TickRegistry.Count > 0)
+            if (Api.Side != EnumAppSide.Server || TickRegistry.Count <= 0) return;
+
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
-                foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+                int tr = pair.Value.TicksRemaining;
+                if (tr > 0)
                 {
-                    int tr = pair.Value.TicksRemaining;
-                    if (tr > 0)
-                    {
-                        IEnchantment enchant = sApi.EnchantAccessor().GetEnchantment(pair.Key);
-                        EnchantTick eTick = pair.Value;
-                        enchant.OnTick(deltaTime, ref eTick);
-                        TickRegistry[pair.Key] = eTick;
-                    }
-                    else
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Key);
-                        pair.Value.Dispose();
-                        TickRegistry.Remove(pair.Key);
-                    }
+                    IEnchantment enchant = sApi.EnchantAccessor().GetEnchantment(pair.Key);
+                    EnchantTick eTick = pair.Value;
+                    enchant.OnTick(deltaTime, ref eTick);
+                    TickRegistry[pair.Key] = eTick;
+                }
+                else
+                {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Key);
+                    pair.Value.Dispose();
+                    TickRegistry.Remove(pair.Key);
                 }
             }
         }
