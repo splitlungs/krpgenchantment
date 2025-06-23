@@ -17,7 +17,6 @@ namespace KRPGLib.Enchantment
     public class LightningEnchantment : Enchantment
     {
         long Delay { get { return Modifiers.GetLong("Delay"); } }
-        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         int MaxBonusStrikes { get { return Modifiers.GetInt("MaxBonusStrikes"); } }
         int EffectRadius { get { return Modifiers.GetInt("EffectRadius"); } }
@@ -44,7 +43,7 @@ namespace KRPGLib.Enchantment
                 "Wand" };
             Modifiers = new EnchantModifiers()
             { 
-                {"Delay", 500 }, {"TickFrequency", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
+                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
             };
 
             sApi = Api as ICoreServerAPI;
@@ -56,30 +55,32 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Lightning enchantment.", enchant.TargetEntity.GetName());
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
-
-            // Refresh ticks if needed
-            if (eeb.TickRegistry.ContainsKey(Code))
+            if (eeb != null)
             {
-                int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
-                int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                eeb.TickRegistry[Code].TicksRemaining = roll;
-                eeb.TickRegistry[Code].Source = enchant.Clone();
+                // Refresh ticks if needed
+                if (eeb.TickRegistry.ContainsKey(Code))
+                {
+                    int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
+                    int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
+                    eeb.TickRegistry[Code].TicksRemaining = roll;
+                    eeb.TickRegistry[Code].Source = enchant.Clone();
+                }
+                else if (enchant.Power == 1)
+                {
+                    EnchantTick tick =
+                        new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = enchant.Power };
+                    eeb.TickRegistry.Add(Code, tick);
+                }
+                else if (enchant.Power > 1)
+                {
+                    int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
+                    int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
+                    EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = roll };
+                    eeb.TickRegistry.Add(Code, tick);
+                }
+                else
+                    Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", enchant.TargetEntity.EntityId);
             }
-            else if (enchant.Power == 1)
-            {
-                EnchantTick tick = 
-                    new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = enchant.Power };
-                eeb.TickRegistry.Add(Code, tick);
-            }
-            else if (enchant.Power > 1)
-            {
-                int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
-                int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = roll };
-                eeb.TickRegistry.Add(Code, tick);
-            }
-            else
-                Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", enchant.TargetEntity.EntityId);
         }
         public override void OnTick(float deltaTime, ref EnchantTick eTick)
         {

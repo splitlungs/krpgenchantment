@@ -29,7 +29,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 10;
             MaxTier = 5;
             ValidToolTypes = new List<string> {
-                "ArmorHead", "ArmorBody", "ArmorLegs",
+                "Armor-Head", "Armor-Body", "Armor-Legs",
                 "Shield" };
             Modifiers = new EnchantModifiers()
             { 

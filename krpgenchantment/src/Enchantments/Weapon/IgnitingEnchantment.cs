@@ -19,7 +19,6 @@ namespace KRPGLib.Enchantment
     {
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
-        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -41,7 +40,7 @@ namespace KRPGLib.Enchantment
                 "Wand" };
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 1 }, {"TickDuration", 12500 }, {"TickFrequency", 500 }
+                {"TickMultiplier", 1 }, {"TickDuration", 12500 }
             };
             // Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
         }
@@ -57,23 +56,25 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Igniting enchantment.", enchant.TargetEntity.GetName());
 
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
-
-            int tickMax = (enchant.Power * TickMultiplier) -1;
-            if (eeb.TickRegistry.ContainsKey(Code))
+            if (eeb != null)
             {
-                eeb.TickRegistry[Code].TicksRemaining = tickMax;
-                eeb.TickRegistry[Code].Source = enchant.Clone();
+                int tickMax = (enchant.Power * TickMultiplier) - 1;
+                if (eeb.TickRegistry.ContainsKey(Code))
+                {
+                    eeb.TickRegistry[Code].TicksRemaining = tickMax;
+                    eeb.TickRegistry[Code].Source = enchant.Clone();
+                }
+                else if (tickMax > 1)
+                {
+                    EnchantTick eTick =
+                        new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
+                    //TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
+                    eeb.TickRegistry.Add(enchant.Code, eTick);
+                    enchant.TargetEntity.Ignite();
+                }
+                else
+                    enchant.TargetEntity.Ignite();
             }
-            else if (tickMax > 1)
-            {
-                EnchantTick eTick =
-                    new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
-                //TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
-                eeb.TickRegistry.Add(enchant.Code, eTick);
-                enchant.TargetEntity.Ignite();
-            }
-            else
-                enchant.TargetEntity.Ignite();
         }
         public override void OnTick(float deltaTime, ref EnchantTick eTick)
         {

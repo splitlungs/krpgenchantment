@@ -2,19 +2,13 @@
 using System.Collections.Generic;
 using Vintagestory.GameContent;
 using Vintagestory.API.Server;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using HarmonyLib;
 using System.Reflection;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using System.IO;
-using System.Xml.Linq;
-using Newtonsoft.Json.Linq;
-using SkiaSharp;
-using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
@@ -109,12 +103,16 @@ namespace KRPGLib.Enchantment
         public EnchantmentSource Source;
         public int TicksRemaining;
         public long LastTickTime;
+        public bool Persistent = false;
+        public bool IsHotbar = false;
 
         public void Dispose()
         {
             Source = null;
             TicksRemaining = 0;
             LastTickTime = 0;
+            Persistent = false;
+            IsHotbar = false;
         }
     }
     /// <summary>
@@ -326,14 +324,16 @@ namespace KRPGLib.Enchantment
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
         public virtual void OnTrigger(EnchantmentSource enchant)
         {
             try
             {
                 MethodInfo meth = this.GetType().GetMethod(enchant.Trigger,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-                meth.Invoke(this, new object[1] { enchant });
+                if (enchant != null)
+                    meth?.Invoke(this, new object[1] { enchant });
+                else
+                    Api.Logger.Error("[KRPGEnchantment] EnchantmentSource is corrupt. Failed to Trigger {0}", Code);
             }
             catch (Exception ex)
             {
@@ -364,6 +364,24 @@ namespace KRPGLib.Enchantment
         /// <param name="deltaTime"></param>
         /// <param name="eTick"></param>
         public virtual void OnTick(float deltaTime, ref EnchantTick eTick)
+        {
+
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
+        /// Called by an ItemStack when a toggle is requested.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnToggle(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
 
         }

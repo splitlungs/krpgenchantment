@@ -13,6 +13,8 @@ namespace KRPGLib.Enchantment
         public string Code;
         // The Power or Tier of the Enchantment
         public int Power;
+        // The ItemSlot from which the Enchantment originated
+        public ItemSlot SourceSlot;
         // The ItemStack from which the Enchantment originated
         public ItemStack SourceStack;
         // Entity being affected by the Enchantment

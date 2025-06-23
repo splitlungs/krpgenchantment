@@ -168,38 +168,19 @@ namespace KRPGLib.Enchantment
             }
 
             // Apply Damage
-            if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
 
-                // Disabled because there is something stopping this from happening in rapid succession.
-                // Some kind of timer is locking damage, and must be calculated manually here, instead.
-                hp.OnEntityReceiveDamage(source, ref dmg);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
-            }
-            else if (!sApi.Server.Config.AllowPvP && source.Type == EnumDamageType.Heal)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Trying to heal while PvP is disabled. Dealing damage anyway.");
+            // Disabled because there is something stopping this from happening in rapid succession.
+            // Some kind of timer is locking damage, and must be calculated manually here, instead.
+            // bool didDamage = entity.ReceiveDamage(source, dmg);
+            // if (didDamage != true)
+            //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
 
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
-
-                // Disabled because there is something stopping this from happening in rapid succession.
-                // Some kind of timer is locking damage, and must be calculated manually here, instead.
-                hp.OnEntityReceiveDamage(source, ref dmg);
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
-            }
-            else
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Warning("[KRPGEnchantment] Tried to deal {0} damage to {1}, but it should not receive damage!", dmg, enchant.TargetEntity.GetName());
-            }
+            hp.OnEntityReceiveDamage(source, ref dmg);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+            GenerateParticles(enchant.TargetEntity, source.Type, dmg);
         }
 
     }

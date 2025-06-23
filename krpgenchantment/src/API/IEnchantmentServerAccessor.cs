@@ -36,7 +36,6 @@ namespace KRPGLib.Enchantment.API
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity);
         /// <summary>
@@ -46,7 +45,6 @@ namespace KRPGLib.Enchantment.API
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity);
         /// <summary>

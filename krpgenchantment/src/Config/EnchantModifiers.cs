@@ -29,5 +29,9 @@ namespace KRPGLib.Enchantment
         {
             return this[key].ToString();
         }
+        public bool GetBool(string key)
+        {
+            return this[key].ToString().ToLower().Contains("true");
+        }
     }
 }

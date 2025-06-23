@@ -20,7 +20,6 @@ namespace KRPGLib.Enchantment
     {
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
-        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         float DamageMultiplier { get { return Modifiers.GetFloat("DamageMultiplier"); } }
         public PoisonEnchantment(ICoreAPI api) : base(api)
         {
@@ -43,7 +42,7 @@ namespace KRPGLib.Enchantment
                 "Wand" };
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 6 }, {"TickDuration", 1000 },  {"TickFrequency", 1000 }, {"DamageMultiplier", 0.1}
+                {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}
             };
         }
         public override void Initialize(EnchantmentProperties properties)
@@ -133,23 +132,23 @@ namespace KRPGLib.Enchantment
 
             int tickMax = (enchant.Power * TickMultiplier) -1;
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
-
-            if (eeb.TickRegistry.ContainsKey(Code))
+            if (eeb != null)
             {
-                eeb.TickRegistry[Code].TicksRemaining = tickMax;
-                eeb.TickRegistry[Code].Source = enchant.Clone();
+                if (eeb.TickRegistry.ContainsKey(Code))
+                {
+                    eeb.TickRegistry[Code].TicksRemaining = tickMax;
+                    eeb.TickRegistry[Code].Source = enchant.Clone();
+                }
+                else if (tickMax > 1)
+                {
+                    EnchantTick eTick =
+                        new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
+                    eeb.TickRegistry.Add(Code, eTick);
+                    DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
+                }
+                else
+                    DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
             }
-            else if (tickMax > 1)
-            {
-                EnchantTick eTick = 
-                    new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
-                eeb.TickRegistry.Add(Code, eTick);
-                DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
-            }
-            else
-                DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
-
-            
         }
         public void DealPoison(Entity entity, Entity byEntity, int power)
         {

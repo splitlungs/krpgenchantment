@@ -126,6 +126,8 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-universal.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-weapon.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
+  <None Remove="assets\krpgenchantment\lang\de.json" />
+  <None Remove="assets\krpgenchantment\lang\pl.json" />
   <None Remove="assets\krpgenchantment\lang\uk.json" />
   <None Remove="assets\krpgenchantment\patches\blackguardadditions\blackguardadditions-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\forlornadditions\forlornadditions-behaviors.json" />

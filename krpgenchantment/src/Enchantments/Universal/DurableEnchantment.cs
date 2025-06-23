@@ -31,7 +31,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 1;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
-                "ArmorHead", "ArmorBody", "ArmorLegs",
+                "Armor-Head", "Armor-Body", "Armor-Legs",
                 "Shield",
                 "Chisel", "Cleaver", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
                 "Knife", "Axe",

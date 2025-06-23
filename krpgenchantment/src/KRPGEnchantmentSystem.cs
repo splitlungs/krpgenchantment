@@ -4,18 +4,9 @@ using System.Reflection;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
-using Vintagestory.GameContent;
 using System.Collections.Generic;
-using Vintagestory.API.Common.Entities;
-using Newtonsoft.Json.Linq;
 using Vintagestory.API.Util;
 using Vintagestory.API.Client;
-using System.IO;
-using System.Runtime.CompilerServices;
-using KRPGLib.Enchantment.API;
-using SkiaSharp;
-using System.Net.Http;
-using Vintagestory.API.Datastructures;
 using System.Linq;
 
 namespace KRPGLib.Enchantment
@@ -85,8 +76,11 @@ namespace KRPGLib.Enchantment
             sApi = api;
             EnchantAccessor.sApi = api;
             RegisterCompatibility();
-            // sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
+            sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
+        /// <summary>
+        /// Instantiate compatibility scripts.
+        /// </summary>
         private void RegisterCompatibility()
         {
             if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
@@ -99,6 +93,18 @@ namespace KRPGLib.Enchantment
                 krpgWands = new KRPGWandsSystem();
                 krpgWands.StartServerSide(Api);
             }
+        }
+        /// <summary>
+        /// Event fired when a player joins a server. Registers their Enchantment Entity Behavior listeners.
+        /// </summary>
+        /// <param name="byPlayer"></param>
+        public void RegisterPlayerEEB(IServerPlayer byPlayer)
+        {
+            EnchantmentEntityBehavior eb = byPlayer.Entity.GetBehavior<EnchantmentEntityBehavior>();
+            if (eb != null)
+                eb.RegisterPlayer(byPlayer);
+            else
+                sApi.Logger.Warning("[KRPGEnchantment] No EnchantmentEntityBehavior found on Player {0} during Registration.", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {

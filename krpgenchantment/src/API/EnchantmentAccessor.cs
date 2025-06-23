@@ -9,18 +9,10 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using Vintagestory.API;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
-using HarmonyLib;
 using KRPGLib.Enchantment.API;
-using Newtonsoft.Json;
-using Vintagestory.API.Config;
-using static System.Net.Mime.MediaTypeNames;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Util;
-using CombatOverhaul.Armor;
-using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
@@ -81,7 +73,23 @@ namespace KRPGLib.Enchantment
 
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
                 }
-                enchant.Initialize(props);
+                else
+                {
+                    // Temporary fixer for ValidToolTypes v1.0.1
+                    if (props.ValidToolTypes.Contains("ArmorHead") || props.ValidToolTypes.Contains("ArmorBody") || props.ValidToolTypes.Contains("ArmorLegs"))
+                    {
+                        props.ValidToolTypes.Remove("ArmorHead");
+                        props.ValidToolTypes.Add("Armor-Head");
+                        props.ValidToolTypes.Remove("ArmorBody");
+                        props.ValidToolTypes.Add("Armor-Body");
+                        props.ValidToolTypes.Remove("ArmorLegs");
+                        props.ValidToolTypes.Add("Armor-Legs");
+
+                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    }
+
+                    enchant.Initialize(props);
+                }
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
@@ -166,7 +174,12 @@ namespace KRPGLib.Enchantment
                 if (ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
                 string toolType = GetToolType(inSlot.Itemstack);
-                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
+                bool validTool = false;
+                foreach (string s in ench.ValidToolTypes)
+                {
+                    if (toolType.CaseInsensitiveContains(s)) validTool = true;
+                }
+                if (!validTool) continue;
                 // Write to the List if it passed
                 enchants.Add(pair.Key);
             }
@@ -187,7 +200,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can be Enchanted with {1}.", inStack.GetName(), rStack.GetName());
 
-            // Check against Max Enchantments Config option
+            // 1. Check against Max Enchantments Config option
             int maxEnchants = EnchantingConfigLoader.Config.MaxEnchantsPerItem;
             Dictionary<string, int> enchantments = sApi.EnchantAccessor().GetActiveEnchantments(inStack);
             if (enchantments != null && maxEnchants >= 0 && enchantments.Count >= maxEnchants)
@@ -199,7 +212,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} has {1} enchantments out of {2}.", inStack.GetName(), enchantments?.Count, maxEnchants);
 
-            // Check Reagent Quantity
+            // 2. Check Reagent Quantity
             int rQty = 0;
             foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
             {
@@ -208,22 +221,29 @@ namespace KRPGLib.Enchantment
             }
             if (rQty < 0) return false;
 
-            // Get Reagent Potential
+            // 3. Get Reagent Potential
             int maxPot = GetReagentChargeOrPotential(rStack);
             if (maxPot <= 0) return false;
 
-            // Get Input Type
+            // 4. Get Input Type
             string toolType = GetToolType(inStack);
-            if (toolType == null) return false;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Input type is {0}.", toolType);
-            // Check against Enchantment
+
+            // 5. Check against Enchantment
             IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(enchant);
             if (ench == null || ench?.Enabled != true) return false;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Enchantment {0} is Enabled.", enchant);
-            // Check the item's type vs the Enchantment's type
-            if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) return false;
+
+            // 6. Check the item's type vs the Enchantment's type
+            bool validTool = false;
+            foreach (string s in ench.ValidToolTypes)
+            {
+                if (toolType.CaseInsensitiveContains(s)) validTool = true;
+            }
+            if (!validTool) return false;
+            // if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) return false;
             
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Enchant Check passed.", enchant);
@@ -315,7 +335,6 @@ namespace KRPGLib.Enchantment
             
             // Get Input Type
             var toolType = GetToolType(inSlot.Itemstack);
-            if (toolType == null) return null;
 
             // Setup a new ItemStack
             ItemStack outStack = inSlot.Itemstack.Clone();
@@ -331,7 +350,13 @@ namespace KRPGLib.Enchantment
                 IEnchantment ench = this.GetEnchantment(enchant.Key);
                 if (ench == null || ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
-                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
+                bool validTool = false;
+                foreach (string s in ench.ValidToolTypes)
+                {
+                    if (toolType.CaseInsensitiveContains(s)) validTool = true;
+                }
+                if (!validTool) continue;
+                // if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
                 // Use provided Power or roll with reagent.
                 int power = enchant.Value;
                 if (power <= 0) power = api.World.Rand.Next(1, maxPot + 1);
@@ -363,7 +388,7 @@ namespace KRPGLib.Enchantment
             return rQty;
         }
         /// <summary>
-        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns null if none can be found.
+        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
@@ -379,12 +404,9 @@ namespace KRPGLib.Enchantment
             s = stack.Attributes.GetString("clothescategory");
             if (s != null) return s.ToLower();
             // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
-            s = stack.Collectible?.Code;
-            if (s != null)
-            {
-                if (s.Contains("cleaver")) return "cleaver";
-            }
-            return null;
+            s = stack.Collectible?.Code.ToShortString();
+            Api.Logger.Event("[KRPGEnchantment] {0} has no ToolType. Returning a Code value of {1}.", stack.GetName(), s);
+            return s;
         }
         #endregion
         #region Assessments
@@ -738,6 +760,7 @@ namespace KRPGLib.Enchantment
 
                     EnchantmentSource enchant = new EnchantmentSource()
                     {
+                        SourceSlot = slot,
                         SourceStack = slot.Itemstack,
                         Trigger = trigger,
                         Code = pair.Key,
@@ -826,6 +849,7 @@ namespace KRPGLib.Enchantment
 
                     EnchantmentSource enchant = new EnchantmentSource()
                     {
+                        SourceSlot = slot,
                         SourceStack = slot.Itemstack,
                         Trigger = trigger,
                         Code = pair.Key,
