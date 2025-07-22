@@ -27,13 +27,17 @@ namespace KRPGLib.Enchantment
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            base.AssetsFinalize(api);
+            // base.AssetsFinalize(api);
             
             if (api.Side != EnumAppSide.Server) return;
-
+        
             // Setup ENchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)
             {
+                // Skip blocks and non-equipment
+                // if (obj is Block) continue;
+                if (obj.Code.ToString().Contains("ingot")) continue;
+
                 bool foundRB = false;
                 if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(obj.Code)) foundRB = true;
                 bool foundEB = false;
@@ -41,7 +45,8 @@ namespace KRPGLib.Enchantment
                 {
                     if (behavior.GetType() == (typeof(EnchantmentBehavior)))
                         foundEB = true;
-                    if (foundEB ==true && foundRB == true) ((EnchantmentBehavior)behavior).IsReagent = true;
+                    if (foundEB ==true && foundRB == true) 
+                        ((EnchantmentBehavior)behavior).IsReagent = true;
                 }
                 if (!foundEB)
                 {
@@ -111,7 +116,6 @@ namespace KRPGLib.Enchantment
             base.Start(api);
             Api = api;
             EnchantAccessor.Api = api;
-
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("ChargingBlock", typeof(ChargingBlock));

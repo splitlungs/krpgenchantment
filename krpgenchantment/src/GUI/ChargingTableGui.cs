@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
     public class ChargingTableGui : GuiDialogBlockEntity
     {
         #region Setup
-        public override string ToggleKeyCombinationCode => "assessmenttablegui";
+        public override string ToggleKeyCombinationCode => "chargingtablegui";
 
         // Primary GUI Element Bounds sizing
         int inputWidth = 300;
@@ -78,9 +78,7 @@ namespace KRPGLib.Enchantment
             else
                 hoveredSlot = null;
 
-            // 2. Sanitize data
-
-            // 3. Set bounds
+            // 2. Set bounds
             // Auto-sized dialog at the center of the screen
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
             // Bounds of the main Dialog
@@ -101,12 +99,12 @@ namespace KRPGLib.Enchantment
                 .WithSizing(ElementSizing.FitToChildren)
                 .WithChildren(inputBounds);
 
-            // 5. Create GUI with fixed bounds for each element
+            // 3. Create GUI with fixed bounds for each element
             ClearComposers();
             SingleComposer = capi.Gui.CreateCompo("assessmenttablebe" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(DialogTitle, OnTitleBarCloseClicked)
-                // 5a. Create GUI for Input
+                // 3a. Create GUI for Input
                 .BeginChildElements(inputBounds)
                     .AddDynamicCustomDraw(gearBounds, OnRenderGearGradient, "symbolDrawer")
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 0 }, inputSlotBounds, "inputSlot")
@@ -117,7 +115,7 @@ namespace KRPGLib.Enchantment
                     .AddItemSlotGrid(Inventory, SendInvPacket, 1, new int[] { 5 }, temporalSlot5Bounds, "temporalSlot5")
                 .EndChildElements();
             
-            // 7. Compose
+            // 4. Compose
             SingleComposer.Compose();
 
             if (hoveredSlot != null)

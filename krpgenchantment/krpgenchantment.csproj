@@ -174,7 +174,6 @@
 
 <ItemGroup>
   <Folder Include="src\Enchantments\Accessory\" />
-  <Folder Include="src\Enchantments\Tool\" />
   <Folder Include="src\Enchantments\Ranged\" />
 </ItemGroup>
 

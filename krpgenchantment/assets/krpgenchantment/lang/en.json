@@ -108,6 +108,11 @@
 
   "dsc-cmd-krpg": "Manage all KRPG mods.",
   "dsc-cmd-enchantment": "Manage the KRPG Enchantment mod.",
+  "dsc-cmd-help": "Detailed help for KRPG mods.",
+  "dsc-cmd-player": "Manage the player.",
+  "dsc-cmd-reload": "Reload all KRPG mods.",
+  "dsc-cmd-version": "Check version of all KRPG mods.",
+  "dsc-cmd-enchantments-enchant": "Enchants the held item.",
   "dsc-reload-config": "Reloads the config from file.",
   "cmd-reloadcfg-msg": "Config reloaded. Server restart may be required to see changes.",
   "cmd-reloadcfg-fail": "Config reload failed.",

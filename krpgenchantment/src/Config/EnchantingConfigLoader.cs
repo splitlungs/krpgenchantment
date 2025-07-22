@@ -120,6 +120,13 @@ namespace KRPGLib.Enchantment
 
         public override void StartServerSide(ICoreServerAPI api)
         {
+            // Obsolete
+            // This is now configured in KRPGCommandSystem
+
+            // RegisterCommands(api);
+        }
+        private void RegisterCommands(ICoreServerAPI api)
+        {
             api.ChatCommands.GetOrCreate("krpg")
             .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
             .RequiresPrivilege(Privilege.controlserver)
@@ -135,14 +142,14 @@ namespace KRPGLib.Enchantment
                 {
                     return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
                 }
-
+            
                 return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
             })
             .EndSubCommand()
             .EndSubCommand()
             .Validate();
         }
-        private bool ReloadConfig()
+        public bool ReloadConfig()
         {
             try
             {

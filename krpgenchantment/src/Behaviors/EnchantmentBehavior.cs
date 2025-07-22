@@ -143,57 +143,57 @@ namespace KRPGLib.Enchantment
                 DieInLiquid = true
             };
         }
-        public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
-        {
-            return assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
-        }
-        public override void Initialize(JsonObject properties)
-        {
-            base.Initialize(properties);
-        }
+        // public IEnumerable<Type> FindDerivedTypes(Assembly assembly, Type baseType)
+        // {
+        //     return assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
+        // }
+        // public override void Initialize(JsonObject properties)
+        // {
+        //     base.Initialize(properties);
+        // }
         /// <summary>
         /// Applies default JSON properties to EnchantProps.
         /// </summary>
         /// <param name="properties"></param>
-        public virtual void GetProperties(JsonObject properties)
-        {
-            // EnchantProps.Enchantable = properties["enchantable"].AsBool(false);
-            foreach (var eType in Enum.GetNames<EnumEnchantments>())
-                properties[eType].AsInt(0);
-        }
+        // public virtual void GetProperties(JsonObject properties)
+        // {
+        //     // EnchantProps.Enchantable = properties["enchantable"].AsBool(false);
+        //     foreach (var eType in Enum.GetNames<EnumEnchantments>())
+        //         properties[eType].AsInt(0);
+        // }
         /// <summary>
         /// Save all EnchantProps to ItemStack's Attributes.
         /// </summary>
         /// <param name="itemStack"></param>
-        public void SetAttributesFromProps(ItemStack itemStack)
-        {
-            ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            // tree.SetBool("enchantable", EnchantProps.Enchantable);
-            // foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
-            //     tree.SetInt(keyValuePair.Key, keyValuePair.Value);
-            itemStack.Attributes.MergeTree(tree);
-        }
+        // public void SetAttributesFromProps(ItemStack itemStack)
+        // {
+        //     ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+        //     // tree.SetBool("enchantable", EnchantProps.Enchantable);
+        //     // foreach (KeyValuePair<string, int> keyValuePair in EnchantProps.Enchants)
+        //     //     tree.SetInt(keyValuePair.Key, keyValuePair.Value);
+        //     itemStack.Attributes.MergeTree(tree);
+        // }
         /// <summary>
         /// Gets Enchantment attributes from the ItemStack and writes to Enchant Properties
         /// </summary>
         /// <param name="itemStack"></param>
-        public void GetAttributes(ItemSlot inSlot)
-        {
-            Enchantments = Api.EnchantAccessor().GetActiveEnchantments(inSlot.Itemstack);
-            Enchantable = Api.EnchantAccessor().IsEnchantable(inSlot);
-        }
+        // public void GetAttributes(ItemSlot inSlot)
+        // {
+        //     Enchantments = Api.EnchantAccessor().GetActiveEnchantments(inSlot.Itemstack);
+        //     Enchantable = Api.EnchantAccessor().IsEnchantable(inSlot);
+        // }
         /// <summary>
         /// Sets all Enchantment data to ItemStack's Attributes
         /// </summary>
         /// <param name="itemStack"></param>
-        public void SetAttributes(ItemStack itemStack)
-        {
-            ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            tree.SetBool("enchantable", Enchantable);
-            foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
-                itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
-            itemStack.Attributes.MergeTree(tree);
-        }
+        // public void SetAttributes(ItemStack itemStack)
+        // {
+        //     ITreeAttribute tree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+        //     tree.SetBool("enchantable", Enchantable);
+        //     foreach (KeyValuePair<string, int> keyValuePair in Enchantments)
+        //         itemStack.Attributes.SetInt(keyValuePair.Key, keyValuePair.Value);
+        //     itemStack.Attributes.MergeTree(tree);
+        // }
         
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
