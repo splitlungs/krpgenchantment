@@ -52,9 +52,8 @@ namespace KRPGLib.Enchantment
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
-            // Get Enchantments
+            // Enchantments
             Dictionary<string, int> enchants = world.Api.EnchantAccessor().GetActiveEnchantments(inSlot.Itemstack);
-            // Write Enchantment
             if (enchants != null)
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
@@ -62,12 +61,14 @@ namespace KRPGLib.Enchantment
                     string s = string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>");
                     dsc.AppendLine(s);
                     // dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
-                    // dsc.AppendLine("Test");
+                    dsc.AppendLine(string.Format("<font color=\"{0}\">{1} {2}</font>",
+                        Enum.GetName(typeof(EnchantColors), pair.Value),
+                        Lang.Get("krpgenchantment:enchantment-" + pair.Key),
+                        Lang.Get("krpgenchantment:" + pair.Value)));
                 }
             }
-            // Get Reagent
+            // Reagent Charge
             int p = world.Api.EnchantAccessor().GetReagentCharge(inSlot.Itemstack);
-            // Write Reagents
             if (p != 0)
             {
                string s = string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), p) + "\">" + Lang.Get("krpgenchantment:reagent-charge-prefix") + p.ToString() + "</font>");
