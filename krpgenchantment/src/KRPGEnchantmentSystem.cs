@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Vintagestory.API.Util;
 using Vintagestory.API.Client;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 
 namespace KRPGLib.Enchantment
 {
@@ -27,36 +28,10 @@ namespace KRPGLib.Enchantment
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            // base.AssetsFinalize(api);
+            api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
             
-            if (api.Side != EnumAppSide.Server) return;
-        
-            // Setup ENchantment Behaviors on ALL collectibles
-            foreach (CollectibleObject obj in api.World.Collectibles)
-            {
-                // Skip blocks and non-equipment
-                // if (obj is Block) continue;
-                if (obj.Code.ToString().Contains("ingot")) continue;
-
-                bool foundRB = false;
-                if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(obj.Code)) foundRB = true;
-                bool foundEB = false;
-                foreach (var behavior in obj.CollectibleBehaviors)
-                {
-                    if (behavior.GetType() == (typeof(EnchantmentBehavior)))
-                        foundEB = true;
-                    if (foundEB ==true && foundRB == true) 
-                        ((EnchantmentBehavior)behavior).IsReagent = true;
-                }
-                if (!foundEB)
-                {
-                    EnchantmentBehavior eb = new EnchantmentBehavior(obj);
-                    if (foundRB == true) eb.IsReagent = true;
-                    obj.CollectibleBehaviors = obj.CollectibleBehaviors.Append(eb).ToArray();
-                }
-            }
-            sApi.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
-            Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment behaviors loaded.");
+            // if (api.Side != EnumAppSide.Server) return;
+            RegisterEnchantmentBehaviors(api);
         }
         public override void StartPre(ICoreAPI api)
         {
@@ -82,6 +57,7 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.sApi = api;
             RegisterCompatibility();
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
+            
         }
         /// <summary>
         /// Instantiate compatibility scripts.
@@ -113,7 +89,6 @@ namespace KRPGLib.Enchantment
         }
         public override void Start(ICoreAPI api)
         {
-            base.Start(api);
             Api = api;
             EnchantAccessor.Api = api;
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
@@ -126,6 +101,28 @@ namespace KRPGLib.Enchantment
 
             DoHarmonyPatch(api);
             Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment loaded.");
+        }
+        
+        private void RegisterEnchantmentBehaviors(ICoreAPI api)
+        {
+        
+            // Setup Enchantment Behaviors on ALL collectibles
+            foreach (CollectibleObject obj in api.World.Collectibles)
+            {
+                // We have to skip ingots because it breaks their AlloyFor in the Handbook for some reason.
+                // Likely VS is caching an index at load or something
+                // if (obj.Code.Path.Contains("ingot") || obj.HasBehavior<EnchantmentBehavior>()) continue;
+        
+                EnchantmentBehavior eb = new EnchantmentBehavior(obj);
+                eb.OnLoaded(api);
+                api.Event.EnqueueMainThreadTask(() =>
+                {
+                    obj.CollectibleBehaviors = obj.CollectibleBehaviors.AddToArray(eb);
+                }, "InjectGlobalBehaviors");
+
+            }
+        
+            api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment behaviors loaded.");
         }
         private static void DoHarmonyPatch(ICoreAPI api)
         {

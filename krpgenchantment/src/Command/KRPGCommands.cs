@@ -1,7 +1,57 @@
-﻿namespace KRPGLib 
-{ 
+﻿using System;
+using System.Collections.Generic;
+using Vintagestory.API.Server;
+using Vintagestory.GameContent;
+using KRPGLib.Enchantment.API;
+using Vintagestory.API.Common;
+using Vintagestory.API.Util;
+
+namespace KRPGLib.Enchantment
+{
     public static class KRPGCommands
     {
+        public static bool EnchantsHandler()
+        {
+            return true;
+        }
+        public static bool EnchantsAddHandler(ICoreServerAPI api, TextCommandCallingArgs args)
+        {
+            // Try to Enchant the item
+            ItemSlot activeSlot =  args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+            if (activeSlot?.Empty != true) {
+                string eCode = args.RawArgs[0].ToString().ToLower();
+                int ePower = args.RawArgs[1].ToInt();
+                ItemStack outStack = activeSlot.Itemstack;
+                IEnchantment ench = api.EnchantAccessor().GetEnchantment(eCode);
+                bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, api);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
+                if (didEnchant == true) return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Returns a comma separated list of all of the registered enchantment codes. Returns null if none are found.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <returns></returns>
+        public static string EnchantsListHandler(ICoreServerAPI api)
+        {
+            string eList = null;
+            KRPGEnchantmentSystem sys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
+            foreach (KeyValuePair<string, Enchantment> pair in sys.EnchantAccessor.EnchantmentRegistry)
+            {
+                if (eList != null) eList += ", " + pair.Value.Code;
+                else eList += pair.Value.Code;
+            }
+            return eList;
+        }
+        public static bool EnchantsRemoveHandler(ICoreServerAPI api)
+        {
+            return true;
+        }
+
         public static string helpMessage =
         "------------------ Kronos RPG Help ---------------------" +
         "\nkrpg help : Display help information on a specified command. Default display all commands." +

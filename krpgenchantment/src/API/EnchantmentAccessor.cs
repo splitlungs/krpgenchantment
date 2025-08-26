@@ -298,19 +298,21 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public int GetReagentCharge(ItemStack reagent)
         {
-            int maxPot = 0;
-            ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
-            int rPot = tree.GetInt("charge");
-            if (rPot == 0)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
-                return 0;
-            }
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
+            ITreeAttribute tree = reagent.Attributes.GetTreeAttribute("enchantments");
+            if (tree == null) return 0;
 
-            return maxPot;
+            int rPot = tree.GetInt("charge", 0);
+            // Pulling logs because they got too heavy when calculating against all items
+            // if (rPot == 0)
+            // {
+            //     // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     //     Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
+            //     return 0;
+            // }
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
+
+            return rPot;
         }
         /// <summary>
         /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
@@ -558,11 +560,12 @@ namespace KRPGLib.Enchantment
             if (enchantable == true)
                 return true;
 
-            EnchantmentBehavior eb = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
-            if (eb != null)
-                enchantable = eb.Enchantable;
-            if (enchantable != true)
-                return false;
+            // Obsolete - Removing the EB
+            // EnchantmentBehavior eb = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
+            // if (eb != null)
+            //     enchantable = eb.Enchantable;
+            // if (enchantable != true)
+            //     return false;
 
             return true;
 
