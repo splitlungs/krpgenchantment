@@ -58,13 +58,15 @@ namespace KRPGLib.Enchantment
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
                 {
-                    string s = string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>");
-                    dsc.AppendLine(s);
+                    // string s = string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>");
+                    // dsc.AppendLine(s);
                     // dsc.AppendLine(string.Format("<font color=\"" + Enum.GetName(typeof(EnchantColors), pair.Value) + "\">" + Lang.Get("krpgenchantment:enchantment-" + pair.Key) + " " + Lang.Get("krpgenchantment:" + pair.Value) + "</font>"));
+                    
+                    // THE RIGHT WAY
                     dsc.AppendLine(string.Format("<font color=\"{0}\">{1} {2}</font>",
-                        Enum.GetName(typeof(EnchantColors), pair.Value),
-                        Lang.Get("krpgenchantment:enchantment-" + pair.Key),
-                        Lang.Get("krpgenchantment:" + pair.Value)));
+                    Enum.GetName(typeof(EnchantColors), pair.Value),
+                    Lang.Get("krpgenchantment:enchantment-" + pair.Key),
+                    Lang.Get("krpgenchantment:" + pair.Value)));
                 }
             }
             // Reagent Charge

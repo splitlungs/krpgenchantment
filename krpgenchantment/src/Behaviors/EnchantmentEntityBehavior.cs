@@ -169,13 +169,13 @@ namespace KRPGLib.Enchantment
         {
             if (Api.Side != EnumAppSide.Server || TickRegistry?.Count <= 0) return;
 
-            if (!player.InventoryManager.ActiveHotbarSlot.Empty) 
-            {
-                if (Api.EnchantAccessor().GetActiveEnchantments(player.InventoryManager.ActiveHotbarSlot.Itemstack) != null)
-                {
-
-                }
-            }
+            // if (!player.InventoryManager.ActiveHotbarSlot.Empty) 
+            // {
+            //     if (Api.EnchantAccessor().GetActiveEnchantments(player.InventoryManager.ActiveHotbarSlot.Itemstack) != null)
+            //     {
+            // 
+            //     }
+            // }
 
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {

@@ -4,7 +4,7 @@
   "height": 3,
   "ingredients": {
     "W": {
-      "type": "block",
+      "type": "item",
       "code": "game:plank-*",
       "quanityt": 1
     },
