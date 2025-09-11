@@ -112,14 +112,16 @@ namespace KRPGLib.Enchantment
                 // We have to skip ingots because it breaks their AlloyFor in the Handbook for some reason.
                 // Likely VS is caching an index at load or something
                 // if (obj.Code.Path.Contains("ingot") || obj.HasBehavior<EnchantmentBehavior>()) continue;
-        
-                EnchantmentBehavior eb = new EnchantmentBehavior(obj);
-                eb.OnLoaded(api);
-                api.Event.EnqueueMainThreadTask(() =>
-                {
-                    obj.CollectibleBehaviors = obj.CollectibleBehaviors.AddToArray(eb);
-                }, "InjectGlobalBehaviors");
 
+                if (obj.HasBehavior<EnchantmentBehavior>() != true)
+                {
+                    EnchantmentBehavior eb = new EnchantmentBehavior(obj);
+                    eb.OnLoaded(api);
+                    api.Event.EnqueueMainThreadTask(() =>
+                    {
+                        obj.CollectibleBehaviors = obj.CollectibleBehaviors.AddToArray(eb);
+                    }, "InjectGlobalBehaviors");
+                }
             }
         
             api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment behaviors loaded.");

@@ -21,10 +21,8 @@ using System.Reflection.Metadata;
 
 namespace KRPGLib.Enchantment
 {
-    // [Obsolete]
     public class EnchantmentBehavior : CollectibleBehavior
     {
-
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         /// <summary>

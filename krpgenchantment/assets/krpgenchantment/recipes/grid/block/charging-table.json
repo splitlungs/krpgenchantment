@@ -6,12 +6,12 @@
     "W": {
       "type": "item",
       "code": "game:plank-*",
-      "quanityt": 1
+      "quantity": 1
     },
     "T": {
       "type": "item",
       "code": "game:gear-temporal",
-      "quanityt": 1
+      "quantity": 1
     },
     "B": {
       "type": "block",
