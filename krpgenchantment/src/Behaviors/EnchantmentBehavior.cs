@@ -77,6 +77,13 @@ namespace KRPGLib.Enchantment
         }
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
+            // Defensive null checks
+            if (slot == null || slot.Itemstack == null || slot.Itemstack.Collectible == null)
+            {
+                base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+                return;
+            }
+
             // Specific use on self for KRPG Wands
             if (secondsUsed < 1 || slot.Itemstack.Collectible.Class != "WandItem") return;
 
