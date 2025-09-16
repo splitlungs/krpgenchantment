@@ -18,7 +18,7 @@ namespace KRPGLib.Enchantment
     {
         double PowerMultiplier { get { return Modifiers.GetDouble("PowerMultiplier"); } }
         /// <summary>
-        /// Rolls a % chance to negate item damage.
+        /// 
         /// </summary>
         /// <param name="api"></param>
         public EfficientEnchantment(ICoreAPI api) : base(api)

@@ -59,7 +59,8 @@ namespace KRPGLib.Enchantment
             int stackID = enchant.SourceStack.Id;
             int slotID = enchant.SourceSlot.Inventory.GetSlotId(enchant.SourceSlot);
             string codeID = Code + ":" + slotID + ":" + stackID;
-            Api.Logger.Event("[KRPGEnchantment] CodeID for Reversion Tick is {0}.", codeID);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] CodeID for Reversion Tick is {0}.", codeID);
             if (!enchant.SourceSlot.Empty)
             {
                 // Toggle On
