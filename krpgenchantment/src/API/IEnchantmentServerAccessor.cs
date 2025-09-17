@@ -28,6 +28,25 @@ namespace KRPGLib.Enchantment.API
         /// <param name="t"></param>
         bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
         #endregion
+        #region Enchanting
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="eName"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool RemoveEnchantFromItem(ICoreServerAPI api, string eName, ItemSlot inSlot, Entity entity);
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool RemoveAllEnchantsFromItem(ICoreServerAPI api, ItemSlot inSlot, Entity entity);
+        #endregion
         #region Actions
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.

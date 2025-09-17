@@ -32,7 +32,7 @@ namespace KRPGLib.Enchantment
             int count = 0;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("chilling", "Weapon/chilling.json", typeof(ChillingEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("durable", "Universal/durable.json", typeof(EfficientEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("efficient", "Tool/efficient.json", typeof(EfficientEnchantment)) == true) count++;
+            // if (sapi.EnchantAccessor().RegisterEnchantmentClass("efficient", "Tool/efficient.json", typeof(EfficientEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("flaming", "Weapon/flaming.json", typeof(FlamingEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("frost", "Weapon/frost.json", typeof(FrostEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("harming", "Weapon/harming.json", typeof(HarmingEnchantment)) == true) count++;

@@ -118,53 +118,43 @@ namespace KRPGLib.Enchantment
         }
 
 
-        public override void StartServerSide(ICoreServerAPI api)
-        {
-            // Obsolete
-            // This is now configured in KRPGCommandSystem
+        // public override void StartServerSide(ICoreServerAPI api)
+        // {
+        //     // Obsolete
+        //     // This is now configured in KRPGCommandSystem
+        // 
+        //     // RegisterCommands(api);
+        // }
+        // [Obsolete]
+        // private void RegisterCommands(ICoreServerAPI api)
+        // {
+        //     api.ChatCommands.GetOrCreate("krpg")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .BeginSubCommand("enchantment")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .BeginSubCommand("reload")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .HandleWith(_ =>
+        //     {
+        //         if (ReloadConfig())
+        //         {
+        //             return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
+        //         }
+        //     
+        //         return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
+        //     })
+        //     .EndSubCommand()
+        //     .EndSubCommand()
+        //     .Validate();
+        // }
 
-            // RegisterCommands(api);
-        }
-        private void RegisterCommands(ICoreServerAPI api)
-        {
-            api.ChatCommands.GetOrCreate("krpg")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .BeginSubCommand("enchantment")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .BeginSubCommand("reload")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .HandleWith(_ =>
-            {
-                if (ReloadConfig())
-                {
-                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
-                }
-            
-                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
-            })
-            .EndSubCommand()
-            .EndSubCommand()
-            .Validate();
-        }
         public bool ReloadConfig()
         {
-            try
-            {
-                var configTemp = sApi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
-                Config.Reload(configTemp);
-
-                Config.Version = ConfigVersion;
-                sApi.StoreModConfig(Config, ConfigFile);
-                sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
-            }
-            catch (Exception e)
-            {
-                sApi.Logger.Error("[KRPGEnchantment] Error reloading KRPGEnchantment Recipe Config: ", e.ToString());
-                return false;
-            }
+            sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is being reloaded from JSON.");
+            LoadEnchantingConfig();
 
             return true;
         }

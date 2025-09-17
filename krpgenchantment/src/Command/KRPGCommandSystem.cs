@@ -25,7 +25,9 @@ namespace KRPGLib.Enchantment
     /// </summary>
     public class KRPGCommandSystem : ModSystem
     {
+        public ICoreAPI Api { get; private set; }
         public ICoreServerAPI sApi { get; private set; }
+        public ICoreClientAPI cApi { get; private set; }
         public override double ExecuteOrder()
         {
             return 1;
@@ -34,32 +36,35 @@ namespace KRPGLib.Enchantment
         {
             return side == EnumAppSide.Server;
         }
-        public override void StartServerSide(ICoreServerAPI api)
+        public override void Start(ICoreAPI api)
         {
-            sApi = api;
+            Api = api;
+            cApi = api as ICoreClientAPI;
+            sApi = api as ICoreServerAPI;
 
-            // // Register the main KRPG command
-            // sApi.ChatCommands.GetOrCreate("krpg")
-            // .WithDescription(Lang.Get("krpgenchantment:cmd-krpg-help"))
-            // .RequiresPrivilege(Privilege.controlserver)
-            // // .HandleWith((args) =>
-            // // {
-            // //     return TextCommandResult.Success(KRPGCommands.helpMessage);
-            // // })
-            // // .Validate()
-            // ;
-            // 
-            // RegisterEnchantmentCommands();
-            // RegisterPlayerCommands();
-            // RegisterReloadCommands();
-            // RegisterVersionCommands();
+            // Register the main KRPG command
+            Api.ChatCommands.GetOrCreate("krpg")
+            .WithDescription(Lang.Get("krpgenchantment:cmd-krpg-help"))
+            .RequiresPrivilege(Privilege.controlserver)
+            // .HandleWith((args) =>
+            // {
+            //     return TextCommandResult.Success(KRPGCommands.helpMessage);
+            // })
+            // .Validate()
+            ;
+            
+            RegisterEnchantmentCommands();
+            RegisterPlayerCommands();
+            RegisterReloadCommands();
+            RegisterVersionCommands();
         }
         private void RegisterEnchantmentCommands()
         {
             EnchantingConfigLoader configLoader = sApi.ModLoader.GetModSystem<EnchantingConfigLoader>();
             KRPGEnchantmentSystem eSystem = sApi.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
+            CommandArgumentParsers parsers = sApi.ChatCommands.Parsers;
 
-            sApi.ChatCommands.GetOrCreate("krpg")
+            Api.ChatCommands.GetOrCreate("krpg")
             .BeginSubCommand("enchantment")
             .WithAlias("e")
             .WithDescription(Lang.Get("krpgenchantment:cmd-enchantment-help"))
@@ -76,9 +81,11 @@ namespace KRPGLib.Enchantment
             .BeginSubCommand("add")
             .WithDescription(Lang.Get("krpgenchantment:cmd-e-add-help"))
             .RequiresPrivilege(Privilege.give)
-            .HandleWith(_ =>
+            .WithArgs(parsers.OptionalWord("name"), parsers.OptionalInt("power"))
+            .HandleWith(args =>
             {
-                if (KRPGCommands.EnchantsAddHandler(sApi, _))
+                // sApi.Logger.Event("Arg0 is {0} and Arg1 is {1}", args[0].ToString().ToLower(), args[1]);
+                if (KRPGCommands.EnchantsAddHandler(sApi, args))
                 {
                     return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-add-success"));
                 }
@@ -103,15 +110,29 @@ namespace KRPGLib.Enchantment
             .EndSubCommand()
             .BeginSubCommand("remove")
             .WithDescription(Lang.Get("krpgenchantment:cmd-e-remove-help"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .HandleWith(_ =>
+            .RequiresPrivilege(Privilege.give)
+            .WithArgs(parsers.OptionalWord("name"))
+            .HandleWith(args =>
             {
-                if (KRPGCommands.EnchantsRemoveHandler(sApi))
+                if (KRPGCommands.EnchantsRemoveHandler(sApi, args))
                 {
                     return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-remove-success"));
                 }
 
-                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-remove-fail"));
+            })
+            .EndSubCommand()
+            .BeginSubCommand("removeall")
+            .WithDescription(Lang.Get("krpgenchantment:cmd-e-removeall-help"))
+            .RequiresPrivilege(Privilege.give)
+            .HandleWith(args =>
+            {
+                if (KRPGCommands.EnchantsRemoveAllHandler(sApi, args))
+                {
+                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-removeall-success"));
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-removeall-fail"));
             })
             .EndSubCommand()
             .BeginSubCommand("reload")
@@ -135,7 +156,7 @@ namespace KRPGLib.Enchantment
         {
             EnchantingConfigLoader configLoader = sApi.ModLoader.GetModSystem<EnchantingConfigLoader>();
 
-            sApi.ChatCommands.GetOrCreate("krpg")
+            Api.ChatCommands.GetOrCreate("krpg")
             .BeginSubCommand("player")
             .WithDescription(Lang.Get("krpgenchantment:cmd-player-help"))
             .HandleWith((args) => { return TextCommandResult.Success(KRPGCommands.helpPlayerMessage); })
@@ -146,10 +167,18 @@ namespace KRPGLib.Enchantment
         {
             EnchantingConfigLoader configLoader = sApi.ModLoader.GetModSystem<EnchantingConfigLoader>();
 
-            sApi.ChatCommands.GetOrCreate("krpg")
+            Api.ChatCommands.GetOrCreate("krpg")
             .BeginSubCommand("reload")
             .WithDescription(Lang.Get("krpgenchantment:cmd-reload-help"))
-            .HandleWith((args) => { return TextCommandResult.Success("All KRPG configs reloaded."); })
+            .HandleWith((args) => 
+            {
+                if (configLoader.ReloadConfig())
+                {
+                    return TextCommandResult.Success("All KRPG configs reloaded.");
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
+            })
             .EndSubCommand()
             .Validate();
         }
@@ -157,7 +186,7 @@ namespace KRPGLib.Enchantment
         {
             EnchantingConfigLoader configLoader = sApi.ModLoader.GetModSystem<EnchantingConfigLoader>();
 
-            sApi.ChatCommands.GetOrCreate("krpg")
+            Api.ChatCommands.GetOrCreate("krpg")
             .BeginSubCommand("version")
             .WithDescription(Lang.Get("krpgenchantment:cmd-version-help"))
             .HandleWith((args) =>

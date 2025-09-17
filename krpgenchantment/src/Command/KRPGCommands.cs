@@ -14,18 +14,30 @@ namespace KRPGLib.Enchantment
         {
             return true;
         }
+        /// <summary>
+        /// Adds a given enchantment to the currently held item. Returns false if it fails to add the enchantment in any way.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static bool EnchantsAddHandler(ICoreServerAPI api, TextCommandCallingArgs args)
         {
             // Try to Enchant the item
             ItemSlot activeSlot =  args.Caller.Player.InventoryManager.ActiveHotbarSlot;
-            if (activeSlot?.Empty != true) {
-                string eCode = args.RawArgs[0].ToString().ToLower();
-                int ePower = args.RawArgs[1].ToInt();
+            if (activeSlot?.Empty != true) 
+            {
+                string eCode = args[0].ToString().ToLower();
+                int ePower = args[1].ToString().ToInt();
+
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] {0} is attempting to add {1} {2} to {3} through commands.", args.Caller.GetName(), eCode, ePower, activeSlot?.Itemstack?.GetName());
+                
                 ItemStack outStack = activeSlot.Itemstack;
                 IEnchantment ench = api.EnchantAccessor().GetEnchantment(eCode);
                 bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, api);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
+                activeSlot.MarkDirty();
                 if (didEnchant == true) return true;
             }
 
@@ -47,9 +59,49 @@ namespace KRPGLib.Enchantment
             }
             return eList;
         }
-        public static bool EnchantsRemoveHandler(ICoreServerAPI api)
+        /// <summary>
+        /// Removes the given enchantment from the currently held item. Returns false if it fails to remove an enchantment in any way.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool EnchantsRemoveHandler(ICoreServerAPI api, TextCommandCallingArgs args)
         {
-            return true;
+            ItemSlot activeSlot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+            if (activeSlot?.Empty != true)
+            {
+                string eCode = args[0].ToString().ToLower();
+
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] {0} is attempting to remove {1} from {2} through commands.", args.Caller.GetName(), eCode, activeSlot?.Itemstack?.GetName());
+                bool didEnchant = api.EnchantAccessor().RemoveEnchantFromItem(api, eCode, activeSlot, args.Caller.Entity);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
+                if (didEnchant == true) return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Removes all enchantments on the currently held item. Returns false if it fails to remove an enchantment in any way.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool EnchantsRemoveAllHandler(ICoreServerAPI api, TextCommandCallingArgs args)
+        {
+            ItemSlot activeSlot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+            if (activeSlot?.Empty != true)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] {0} is attempting to remove all enchantments from {1} through commands.", args.Caller.GetName(), activeSlot?.Itemstack?.GetName());
+                bool didEnchant = api.EnchantAccessor().RemoveAllEnchantsFromItem(api, activeSlot, args.Caller.Entity);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
+                if (didEnchant == true) return true;
+            }
+
+            return false;
         }
 
         public static string helpMessage =

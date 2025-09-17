@@ -13,6 +13,8 @@ using System.Runtime.CompilerServices;
 using KRPGLib.Enchantment.API;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Util;
+using HarmonyLib;
+using System.Xml.Linq;
 
 namespace KRPGLib.Enchantment
 {
@@ -177,7 +179,7 @@ namespace KRPGLib.Enchantment
                 bool validTool = false;
                 foreach (string s in ench.ValidToolTypes)
                 {
-                    if (toolType.CaseInsensitiveContains(s)) validTool = true;
+                    if (toolType.EqualsFastIgnoreCase(s) != false) validTool = true;
                 }
                 if (!validTool) continue;
                 // Write to the List if it passed
@@ -371,6 +373,73 @@ namespace KRPGLib.Enchantment
             }
 
             return outStack;
+        }
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="eName"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool RemoveEnchantFromItem(ICoreServerAPI api, string eName, ItemSlot inSlot, Entity entity)
+        {
+            if (inSlot?.Empty != false || entity == null) return false;
+            // Stop any active EnchantTicks
+            int stackID = inSlot.Itemstack.Id;
+            int slotID = inSlot.Inventory.GetSlotId(inSlot);
+            string codeID = eName + ":" + slotID + ":" + stackID;
+            entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            string a = tree.GetString("active", null);
+            if (a == null) return false;
+            string[] aStrings = a.Split(';');
+            string aa = null;
+            foreach (string s in aStrings)
+            {
+                string[] eStrings = s.Split(':');
+                if (!eStrings[0].EqualsFastIgnoreCase(eName))
+                    aa += s + ';';
+            }
+            // Fail if nothing was removed.
+            if (aa == null || aa.Equals(a)) return false;
+            tree.SetString("active", aa);
+            inSlot?.Itemstack?.Attributes?.MergeTree(tree);
+            inSlot?.MarkDirty();
+            return true;
+        }
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool RemoveAllEnchantsFromItem(ICoreServerAPI api, ItemSlot inSlot, Entity entity)
+        {
+            if (inSlot?.Empty != false || entity == null) return false;
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            string active = tree.GetString("active", null);
+            if (active == null) return false;
+            // Stop any active EnchantTicks
+            int stackID = inSlot.Itemstack.Id;
+            int slotID = inSlot.Inventory.GetSlotId(inSlot);
+            string[] aStrings = active.Split(';');
+            foreach (string s in aStrings)
+            {
+                string[] eStrings = s.Split(':');
+                string codeID = eStrings[0] + ":" + slotID + ":" + stackID;
+                entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
+            }
+            // Delete the Active string
+            tree.SetString("active", null);
+            inSlot?.Itemstack?.Attributes?.MergeTree(tree);
+            inSlot?.MarkDirty();
+            return true;
         }
         /// <summary>
         /// Returns the quantity of a provided Reagent, as set in the Config under ValidReagents. Set to 0 to disable Reagent consumption. Returns -1 if nothing is found.

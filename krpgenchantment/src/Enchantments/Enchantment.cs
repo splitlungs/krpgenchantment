@@ -140,6 +140,9 @@ namespace KRPGLib.Enchantment
         public List<string> ValidToolTypes { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
+        
+        // Properties moved to Modifiers and EnchantTick Registry moved to EnchantmentEntityBehavior
+        //
         // Used to manage generic ticks. You still have to register your tick method with the API.
         // public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
