@@ -69,7 +69,15 @@ namespace KRPGLib.Enchantment
     {
         ChargingBE bEntity;
         int stackNum;
-
+        string inputCode() 
+        {
+            if (!Empty) return this.itemstack?.Collectible.Code;
+            else return null;
+        }
+        int? maxSlotStackSize()
+        {
+            return EnchantingConfigLoader.Config?.ValidReagents?.GetValueOrDefault("", 1);
+        }
         public ItemSlotAssessmentInput(InventoryBase inventory, ChargingBE assessmentTable, int itemNumber) : base(inventory)
         {
             MaxSlotStackSize = 1;

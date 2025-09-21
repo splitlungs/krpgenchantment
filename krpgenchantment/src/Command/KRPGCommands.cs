@@ -34,6 +34,7 @@ namespace KRPGLib.Enchantment
                 
                 ItemStack outStack = activeSlot.Itemstack;
                 IEnchantment ench = api.EnchantAccessor().GetEnchantment(eCode);
+                if (ench == null) return false;
                 bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, api);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);

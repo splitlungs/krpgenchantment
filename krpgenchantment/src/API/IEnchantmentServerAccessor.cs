@@ -96,7 +96,7 @@ namespace KRPGLib.Enchantment.API
         #endregion
         #region Getters
         /// <summary>
-        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// Returns the Enchantment Interface from the EnchantmentRegistry. Returns null if not found.
         /// </summary>
         /// <param name="enchantCode"></param>
         /// <returns></returns>
@@ -188,8 +188,9 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="player"></param>
         /// <param name="enchantName"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
-        bool CanReadEnchant(string player, string enchantName);
+        bool CanReadEnchant(string player, string enchantName, ICoreServerAPI api);
         #endregion
     }
 }

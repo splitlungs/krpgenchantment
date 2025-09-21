@@ -83,7 +83,7 @@ namespace KRPGLib.Enchantment
         public void OnGearModified(int slotId)
         {
             // Sanity Check
-            if (Api.Side != EnumAppSide.Server || gearInventory == null) return;
+            if (Api?.Side != EnumAppSide.Server || gearInventory == null) return;
             // Cleanup empty slots
             if (gearInventory[slotId].Empty)
             {
@@ -112,7 +112,7 @@ namespace KRPGLib.Enchantment
         public void OnHotbarModified(int slotId)
         {
             // Sanity Check
-            if (Api.Side != EnumAppSide.Server || hotbarInventory == null) return;
+            if (Api?.Side != EnumAppSide.Server || hotbarInventory == null) return;
             // Cleanup empty slots
             if (hotbarInventory[slotId].Empty)
             {

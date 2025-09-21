@@ -44,6 +44,7 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
         bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api);
         #nullable enable

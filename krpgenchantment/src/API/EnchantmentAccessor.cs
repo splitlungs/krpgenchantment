@@ -482,7 +482,7 @@ namespace KRPGLib.Enchantment
         #endregion
         #region Assessments
         /// <summary>
-        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// Returns the Enchantment Interface from the EnchantmentRegistry. Returns null if not found.
         /// </summary>
         /// <param name="enchantCode"></param>
         /// <returns></returns>
@@ -771,13 +771,15 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="player"></param>
         /// <param name="enchantName"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
-        public bool CanReadEnchant(string player, string enchantName)
+        public bool CanReadEnchant(string player, string enchantName, ICoreServerAPI api)
         {
-            if (player != null && enchantName != null)
+            if (player != null && enchantName != null && api != null)
             {
+                string playerName = api.World?.PlayerByUid(player)?.PlayerName;
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchantName);
+                    api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", playerName, enchantName);
 
                 // string[] text = enchantName.Split(":");
                 // string enchantCode = text[1].Replace("enchantment-", "");
@@ -787,19 +789,19 @@ namespace KRPGLib.Enchantment
                 if (enchantment.Enabled != true)
                     return false;
                 int id = enchantment.LoreChapterID;
-                ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
+                ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
-                    Api.Logger.Warning("[KRPGEnchantment] Could not find ModJournal!");
+                    api.Logger.Warning("[KRPGEnchantment] Could not find ModJournal!");
                     return false;
                 }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, enchantName, canRead);
+                    api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", playerName, enchantName, canRead);
                 return canRead;
             }
-
-            Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
             return false;
         }
         #endregion
