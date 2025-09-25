@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
@@ -155,9 +156,14 @@ namespace KRPGLib.Enchantment
         {
             sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is being reloaded from JSON.");
             LoadEnchantingConfig();
+            // Notify the masses
+            ConfigReloaded.Invoke();
 
             return true;
         }
 
+        public delegate void ConfigReloadDelegate();
+
+        public event ConfigReloadDelegate? ConfigReloaded;
     }
 }

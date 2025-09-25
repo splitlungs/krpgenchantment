@@ -309,26 +309,6 @@ namespace KRPGLib.Enchantment
                     enchants.Remove(pair1.Key);
                 }
             }
-
-            // BROKEN
-            // foreach (KeyValuePair<string, int> pair1 in maxEnchantsByCategory)
-            // {
-            //     List<string> categoryEnchants = api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
-            //     if (categoryEnchants != null && pair1.Value >= 0)
-            //     {
-            //         List<string> activeEnchants = new List<string>();
-            //         foreach (KeyValuePair<string, int> pair2 in enchants)
-            //         {
-            //             if (categoryEnchants.Contains(pair2.Key))
-            //                 activeEnchants.Add(pair2.Key);
-            //         }
-            //         while (activeEnchants.Count >= pair1.Value)
-            //         {
-            //             int roll = api.World.Rand.Next(0, activeEnchants.Count);
-            //             enchants.Remove(activeEnchants[roll]);
-            //         }
-            //     }
-            // }
             return enchants;
         }
         /// <summary>

@@ -77,15 +77,13 @@ namespace KRPGLib.Enchantment
                 }
                 else
                 {
-                    // Temporary fixer for ValidToolTypes v1.0.1
-                    if (props.ValidToolTypes.Contains("ArmorHead") || props.ValidToolTypes.Contains("ArmorBody") || props.ValidToolTypes.Contains("ArmorLegs"))
+                    // Temporary fixer for ValidToolTypes 1.2.2
+                    // Have to reverse this because Combat Overhaul Armory uses it
+                    if (!props.ValidToolTypes.Contains("ArmorHead") || !props.ValidToolTypes.Contains("ArmorBody") || !props.ValidToolTypes.Contains("ArmorLegs"))
                     {
-                        props.ValidToolTypes.Remove("ArmorHead");
-                        props.ValidToolTypes.Add("Armor-Head");
-                        props.ValidToolTypes.Remove("ArmorBody");
-                        props.ValidToolTypes.Add("Armor-Body");
-                        props.ValidToolTypes.Remove("ArmorLegs");
-                        props.ValidToolTypes.Add("Armor-Legs");
+                        props.ValidToolTypes.Add("ArmorHead");
+                        props.ValidToolTypes.Add("ArmorBody");
+                        props.ValidToolTypes.Add("ArmorLegs");
 
                         Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
                     }
@@ -106,6 +104,7 @@ namespace KRPGLib.Enchantment
                 return false;
             }
         }
+        [Obsolete]
         private Type GetEnchantmentClass(string enchantClass)
         {
             Type val = null;
@@ -162,7 +161,7 @@ namespace KRPGLib.Enchantment
         }
         */
         /// <summary>
-        /// Returns a List of Enchantments that can be written to the ItemStack, or null if something went wrong.
+        /// Returns a List of Enchantment codes that can be written to the ItemStack or null if something went wrong.
         /// </summary>
         /// <param name="inSlot"></param>
         /// <returns></returns>
@@ -506,6 +505,19 @@ namespace KRPGLib.Enchantment
             return count;
         }
         /// <summary>
+        /// Returns a list of all Enchantment Categories among all registered Enchantments.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetEnchantmentCategories()
+        {
+            List<string> categories = new List<string>();
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                if (pair.Value?.Category != null) categories.Add(pair.Value.Category);
+            }
+            return categories;
+        }
+        /// <summary>
         /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found or if run from client.
         /// </summary>
         /// <param name="category"></param>
@@ -540,19 +552,6 @@ namespace KRPGLib.Enchantment
             ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null)
                 return null;
-            // Convert 0.6.x enchantments to 0.7.x "active" string. This will be removed in a later release.
-            string oldActive = null;
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int power = tree.GetInt(val.ToString());
-                if (power > 0)
-                {
-                    oldActive += val.ToString() + ":" + power + ";";
-                    tree.SetInt(val.ToString(), 0);
-                }
-            }
-            if (oldActive != null) tree.SetString("active", oldActive);
-            // Get Active Enchantments string
             string active = tree.GetString("active", null);
             if (active == null) return null;
             // Convert Active Enchantments string to Dictionary

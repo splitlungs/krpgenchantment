@@ -74,10 +74,7 @@ namespace KRPGLib.Enchantment
             if (!Empty) return this.itemstack?.Collectible.Code;
             else return null;
         }
-        int? maxSlotStackSize()
-        {
-            return EnchantingConfigLoader.Config?.ValidReagents?.GetValueOrDefault("", 1);
-        }
+        private Dictionary<string, int> validReagents = new Dictionary<string, int>();
         public ItemSlotAssessmentInput(InventoryBase inventory, ChargingBE assessmentTable, int itemNumber) : base(inventory)
         {
             MaxSlotStackSize = 1;
@@ -89,14 +86,23 @@ namespace KRPGLib.Enchantment
             bEntity = assessmentTable;
             stackNum = num;
         }
+        public override int GetRemainingSlotSpace(ItemStack forItemstack)
+        {
+            return Math.Max(0, MaxSlotStackSize - StackSize);
+        }
         public override bool CanHold(ItemSlot sourceSlot)
         {
             // if (bEntity.invLocked) return false;
             if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
-            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            // Limit according to code and qty in configs
+            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config?.ValidReagents)
             {
-                if (sourceSlot.Itemstack.Collectible.Code == pair.Key) return true;
+                if (sourceSlot.Itemstack.Collectible.Code == pair.Key)
+                {
+                    MaxSlotStackSize = pair.Value;
+                    return true;
+                }
             }
 
             return false;
@@ -109,7 +115,6 @@ namespace KRPGLib.Enchantment
         {
             return base.CanTakeFrom(sourceSlot, priority);
         }
-
         public override void OnItemSlotModified(ItemStack stack)
         {
             base.OnItemSlotModified(stack);

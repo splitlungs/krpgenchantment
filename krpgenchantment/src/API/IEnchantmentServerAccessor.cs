@@ -174,6 +174,11 @@ namespace KRPGLib.Enchantment.API
         /// <param name="category"></param>
         /// <returns></returns>
         List<string> GetEnchantmentsInCategory(string category);
+        /// <summary>
+        /// Returns a list of all Enchantment Categories among all registered Enchantments.
+        /// </summary>
+        /// <returns></returns>
+        List<string> GetEnchantmentCategories();
         #endregion
         #region Lore
         /// <summary>

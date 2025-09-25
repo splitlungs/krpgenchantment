@@ -24,7 +24,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Overhaullib">
-      <HintPath>..\..\..\Examples\overhaullib_1.8.0\Overhaullib.dll</HintPath>
+      <HintPath>..\..\..\Examples\overhaullib_1.10.0\Overhaullib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="protobuf-net">

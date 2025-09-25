@@ -83,6 +83,7 @@ namespace KRPGLib.Enchantment
         public void OnGearModified(int slotId)
         {
             // Sanity Check
+            if (!entity.Alive) return;
             if (Api?.Side != EnumAppSide.Server || gearInventory == null) return;
             // Cleanup empty slots
             if (gearInventory[slotId].Empty)
@@ -112,6 +113,7 @@ namespace KRPGLib.Enchantment
         public void OnHotbarModified(int slotId)
         {
             // Sanity Check
+            if (!entity.Alive) return;
             if (Api?.Side != EnumAppSide.Server || hotbarInventory == null) return;
             // Cleanup empty slots
             if (hotbarInventory[slotId].Empty)
@@ -148,13 +150,21 @@ namespace KRPGLib.Enchantment
                 Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
                 if (enchants != null)
                 {
+                    ICoreServerAPI sapi = Api as ICoreServerAPI;
+
                     // Should avoid default during healing
-                    if (enchants.ContainsKey(EnumEnchantments.healing.ToString()))
+                    List<string> cats = sapi.EnchantAccessor().GetEnchantmentCategories();
+                    bool preventDefault = false;
+                    foreach (string cat in cats) 
+                    {
+                        if (cat.ToLower().Contains("heal"))
+                            preventDefault = true;
+                    }
+                    if (preventDefault == true)
                         handled = EnumHandling.PreventDefault;
                     else
                         handled = EnumHandling.Handled;
-
-                    ICoreServerAPI sapi = Api as ICoreServerAPI;
+                    
                     EnchantModifiers parameters = new EnchantModifiers();
                     sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
                 }
