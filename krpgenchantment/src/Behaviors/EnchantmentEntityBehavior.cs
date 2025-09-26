@@ -9,6 +9,7 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
 using CombatOverhaul.Armor;
+using System.Reflection.Metadata;
 
 namespace KRPGLib.Enchantment
 {
@@ -82,9 +83,9 @@ namespace KRPGLib.Enchantment
         
         public void OnGearModified(int slotId)
         {
-            // Sanity Check
-            if (!entity.Alive) return;
-            if (Api?.Side != EnumAppSide.Server || gearInventory == null) return;
+            // Sanity Checks
+            if (!entity.Alive || Api?.Side != EnumAppSide.Server || gearInventory == null) return;
+            
             // Cleanup empty slots
             if (gearInventory[slotId].Empty)
             {
@@ -97,6 +98,13 @@ namespace KRPGLib.Enchantment
                     }
                 }
                 return;
+            }
+
+            // Item is still equipped
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            {
+                string s = pair.Key.Split(":")[2];
+                if (s == gearInventory[slotId].Itemstack.Id.ToString()) return;
             }
 
             // Armor slots, probably
@@ -113,8 +121,7 @@ namespace KRPGLib.Enchantment
         public void OnHotbarModified(int slotId)
         {
             // Sanity Check
-            if (!entity.Alive) return;
-            if (Api?.Side != EnumAppSide.Server || hotbarInventory == null) return;
+            if (!entity.Alive || Api?.Side != EnumAppSide.Server || hotbarInventory == null) return;
             // Cleanup empty slots
             if (hotbarInventory[slotId].Empty)
             {
@@ -127,6 +134,13 @@ namespace KRPGLib.Enchantment
                     }
                 }
                 return;
+            }
+
+            // Item is still equipped
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            {
+                string s = pair.Key.Split(":")[2];
+                if (s == hotbarInventory[slotId].Itemstack.Id.ToString()) return;
             }
 
             // 11. Offhand, probably
@@ -194,8 +208,9 @@ namespace KRPGLib.Enchantment
                     && pair.Value.Source.SourceStack.Id != player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id
                     && pair.Value.Source.SourceSlot.StorageType != EnumItemStorageFlags.Offhand)
                     continue;
-                
-                // Handle multi
+
+                // Handle OnTick() or remove from the registry if expired.
+                // Be sure to handle your EnchantTick updates (LastTickTime, TicksRemaining, etc. in OnTick())
                 string eCode = pair.Key;
                 int tr = pair.Value.TicksRemaining;
                 if (tr > 0 || pair.Value.Persistent == true)
@@ -212,6 +227,7 @@ namespace KRPGLib.Enchantment
                         Api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", eCode);
                     pair.Value.Dispose();
                     TickRegistry.Remove(eCode);
+                    continue;
                 }
             }
         }

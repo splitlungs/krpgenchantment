@@ -103,6 +103,8 @@ namespace KRPGLib.Enchantment
                     Api.Logger.Event("[KRPGEnchantment] Igniting enchantment finished Ticking for {0}.", Code);
                 eTick.Dispose();
             }
+            else
+                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
         }
         /// <summary>
         /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.

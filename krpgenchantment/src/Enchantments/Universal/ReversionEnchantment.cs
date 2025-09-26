@@ -98,8 +98,14 @@ namespace KRPGLib.Enchantment
             //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(p.InventoryManager.ActiveHotbarSlot.Itemstack);
             //     if (enchants != null) sApi
             // }
-
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] {0} is being ticked by a Reversion enchantment.", eTick.Source.SourceStack.GetName());
+            
             long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
+
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] Current Time: {0}, Last Tick Time: {1}, Tick Duration: {2}", Api.World.ElapsedMilliseconds, eTick.LastTickTime, TickDuration);
+
             if (curDur >= TickDuration)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
@@ -123,12 +129,16 @@ namespace KRPGLib.Enchantment
                     int amount = eTick.Source.Power * PowerMultiplier;
                     int remDur = eTick.Source.SourceStack.Collectible.GetRemainingDurability(eTick.Source.SourceStack);
                     int maxDur = eTick.Source.SourceStack.Collectible.GetMaxDurability(eTick.Source.SourceStack);
-                    remDur += amount;
-                    remDur = Math.Min(remDur, maxDur);
-                    eTick.Source.SourceStack.Attributes.SetInt("durability", remDur);
-                    
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
+                    if (remDur != maxDur)
+                    {
+
+                        remDur += amount;
+                        remDur = Math.Min(remDur, maxDur);
+                        eTick.Source.SourceStack.Attributes.SetInt("durability", remDur);
+
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
+                    }
                 }
                 eTick.LastTickTime = Api.World.ElapsedMilliseconds;
                 eTick.Source.SourceSlot.MarkDirty();

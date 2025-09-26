@@ -213,7 +213,7 @@ namespace KRPGLib.Enchantment
             if (tr > 0 && curDur >= TickDuration)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing an Poison Tick on {0}.", eTick.Source.TargetEntity.GetName());
+                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing a Poison Tick on {0}.", eTick.Source.TargetEntity.GetName());
                 Entity entity = eTick.Source.TargetEntity;
                 if (entity == null)
                 {
@@ -232,6 +232,8 @@ namespace KRPGLib.Enchantment
                     Api.Logger.Event("[KRPGEnchantment] Poison enchantment finished Ticking for {0}.", Code);
                 eTick.Dispose();
             }
+            else
+                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
         }
 
         // public void PoisonTick(float dt)

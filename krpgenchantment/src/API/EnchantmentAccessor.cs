@@ -79,15 +79,13 @@ namespace KRPGLib.Enchantment
                 {
                     // Temporary fixer for ValidToolTypes 1.2.2
                     // Have to reverse this because Combat Overhaul Armory uses it
-                    if (!props.ValidToolTypes.Contains("ArmorHead") || !props.ValidToolTypes.Contains("ArmorBody") || !props.ValidToolTypes.Contains("ArmorLegs"))
-                    {
+                    if (!props.ValidToolTypes.Contains("ArmorHead") && props.ValidToolTypes.Contains("Armor-Head"))
                         props.ValidToolTypes.Add("ArmorHead");
+                    if (!props.ValidToolTypes.Contains("ArmorBody") && props.ValidToolTypes.Contains("Armor-Body"))
                         props.ValidToolTypes.Add("ArmorBody");
+                    if (!props.ValidToolTypes.Contains("ArmorLegs") && props.ValidToolTypes.Contains("Armor-Legs"))
                         props.ValidToolTypes.Add("ArmorLegs");
-
-                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
-                    }
-
+                    Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
                     enchant.Initialize(props);
                 }
                 // Add to the Registry
@@ -175,10 +173,17 @@ namespace KRPGLib.Enchantment
                 if (ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
                 string toolType = GetToolType(inSlot.Itemstack);
+                if (toolType == null) continue;
                 bool validTool = false;
                 foreach (string s in ench.ValidToolTypes)
                 {
-                    if (toolType.EqualsFastIgnoreCase(s) != false) validTool = true;
+                    string[] toolStrings = toolType.Split(";");
+                    // ToolType
+                    if (toolStrings[0] == "tool" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
+                    // Wearable
+                    else if (toolStrings[0] == "wearable" && toolStrings[1].CaseInsensitiveContains(s) != false) validTool = true;
+                    // Code
+                    else if (toolStrings[0] == "code" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
                 }
                 if (!validTool) continue;
                 // Write to the List if it passed
@@ -458,25 +463,48 @@ namespace KRPGLib.Enchantment
             return rQty;
         }
         /// <summary>
-        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found.
+        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found or null if no code is found.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
         public string GetToolType(ItemStack stack)
         {
+            if (stack == null) return null;
+
             // Block
             if (stack.Class == EnumItemClass.Block) return "block";
             // Tool or Weapon
             string s = null;
-            s = stack.Collectible.Tool?.ToString().ToLower();
-            if (s != null) return s;
+            s = stack.Collectible.Tool?.ToString()?.ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "tool;");
+                return s;
+            }
             // Wearables
-            s = stack.Attributes.GetString("clothescategory");
-            if (s != null) return s.ToLower();
+            s = stack.ItemAttributes["clothescategory"].AsString()?.ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "wearable;");
+                return s;
+            }
+            string itemCode = stack.Collectible?.Code?.ToShortString();
+            // Wearables by Type - Not working?? Gotta use the ItemAttributes for some weird ass reason
+            // ITreeAttribute catByType = stack.Attributes?.GetTreeAttribute("clothesCategoryByType");
+            // if (catByType != null)
+            // {
+            //     s = catByType.GetString(itemCode)?.ToLower();
+            //     s = s.Insert(0, "wearable;");
+            //     return s;
+            // }
             // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
-            s = stack.Collectible?.Code.ToShortString();
-            Api.Logger.Event("[KRPGEnchantment] {0} has no ToolType. Returning a Code value of {1}.", stack.GetName(), s);
-            return s;
+            if (itemCode != null)
+            {
+                itemCode = itemCode.Insert(0, "code;");
+                return s;
+            }
+
+            return null;
         }
         #endregion
         #region Assessments
