@@ -129,7 +129,7 @@ namespace KRPGLib.Enchantment
                     int amount = eTick.Source.Power * PowerMultiplier;
                     int remDur = eTick.Source.SourceStack.Collectible.GetRemainingDurability(eTick.Source.SourceStack);
                     int maxDur = eTick.Source.SourceStack.Collectible.GetMaxDurability(eTick.Source.SourceStack);
-                    if (remDur != maxDur)
+                    if (remDur < maxDur)
                     {
 
                         remDur += amount;

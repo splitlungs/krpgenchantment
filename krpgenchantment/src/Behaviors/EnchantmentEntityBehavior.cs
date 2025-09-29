@@ -50,6 +50,7 @@ namespace KRPGLib.Enchantment
             //     hp.onDamaged += this.OnDamaged;
             // }
         }
+        // [Obsolete]
         // public float OnDamaged(float dmg, DamageSource dmgSource)
         // {
         //     if (EnchantingConfigLoader.Config?.Debug == true)
@@ -58,17 +59,22 @@ namespace KRPGLib.Enchantment
         // }
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
-            if (Api.Side != EnumAppSide.Server) return;
-            
+            if (!(Api is ICoreServerAPI sapi)) return;
+
             // Save the IServerPlayer
             player = byPlayer;
             // Register inventory listener
             gearInventory = player.Entity?.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
-            gearInventory.SlotModified += OnGearModified;
+            if (gearInventory != null)
+                gearInventory.SlotModified += OnGearModified;
+            else
+                Api?.Logger?.Error("[KRPGEnchantment] Player {0} tried to register GearInventory, but returned null. Gear enchants will not trigger.", player.PlayerUID);
             hotbarInventory = player.InventoryManager.GetHotbarInventory();
-            hotbarInventory.SlotModified += OnHotbarModified;
+            if (hotbarInventory != null)
+                hotbarInventory.SlotModified += OnHotbarModified;
+            else
+                Api?.Logger?.Error("[KRPGEnchantment] Player {0} tried to register HotbarInventory, but returned null. Hotbar enchants will not trigger.", player.PlayerUID);
             // Initialize already equipped items
-            ICoreServerAPI sapi = Api as ICoreServerAPI;
             foreach (ItemSlot slot in gearInventory)
             {
                 EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
@@ -84,36 +90,45 @@ namespace KRPGLib.Enchantment
         public void OnGearModified(int slotId)
         {
             // Sanity Checks
-            if (!entity.Alive || Api?.Side != EnumAppSide.Server || gearInventory == null) return;
+            if (entity.Alive != true) return;
+            if (gearInventory?[slotId] == null) return;
             
-            // Cleanup empty slots
-            if (gearInventory[slotId].Empty)
+            // 1. If Slot is empty, Remove any ticks registered to the slot
+            if (gearInventory?[slotId]?.Empty == true)
             {
                 foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
                 {
-                    string s = pair.Key.Split(":")[1];
-                    if (s == slotId.ToString())
+                    string eCode = pair.Key;
+                    if (pair.Key.Contains(":")) eCode = eCode.Split(":")?[1];
+                    if (eCode == slotId.ToString())
                     {
+                        TickRegistry[pair.Key].Dispose();
                         TickRegistry.Remove(pair.Key);
                     }
                 }
+                // Don't trigger OnEquip
                 return;
             }
 
-            // Item is still equipped
+            // 2. Item is still equipped
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
-                string s = pair.Key.Split(":")[2];
-                if (s == gearInventory[slotId].Itemstack.Id.ToString()) return;
+                string eCode = pair.Key;
+                if (pair.Key.Contains(":"))
+                {
+                    eCode = eCode.Split(":")?[2];
+                    // Don't trigger OnEquip if matching
+                    if (eCode == gearInventory?[slotId]?.Itemstack?.Id.ToString()) return;
+                }
             }
 
             // Armor slots, probably
             // 12.Head 13.Body 14.Legs
             // int[] wearableSlots = new int[3] { 12, 13, 14 };
 
+            // 3. Trigger OnEquip for any Enchantments
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} gear modified slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
-
             // ItemSlot slot = gearInventory[slotId];
             EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
             sApi.EnchantAccessor().TryEnchantments(gearInventory[slotId], "OnEquip", entity, entity, ref parameters);
@@ -121,26 +136,36 @@ namespace KRPGLib.Enchantment
         public void OnHotbarModified(int slotId)
         {
             // Sanity Check
-            if (!entity.Alive || Api?.Side != EnumAppSide.Server || hotbarInventory == null) return;
-            // Cleanup empty slots
-            if (hotbarInventory[slotId].Empty)
+            if (entity?.Alive != true) return;
+            if (hotbarInventory?[slotId] == null) return;
+
+            // 1. If Slot is empty, Remove any ticks registered to the slot
+            if (hotbarInventory?[slotId]?.Empty == true)
             {
                 foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
                 {
-                    string s = pair.Key.Split(":")[1];
-                    if (s == slotId.ToString())
+                    string eCode = pair.Key;
+                    if (pair.Key.Contains(":")) eCode = eCode.Split(":")?[1];
+                    if (eCode == slotId.ToString())
                     {
+                        TickRegistry[pair.Key].Dispose();
                         TickRegistry.Remove(pair.Key);
                     }
                 }
+                // Don't trigger OnEquip
                 return;
             }
 
-            // Item is still equipped
+            // 2. Item is still equipped
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
-                string s = pair.Key.Split(":")[2];
-                if (s == hotbarInventory[slotId].Itemstack.Id.ToString()) return;
+                string eCode = pair.Key;
+                if (pair.Key.Contains(":"))
+                {
+                    eCode = eCode.Split(":")?[2];
+                    // Don't trigger OnEquip if matching
+                    if (eCode == hotbarInventory?[slotId]?.Itemstack?.Id.ToString()) return;
+                }
             }
 
             // 11. Offhand, probably
