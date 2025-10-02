@@ -32,20 +32,24 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="eName"></param>
         /// <param name="inSlot"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        bool RemoveEnchantFromItem(ICoreServerAPI api, string eName, ItemSlot inSlot, Entity entity);
+        bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity);
         /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        bool RemoveAllEnchantsFromItem(ICoreServerAPI api, ItemSlot inSlot, Entity entity);
+        bool RemoveAllEnchantsFromItem(ItemSlot inSlot, Entity entity);
+        /// <summary>
+        /// Resets all Latent Enchant attributes to null on the ItemStack in the slot provided.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        bool ResetLatentEnchantsOnItem(ItemSlot inSlot);
         #endregion
         #region Actions
         /// <summary>

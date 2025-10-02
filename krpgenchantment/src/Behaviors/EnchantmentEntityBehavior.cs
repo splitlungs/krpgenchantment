@@ -181,6 +181,13 @@ namespace KRPGLib.Enchantment
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
+            // Creative check
+            if (player?.WorldData?.CurrentGameMode != EnumGameMode.Survival)
+            {
+                handled = EnumHandling.Handled;
+                return;
+            }
+
             if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)

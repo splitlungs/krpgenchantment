@@ -42,6 +42,8 @@ namespace KRPGLib.Enchantment
             { "game:gem-diamond-rough", 1 },
             { "game:gem-olivine_peridot-rough", 1 }
         };
+        // Forces the Enchantment class loader to reload all configs from default
+        public bool ResetEnchantConfigs = true;
         // Deboog
         public bool Debug = false;
         // Version
@@ -99,6 +101,7 @@ namespace KRPGLib.Enchantment
                 if (!config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                     ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
 
+                if (config.ResetEnchantConfigs == true) ResetEnchantConfigs = true;
                 if (config.Debug == true) Debug = true;
                 
             }

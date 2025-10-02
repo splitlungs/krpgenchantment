@@ -16,7 +16,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 1.00d;
+        private const double ConfigVersion = 1.01d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -100,6 +100,7 @@ namespace KRPGLib.Enchantment
                     if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                         tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
 
+                    if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;

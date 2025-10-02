@@ -24,11 +24,11 @@ namespace KRPGLib.Enchantment
         public EfficientEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
-            Enabled = true;
+            Enabled = false;
             Code = "efficient";
             Category = "Universal";
             LoreCode = "enchantment-efficient";
-            LoreChapterID = 1;
+            LoreChapterID = 20;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
                 "Chisel", "Cleaver", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
@@ -44,7 +44,7 @@ namespace KRPGLib.Enchantment
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a {1} enchantment.", enchant.TargetEntity.GetName(), Code);
             // Roll 0.01 - 1.00
             double roll = Api.World.Rand.NextDouble() + 0.01;
             double bonus = enchant.Power * PowerMultiplier;

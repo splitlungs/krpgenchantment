@@ -43,7 +43,7 @@ namespace KRPGLib.Enchantment
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a chilling enchantment.", enchant.TargetEntity.GetName());
-            
+
             EntityBehaviorBodyTemperature ebbt = enchant.TargetEntity.GetBehavior<EntityBehaviorBodyTemperature>();
             if (ebbt != null)
                 ebbt.CurBodyTemperature = enchant.Power * PowerMultiplier;

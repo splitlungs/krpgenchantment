@@ -75,7 +75,7 @@ namespace KRPGLib.Enchantment
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] {0} is attempting to remove {1} from {2} through commands.", args.Caller.GetName(), eCode, activeSlot?.Itemstack?.GetName());
-                bool didEnchant = api.EnchantAccessor().RemoveEnchantFromItem(api, eCode, activeSlot, args.Caller.Entity);
+                bool didEnchant = api.EnchantAccessor().RemoveEnchantFromItem(eCode, activeSlot, args.Caller.Entity);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
                 if (didEnchant == true) return true;
@@ -96,7 +96,7 @@ namespace KRPGLib.Enchantment
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] {0} is attempting to remove all enchantments from {1} through commands.", args.Caller.GetName(), activeSlot?.Itemstack?.GetName());
-                bool didEnchant = api.EnchantAccessor().RemoveAllEnchantsFromItem(api, activeSlot, args.Caller.Entity);
+                bool didEnchant = api.EnchantAccessor().RemoveAllEnchantsFromItem(activeSlot, args.Caller.Entity);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
                 if (didEnchant == true) return true;
@@ -104,7 +104,29 @@ namespace KRPGLib.Enchantment
 
             return false;
         }
+        /// <summary>
+        /// Removes all enchantments on the currently held item. Returns false if it fails to remove an enchantment in any way.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool LatentResetHandler(ICoreServerAPI api, TextCommandCallingArgs args)
+        {
+            ItemSlot activeSlot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+            if (activeSlot?.Empty != true)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] {0} is attempting to reset the Latent Enchants from {1} through commands.", args.Caller.GetName(), activeSlot?.Itemstack?.GetName());
+                bool didEnchant = api.EnchantAccessor().ResetLatentEnchantsOnItem(activeSlot);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    api.Logger.Event("[KRPGEnchantment] Reset completed with status: {0}.", didEnchant);
+                if (didEnchant == true) return true;
+            }
 
+            return false;
+        }
+        // Legacy command responses
+        [Obsolete]
         public static string helpMessage =
         "------------------ Kronos RPG Help ---------------------" +
         "\nkrpg help : Display help information on a specified command. Default display all commands." +
@@ -114,7 +136,7 @@ namespace KRPGLib.Enchantment
         "\nkrpg version : Display currently installed version of a mod." +
         "\n--------------------------------------------------------------"
         ;
-
+        [Obsolete]
         public static string helpPlayerMessage =
         "-------------- Kronos RPG Player Help ----------------" +
         "\nkrpg player list : Display a list of players in the server database." +
@@ -124,21 +146,20 @@ namespace KRPGLib.Enchantment
         "\nkrpg player Player get Stat Value: Set a specified stat for the player to a specified value." +
         "\n--------------------------------------------------------------"
         ;
-
+        [Obsolete]
         public static string helpReloadMessage =
         "-------------- Kronos RPG Reload Help ----------------" +
         "\nkrpg reload : Reload the config files for all KRPG Mods. WARNING: This could be dangerous!" +
         "\nkrpg reload ModID : Reload the config file for a specific KRPG Mod. WARNING: This could be dangerous!" +
         "\n--------------------------------------------------------------"
         ;
-
+        [Obsolete]
         public static string helpVersionMessage =
         "-------------- Kronos RPG Version Help ---------------" +
         "\nkrpg version : Display currently installed version of all KRPG Mods." +
         "\nkrpg version ModID : Display currently installed version a specified mod." +
         "\n--------------------------------------------------------------"
         ;
-
         public static string[] allKRPGMods = { "krpgarmory", "krpgclasses", "krpgenchantment", "krpglib", "krpgstats", "krpgwands" };
     }
 }

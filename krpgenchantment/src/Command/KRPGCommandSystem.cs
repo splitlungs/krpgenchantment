@@ -135,6 +135,19 @@ namespace KRPGLib.Enchantment
                 return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-removeall-fail"));
             })
             .EndSubCommand()
+            .BeginSubCommand("latentreset")
+            .WithDescription(Lang.Get("krpgenchantment:cmd-e-latentreset-help"))
+            .RequiresPrivilege(Privilege.give)
+            .HandleWith(args =>
+            {
+                if (KRPGCommands.LatentResetHandler(sApi, args))
+                {
+                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-latentreset-success"));
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-latentreset-fail"));
+            })
+            .EndSubCommand()
             .BeginSubCommand("reload")
             .WithAlias("r")
             .WithDescription(Lang.Get("krpgenchantment:cmd-reload-config-help"))

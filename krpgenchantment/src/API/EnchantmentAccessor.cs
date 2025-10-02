@@ -15,6 +15,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Util;
 using HarmonyLib;
 using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KRPGLib.Enchantment
 {
@@ -58,10 +59,9 @@ namespace KRPGLib.Enchantment
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
                 // Setup the Config
-                EnchantmentProperties props = Api.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
-                if (props == null)
+                if (EnchantingConfigLoader.Config?.ResetEnchantConfigs == true)
                 {
-                    props = new EnchantmentProperties()
+                    EnchantmentProperties props = new EnchantmentProperties()
                     {
                         Enabled = enchant.Enabled,
                         Code = enchant.Code,
@@ -74,20 +74,45 @@ namespace KRPGLib.Enchantment
                     };
 
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+
+                    KRPGEnchantConfig config = EnchantingConfigLoader.Config;
+                    config.ResetEnchantConfigs = false;
+                    Api.StoreModConfig(config, EnchantingConfigLoader.ConfigFile);
                 }
                 else
                 {
-                    // Temporary fixer for ValidToolTypes 1.2.2
-                    // Have to reverse this because Combat Overhaul Armory uses it
-                    if (!props.ValidToolTypes.Contains("ArmorHead") && props.ValidToolTypes.Contains("Armor-Head"))
-                        props.ValidToolTypes.Add("ArmorHead");
-                    if (!props.ValidToolTypes.Contains("ArmorBody") && props.ValidToolTypes.Contains("Armor-Body"))
-                        props.ValidToolTypes.Add("ArmorBody");
-                    if (!props.ValidToolTypes.Contains("ArmorLegs") && props.ValidToolTypes.Contains("Armor-Legs"))
-                        props.ValidToolTypes.Add("ArmorLegs");
-                    Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
-                    enchant.Initialize(props);
+                    EnchantmentProperties props = Api.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
+                    if (props == null)
+                    {
+                        props = new EnchantmentProperties()
+                        {
+                            Enabled = enchant.Enabled,
+                            Code = enchant.Code,
+                            Category = enchant.Category,
+                            LoreCode = enchant.LoreCode,
+                            LoreChapterID = enchant.LoreChapterID,
+                            MaxTier = enchant.MaxTier,
+                            ValidToolTypes = enchant.ValidToolTypes,
+                            Modifiers = enchant.Modifiers
+                        };
+
+                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    }
+                    // else
+                    // {
+                    //     // Temporary fixer for ValidToolTypes 1.2.2
+                    //     // Have to reverse this because Combat Overhaul Armory uses it
+                    //     if (!props.ValidToolTypes.Contains("ArmorHead") && props.ValidToolTypes.Contains("Armor-Head"))
+                    //         props.ValidToolTypes.Add("ArmorHead");
+                    //     if (!props.ValidToolTypes.Contains("ArmorBody") && props.ValidToolTypes.Contains("Armor-Body"))
+                    //         props.ValidToolTypes.Add("ArmorBody");
+                    //     if (!props.ValidToolTypes.Contains("ArmorLegs") && props.ValidToolTypes.Contains("Armor-Legs"))
+                    //         props.ValidToolTypes.Add("ArmorLegs");
+                    //     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    //     enchant.Initialize(props);
+                    // }
                 }
+
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
@@ -381,12 +406,11 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="eName"></param>
         /// <param name="inSlot"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public bool RemoveEnchantFromItem(ICoreServerAPI api, string eName, ItemSlot inSlot, Entity entity)
+        public bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity)
         {
             if (inSlot?.Empty != false || entity == null) return false;
             // Stop any active EnchantTicks
@@ -410,18 +434,17 @@ namespace KRPGLib.Enchantment
             // Fail if nothing was removed.
             if (aa == null || aa.Equals(a)) return false;
             tree.SetString("active", aa);
-            inSlot?.Itemstack?.Attributes?.MergeTree(tree);
-            inSlot?.MarkDirty();
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
             return true;
         }
         /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public bool RemoveAllEnchantsFromItem(ICoreServerAPI api, ItemSlot inSlot, Entity entity)
+        public bool RemoveAllEnchantsFromItem(ItemSlot inSlot, Entity entity)
         {
             if (inSlot?.Empty != false || entity == null) return false;
             // Get Active enchants
@@ -441,8 +464,29 @@ namespace KRPGLib.Enchantment
             }
             // Delete the Active string
             tree.SetString("active", null);
-            inSlot?.Itemstack?.Attributes?.MergeTree(tree);
-            inSlot?.MarkDirty();
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
+            return true;
+        }
+        /// <summary>
+        /// Resets all Latent Enchant attributes to null on the ItemStack in the slot provided.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        public bool ResetLatentEnchantsOnItem(ItemSlot inSlot)
+        {
+            if (inSlot?.Empty != false) return false;
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            // Delete the Active string
+            tree.SetString("latentEnchants", null);
+            tree.SetString("latentEnchantsEncrypted", null);
+            tree.SetDouble("latentEnchantTime", 0);
+            // Save
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
+
             return true;
         }
         /// <summary>

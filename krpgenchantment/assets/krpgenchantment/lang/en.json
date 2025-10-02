@@ -115,6 +115,9 @@
   "cmd-e-add-help": "Add an enchantment to the item held in your main hand. \nEx: krpg e add frost 5",
   "cmd-e-add-success": "Successfully added enchantment to the held item.",
   "cmd-e-add-fail": "Failed to add enchant to the held item. \nEx: krpg e add frost 5",
+  "cmd-e-latentreset-help": "Resets all latent enchantments on held item, allowing it to generate new latent enchants when assessed in an Enchanting Table.",
+  "cmd-e-latentreset-success": "Successfully reset all latent enchantments on held item.",
+  "cmd-e-latentreset-fail": "Failed to reset all latent enchantments on held item. \nEx: krpg e latentreset",
   "cmd-e-list-help": "List all registered enchantments.",
   "cmd-e-list-success": "Currently loaded enchantments: ",
   "cmd-e-list-fail": "Could not find any registered enchantments.",
@@ -152,6 +155,8 @@
   "ChargePerGearComment": "Sets the amount of charge a single gear will provide to a reagent in the charging table.",
   "ValidReagents": "Valid Reagents",
   "ValidReagentsComment": "Item and quantity required to perform an Enchantment.",
+  "ResetEnchantConfigs": "Reset Enchantment Configs",
+  "ResetEnchantConfigsComment": "Reloads all Enchantment config files from default at the next restart, then resets to false.",
   "Debug": "Debug",
   "DebugComment": "Enable for more verbose logging."
 }
