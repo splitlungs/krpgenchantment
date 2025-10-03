@@ -135,6 +135,12 @@ namespace KRPGLib.Enchantment
             this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out val);
             return val;
         }
+        /// <summary>
+        /// Instantiates the given Enchantment class, as defined by the EnchantCodeToTypeMapping.
+        /// </summary>
+        /// <param name="enchantClass"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private Enchantment CreateEnchantment(string enchantClass)
         {
             Type enchantType;
