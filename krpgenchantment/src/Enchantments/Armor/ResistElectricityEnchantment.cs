@@ -43,7 +43,7 @@ namespace KRPGLib.Enchantment
             
             // Extract the Damage Values
             float dmg = parameters.GetFloat("damage");
-            string dmgType = Enum.Parse(enchant.Type, );
+            string dmgType = enchant.Type.ToString().ToLower();
 
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} {1} damage.", dmg, dmgType);
