@@ -30,7 +30,8 @@ namespace KRPGLib.Enchantment
                 foundEB = true;
             if (!foundEB)
             {
-                EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance);
+                int tickMs = EnchantingConfigLoader.Config?.EntityTickMs ?? 250;
+                EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance, tickMs);
                 __instance.AddBehavior(eb);
             }
 
@@ -50,7 +51,8 @@ namespace KRPGLib.Enchantment
                 foundEB = true;
             if (!foundEB)
             {
-                EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance);
+                int tickMs = EnchantingConfigLoader.Config?.EntityTickMs ?? 250;
+                EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance, tickMs);
                 __instance.AddBehavior(eb);
             }
 

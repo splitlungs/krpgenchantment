@@ -85,7 +85,7 @@ namespace KRPGLib.Enchantment
                 eeb.TickRegistry.Remove(codeID);
             }
         }
-        public override void OnTick(float deltaTime, ref EnchantTick eTick)
+        public override void OnTick(ref EnchantTick eTick)
         {
             if (eTick.Source.SourceSlot.Empty || eTick.Source?.SourceStack == null)
             {

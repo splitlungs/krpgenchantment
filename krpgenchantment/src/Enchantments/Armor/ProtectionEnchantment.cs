@@ -43,7 +43,8 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());
 
-            if (DamageResist.Contains(enchant.Type.ToString()) && parameters.ContainsKey("damage") == true)
+            string dmgType = enchant.Type.ToString().ToLower();
+            if (DamageResist.Contains(dmgType) && parameters.ContainsKey("damage") == true)
             {
                 float resist = enchant.Power * PowerMultiplier;
                 float dmg = MathF.Min(((1 - resist) * (float)parameters["damage"]), 0);

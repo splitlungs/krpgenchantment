@@ -130,6 +130,8 @@
   "cmd-reloadcfg-fail": "Не вдалося перезавантажити конфіг.",
 
   "KRPGEnchantmentSettings": "Налаштування параметрів чарівності KRPG",
+  "EntityTickMs": "Тіки сутностей у мілісекундах",
+  "EntityTickMsComment": "Визначає, як часто кожна поведінка сутності зачарування оновлюється через свій реєстр тіків. Вищі значення зменшують навантаження на сервер, але можуть спричиняти затримки в обробці зачарувань.",
   "MaxEnchantTier": "Maximum Enchantment Tier",
   "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeHours": "Перевизначення часу зачарування",
@@ -150,6 +152,8 @@
   "ChargePerGearComment": "Встановлює кількість заряду, який одна шестерня забезпечить реагенту в таблиці заряджання.",
   "ValidReagents": "Реагенти, що діють",
   "ValidReagentsComment": "Предмет і кількість, необхідне виконання зачарування.",
+  "ResetEnchantConfigs": "Скинути конфігурації зачарувань",
+  "ResetEnchantConfigsComment": "Перезавантажує всі конфігураційні файли зачарувань за замовчуванням під час наступного запуску, після чого встановлює значення false.",
   "Debug": "Налагодження",
   "DebugComment": "Увімкніть для більш детального журналювання."
 }

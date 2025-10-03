@@ -105,7 +105,6 @@ namespace KRPGLib.Enchantment
         
         private void RegisterEnchantmentBehaviors(ICoreAPI api)
         {
-        
             // Setup Enchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)
             {

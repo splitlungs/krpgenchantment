@@ -15,6 +15,7 @@ using KRPGLib.Enchantment.API;
 using Cairo.Freetype;
 using CombatOverhaul.Implementations;
 using System.Diagnostics.Metrics;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -114,7 +115,10 @@ namespace KRPGLib.Enchantment
                 hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
+
+                ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+                byte[] data = SerializerUtil.Serialize(packet);
+                sApi.Network.SendEntityPacket(enchant.SourceEntity as IServerPlayer, enchant.TargetEntity.EntityId, 1616, data);
             }
             else if (!sApi.Server.Config.AllowPvP && source.Type == EnumDamageType.Heal)
             {
@@ -129,7 +133,10 @@ namespace KRPGLib.Enchantment
                 hp.OnEntityReceiveDamage(source, ref dmg);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
+
+                ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+                byte[] data = SerializerUtil.Serialize(packet);
+                sApi.Network.SendEntityPacket(enchant.SourceEntity as IServerPlayer, enchant.TargetEntity.EntityId, 1616, data);
             }
             else
             {

@@ -13,6 +13,8 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
 using Newtonsoft.Json.Linq;
+using CompactExifLib;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -51,6 +53,7 @@ namespace KRPGLib.Enchantment
             // We let the config initialize before registering the Tick Listener
             // Api.World.RegisterGameTickListener(PoisonTick, TickFrequency);
         }
+        /*
         public override void ConfigParticles()
         {
             ParticleProps = new AdvancedParticleProperties[3];
@@ -125,6 +128,7 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
+        */
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -203,8 +207,13 @@ namespace KRPGLib.Enchantment
             // I think OnEntityReceiveDamage is good enough and we don't need to bypass it?
             // hp.Health -= dmg;
             // hp.MarkDirty();
-            // Particle
-            GenerateParticles(entity, EnumDamageType.Injury, dmg + 1);
+            // Particle if damaged
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+            ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = EnumDamageType.Poison };
+            byte[] data = SerializerUtil.Serialize(packet);
+            sApi.Network.BroadcastEntityPacket(entity.EntityId, 1616, data);
             // entity.ReceiveDamage(source, dmg);
             // Hunger damage
             EntityBehaviorHunger hungy = entity.GetBehavior<EntityBehaviorHunger>();
@@ -215,7 +224,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Attempt to resist, then deal Poison effect. Power multiplies number of 1s refreshes.
         /// </summary>
-        public override void OnTick(float deltaTime, ref EnchantTick eTick)
+        public override void OnTick(ref EnchantTick eTick)
         {
             long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
             int tr = eTick.TicksRemaining;

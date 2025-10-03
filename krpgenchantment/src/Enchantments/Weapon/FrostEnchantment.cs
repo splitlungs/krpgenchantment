@@ -12,6 +12,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -45,6 +46,7 @@ namespace KRPGLib.Enchantment
                 { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
         }
+        /*
         public override void ConfigParticles()
         {
             ParticleProps = new AdvancedParticleProperties[3];
@@ -119,6 +121,7 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
+        */
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;
@@ -180,9 +183,13 @@ namespace KRPGLib.Enchantment
                 //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
 
                 hp.OnEntityReceiveDamage(source, ref dmg);
+
+                // Particle if damaged
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
+                    sApi.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+                ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+                byte[] data = SerializerUtil.Serialize(packet);
+                sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
             }
             else
             {

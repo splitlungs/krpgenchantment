@@ -16,7 +16,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 1.01d;
+        private const double ConfigVersion = 1.02d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -60,6 +60,7 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     // Enchant Config
+                    if (Config.EntityTickMs != 250) tempConfig.EntityTickMs = Config.EntityTickMs;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
@@ -99,8 +100,9 @@ namespace KRPGLib.Enchantment
                         tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
                     if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                         tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
-
-                    if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
+                    // Force reset if they haven't done Enchantments 1.2.5 upgrade yet
+                    if (Config.Version < 1.01) tempConfig.ResetEnchantConfigs = true;
+                    else if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;

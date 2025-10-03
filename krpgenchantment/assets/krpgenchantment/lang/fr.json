@@ -130,6 +130,8 @@
   "cmd-reloadcfg-fail": "Échec du rechargement de la configuration.",
 
   "KRPGEnchantmentSettings": "Configure KRPG Enchantment settings",
+  "EntityTickMs": "Millisecondes de Tick d’entité",
+  "EntityTickMsComment": "Définit la fréquence à laquelle chaque comportement d’entité d’enchantement s’actualise via son registre de ticks. Des valeurs plus élevées réduisent la charge du serveur, mais peuvent provoquer des retards dans le traitement des enchantements.",
   "MaxEnchantTier": "Maximum Enchantment Tier",
   "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeHours": "Remplacement du temps d'enchantement",
@@ -150,6 +152,8 @@
   "ChargePerGearComment": "Définit la quantité de charge qu'un seul engrenage fournira à un réactif dans la table de charge.",
   "ValidReagents": "Réactifs valides",
   "ValidReagentsComment": "Objet et quantité requis pour effectuer un enchantement.",
+  "ResetEnchantConfigs": "Réinitialiser les configurations d’enchantement",
+  "ResetEnchantConfigsComment": "Recharge tous les fichiers de configuration d’enchantement par défaut au prochain redémarrage, puis repasse à faux.",
   "Debug": "Déboguer",
   "DebugComment": "Activer pour une journalisation plus détaillée."
 }

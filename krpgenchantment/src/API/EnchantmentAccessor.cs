@@ -74,7 +74,8 @@ namespace KRPGLib.Enchantment
                     };
 
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
-
+                    
+                    // Notify the config that we completed a Reset
                     KRPGEnchantConfig config = EnchantingConfigLoader.Config;
                     config.ResetEnchantConfigs = false;
                     Api.StoreModConfig(config, EnchantingConfigLoader.ConfigFile);

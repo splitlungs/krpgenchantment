@@ -130,6 +130,8 @@
   "cmd-reloadcfg-fail": "Nie udało się przeładować konfiguracji.",
 
   "KRPGEnchantmentSettings": "Ustawienia Zaklinania KRPG",
+  "EntityTickMs": "Czas ticku jednostki w milisekundach",
+  "EntityTickMsComment": "Określa, jak często każde zachowanie jednostki zaklęcia jest aktualizowane poprzez swój rejestr ticków. Wyższe wartości zmniejszą obciążenie serwera, ale mogą powodować opóźnienia w przetwarzaniu zaklęć.",
   "MaxEnchantTier": "Maksymalny poziom zaklęcia",
   "MaxEnchantTierComment": "Określa maksymalny poziom zaklęcia, jaki reagent może nadać przedmiotowi.",
   "EnchantTimeHours": "Czas zaklinania (godziny)",
@@ -152,6 +154,8 @@
   "ChargePerGearComment": "Określa ilość ładunku, jaką jedno koło zębate dodaje do reagenta w stole ładującym.",
   "ValidReagents": "Prawidłowe reagenty",
   "ValidReagentsComment": "Przedmioty i ilości wymagane do wykonania zaklęcia.",
+  "ResetEnchantConfigs": "Resetuj konfiguracje zaklęć",
+  "ResetEnchantConfigsComment": "Przeładowuje wszystkie pliki konfiguracyjne zaklęć z domyślnych przy następnym uruchomieniu, a następnie ustawia na false.",
   "Debug": "Debugowanie",
   "DebugComment": "Włącz, aby uzyskać bardziej szczegółowe logi."
 }

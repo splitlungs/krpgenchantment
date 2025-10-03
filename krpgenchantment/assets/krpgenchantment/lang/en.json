@@ -133,6 +133,8 @@
   "cmd-reloadcfg-fail": "Config reload failed.",
 
   "KRPGEnchantmentSettings": "Configure KRPG Enchantment settings",
+  "EntityTickMs": "Entity Tick Miliseconds",
+  "EntityTickMsComment": "Defines how frequently each Enchantment Entity Behavior ticks over its Tick Registry. Higher values will reduce server load, but may cause delays in Enchantment processing.",
   "MaxEnchantTier": "Maximum Enchantment Tier",
   "MaxEnchantTierComment": "Sets the maximum tier a reagent can imbue into an item when enchanting.",
   "EnchantTimeHours": "Enchant Time Hours",

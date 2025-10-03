@@ -76,7 +76,7 @@ namespace KRPGLib.Enchantment
                     enchant.TargetEntity.Ignite();
             }
         }
-        public override void OnTick(float deltaTime, ref EnchantTick eTick)
+        public override void OnTick(ref EnchantTick eTick)
         {
             long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
             int tr = eTick.TicksRemaining;

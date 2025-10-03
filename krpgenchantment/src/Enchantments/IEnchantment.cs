@@ -75,8 +75,8 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
         /// </summary>
-        /// <param name="deltTime"></param>
-        void OnTick(float deltTime, ref EnchantTick eTick);
+        /// <param name="eTick"></param>
+        void OnTick(ref EnchantTick eTick);
         /// <summary>
         /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
         /// </summary>

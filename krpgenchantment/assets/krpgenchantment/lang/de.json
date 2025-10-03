@@ -130,6 +130,8 @@
   "cmd-reloadcfg-fail": "Fehler beim Neuladen der Konfiguration.",
 
   "KRPGEnchantmentSettings": "KRPG-Verzauberungseinstellungen konfigurieren",
+  "EntityTickMs": "Entitäts-Tick-Millisekunden",
+  "EntityTickMsComment": "Legt fest, wie häufig jedes Verzauberungs-Entitätsverhalten über sein Tick-Register aktualisiert wird. Höhere Werte verringern die Serverlast, können jedoch Verzögerungen bei der Verarbeitungen von Verzauberungen verursachen.",
   "MaxEnchantTier": "Maximale Verzauberungsstufe",
   "MaxEnchantTierComment": "Legt die maximale Stufe fest, die ein Reagenz beim Verzaubern in einen Gegenstand einflößen kann.",
   "EnchantTimeHours": "Verzauberungszeit (Stunden)",
@@ -152,6 +154,8 @@
   "ChargePerGearComment": "Legt fest, wie viel Ladung ein einzelnes Zahnrad einem Reagenz im Ladetisch verleiht.",
   "ValidReagents": "Gültige Reagenzien",
   "ValidReagentsComment": "Gegenstand und Menge, die für eine Verzauberung erforderlich sind.",
+  "ResetEnchantConfigs": "Verzauberungskonfigurationen zurücksetzen",
+  "ResetEnchantConfigsComment": "Lädt alle Verzauberungskonfigurationsdateien beim nächsten Neustart standardmäßig neu und setzt dann auf false zurück.",
   "Debug": "Debug",
   "DebugComment": "Für detailliertere Protokollierung aktivieren."
 }

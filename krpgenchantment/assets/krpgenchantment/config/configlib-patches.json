@@ -8,6 +8,13 @@
       "title": "KRPGEnchantmentSettings"
     },
     {
+      "code": "EntityTickMs",
+      "comment": "EntityTickMsComment",
+      "type": "int",
+      "clientSide": false,
+      "default": 250
+    },
+    {
       "code": "EnchantTimeHours",
       "comment": "EnchantTimeHoursComment",
       "type": "float",

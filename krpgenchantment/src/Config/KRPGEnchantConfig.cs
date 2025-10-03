@@ -14,6 +14,7 @@ namespace KRPGLib.Enchantment
     public class KRPGEnchantConfig
     {
         // Enchantment Config
+        public int EntityTickMs = 250;
         public int MaxEnchantsPerItem = 4;
         public double EnchantTimeHours = 1d;
         public double LatentEnchantResetDays = 7d;
@@ -62,6 +63,7 @@ namespace KRPGLib.Enchantment
             if (config != null) 
             {
                 // Enchant Config
+                if (config.EntityTickMs != 250) EntityTickMs = config.EntityTickMs;
                 if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
                 if (config.EnchantTimeHours != 1) EnchantTimeHours = config.EnchantTimeHours;
                 if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;

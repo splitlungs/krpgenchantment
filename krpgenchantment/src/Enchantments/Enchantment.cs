@@ -9,6 +9,8 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using System.IO;
+using Vintagestory.API.Client;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -178,7 +180,7 @@ namespace KRPGLib.Enchantment
             if (properties.Modifiers != null) Modifiers = properties.Modifiers;
             else Modifiers = new EnchantModifiers();
             
-            ConfigParticles();
+            // ConfigParticles();
         }
         /// <summary>
         /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
@@ -388,9 +390,8 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
         /// </summary>
-        /// <param name="deltaTime"></param>
         /// <param name="eTick"></param>
-        public virtual void OnTick(float deltaTime, ref EnchantTick eTick)
+        public virtual void OnTick(ref EnchantTick eTick)
         {
 
         }
@@ -412,10 +413,14 @@ namespace KRPGLib.Enchantment
         {
 
         }
+
+        // Obsolete particles
+        /*
         protected AdvancedParticleProperties[] ParticleProps;
         protected static AdvancedParticleProperties[] PoisonParticleProps;
         protected bool resetLightHsv;
-
+        */
+        /*
         public virtual void ConfigParticles()
         {
             ParticleProps = new AdvancedParticleProperties[3];
@@ -562,16 +567,19 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
-        public virtual void GenerateParticles(Entity entity, EnumDamageType damageType, float damage)
+        */
+        /*
+        public virtual void GenerateParticles(ICoreClientAPI api, Entity entity, EnumDamageType damageType, float damage)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
 
             int power = (int)MathF.Ceiling(damage);
+            int r = api.World.Rand.Next(ParticleProps.Length + 1);
 
             if (damageType == EnumDamageType.Fire)
             {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                int num = Math.Min(ParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
@@ -702,5 +710,6 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
+        */
     }
 }

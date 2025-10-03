@@ -12,6 +12,10 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
+using CompactExifLib;
+using static System.Net.Mime.MediaTypeNames;
+using Vintagestory.API.Util;
+using Vintagestory.API.Client;
 
 namespace KRPGLib.Enchantment
 {
@@ -45,6 +49,7 @@ namespace KRPGLib.Enchantment
                 { "DamageResist", "resistfire" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
         }
+        /*
         public override void ConfigParticles()
         {
             ParticleProps = new AdvancedParticleProperties[3];
@@ -119,12 +124,13 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
+        */
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
+                sApi.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
 
             // Check if it has HP first, since we have to address this directly.
             EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
@@ -149,7 +155,7 @@ namespace KRPGLib.Enchantment
                 if (inv != null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Player's inventory detected when receiving a damage enchant.");
+                        sApi.Logger.Event("[KRPGEnchantment] Player's inventory detected when receiving a damage enchant.");
                     float resist = 0f;
                     int[] wearableSlots = new int[3] { 12, 13, 14 };
 
@@ -171,7 +177,7 @@ namespace KRPGLib.Enchantment
             if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
+                    sApi.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
 
                 // Disabled because there is something stopping this from happening in rapid succession.
                 // Some kind of timer is locking damage, and must be calculated manually here, instead.
@@ -180,14 +186,18 @@ namespace KRPGLib.Enchantment
                 //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
 
                 hp.OnEntityReceiveDamage(source, ref dmg);
+
+                // Particle if damaged
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
-                GenerateParticles(enchant.TargetEntity, source.Type, dmg);
+                    sApi.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+                ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+                byte[] data = SerializerUtil.Serialize(packet);
+                sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
             }
             else
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Warning("[KRPGEnchantment] Tried to deal {0} damage to {1}, but it should not receive damage!", dmg, enchant.TargetEntity.GetName());
+                    sApi.Logger.Warning("[KRPGEnchantment] Tried to deal {0} damage to {1}, but it should not receive damage!", dmg, enchant.TargetEntity.GetName());
             }
         }
     }
