@@ -42,6 +42,7 @@ namespace KRPGLib.Enchantment
             {
                 { "MulXZ", 0.50 }, {"MulY", 1.00 }
             };
+            Version = 1.00f;
             sApi = Api as IServerAPI;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)

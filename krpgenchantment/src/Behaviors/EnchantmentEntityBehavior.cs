@@ -69,6 +69,7 @@ namespace KRPGLib.Enchantment
                 EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true } };
                 if (!slot.Empty) sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
             }
+            entity.GetBehavior<EntityBehaviorHealth>().onDamaged += OnHit;
         }
         #region Triggers
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
@@ -209,38 +210,73 @@ namespace KRPGLib.Enchantment
             }
             // base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }
-        public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
+        /// <summary>
+        /// Primary trigger call for OnHit enchantments, which is applied BEFORE damage is dealt to HP.
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="damageSource"></param>
+        /// <returns></returns>
+        public float OnHit(float damage, DamageSource damageSource)
         {
-            // Only players should actually have OnHit triggers
-            if (!IsPlayer || entity.World?.Side != EnumAppSide.Server) return;
-
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} was hit. Attempting to trigger OnHit enchantments.", entity.GetName());
+            // Only living players should actually have OnHit triggers
+            if (!IsPlayer || !entity.Alive || entity.World?.Side != EnumAppSide.Server) return damage;
 
             float dmg = damage;
+            string dmgType = Enum.GetName(damageSource.Type).ToLower();
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} is receiving {1} {2} damage. Attempting to trigger OnHit enchantments.",
+                    entity.GetName(), damage, dmgType);
+
             // Push OnHit to each item that is equipped
             foreach (ItemSlot slot in gearInventory)
             {
                 if (slot.Empty == true) continue;
 
-                EnchantModifiers parameters = new EnchantModifiers { { "damage", dmg } };
-                sApi.EnchantAccessor().TryEnchantments(slot, "OnHit", damageSource.CauseEntity, entity, ref parameters);
+                EnchantModifiers parameters = new EnchantModifiers { { "damage", dmg }, { "type", dmgType } };
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(slot, "OnHit", damageSource.CauseEntity, entity, ref parameters);
                 dmg = parameters.GetFloat("damage");
+
+                if (didEnchants != true)
+                    Api.Logger.Error("[KRPGEnchantment] {0} failed to TryEnchantments on {1}.", entity.GetName(), slot?.Itemstack?.GetName());
             }
-            damage = dmg;
-            return;
-            // base.OnEntityReceiveDamage(damageSource, ref damage);
+            return dmg;
+        }
+        public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
+        {
+            // Only living players should actually have OnDamaged triggers
+            if (!IsPlayer || !entity.Alive || entity.World?.Side != EnumAppSide.Server) return;
+
+            float dmg = damage;
+            string dmgType = Enum.GetName(damageSource.Type).ToLower();
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} received {1} {2} damage. Attempting to trigger OnDamaged enchantments.",
+                    entity.GetName(), damage, dmgType);
+
+            // Push OnHit to each item that is equipped
+            foreach (ItemSlot slot in gearInventory)
+            {
+                if (slot.Empty == true) continue;
+
+                EnchantModifiers parameters = new EnchantModifiers { { "damage", dmg }, { "type", dmgType } };
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(slot, "OnDamaged", damageSource.CauseEntity, entity, ref parameters);
+                dmg = parameters.GetFloat("damage");
+
+                if (didEnchants != true)
+                    Api.Logger.Error("[KRPGEnchantment] {0} failed to TryEnchantments on {1}.", entity.GetName(), slot?.Itemstack?.GetName());
+            }
         }
         public void OnTick(float deltaTime)
         {
-            if (Api?.Side != EnumAppSide.Server || TickRegistry?.Count <= 0) return;
+            if (entity?.World?.Side != EnumAppSide.Server || TickRegistry?.Count <= 0) return;
 
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
                 // Don't run if it's on hotbar, but unselected & not in the offhand
-                if (pair.Value.IsHotbar == true
-                    && pair.Value.Source.SourceStack.Id != player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id
-                    && pair.Value.Source.SourceSlot.StorageType != EnumItemStorageFlags.Offhand)
+                if (pair.Value?.IsHotbar == true
+                    && pair.Value?.Source?.SourceStack?.Id != player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id
+                    && pair.Value?.Source?.SourceSlot?.StorageType != EnumItemStorageFlags.Offhand)
                     continue;
 
                 // Handle OnTick() or remove from the registry if expired.

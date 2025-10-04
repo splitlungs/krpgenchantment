@@ -58,9 +58,10 @@ namespace KRPGLib.Enchantment
                 this.EnchantCodeToTypeMapping[enchantClass] = t;
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
-                // Setup the Config
+                // Reset the Configs if configured
                 if (EnchantingConfigLoader.Config?.ResetEnchantConfigs == true)
                 {
+                    // Get Properties from default
                     EnchantmentProperties props = new EnchantmentProperties()
                     {
                         Enabled = enchant.Enabled,
@@ -72,17 +73,22 @@ namespace KRPGLib.Enchantment
                         ValidToolTypes = enchant.ValidToolTypes,
                         Modifiers = enchant.Modifiers
                     };
-
+                    // Init the props
+                    enchant.Initialize(props);
+                    // Store the properties back to JSON
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
                     
-                    // Notify the config that we completed a Reset
+                    // Notify the main config that we completed a Reset
                     KRPGEnchantConfig config = EnchantingConfigLoader.Config;
                     config.ResetEnchantConfigs = false;
                     Api.StoreModConfig(config, EnchantingConfigLoader.ConfigFile);
                 }
+                // Load normally if reset is not configured
                 else
                 {
+                    // Get the properties from file
                     EnchantmentProperties props = Api.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
+                    // Generate new if they're missing
                     if (props == null)
                     {
                         props = new EnchantmentProperties()
@@ -94,24 +100,33 @@ namespace KRPGLib.Enchantment
                             LoreChapterID = enchant.LoreChapterID,
                             MaxTier = enchant.MaxTier,
                             ValidToolTypes = enchant.ValidToolTypes,
-                            Modifiers = enchant.Modifiers
+                            Modifiers = enchant.Modifiers,
+                            Version = enchant.Version
                         };
-
+                        // Write back to JSON
                         Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
                     }
-                    // else
-                    // {
-                    //     // Temporary fixer for ValidToolTypes 1.2.2
-                    //     // Have to reverse this because Combat Overhaul Armory uses it
-                    //     if (!props.ValidToolTypes.Contains("ArmorHead") && props.ValidToolTypes.Contains("Armor-Head"))
-                    //         props.ValidToolTypes.Add("ArmorHead");
-                    //     if (!props.ValidToolTypes.Contains("ArmorBody") && props.ValidToolTypes.Contains("Armor-Body"))
-                    //         props.ValidToolTypes.Add("ArmorBody");
-                    //     if (!props.ValidToolTypes.Contains("ArmorLegs") && props.ValidToolTypes.Contains("Armor-Legs"))
-                    //         props.ValidToolTypes.Add("ArmorLegs");
-                    //     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
-                    //     enchant.Initialize(props);
-                    // }
+                    // If there is a Version mismatch, reset the Enchantment's Properties
+                    if (props.Version < enchant.Version)
+                    {
+                        // Generate new properties
+                        props = new EnchantmentProperties()
+                        {
+                            Enabled = enchant.Enabled,
+                            Code = enchant.Code,
+                            Category = enchant.Category,
+                            LoreCode = enchant.LoreCode,
+                            LoreChapterID = enchant.LoreChapterID,
+                            MaxTier = enchant.MaxTier,
+                            ValidToolTypes = enchant.ValidToolTypes,
+                            Modifiers = enchant.Modifiers,
+                            Version = enchant.Version
+                        };
+                        // Write back to JSON
+                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    }
+                    // Initialize the properties
+                    enchant.Initialize(props);
                 }
 
                 // Add to the Registry
@@ -920,7 +935,7 @@ namespace KRPGLib.Enchantment
                         SourceEntity = byEntity,
                         CauseEntity = byEntity,
                         TargetEntity = targetEntity,
-                        DamageTier = pair.Value
+                        DamageTier = pair.Value 
                     };
                     enc.OnTrigger(enchant);
                 }

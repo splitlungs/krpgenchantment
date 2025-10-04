@@ -16,7 +16,7 @@ namespace KRPGLib.Enchantment
 {
     public class ResistElectricityEnchantment : Enchantment
     {
-        string DamageResist { get { return Modifiers.GetString("DamageResist").ToLower(); } }
+        string DamageResist { get { return Modifiers.GetString("DamageResist").ToLowerInvariant(); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public ResistElectricityEnchantment(ICoreAPI api) : base(api)
         {
@@ -35,6 +35,7 @@ namespace KRPGLib.Enchantment
             { 
                 { "DamageResist", "electricity"}, { "PowerMultiplier", 0.1 } 
             };
+            Version = 1.00f;
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -43,10 +44,7 @@ namespace KRPGLib.Enchantment
             
             // Extract the Damage Values
             float dmg = parameters.GetFloat("damage");
-            string dmgType = enchant.Type.ToString().ToLower();
-
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} {1} damage.", dmg, dmgType);
+            string dmgType = parameters.GetString("type");
 
             if (DamageResist == dmgType && dmg > 0)
             {
@@ -57,7 +55,7 @@ namespace KRPGLib.Enchantment
                 parameters["damage"] = dmg;
                 
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to item {2}.", Lang.Get(Code), dmg, enchant.TargetEntity.GetName());
+                    Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to {2}.", Code, dmg, enchant.TargetEntity.GetName());
             }
         }
     }

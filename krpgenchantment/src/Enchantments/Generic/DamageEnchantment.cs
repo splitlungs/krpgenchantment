@@ -55,6 +55,7 @@ namespace KRPGLib.Enchantment
             {
                 { "DamageResist", "resistfire" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.1f }
             };
+            Version = 1.00f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

@@ -45,10 +45,10 @@ namespace KRPGLib.Enchantment
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
             };
+            Version = 1.00f;
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
-            // Api.World.RegisterGameTickListener(SpawnLightning, TickFrequency);
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

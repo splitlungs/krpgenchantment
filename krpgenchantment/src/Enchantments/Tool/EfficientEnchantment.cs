@@ -36,22 +36,11 @@ namespace KRPGLib.Enchantment
                 "Drill",
                 };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
+            Version = 1.00f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         { 
             
-        }
-        public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a {1} enchantment.", enchant.TargetEntity.GetName(), Code);
-            // Roll 0.01 - 1.00
-            double roll = Api.World.Rand.NextDouble() + 0.01;
-            double bonus = enchant.Power * PowerMultiplier;
-            if ((roll + bonus) >= (1.00 - bonus))
-                parameters["damage"] = 0;
-            // if (EnchantingConfigLoader.Config.Debug == true)
-            //     Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to item {2}.", Lang.Get(Code), parameters["damage"], enchant.SourceStack.GetName());
         }
     }
 }

@@ -45,6 +45,7 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand" };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
+            Version = 1.00f;
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

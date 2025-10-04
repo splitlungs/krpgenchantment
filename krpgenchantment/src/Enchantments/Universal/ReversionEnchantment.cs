@@ -51,6 +51,7 @@ namespace KRPGLib.Enchantment
             {
                 {"TickDuration", 10000 }, { "PowerMultiplier", 1 } 
             };
+            Version = 1.00f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

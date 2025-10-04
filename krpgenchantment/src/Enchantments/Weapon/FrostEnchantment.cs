@@ -45,83 +45,8 @@ namespace KRPGLib.Enchantment
             {
                 { "DamageResist", "resistfrost" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
+            Version = 1.00f;
         }
-        /*
-        public override void ConfigParticles()
-        {
-            ParticleProps = new AdvancedParticleProperties[3];
-            ParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-        }
-        */
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;

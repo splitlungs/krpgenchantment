@@ -42,13 +42,7 @@ namespace KRPGLib.Enchantment
             {
                 {"TickMultiplier", 1 }, {"TickDuration", 12500 }
             };
-            // Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
-        }
-        public override void Initialize(EnchantmentProperties properties)
-        {
-            base.Initialize(properties);
-            // We let the config initialize before registering the Tick Listener
-            // Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
+            Version = 1.00f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -68,7 +62,6 @@ namespace KRPGLib.Enchantment
                 {
                     EnchantTick eTick =
                         new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
-                    //TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
                     eeb.TickRegistry.Add(enchant.Code, eTick);
                     enchant.TargetEntity.Ignite();
                 }
@@ -109,6 +102,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.
         /// </summary>
+        // [Obsolete]
         // public void IgniteTick(float dt)
         // {
         //     foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry) 

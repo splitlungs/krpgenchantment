@@ -35,6 +35,9 @@ namespace KRPGLib.Enchantment
         public List<string> ValidToolTypes = new List<string>();
         // Configurable JSON multiplier for effects
         public EnchantModifiers Modifiers;
+        // Used to manage default configurations, as well as to force resets of individual enchantments.
+        // Setting to a value less than 1.00 will force a reset of the properties to default.
+        public float Version;
         public EnchantmentProperties Clone()
         {
             return CloneTo<EnchantmentProperties>();
@@ -142,6 +145,9 @@ namespace KRPGLib.Enchantment
         public List<string> ValidToolTypes { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
+        // Used to manage default configurations, as well as to force resets of individual enchantments.
+        // Setting to a value less than 1.00 will force a reset of the properties to default.
+        public float Version { get; set; }
         
         // Properties moved to Modifiers and EnchantTick Registry moved to EnchantmentEntityBehavior
         //
@@ -163,6 +169,7 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void Initialize(EnchantmentProperties properties)
         {
+            // Load from properties, or reset if corrupt
             if (properties.Enabled == true) Enabled = properties.Enabled;
             else Enabled = false;
             if (properties.Code != null) Code = properties.Code;
@@ -179,8 +186,8 @@ namespace KRPGLib.Enchantment
             else ValidToolTypes = new List<string>();
             if (properties.Modifiers != null) Modifiers = properties.Modifiers;
             else Modifiers = new EnchantModifiers();
-            
-            // ConfigParticles();
+            if (properties.Version >= Version) Version = properties.Version;
+            else Version = 0;
         }
         /// <summary>
         /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
@@ -379,13 +386,22 @@ namespace KRPGLib.Enchantment
         
         }
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is successfully attacked.
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
+        }
+        /// <summary>
+        /// Triggered when an entity wearing an enchanted item has already received damage.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
         }
         /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
