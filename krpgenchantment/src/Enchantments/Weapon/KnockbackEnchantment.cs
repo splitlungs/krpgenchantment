@@ -38,17 +38,18 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
-            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 0.10 },  { "VerticalMultiplier", 0.025 } };
-            Version = 1.00f;
+            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 10 },  { "VerticalMultiplier", 0.1 } };
+            Version = 1.01f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Knockback enchantment.", enchant.TargetEntity.GetName());
 
-            float hPower = enchant.Power * HorizontalMultiplier;
-            float vPower = enchant.Power * VerticalMultiplier;
-
+            // OBSOLETE
+            float hPower = enchant.Power * HorizontalMultiplier * GameMath.Clamp((1f - enchant.TargetEntity.Properties.KnockbackResistance) / 10f, 0f, 1f);
+            float vPower = enchant.Power * VerticalMultiplier * GameMath.Clamp((1f - enchant.TargetEntity.Properties.KnockbackResistance) / 10f, 0f, 1f);
+            
             // Get attacking direction
             Vec3d pushDir = enchant.TargetEntity.Pos.XYZ - enchant.SourceEntity.Pos.XYZ;
             pushDir.Y = 0;

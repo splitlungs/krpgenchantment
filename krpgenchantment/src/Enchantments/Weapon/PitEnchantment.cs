@@ -83,7 +83,7 @@ namespace KRPGLib.Enchantment
 
                 LandClaim[] claims = Api.World.Claims.Get(ipos);
                 bool denied = false;
-                if (player != null)
+                if (player != null && claims != null)
                 {
                     foreach (LandClaim lc in claims)
                     {

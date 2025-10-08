@@ -69,7 +69,9 @@ namespace KRPGLib.Enchantment
                 dmg += enchant.Power * PowerMultiplier;
             }
 
+            // OBSOLETE
             // Apply Defenses
+            /*
             if (enchant.TargetEntity is IPlayer player)
             {
                 IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
@@ -93,6 +95,7 @@ namespace KRPGLib.Enchantment
                     dmg = Math.Max(0f, dmg * resist);
                 }
             }
+            */
 
             // Apply Damage
             if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))

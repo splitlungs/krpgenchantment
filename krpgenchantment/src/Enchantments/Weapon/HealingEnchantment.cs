@@ -69,7 +69,9 @@ namespace KRPGLib.Enchantment
                 dmg += enchant.Power * PowerMultiplier;
             }
 
+            // OBSOLETE
             // Apply Defenses
+            /*
             if (enchant.TargetEntity is IPlayer player)
             {
                 // Api.Logger.Event("Damage enchant is affecting a player!");
@@ -94,6 +96,7 @@ namespace KRPGLib.Enchantment
                     dmg = Math.Max(0f, dmg * resist);
                 }
             }
+            */
 
             // Apply Damage
             if (EnchantingConfigLoader.Config?.Debug == true)

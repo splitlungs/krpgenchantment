@@ -64,12 +64,32 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
         /// <param name="stack"></param>
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants);
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
@@ -83,6 +103,17 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
         /// <param name="stack"></param>
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
@@ -90,6 +121,17 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters);
         /// <summary>
         /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
         /// </summary>

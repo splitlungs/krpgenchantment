@@ -15,14 +15,17 @@ using KRPGLib.Enchantment.API;
 using Newtonsoft.Json.Linq;
 using CompactExifLib;
 using Vintagestory.API.Util;
+using System.Data;
 
 namespace KRPGLib.Enchantment
 {
     public class PoisonEnchantment : Enchantment
     {
+        string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         float DamageMultiplier { get { return Modifiers.GetFloat("DamageMultiplier"); } }
+        float HungerMultiplier { get { return Modifiers.GetFloat("HungerMultiplier"); } }
         public PoisonEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -44,9 +47,9 @@ namespace KRPGLib.Enchantment
                 "Wand" };
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}
+                { "DamageResist", "resistpoison" }, {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}, {"HungerMultiplier", 100}
             };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -84,34 +87,13 @@ namespace KRPGLib.Enchantment
         {
             if (entity == null) return;
 
-            // Get Resistance
-            float resist = 0f;
-            if (entity is IPlayer player)
-            {
-                IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
-                if (inv != null)
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Player's inventory detected when receiving a poison enchant.");
-                    
-                    int[] wearableSlots = new int[3] { 12, 13, 14 };
-                    foreach (int i in wearableSlots)
-                    {
-                        if (!inv[i].Empty)
-                        {
-                            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(inv[i].Itemstack);
-                            int rPower = enchants.GetValueOrDefault("resistpoison", 0);
-                            resist += rPower * 0.1f;
-                        }
-                    }
-                }
-            }
-            resist = 1 - resist;
+            double roll = Api.World.Rand.NextDouble();
+            float dmg = ((power * DamageMultiplier) + (float)roll);
+
             // Health Damage
             EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
             if (hp == null) return;
-            double roll = Api.World.Rand.NextDouble();
-            float dmg = ((float)roll * resist) + (power * DamageMultiplier);
+
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, EnumDamageType.Injury.ToString());
             DamageSource source = new DamageSource()
@@ -123,9 +105,7 @@ namespace KRPGLib.Enchantment
                 Type = EnumDamageType.Injury
             };
             hp.OnEntityReceiveDamage(source, ref dmg);
-            // I think OnEntityReceiveDamage is good enough and we don't need to bypass it?
-            // hp.Health -= dmg;
-            // hp.MarkDirty();
+
             // Particle if damaged
             ICoreServerAPI sApi = Api as ICoreServerAPI;
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -133,12 +113,45 @@ namespace KRPGLib.Enchantment
             ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = EnumDamageType.Poison };
             byte[] data = SerializerUtil.Serialize(packet);
             sApi.Network.BroadcastEntityPacket(entity.EntityId, 1616, data);
-            // entity.ReceiveDamage(source, dmg);
+            
             // Hunger damage
             EntityBehaviorHunger hungy = entity.GetBehavior<EntityBehaviorHunger>();
             if (hungy == null) return;
-            hungy.ConsumeSaturation(dmg * 100);
+            // Setup Hunger
+            float amount = dmg * HungerMultiplier;
+            
+            // TODO: Optimize how resist works
+            // Resistances
+            EnchantmentEntityBehavior eeb = entity.GetBehavior<EnchantmentEntityBehavior>();
+            if (eeb?.IsPlayer == true)
+            {
+                // Push OnHit to each cached Gear enchants
+                foreach (KeyValuePair<int, ActiveEnchantCache> pair in eeb.GearEnchantCache)
+                {
+                    if (pair.Value.Enchantments?.ContainsKey("resistpoison") != true) continue;
 
+                    EnchantModifiers parameters = new EnchantModifiers() { { "damage", amount }, { "type", "poison" } };
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        Trigger = "OnHit",
+                        Code = "resistpoison",
+                        Power = power,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = entity
+                    };
+                    bool didEnchant = eeb.sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+
+                    // bool didEnchants =
+                    //     eeb.sApi.EnchantAccessor().TryEnchantments(eeb.gearInventory[pair.Key]?.Itemstack, "OnHit", byEntity, entity, pair.Value.Enchantments, ref parameters);
+                    if (didEnchant)
+                    {
+                        amount = parameters.GetFloat("damage");
+                    }
+                }
+                // Apply hunger
+                hungy.ConsumeSaturation(amount);
+            }
         }
         /// <summary>
         /// Attempt to resist, then deal Poison effect. Power multiplies number of 1s refreshes.

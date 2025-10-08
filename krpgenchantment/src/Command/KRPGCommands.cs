@@ -38,8 +38,17 @@ namespace KRPGLib.Enchantment
                 bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, api);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
-                activeSlot.MarkDirty();
-                if (didEnchant == true) return true;
+                if (didEnchant == true)
+                {
+                    // Update cache
+                    IPlayer player = args.Caller.Player;
+                    int slotId = player.InventoryManager.GetHotbarInventory().GetSlotId(activeSlot);
+                    EnchantmentEntityBehavior eeb = player.Entity.GetBehavior<EnchantmentEntityBehavior>();
+                    eeb.GenerateHotbarEnchantCache(slotId);
+                    // Then update client
+                    activeSlot.MarkDirty();
+                    return true;
+                }
             }
 
             return false;
@@ -78,7 +87,17 @@ namespace KRPGLib.Enchantment
                 bool didEnchant = api.EnchantAccessor().RemoveEnchantFromItem(eCode, activeSlot, args.Caller.Entity);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
-                if (didEnchant == true) return true;
+                if (didEnchant == true)
+                {
+                    // Update cache
+                    IPlayer player = args.Caller.Player;
+                    int slotId = player.InventoryManager.GetHotbarInventory().GetSlotId(activeSlot);
+                    EnchantmentEntityBehavior eeb = player.Entity.GetBehavior<EnchantmentEntityBehavior>();
+                    eeb.GenerateHotbarEnchantCache(slotId);
+                    // Then update client
+                    activeSlot.MarkDirty();
+                    return true;
+                }
             }
 
             return false;
@@ -99,7 +118,17 @@ namespace KRPGLib.Enchantment
                 bool didEnchant = api.EnchantAccessor().RemoveAllEnchantsFromItem(activeSlot, args.Caller.Entity);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
-                if (didEnchant == true) return true;
+                if (didEnchant == true)
+                {
+                    // Update cache
+                    IPlayer player = args.Caller.Player;
+                    int slotId = player.InventoryManager.GetHotbarInventory().GetSlotId(activeSlot);
+                    EnchantmentEntityBehavior eeb = player.Entity.GetBehavior<EnchantmentEntityBehavior>();
+                    eeb.GenerateHotbarEnchantCache(slotId);
+                    // Then update client
+                    activeSlot.MarkDirty();
+                    return true;
+                }
             }
 
             return false;
@@ -120,7 +149,17 @@ namespace KRPGLib.Enchantment
                 bool didEnchant = api.EnchantAccessor().ResetLatentEnchantsOnItem(activeSlot);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Reset completed with status: {0}.", didEnchant);
-                if (didEnchant == true) return true;
+                if (didEnchant == true)
+                {
+                    // Update cache
+                    IPlayer player = args.Caller.Player;
+                    int slotId = player.InventoryManager.GetHotbarInventory().GetSlotId(activeSlot);
+                    EnchantmentEntityBehavior eeb = player.Entity.GetBehavior<EnchantmentEntityBehavior>();
+                    eeb.GenerateHotbarEnchantCache(slotId);
+                    // Then update client
+                    activeSlot.MarkDirty();
+                    return true;
+                }
             }
 
             return false;
