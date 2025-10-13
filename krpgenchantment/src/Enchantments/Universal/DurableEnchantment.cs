@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
             Version = 1.00f;
         }
-        public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public void OnDurability(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());

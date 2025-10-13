@@ -37,16 +37,17 @@ namespace KRPGLib.Enchantment
                 EnchantmentSource enchant = new EnchantmentSource() {
                     SourceStack = itemslot.Itemstack,
                     TargetEntity = byEntity,
-                    Trigger = "OnHit",
+                    Trigger = "OnDurability",
                     Code = "durable",
                     Power = durable };
                 int dmg = amount;
-                EnchantModifiers parameters = new EnchantModifiers() { { "damage", (int)dmg } };
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
                 bool didEnchantment = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
-                if (didEnchantment != true)
-                    return true;
-                else
+                if (didEnchantment == true)
+                {
                     amount = parameters.GetInt("damage");
+                    return false; // Only skip if we 
+                }
             }
 
             return true;

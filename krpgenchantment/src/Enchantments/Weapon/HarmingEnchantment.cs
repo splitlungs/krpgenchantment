@@ -19,7 +19,6 @@ namespace KRPGLib.Enchantment
     public class HarmingEnchantment : Enchantment
     {
         EnumDamageType DamageType { get { return EnumDamageType.Injury; } }
-        string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
         int MaxDamage { get { return Modifiers.GetInt("MaxDamage"); } }
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         public HarmingEnchantment(ICoreAPI api) : base(api)
@@ -43,9 +42,9 @@ namespace KRPGLib.Enchantment
                 "Wand" };
             Modifiers = new EnchantModifiers()
             {
-                { "DamageResist", "resistinjury" }, { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
+                { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -68,35 +67,6 @@ namespace KRPGLib.Enchantment
                 dmg += Api.World.Rand.NextSingle();
                 dmg += enchant.Power * PowerMultiplier;
             }
-
-            // OBSOLETE
-            // Apply Defenses
-            /*
-            if (enchant.TargetEntity is IPlayer player)
-            {
-                // Api.Logger.Event("Damage enchant is affecting a player!");
-                IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
-                if (inv != null)
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Player's inventory detected when receiving a damage enchant.");
-                    float resist = 0f;
-                    int[] wearableSlots = new int[3] { 12, 13, 14 };
-
-                    foreach (int i in wearableSlots)
-                    {
-                        if (!inv[i].Empty)
-                        {
-                            Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments(inv[i].Itemstack);
-                            int rPower = enchants.GetValueOrDefault(DamageResist, 0);
-                            resist += rPower * 0.1f;
-                        }
-                    }
-                    resist = 1 - resist;
-                    dmg = Math.Max(0f, dmg * resist);
-                }
-            }
-            */
 
             // Apply Damage
             if (enchant.TargetEntity.ShouldReceiveDamage(source, dmg))

@@ -14,6 +14,8 @@ using Vintagestory.API.Util;
 using Cairo.Freetype;
 using System.Numerics;
 using Vintagestory.API.Datastructures;
+using static System.Net.Mime.MediaTypeNames;
+using System.Data;
 
 namespace KRPGLib.Enchantment
 {
@@ -288,42 +290,29 @@ namespace KRPGLib.Enchantment
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (mode == EnumInteractMode.Attack && itemslot.Itemstack != null && entity.Api.Side == EnumAppSide.Server)
+            if (mode != EnumInteractMode.Attack || itemslot.Empty == true || entity?.World.Side != EnumAppSide.Server)
+                return;
+
+            // Get Enchantments
+            handled = EnumHandling.Handled;
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
+            if (enchants != null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     byEntity.Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
 
-                // Creative check
-                // if (player?.WorldData?.CurrentGameMode != EnumGameMode.Survival)
-                // {
-                //     handled = EnumHandling.Handled;
-                //     return;
-                // }
-
-                // Get Enchantments
-                Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
-                if (enchants != null)
+                ICoreServerAPI sapi = Api as ICoreServerAPI;
+                // Translate Handling through Int value in Enchantments.
+                // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
+                int eHandled = (int)handled;
+                EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, enchants, ref parameters);
+                if (didEnchants)
                 {
-                    ICoreServerAPI sapi = Api as ICoreServerAPI;
-
-                    // Should avoid default during healing
-                    List<string> cats = sapi.EnchantAccessor().GetEnchantmentCategories();
-                    bool preventDefault = false;
-                    foreach (string cat in cats) 
-                    {
-                        if (cat.ToLower().Contains("heal"))
-                            preventDefault = true;
-                    }
-                    if (preventDefault == true)
-                        handled = EnumHandling.PreventDefault;
-                    else
-                        handled = EnumHandling.Handled;
-                    
-                    EnchantModifiers parameters = new EnchantModifiers();
-                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, ref parameters);
+                    eHandled = parameters.GetInt("handled");
+                    handled = (EnumHandling)eHandled;
                 }
             }
-            base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }
         /// <summary>
         /// Primary trigger call for OnHit enchantments, which is applied BEFORE damage is dealt to HP.
@@ -381,12 +370,11 @@ namespace KRPGLib.Enchantment
                 if (didEnchants)
                     dmg = parameters.GetFloat("damage");
             }
-                base.OnEntityReceiveDamage(damageSource, ref dmg);
         }
         public void OnTick(float deltaTime)
         {
             if (entity?.World?.Side != EnumAppSide.Server || TickRegistry?.Count == 0) return;
-            
+
             // if (EnchantingConfigLoader.Config?.Debug == true)
             //     Api.Logger.Event("[KRPGEnchantment] {0} is attempting to tick over Tick Registry.", entity.GetName());
 
@@ -440,7 +428,6 @@ namespace KRPGLib.Enchantment
                 EnumDamageType type = packet.DamageType;
                 GenerateParticles(type, amount);
             }
-            base.OnReceivedServerPacket(packetid, data, ref handled);
         }
 
         protected AdvancedParticleProperties[] ParticleProps;

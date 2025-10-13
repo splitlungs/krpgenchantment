@@ -38,8 +38,8 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
-            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 10 },  { "VerticalMultiplier", 0.1 } };
-            Version = 1.01f;
+            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 1 },  { "VerticalMultiplier", 0.1 } };
+            Version = 1.02f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
