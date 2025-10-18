@@ -21,18 +21,22 @@ using System.Reflection.Metadata;
 
 namespace KRPGLib.Enchantment
 {
+    /// <summary>
+    /// Class for storing default enchantment data at runtime. Do not save your active enchantments here.
+    /// </summary>
     public class EnchantmentBehavior : CollectibleBehavior
     {
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
-        /// <summary>
-        /// Class for storing default enchantment configuration. Do not save your active enchantments here.
-        /// </summary>
-        private Dictionary<string, int> Enchantments = new Dictionary<string, int>();
+        public Dictionary<string, int> Enchantments = null;
         public bool Enchantable = false;
         public bool IsReagent = false;
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
+        }
+        void GetEnchantments(ItemStack itemStack)
+        {
+            Enchantments = Api.EnchantAccessor().GetActiveEnchantments(itemStack);
         }
         public override void OnLoaded(ICoreAPI api)
         {
@@ -41,12 +45,42 @@ namespace KRPGLib.Enchantment
             Api = api;
             // Particles - Not Working Yet
             // ConfigParticles();
-            
+
             // We only load the config on the server, so check side first
             if (api.Side != EnumAppSide.Server) return;
             sApi = api as ICoreServerAPI;
-            if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(collObj.Code)) 
+            if (EnchantingConfigLoader.Config?.ValidReagents.ContainsKey(collObj.Code) == true) 
                 IsReagent = true;
+            
+        }
+        public override void OnDamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount, ref EnumHandling bhHandling)
+        {
+            if (!(world.Api is ICoreServerAPI api)) return;
+
+            bhHandling = EnumHandling.Handled;
+            Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
+            if (enchants == null) return;
+
+            int durable = enchants.GetValueOrDefault("durable", 0);
+            if (durable > 0)
+            {
+                EnchantmentSource enchant = new EnchantmentSource()
+                {
+                    SourceStack = itemslot.Itemstack,
+                    TargetEntity = byEntity,
+                    Trigger = "OnDurability",
+                    Code = "durable",
+                    Power = durable
+                };
+                int dmg = amount;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+                bool didEnchantment = api.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+                if (didEnchantment == true)
+                {
+                    amount = parameters.GetInt("damage");
+                }
+            }
+
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {

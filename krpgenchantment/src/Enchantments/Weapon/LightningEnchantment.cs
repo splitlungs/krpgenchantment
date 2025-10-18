@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Datastructures;
-using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
@@ -57,26 +51,25 @@ namespace KRPGLib.Enchantment
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
             if (eeb != null)
             {
+                EnchantTick eTick = enchant.ToEnchantTick();
+                eTick.TickDuration = Delay;
                 // Refresh ticks if needed
                 if (eeb.TickRegistry.ContainsKey(Code))
                 {
                     int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                     int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
                     eeb.TickRegistry[Code].TicksRemaining = roll;
-                    eeb.TickRegistry[Code].Source = enchant.Clone();
                 }
                 else if (enchant.Power == 1)
                 {
-                    EnchantTick tick =
-                        new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = enchant.Power };
-                    eeb.TickRegistry.Add(Code, tick);
+                    eeb.TickRegistry.Add(Code, eTick);
                 }
                 else if (enchant.Power > 1)
                 {
                     int mul = (int)Math.Abs(enchant.Power * PowerMultiplier);
                     int roll = Api.World.Rand.Next(enchant.Power - mul, enchant.Power + MaxBonusStrikes);
-                    EnchantTick tick = new EnchantTick() { LastTickTime = Api.World.ElapsedMilliseconds, Source = enchant.Clone(), TicksRemaining = roll };
-                    eeb.TickRegistry.Add(Code, tick);
+                    eTick.TicksRemaining = roll;
+                    eeb.TickRegistry.Add(Code, eTick);
                 }
                 else
                     Api.Logger.Error("[KRPGEnchantment] Call Lightning was registered against {0} with Power 0 or less!", enchant.TargetEntity.EntityId);
@@ -89,9 +82,9 @@ namespace KRPGLib.Enchantment
 
             if (tr > 0 && curDur >= Delay)
             {
+                Entity entity = Api.World.GetEntityById(eTick.TargetEntityID);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Lightning enchantment is performing a Lightning Tick on {0}.", eTick.Source.TargetEntity.GetName());
-                Entity entity = eTick.Source.TargetEntity;
+                    Api.Logger.Event("[KRPGEnchantment] Lightning enchantment is performing a Lightning Tick on {0}.", entity.GetName());
                 if (entity == null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
@@ -99,7 +92,7 @@ namespace KRPGLib.Enchantment
                     eTick.Dispose();
                     return;
                 }
-                SpawnLightning(eTick.Source.TargetEntity.SidedPos.XYZ);
+                SpawnLightning(entity.SidedPos.XYZ);
                 eTick.TicksRemaining = tr - 1;
                 eTick.LastTickTime = Api.World.ElapsedMilliseconds;
             }

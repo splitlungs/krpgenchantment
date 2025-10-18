@@ -101,23 +101,59 @@ namespace KRPGLib.Enchantment
         }
     }
     /// <summary>
-    /// Generic for creating Tick Registries
+    /// Stores data for Entities to process their TickRegistry.
     /// </summary>
     public class EnchantTick : IDisposable
     {
-        public EnchantmentSource Source;
+        // The Code of the Enchantment
+        public string Code;
+        // The Power or Tier of the Enchantment
+        public int Power;
+        // Used to define which inventory to search with InventoryManager
+        public string InventoryID;
+        // ID of the slot in the given inventory
+        public int SlotID;
+        // Unique ID of the source enchanted item
+        public int ItemID;
+        // Entity ID of the cause entity
+        public long CauseEntityID;
+        // Entity ID of the cause entity
+        public long TargetEntityID;
+        // Block Position for where the enchantment landed. Typically used in place of TargetEntity
+        public BlockPos TargetPos;
+        // public EnchantmentSource Source;
+        // When this is 0, the EnchantTick is disposed
         public int TicksRemaining;
+        // Set after processing a tick fully
         public long LastTickTime;
+        // How long it should take minimum before a tick can be triggered again
+        public long TickDuration;
+        // If true, it will not be removed if TicksRemaining is 0
         public bool Persistent = false;
+        // If true, it will not be ticked when not in main hand
         public bool IsHotbar = false;
-
+        // If true, it will not be ticked when not in off hand
+        public bool IsOffhand = false;
+        // Mark this tick to be cleaned in the next trash cycle
+        public bool IsTrash = false;
         public void Dispose()
         {
-            Source = null;
+            // Source = null;
+            Code = null;
+            Power = 0;
+            InventoryID = null;
+            SlotID = 0;
+            ItemID = 0;
+            CauseEntityID = 0;
+            TargetEntityID = 0;
+            TargetPos = null;
             TicksRemaining = 0;
             LastTickTime = 0;
+            TickDuration = 0;
             Persistent = false;
             IsHotbar = false;
+            IsOffhand = false;
+            IsTrash = true;
         }
     }
     /// <summary>

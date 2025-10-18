@@ -60,18 +60,16 @@ namespace KRPGLib.Enchantment
             EnchantmentEntityBehavior eeb = enchant.TargetEntity?.GetBehavior<EnchantmentEntityBehavior>();
             if (eeb != null)
             {
+                EnchantTick eTick = enchant.ToEnchantTick();
+                eTick.TicksRemaining = tickMax;
                 // TODO: Make this better?
                 if (eeb.TickRegistry.ContainsKey(Code))
                 {
-                    eeb.TickRegistry[Code].TicksRemaining = tickMax;
-                    eeb.TickRegistry[Code].Source = enchant.Clone();
+                    eeb.TickRegistry[Code] = eTick;
                 }
                 else if (tickMax > 1)
                 {
-                    EnchantTick eTick =
-                        new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = 0 };
                     eeb.TickRegistry.Add(Code, eTick);
-                    // DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
                 }
                 else
                     DealPoison(enchant.TargetEntity, enchant.CauseEntity, enchant.Power);
@@ -163,9 +161,11 @@ namespace KRPGLib.Enchantment
 
             if (tr > 0 && curDur >= TickDuration)
             {
+                Entity entity = Api.World.GetEntityById(eTick.TargetEntityID);
+                Entity byEntity = Api.World.GetEntityById(eTick.CauseEntityID);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing a Poison Tick on {0}.", eTick.Source.TargetEntity.GetName());
-                Entity entity = eTick.Source.TargetEntity;
+                    Api.Logger.Event("[KRPGEnchantment] Poison enchantment is performing a Poison Tick on {0}.", entity.GetName());
+
                 if (entity == null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
@@ -173,7 +173,7 @@ namespace KRPGLib.Enchantment
                     eTick.Dispose();
                     return;
                 }
-                DealPoison(entity, eTick.Source.CauseEntity, eTick.Source.Power);
+                DealPoison(entity, byEntity, eTick.Power);
                 eTick.TicksRemaining = tr - 1;
                 eTick.LastTickTime = Api.World.ElapsedMilliseconds;
             }

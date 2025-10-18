@@ -68,8 +68,11 @@ namespace KRPGLib.Enchantment
                 // Toggle On
                 if (!eeb.TickRegistry.ContainsKey(codeID))
                 {
-                    EnchantTick eTick = new EnchantTick()
-                    { LastTickTime = 0, Source = enchant, TicksRemaining = 0, Persistent = true, IsHotbar = parameters.GetBool("IsHotbar") };
+                    EnchantTick eTick = enchant.ToEnchantTick();
+                    eTick.Persistent = true;
+                    eTick.IsHotbar = parameters.GetBool("IsHotbar");
+                    eTick.TickDuration = TickDuration;
+                    // { LastTickTime = 0, Source = enchant, TicksRemaining = 0, Persistent = true, IsHotbar = parameters.GetBool("IsHotbar") };
                     eeb.TickRegistry.Add(codeID, eTick);
                 }
                 // Toggle Off - Failsafe
@@ -83,13 +86,39 @@ namespace KRPGLib.Enchantment
             else
             {
                 eeb.TickRegistry[codeID].Dispose();
-                eeb.TickRegistry.Remove(codeID);
             }
         }
         public override void OnTick(ref EnchantTick eTick)
         {
-            if (eTick.Source.SourceSlot.Empty || eTick.Source?.SourceStack == null)
+            if (!(Api is ICoreServerAPI api))
             {
+                Api.Logger.Event("[KRPGEnchantment] Failed to get ICoreServerAPI for a Reversion tick. Disposing.");
+                eTick.Dispose();
+                return;
+            }
+            Entity entity = api.World.GetEntityById(eTick.CauseEntityID);
+            if (entity == null)
+            {
+                Api.Logger.Event("[KRPGEnchantment] Failed to get the Entity for a Reversion tick. Disposing.");
+                eTick.Dispose();
+                return;
+            }
+            EnchantmentEntityBehavior eeb = entity.GetBehavior<EnchantmentEntityBehavior>();
+            IInventory inventory;
+            if (eTick.IsHotbar == true)
+                inventory = eeb.hotbarInventory;
+            else
+                inventory = eeb.gearInventory;
+            if (inventory == null)
+            {
+                Api.Logger.Event("[KRPGEnchantment] Failed to get the IInventory for a Reversion tick. Disposing.");
+                eTick.Dispose();
+                return;
+            }
+            ItemSlot slot = inventory[eTick.SlotID];
+            if (slot.Empty)
+            {
+                Api.Logger.Event("[KRPGEnchantment] Failed to get the ItemSlot for a Reversion tick. Disposing.");
                 eTick.Dispose();
                 return;
             }
@@ -102,49 +131,44 @@ namespace KRPGLib.Enchantment
             // }
             // if (EnchantingConfigLoader.Config?.Debug == true)
             //     Api.Logger.Event("[KRPGEnchantment] {0} is being ticked by a Reversion enchantment.", eTick.Source.SourceStack.GetName());
-            
-            long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
 
             // if (EnchantingConfigLoader.Config?.Debug == true)
             //     Api.Logger.Event("[KRPGEnchantment] Current Time: {0}, Last Tick Time: {1}, Tick Duration: {2}", Api.World.ElapsedMilliseconds, eTick.LastTickTime, TickDuration);
 
-            if (curDur >= TickDuration)
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Reversion enchantment.", slot.Itemstack.GetName());
+
+            EntityPos causePos = entity.SidedPos;
+            // EntityBehaviorTemporalStabilityAffected tempStab = eTick.Source.CauseEntity.GetBehavior<EntityBehaviorTemporalStabilityAffected>();
+            SystemTemporalStability tempStabilitySystem = api.ModLoader.GetModSystem<SystemTemporalStability>();
+            float stabf = tempStabilitySystem.GetTemporalStability(causePos.AsBlockPos);
+
+            // Entity entity = eTick.Source.GetCauseEntity();
+            // IPlayer player = null;
+            // if (entity is EntityPlayer ep)
+            // {
+            //     player = Api?.World.PlayerByUid(ep.PlayerUID);
+            // }
+            // IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
+
+            if (stabf < 1)
             {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Reversion enchantment.", eTick.Source.SourceStack.GetName());
-
-                EntityPos causePos = eTick.Source.CauseEntity.SidedPos;
-                // EntityBehaviorTemporalStabilityAffected tempStab = eTick.Source.CauseEntity.GetBehavior<EntityBehaviorTemporalStabilityAffected>();
-                SystemTemporalStability tempStabilitySystem = eTick.Source.CauseEntity.Api.ModLoader.GetModSystem<SystemTemporalStability>();
-                float stabf = tempStabilitySystem.GetTemporalStability(causePos.AsBlockPos);
-
-                // Entity entity = eTick.Source.GetCauseEntity();
-                // IPlayer player = null;
-                // if (entity is EntityPlayer ep)
-                // {
-                //     player = Api?.World.PlayerByUid(ep.PlayerUID);
-                // }
-                // IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
-
-                if (stabf < 1)
+                int amount = eTick.Power * PowerMultiplier;
+                int remDur = slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack);
+                int maxDur = slot.Itemstack.Collectible.GetMaxDurability(slot.Itemstack);
+                if (remDur < maxDur)
                 {
-                    int amount = eTick.Source.Power * PowerMultiplier;
-                    int remDur = eTick.Source.SourceStack.Collectible.GetRemainingDurability(eTick.Source.SourceStack);
-                    int maxDur = eTick.Source.SourceStack.Collectible.GetMaxDurability(eTick.Source.SourceStack);
-                    if (remDur < maxDur)
-                    {
 
-                        remDur += amount;
-                        remDur = Math.Min(remDur, maxDur);
-                        eTick.Source.SourceStack.Attributes.SetInt("durability", remDur);
+                    remDur += amount;
+                    remDur = Math.Min(remDur, maxDur);
+                    slot.Itemstack.Attributes.SetInt("durability", remDur);
 
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
-                    }
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
                 }
-                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
-                eTick.Source.SourceSlot.MarkDirty();
             }
+            eTick.LastTickTime = api.World.ElapsedMilliseconds;
+            slot.MarkDirty();
         }
     }
 }
