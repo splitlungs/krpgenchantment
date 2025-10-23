@@ -414,9 +414,11 @@ namespace KRPGLib.Enchantment
             // 0. Safety check
             if (!(Api is ICoreServerAPI sapi)) return;
             if (dt < TickTime) return;
-            // if (TickRegistry?.Count <= 0) return;
-            ITreeAttribute enchantTicks = entity.WatchedAttributes.GetOrAddTreeAttribute("EnchantTicks");
-            if (enchantTicks.Values.Length <= 0) return;
+            if (TickRegistry?.Count <= 0) return;
+            
+            // Can we use WatchedAttributes? 
+            // ITreeAttribute enchantTicks = entity.WatchedAttributes.GetOrAddTreeAttribute("EnchantTicks");
+            // if (enchantTicks.Values.Length <= 0) return;
             // if (EnchantingConfigLoader.Config?.Debug == true)
             //     Api.Logger.Event("[KRPGEnchantment] {0} is attempting to tick over Tick Registry.", entity.GetName());
 
@@ -424,8 +426,8 @@ namespace KRPGLib.Enchantment
             List <string> tickBin = new List<string>();
             long tickStart = sapi.World.ElapsedMilliseconds;
             // 2. Loop TickRegistry
-            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             // foreach (IAttribute attribute in enchantTicks.Values)
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
                 
                 // 2a. Trash Checks
@@ -487,11 +489,11 @@ namespace KRPGLib.Enchantment
             // 3. Take out the trash
             foreach (string s in tickBin)
             {
-                // TickRegistry.Remove(s);
-                enchantTicks.RemoveAttribute(s);
+                TickRegistry.Remove(s);
+                // enchantTicks.RemoveAttribute(s);
             }
             // 4. Write back to the entity
-            entity.WatchedAttributes.MergeTree(enchantTicks);
+            // entity.WatchedAttributes.MergeTree(enchantTicks);
         }
         #endregion
         #region Particles
