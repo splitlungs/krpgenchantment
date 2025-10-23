@@ -18,6 +18,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Data;
 using CombatOverhaul.MeleeSystems;
 using System.Collections;
+using Cairo;
 
 namespace KRPGLib.Enchantment
 {
@@ -25,44 +26,69 @@ namespace KRPGLib.Enchantment
     {
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public ICoreAPI Api;
-        public ICoreClientAPI cApi;
-        public ICoreServerAPI sApi;
-        public int TickTime = 250;
-
-        private EntityAgent agent;
-        private IServerPlayer player = null;
+        public int TickTime
+        {
+            get
+            {
+                return EnchantingConfigLoader.Config?.EntityTickMs ?? 1000;
+            }
+        }
         private long onTickID = 0;
-        
-        public  IInventory gearInventory = null;
-        public  IInventory hotbarInventory = null;
-        
+        private EntityAgent agent
+        {
+            get
+            {
+                if (!(entity is EntityAgent ea)) return null;
+                return ea;
+            }
+        }
+        private string playerUID;
+        /// <summary>
+        /// Gets the Player from API. Always returns null on client.
+        /// </summary>
+        private IServerPlayer player
+        {
+            get
+            {
+                if (!(Api is ICoreServerAPI api)) return null;
+                return (IServerPlayer)api.World.PlayerByUid(playerUID);
+            }
+        }
+        public bool IsPlayer { get { if (player != null) return true; return false; } }
+        public IInventory gearInventory
+        {
+            get 
+            { 
+                if (!IsPlayer) return null;
+                return player.InventoryManager.GetOwnInventory("character");
+            }
+        }
+        public  IInventory hotbarInventory
+        {
+            get
+            {
+                if (!IsPlayer) return null;
+                return player.InventoryManager.GetHotbarInventory();
+            }
+        }
         public Dictionary<int, ActiveEnchantCache> GearEnchantCache = null;
         public Dictionary<int, ActiveEnchantCache> HotbarEnchantCache = null;
-        public Dictionary<string, EnchantTick> TickRegistry;
-        public bool IsPlayer { get { if (player != null) return true; return false; } }
-        public EnchantmentEntityBehavior(Entity entity, int tickTime) : base(entity)
+        public Dictionary<string, EnchantTick> TickRegistry = new Dictionary<string, EnchantTick>();
+        public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             Api = entity.Api;
-            sApi = entity.Api as ICoreServerAPI;
-            agent = entity as EntityAgent;
-            TickTime = tickTime;
-            ConfigParticles();
-        }
-        public override void OnEntitySpawn()
-        {
-            if (!(Api is ICoreServerAPI sapi)) return;
-            TickRegistry = new Dictionary<string, EnchantTick>();
-            onTickID = sapi.World.RegisterGameTickListener(OnTick, TickTime);
+
+            // Well look what I fuckin found in EntityPlayer. I don't remember any patch notes about this shit
+            // entity.Stats.Register("healingeffectivness").Register("maxhealthExtraPoints").Register("walkspeed");
         }
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
 
             // Save the IServerPlayer
-            player = byPlayer;
+            playerUID = byPlayer.PlayerUID;
 
-            // Register Gear inventory
-            gearInventory = player.InventoryManager.GetOwnInventory("character");
+            // Register Gear cache
             if (gearInventory != null)
             {
                 GearEnchantCache = new Dictionary<int, ActiveEnchantCache>();
@@ -86,15 +112,14 @@ namespace KRPGLib.Enchantment
                 Api?.Logger?.Error("[KRPGEnchantment] Player {0} tried to register GearInventory, but returned null. Gear & Hotbar enchants will not trigger.", player.PlayerUID);
                 return;
             }
-            // Register Hotbar inventory
-            hotbarInventory = player.InventoryManager.GetHotbarInventory();
+            // Register Hotbar cache
             if (hotbarInventory != null)
             {
                 HotbarEnchantCache = new Dictionary<int, ActiveEnchantCache>();
                 foreach (ItemSlot slot in hotbarInventory)
                 {
                     int slotId = hotbarInventory.GetSlotId(slot);
-                    if (slot.Empty != true)
+                    if (slot.Empty == false)
                     {
                         // Trigger OnEquip since we just logged in
                         EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true } };
@@ -114,11 +139,14 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
+            base.OnEntityDeath(damageSourceForDeath);
             // TODO: Make a way to check if the ticks should be cleared on death or not.
-            TickRegistry?.Clear();
+            // TickRegistry?.Clear();
         }
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
+            base.OnEntitySpawn();
+
             if (!(Api is ICoreServerAPI sapi)) return;
 
             if (IsPlayer)
@@ -131,6 +159,7 @@ namespace KRPGLib.Enchantment
         }
         public void GenerateGearEnchantCache(int slotId)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             // Don't generate cache for null slots or inventories
             if (gearInventory?[slotId] == null) return;
             ItemSlot slot = gearInventory[slotId];
@@ -150,6 +179,7 @@ namespace KRPGLib.Enchantment
         }
         public void GenerateHotbarEnchantCache(int slotId)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             // Don't generate cache for null slots or inventories
             if (hotbarInventory?[slotId] == null) return;
             ItemSlot slot = hotbarInventory[slotId];
@@ -171,7 +201,8 @@ namespace KRPGLib.Enchantment
         public void OnGearModified(int slotId)
         {
             // Sanity Checks
-            if (entity?.Alive != true || entity?.World.Side != EnumAppSide.Server) return;
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (entity?.Alive != true) return;
             if (gearInventory?[slotId] == null) return;
 
             // 1. If Slot is empty, Remove any ticks registered to the slot
@@ -184,7 +215,6 @@ namespace KRPGLib.Enchantment
                     if (eCode == slotId.ToString())
                     {
                         TickRegistry[pair.Key].Dispose();
-                        TickRegistry.Remove(pair.Key);
                     }
                 }
                 // Update the cache
@@ -216,8 +246,8 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} gear modified slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
             // ItemSlot slot = gearInventory[slotId];
-            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
-            bool didEnchants = sApi.EnchantAccessor().TryEnchantments(gearInventory[slotId], "OnEquip", entity, entity, ref parameters);
+            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false } };
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(gearInventory[slotId], "OnEquip", entity, entity, ref parameters);
             if (didEnchants == true)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
@@ -228,8 +258,9 @@ namespace KRPGLib.Enchantment
         }
         public void OnHotbarModified(int slotId)
         {
-            // Sanity Check
-            if (entity?.Alive != true || entity?.World.Side != EnumAppSide.Server) return;
+            // 0. Sanity Check
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (entity?.Alive != true) return;
             if (hotbarInventory?[slotId] == null) return;
 
             // 1. If Slot is empty, Remove any ticks registered to the slot
@@ -242,7 +273,6 @@ namespace KRPGLib.Enchantment
                     if (eCode == slotId.ToString())
                     {
                         TickRegistry[pair.Key].Dispose();
-                        TickRegistry.Remove(pair.Key);
                     }
                 }
                 // Update the cache
@@ -270,12 +300,17 @@ namespace KRPGLib.Enchantment
             // int activeSlot = player.InventoryManager.ActiveHotbarSlotNumber;
             // if (activeSlot != (slotId | 11)) return;
 
+            // 3. Check if this is the Offhand slot
+            bool isOffhand = false;
+            if (player.InventoryManager.OffhandHotbarSlot?.Itemstack?.Id == hotbarInventory[slotId].Itemstack.Id)
+                isOffhand = true;
+
             // 4. Trigger OnEquip for any Enchantments
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} modified hotbar slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
 
-            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true } };
-            bool didEnchants = sApi.EnchantAccessor().TryEnchantments(hotbarInventory[slotId], "OnEquip", entity, entity, ref parameters);
+            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffhand", isOffhand } };
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(hotbarInventory[slotId], "OnEquip", entity, entity, ref parameters);
             if (didEnchants == true)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
@@ -320,7 +355,8 @@ namespace KRPGLib.Enchantment
         public float OnHit(float damage, DamageSource damageSource)
         {
             // Only living players should actually have OnHit triggers
-            if (!IsPlayer || !entity.Alive || entity.World?.Side != EnumAppSide.Server) return damage;
+            if (!(Api is ICoreServerAPI sapi)) return damage;
+            if (!IsPlayer || !entity.Alive) return damage;
 
             string dmgType = Enum.GetName(damageSource.Type).ToLower();
 
@@ -335,7 +371,7 @@ namespace KRPGLib.Enchantment
 
                 EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type" , dmgType } };
                 bool didEnchants =
-                    sApi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key]?.Itemstack, "OnHit", damageSource.CauseEntity, entity, pair.Value.Enchantments, ref parameters);
+                    sapi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key]?.Itemstack, "OnHit", damageSource.CauseEntity, entity, pair.Value.Enchantments, ref parameters);
                 if (didEnchants) 
                 {
                     damage = parameters.GetFloat("damage");
@@ -347,7 +383,8 @@ namespace KRPGLib.Enchantment
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             // Only living players should actually have OnDamaged triggers
-            if (!IsPlayer || !entity.Alive || entity.World?.Side != EnumAppSide.Server) return;
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!IsPlayer || !entity.Alive) return;
 
             float dmg = damage;
             string dmgType = Enum.GetName(damageSource.Type).ToLower();
@@ -363,7 +400,7 @@ namespace KRPGLib.Enchantment
 
                 EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dmgType } };
                 bool didEnchants =
-                    sApi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key], "OnDamaged", damageSource.CauseEntity, entity, pair.Value.Enchantments);
+                    sapi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key], "OnDamaged", damageSource.CauseEntity, entity, pair.Value.Enchantments);
                 if (didEnchants)
                     dmg = parameters.GetFloat("damage");
             }
@@ -372,21 +409,25 @@ namespace KRPGLib.Enchantment
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;
 
-        public void OnTick(float deltaTime)
+        public override void OnGameTick(float dt)
         {
             // 0. Safety check
-            if (!(entity?.World?.Api is ICoreServerAPI api)) return; 
-            if (TickRegistry?.Count <= 0) return;
-
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (dt < TickTime) return;
+            // if (TickRegistry?.Count <= 0) return;
+            ITreeAttribute enchantTicks = entity.WatchedAttributes.GetOrAddTreeAttribute("EnchantTicks");
+            if (enchantTicks.Values.Length <= 0) return;
             // if (EnchantingConfigLoader.Config?.Debug == true)
             //     Api.Logger.Event("[KRPGEnchantment] {0} is attempting to tick over Tick Registry.", entity.GetName());
 
             // 1. Prepare Garbage & time
             List <string> tickBin = new List<string>();
-            long tickStart = api.World.ElapsedMilliseconds;
+            long tickStart = sapi.World.ElapsedMilliseconds;
             // 2. Loop TickRegistry
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            // foreach (IAttribute attribute in enchantTicks.Values)
             {
+                
                 // 2a. Trash Checks
                 // If marked to be removed
                 if (pair.Value.IsTrash == true)
@@ -409,7 +450,7 @@ namespace KRPGLib.Enchantment
                 if (!(curDur >= pair.Value.TickDuration)) continue;
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    api.Logger.Event("[KRPGEnchantment] {0} is being ticked.", pair.Key);
+                    sapi.Logger.Event("[KRPGEnchantment] {0} is being ticked.", pair.Key);
 
                 // 2c. Process the tick if it meets run conditions
                 // Handle OnTick() or remove from the registry if expired.
@@ -417,18 +458,18 @@ namespace KRPGLib.Enchantment
                 if (pair.Value.TicksRemaining > 0 || pair.Value.Persistent == true)
                 {
                     // 2c1. Mark the tick as trash if we cannot resolve the Enchantment
-                    IEnchantment enchant = api.EnchantAccessor().GetEnchantment(pair.Value.Code);
+                    IEnchantment enchant = sapi.EnchantAccessor().GetEnchantment(pair.Value.Code);
                     if (enchant == null)
                     {
-                        api.Logger.Error("[KRPGEnchantment] Failed to get the required IEnchantment. Removing this tick.");
+                        sapi.Logger.Error("[KRPGEnchantment] Failed to get the required IEnchantment. Removing this tick.");
                         pair.Value.Dispose();
                         tickBin.Add(pair.Key);
                         continue;
                     }
-                    enchant.Api = api;
+                    enchant.Api = sapi;
                     // 2c2. Trigger OnTick
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        api.Logger.Event("[KRPGEnchantment] {0} is being triggered.", pair.Value.Code);
+                        sapi.Logger.Event("[KRPGEnchantment] {0} is being triggered.", pair.Value.Code);
                     EnchantTick eTick = pair.Value;
                     enchant.OnTick(ref eTick);
                     TickRegistry[pair.Key] = eTick;
@@ -437,7 +478,7 @@ namespace KRPGLib.Enchantment
                 else
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Value.Code);
+                        sapi.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Value.Code);
                     pair.Value.Dispose();
                     tickBin.Add(pair.Key);
                     continue;
@@ -446,8 +487,11 @@ namespace KRPGLib.Enchantment
             // 3. Take out the trash
             foreach (string s in tickBin)
             {
-                TickRegistry.Remove(s);
+                // TickRegistry.Remove(s);
+                enchantTicks.RemoveAttribute(s);
             }
+            // 4. Write back to the entity
+            entity.WatchedAttributes.MergeTree(enchantTicks);
         }
         #endregion
         #region Particles
@@ -463,532 +507,22 @@ namespace KRPGLib.Enchantment
                 GenerateParticles(type, amount);
             }
         }
-
-        protected AdvancedParticleProperties[] ParticleProps;
-        protected static AdvancedParticleProperties[] FireParticleProps;
-        protected static AdvancedParticleProperties[] FrostParticleProps;
-        protected static AdvancedParticleProperties[] ElectricityParticleProps;
-        protected static AdvancedParticleProperties[] HealParticleProps;
-        protected static AdvancedParticleProperties[] InjuryParticleProps;
-        protected static AdvancedParticleProperties[] PoisonParticleProps;
-        public virtual void ConfigParticles()
-        {
-            ParticleProps = new AdvancedParticleProperties[3];
-            ParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            FireParticleProps = new AdvancedParticleProperties[3];
-            FireParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            FireParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            FireParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            FrostParticleProps = new AdvancedParticleProperties[3];
-            FrostParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            FrostParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            FrostParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(128f, 0f),
-                NatFloat.createUniform(128f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            ElectricityParticleProps = new AdvancedParticleProperties[3];
-            ElectricityParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.5f, 0.05f),
-                NatFloat.createUniform(0.75f, 0.1f),
-                NatFloat.createUniform(0.5f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ElectricityParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ElectricityParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(45f, 0f),
-                NatFloat.createUniform(0f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.3f),
-                NatFloat.createUniform(0.2f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            HealParticleProps = new AdvancedParticleProperties[3];
-            HealParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 10f),
-                NatFloat.createUniform(200f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            HealParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 10f),
-                NatFloat.createUniform(200f, 20f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            HealParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(36f, 0f),
-                NatFloat.createUniform(255f, 00f),
-                NatFloat.createUniform(255f, 20f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            InjuryParticleProps = new AdvancedParticleProperties[3];
-            InjuryParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            InjuryParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            InjuryParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            PoisonParticleProps = new AdvancedParticleProperties[3];
-            PoisonParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            PoisonParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            PoisonParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-        }
         public void GenerateParticles(EnumDamageType damageType, float damage)
         {
+            if (!(Api is ICoreClientAPI api)) return;
+
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+
+            KRPGEnchantmentSystem eSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
 
             int power = (int)MathF.Ceiling(damage);
 
             if (damageType == EnumDamageType.Fire)
             {
-                int r = Api.World.Rand.Next(FireParticleProps.Length + 1);
-                int num = Math.Min(FireParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = FireParticleProps[num];
+                int r = api.World.Rand.Next(eSys.FireParticleProps.Length + 1);
+                int num = Math.Min(eSys.FireParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.FireParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1004,14 +538,14 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Frost)
             {
-                int r = Api.World.Rand.Next(FrostParticleProps.Length + 1);
-                int num = Math.Min(FrostParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = FrostParticleProps[num];
+                int r = api.World.Rand.Next(eSys.FrostParticleProps.Length + 1);
+                int num = Math.Min(eSys.FrostParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.FrostParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1027,14 +561,14 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Electricity)
             {
-                int r = Api.World.Rand.Next(ElectricityParticleProps.Length + 1);
-                int num = Math.Min(ElectricityParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = ElectricityParticleProps[num];
+                int r = api.World.Rand.Next(eSys.ElectricityParticleProps.Length + 1);
+                int num = Math.Min(eSys.ElectricityParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.ElectricityParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1050,14 +584,14 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Heal)
             {
-                int r = Api.World.Rand.Next(HealParticleProps.Length + 1);
-                int num = Math.Min(HealParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = HealParticleProps[num];
+                int r = api.World.Rand.Next(eSys.HealParticleProps.Length + 1);
+                int num = Math.Min(eSys.HealParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.HealParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1073,14 +607,14 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Injury)
             {
-                int r = Api.World.Rand.Next(InjuryParticleProps.Length + 1);
-                int num = Math.Min(InjuryParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = InjuryParticleProps[num];
+                int r = api.World.Rand.Next(eSys.InjuryParticleProps.Length + 1);
+                int num = Math.Min(eSys.InjuryParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.InjuryParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1096,14 +630,14 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Poison)
             {
-                int r = Api.World.Rand.Next(PoisonParticleProps.Length + 1);
-                int num = Math.Min(PoisonParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
+                int r = api.World.Rand.Next(eSys.PoisonParticleProps.Length + 1);
+                int num = Math.Min(eSys.PoisonParticleProps.Length - 1, r);
+                AdvancedParticleProperties advancedParticleProperties = eSys.PoisonParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
@@ -1119,10 +653,10 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    Api.World.SpawnParticles(advancedParticleProperties);
+                    api.World.SpawnParticles(advancedParticleProperties);
                 }
             }
         }
-        #endregion
+#endregion
     }
 }

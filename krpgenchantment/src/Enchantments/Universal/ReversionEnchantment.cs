@@ -71,6 +71,7 @@ namespace KRPGLib.Enchantment
                     EnchantTick eTick = enchant.ToEnchantTick();
                     eTick.Persistent = true;
                     eTick.IsHotbar = parameters.GetBool("IsHotbar");
+                    eTick.IsOffhand = parameters.GetBool("IsOffhand");
                     eTick.TickDuration = TickDuration;
                     // { LastTickTime = 0, Source = enchant, TicksRemaining = 0, Persistent = true, IsHotbar = parameters.GetBool("IsHotbar") };
                     eeb.TickRegistry.Add(codeID, eTick);
@@ -116,40 +117,19 @@ namespace KRPGLib.Enchantment
                 return;
             }
             ItemSlot slot = inventory[eTick.SlotID];
-            if (slot.Empty)
+            if (slot.Empty == true)
             {
                 Api.Logger.Event("[KRPGEnchantment] Failed to get the ItemSlot for a Reversion tick. Disposing.");
                 eTick.Dispose();
                 return;
             }
 
-            // IPlayer p = eTick.Source.SourceEntity as IPlayer;
-            // if (!p.InventoryManager.ActiveHotbarSlot.Empty)
-            // {
-            //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(p.InventoryManager.ActiveHotbarSlot.Itemstack);
-            //     if (enchants != null) sApi
-            // }
-            // if (EnchantingConfigLoader.Config?.Debug == true)
-            //     Api.Logger.Event("[KRPGEnchantment] {0} is being ticked by a Reversion enchantment.", eTick.Source.SourceStack.GetName());
-
-            // if (EnchantingConfigLoader.Config?.Debug == true)
-            //     Api.Logger.Event("[KRPGEnchantment] Current Time: {0}, Last Tick Time: {1}, Tick Duration: {2}", Api.World.ElapsedMilliseconds, eTick.LastTickTime, TickDuration);
-
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Reversion enchantment.", slot.Itemstack.GetName());
 
             EntityPos causePos = entity.SidedPos;
-            // EntityBehaviorTemporalStabilityAffected tempStab = eTick.Source.CauseEntity.GetBehavior<EntityBehaviorTemporalStabilityAffected>();
             SystemTemporalStability tempStabilitySystem = api.ModLoader.GetModSystem<SystemTemporalStability>();
             float stabf = tempStabilitySystem.GetTemporalStability(causePos.AsBlockPos);
-
-            // Entity entity = eTick.Source.GetCauseEntity();
-            // IPlayer player = null;
-            // if (entity is EntityPlayer ep)
-            // {
-            //     player = Api?.World.PlayerByUid(ep.PlayerUID);
-            // }
-            // IInventory inv = player.Entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
 
             if (stabf < 1)
             {

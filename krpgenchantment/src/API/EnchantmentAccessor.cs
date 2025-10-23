@@ -16,6 +16,7 @@ using Vintagestory.API.Util;
 using HarmonyLib;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Vintagestory.API.MathTools;
 
 namespace KRPGLib.Enchantment
 {

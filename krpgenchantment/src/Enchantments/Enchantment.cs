@@ -103,7 +103,7 @@ namespace KRPGLib.Enchantment
     /// <summary>
     /// Stores data for Entities to process their TickRegistry.
     /// </summary>
-    public class EnchantTick : IDisposable
+    public class EnchantTick : IDisposable, IByteSerializable
     {
         // The Code of the Enchantment
         public string Code;
@@ -154,6 +154,40 @@ namespace KRPGLib.Enchantment
             IsHotbar = false;
             IsOffhand = false;
             IsTrash = true;
+        }
+        public void ToBytes(BinaryWriter writer)
+        {
+            writer.Write(Code);
+            writer.Write(Power);
+            writer.Write(InventoryID);
+            writer.Write(SlotID);
+            writer.Write(ItemID);
+            writer.Write(CauseEntityID);
+            writer.Write(TargetEntityID);
+            writer.Write(TicksRemaining);
+            writer.Write(LastTickTime);
+            writer.Write(TickDuration);
+            writer.Write(Persistent);
+            writer.Write(IsHotbar);
+            writer.Write(IsOffhand);
+            writer.Write(IsTrash);
+        }
+        public void FromBytes(BinaryReader reader, IWorldAccessor world)
+        {
+            Code = reader.ReadString();
+            Power = reader.ReadInt32();
+            InventoryID = reader.ReadString();
+            SlotID = reader.ReadInt32();
+            ItemID = reader.ReadInt32();
+            CauseEntityID = reader.ReadInt32();
+            TargetEntityID = reader.ReadInt32();
+            TicksRemaining = reader.ReadInt32();
+            LastTickTime = reader.ReadInt64();
+            TickDuration = reader.ReadInt64();
+            Persistent = reader.ReadBoolean();
+            IsHotbar = reader.ReadBoolean();
+            IsOffhand = reader.ReadBoolean();
+            IsTrash = reader.ReadBoolean();
         }
     }
     /// <summary>

@@ -138,7 +138,7 @@ namespace KRPGLib.Enchantment
                         CauseEntity = byEntity,
                         TargetEntity = entity
                     };
-                    bool didEnchant = eeb.sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+                    bool didEnchant = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
 
                     // bool didEnchants =
                     //     eeb.sApi.EnchantAccessor().TryEnchantments(eeb.gearInventory[pair.Key]?.Itemstack, "OnHit", byEntity, entity, pair.Value.Enchantments, ref parameters);
