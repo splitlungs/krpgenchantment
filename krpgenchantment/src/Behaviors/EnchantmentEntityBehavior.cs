@@ -408,14 +408,16 @@ namespace KRPGLib.Enchantment
 
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;
-
+        private long lastTickMs = 0;
         public override void OnGameTick(float dt)
         {
             // 0. Safety check
             if (!(Api is ICoreServerAPI sapi)) return;
-            if (dt < TickTime) return;
             if (TickRegistry?.Count <= 0) return;
-            
+            // if (dt < TickTime) return;
+            long curTime = sapi.World.ElapsedMilliseconds;
+            if (!((curTime - lastTickMs) >= TickTime)) return;
+
             // Can we use WatchedAttributes? 
             // ITreeAttribute enchantTicks = entity.WatchedAttributes.GetOrAddTreeAttribute("EnchantTicks");
             // if (enchantTicks.Values.Length <= 0) return;
@@ -423,7 +425,7 @@ namespace KRPGLib.Enchantment
             //     Api.Logger.Event("[KRPGEnchantment] {0} is attempting to tick over Tick Registry.", entity.GetName());
 
             // 1. Prepare Garbage & time
-            List <string> tickBin = new List<string>();
+            List<string> tickBin = new List<string>();
             long tickStart = sapi.World.ElapsedMilliseconds;
             // 2. Loop TickRegistry
             // foreach (IAttribute attribute in enchantTicks.Values)
