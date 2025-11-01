@@ -37,16 +37,19 @@ namespace KRPGLib.Enchantment
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (Api?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack) == null)
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack);
+            if (enchants == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged event, but could not find Enchantments to try.");
                 return;
             }
 
-            EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
-            damage = parameters.GetFloat("damage");
+            float dmg = damage;
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            if (didEnchantments)
+                damage = parameters.GetFloat("damage");
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
@@ -55,16 +58,19 @@ namespace KRPGLib.Enchantment
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
-            if (Api?.EnchantAccessor()?.GetActiveEnchantments(weaponStack) == null)
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(weaponStack);
+            if (enchants == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] COSystem received OnRangedDamaged event, but could not find Enchantments to try.");
                 return;
             }
 
-            EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, ref parameters);
-            damage = parameters.GetFloat("damage");
+            float dmg = damage;
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            if (didEnchantments)
+                damage = parameters.GetFloat("damage");
 
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");

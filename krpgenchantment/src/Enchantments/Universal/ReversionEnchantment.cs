@@ -69,6 +69,7 @@ namespace KRPGLib.Enchantment
                 if (!eeb.TickRegistry.ContainsKey(codeID))
                 {
                     EnchantTick eTick = enchant.ToEnchantTick();
+                    eTick.SlotID = slotID;
                     eTick.Persistent = true;
                     eTick.IsHotbar = parameters.GetBool("IsHotbar");
                     eTick.IsOffhand = parameters.GetBool("IsOffhand");
@@ -117,9 +118,15 @@ namespace KRPGLib.Enchantment
                 return;
             }
             ItemSlot slot = inventory[eTick.SlotID];
-            if (slot.Empty == true)
+            if (slot == null)
             {
                 Api.Logger.Event("[KRPGEnchantment] Failed to get the ItemSlot for a Reversion tick. Disposing.");
+                eTick.Dispose();
+                return;
+            }
+            if (slot.Empty == true)
+            {
+                Api.Logger.Event("[KRPGEnchantment] Failed to get the ItemStack for a Reversion tick. Disposing.");
                 eTick.Dispose();
                 return;
             }

@@ -117,6 +117,11 @@ namespace KRPGLib.Enchantment
                 SoundTickListener = RegisterGameTickListener(TickSounds, MsSoundTick);
             }
         }
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            UnregisterAllTickListeners();
+        }
         /// <summary>
         /// Called by the ChargingBE to write the InputSlot's EnchantPotential value
         /// </summary>

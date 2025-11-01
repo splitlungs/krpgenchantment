@@ -71,17 +71,22 @@ namespace KRPGLib.Enchantment
             };
         }
         /// <summary>
-        /// Creates a valid EnchantTick from the EnchantSource. Default TicksRemaining = Power and all bools false.
+        /// Creates a valid EnchantTick from the EnchantSource. Default TicksRemaining = Power and all bools false, and SlotID is -1.
         /// </summary>
         /// <returns></returns>
         public EnchantTick ToEnchantTick()
         {
+            // Null safe slot check
+            // int slotID = -1;
+            // if (SourceSlot != null)
+            //     SourceSlot.Inventory.GetSlotId(SourceSlot);
+
             return new EnchantTick()
             {
                 Code = Code,
                 Power = Power,
-                InventoryID = SourceSlot.Inventory.InventoryID,
-                SlotID = SourceSlot.Inventory.GetSlotId(SourceSlot),
+                InventoryID = SourceSlot?.Inventory?.InventoryID,
+                SlotID = -1,
                 ItemID = SourceStack.Id,
                 CauseEntityID = CauseEntity.EntityId,
                 TargetEntityID = TargetEntity.EntityId,

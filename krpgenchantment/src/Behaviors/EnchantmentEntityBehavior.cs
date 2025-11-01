@@ -60,6 +60,7 @@ namespace KRPGLib.Enchantment
             get 
             { 
                 if (!IsPlayer) return null;
+                
                 return player.InventoryManager.GetOwnInventory("character");
             }
         }
@@ -94,10 +95,8 @@ namespace KRPGLib.Enchantment
                 GearEnchantCache = new Dictionary<int, ActiveEnchantCache>();
                 foreach (ItemSlot slot in gearInventory)
                 {
-                    // Generate Cache
-                    ActiveEnchantCache cache = new ActiveEnchantCache();
                     int slotId = gearInventory.GetSlotId(slot);
-                    if (slot.Empty != true)
+                    if (slot?.Itemstack != null)
                     {
                         // Trigger OnEquip since we just logged in
                         EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
@@ -115,14 +114,17 @@ namespace KRPGLib.Enchantment
             // Register Hotbar cache
             if (hotbarInventory != null)
             {
+                int offHandID = hotbarInventory.GetSlotId(player.InventoryManager.OffhandHotbarSlot);
                 HotbarEnchantCache = new Dictionary<int, ActiveEnchantCache>();
                 foreach (ItemSlot slot in hotbarInventory)
                 {
                     int slotId = hotbarInventory.GetSlotId(slot);
-                    if (slot.Empty == false)
+                    if (slot?.Itemstack != null)
                     {
                         // Trigger OnEquip since we just logged in
-                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true } };
+                        bool isOffhand = false;
+                        if (slotId == offHandID) isOffhand = true;
+                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffHand", isOffhand } };
                         bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
                     }
                     GenerateHotbarEnchantCache(slotId);
@@ -226,18 +228,6 @@ namespace KRPGLib.Enchantment
             // 2. Item is still equipped
             if (gearInventory?[slotId]?.Itemstack?.Id == GearEnchantCache[slotId]?.ItemId) return;
 
-            // OBSOLETE
-            // foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
-            // {
-            //     string eCode = pair.Key;
-            //     if (pair.Key.Contains(":"))
-            //     {
-            //         eCode = eCode.Split(":")?[2];
-            //         // Don't trigger OnEquip if matching
-            //         if (eCode == gearInventory?[slotId]?.Itemstack?.Id.ToString()) return;
-            //     }
-            // }
-
             // Armor slots, probably
             // 12.Head 13.Body 14.Legs
             // int[] wearableSlots = new int[3] { 12, 13, 14 };
@@ -283,18 +273,6 @@ namespace KRPGLib.Enchantment
 
             // 2. Item is still equipped
             if (hotbarInventory?[slotId]?.Itemstack?.Id == HotbarEnchantCache[slotId]?.ItemId) return;
-
-            // 3. Process ticks - OBSOLETE?
-            // foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
-            // {
-            //     string eCode = pair.Key;
-            //     if (pair.Key.Contains(":"))
-            //     {
-            //         eCode = eCode.Split(":")?[2];
-            //         // Don't trigger OnEquip if matching
-            //         if (eCode == hotbarInventory?[slotId]?.Itemstack?.Id.ToString()) return;
-            //     }
-            // }
 
             // 11. Offhand, probably
             // int activeSlot = player.InventoryManager.ActiveHotbarSlotNumber;
@@ -470,7 +448,7 @@ namespace KRPGLib.Enchantment
                         tickBin.Add(pair.Key);
                         continue;
                     }
-                    enchant.Api = sapi;
+                    // enchant.Api = sapi;
                     // 2c2. Trigger OnTick
                     if (EnchantingConfigLoader.Config?.Debug == true)
                         sapi.Logger.Event("[KRPGEnchantment] {0} is being triggered.", pair.Value.Code);

@@ -121,6 +121,8 @@ namespace KRPGLib.Enchantment
         }
         protected override void ActivateSlotLeftClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {
+            base.ActivateSlotLeftClick(sourceSlot, ref op);
+
             if (inventory.Api.Side == EnumAppSide.Client) return;
 
             if (Empty)
