@@ -63,6 +63,14 @@ namespace KRPGLib.Enchantment
         {
             return inventory[slot];
         }
+        public Dictionary<string, int> validReagents 
+        { 
+            get 
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null;
+                return EnchantingConfigLoader.Config?.ValidReagents; 
+            } 
+        }
         public ChargingBE()
         {
             inventory = new ChargingInventory(null, null, this);
