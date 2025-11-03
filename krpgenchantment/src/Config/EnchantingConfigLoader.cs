@@ -52,6 +52,25 @@ namespace KRPGLib.Enchantment
                 {
                     Config = new KRPGEnchantConfig();
                     Config.Version = ConfigVersion;
+                    Config.MaxEnchantsByCategory = new Dictionary<string, int>()
+                    {
+                        {"ControlArea", -1 },
+                        {"ControlTarget", -1},
+                        {"DamageArea", -1},
+                        {"DageTarget", -1},
+                        {"DageTick", -1},
+                        {"HeArea", -1},
+                        {"HeTarget", -1},
+                        {"HeTick", -1},
+                        {"RestDamage", -1},
+                        {"Unersal", -1}
+                    };
+                    Config.ValidReagents = new Dictionary<string, int>()
+                    {
+                        {"game:gem-emerald-rough", 1 },
+                        { "game:gem-diamond-rough", 1},
+                        { "game:gem-olivine_peridot-rough", 1}
+                    };
                     sApi.StoreModConfig(Config, ConfigFile);
 
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");

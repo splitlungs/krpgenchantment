@@ -1290,7 +1290,6 @@ namespace KRPGLib.Enchantment
         {
             // Path to the font file in the ModData folder
             string fontPath = System.IO.Path.Combine(cApi.GetOrCreateDataPath(System.IO.Path.Combine("ModData", "krpgenchantment", "fonts")), fName);
-
             // Download the file to the client's ModData if it doesn't exist
             if (!File.Exists(fontPath))
             {

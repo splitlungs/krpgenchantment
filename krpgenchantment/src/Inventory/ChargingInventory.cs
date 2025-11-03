@@ -140,52 +140,8 @@ namespace KRPGLib.Enchantment
         {
             if (!(inventory.Api is ICoreServerAPI sapi)) return;
 
-            // if (!sourceSlot.Empty)
-            // {
-            //     if (!CanHold(sourceSlot)) return;
-            // }
-
             base.ActivateSlotLeftClick(sourceSlot, ref op);
 
-            // if (inventory.Api.Side == EnumAppSide.Client) return;
-            // 
-            // if (Empty)
-            // {
-            //     if (CanHold(sourceSlot))
-            //     {
-            //         int val = Math.Min(sourceSlot.StackSize, MaxSlotStackSize);
-            //         val = Math.Min(val, GetRemainingSlotSpace(sourceSlot.Itemstack));
-            //         itemstack = sourceSlot.TakeOut(val);
-            //         op.MovedQuantity = itemstack.StackSize;
-            //         OnItemSlotModified(itemstack);
-            //     }
-            // 
-            //     return;
-            // }
-            // 
-            // if (sourceSlot.Empty)
-            // {
-            //     op.RequestedQuantity = StackSize;
-            //     TryPutInto(sourceSlot, ref op);
-            //     return;
-            // }
-            // 
-            // int mergableQuantity = itemstack.Collectible.GetMergableQuantity(itemstack, sourceSlot.Itemstack, op.CurrentPriority);
-            // if (mergableQuantity > 0)
-            // {
-            //     int requestedQuantity = op.RequestedQuantity;
-            //     op.RequestedQuantity = GameMath.Min(mergableQuantity, sourceSlot.Itemstack.StackSize, GetRemainingSlotSpace(sourceSlot.Itemstack));
-            //     ItemStackMergeOperation op2 = (ItemStackMergeOperation)(op = op.ToMergeOperation(this, sourceSlot));
-            //     itemstack.Collectible.TryMergeStacks(op2);
-            //     sourceSlot.OnItemSlotModified(itemstack);
-            //     OnItemSlotModified(itemstack);
-            //     op.RequestedQuantity = requestedQuantity;
-            // }
-            // else
-            // {
-            //     TryFlipWith(sourceSlot);
-            // }
-            // MarkDirty();
         }
         protected override void ActivateSlotRightClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {
