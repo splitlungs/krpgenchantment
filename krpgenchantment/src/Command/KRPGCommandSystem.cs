@@ -148,6 +148,19 @@ namespace KRPGLib.Enchantment
                 return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-latentreset-fail"));
             })
             .EndSubCommand()
+            .BeginSubCommand("learnall")
+            .WithDescription(Lang.Get("krpgenchantment:cmd-e-learnall-help"))
+            .RequiresPrivilege(Privilege.give)
+            .HandleWith(args =>
+            {
+                if (KRPGCommands.LearnEnchantsHandler(sApi, args))
+                {
+                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-learnall-success"));
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-learnall-fail"));
+            })
+            .EndSubCommand()
             .BeginSubCommand("reload")
             .WithAlias("r")
             .WithDescription(Lang.Get("krpgenchantment:cmd-reload-config-help"))

@@ -5,6 +5,8 @@ using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
 using Vintagestory.API.Common;
 using Vintagestory.API.Util;
+using Vintagestory.API.Datastructures;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KRPGLib.Enchantment
 {
@@ -172,8 +174,11 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public static bool LearnEnchantsHandler(ICoreServerAPI api, TextCommandCallingArgs args)
         {
-
-            return false;
+            if (!(args.Caller.Player is IServerPlayer player)) return false;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("[KRPGEnchantment] {0} is attempting to learn all Enchanter's Manuals through commands.", args.Caller.GetName());
+            bool discovered = api.EnchantAccessor().LearnAllEnchantersManuals(player);
+            return discovered;
         }
         // Legacy command responses
         [Obsolete]

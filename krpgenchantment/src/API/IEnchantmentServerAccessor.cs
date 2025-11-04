@@ -242,6 +242,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="api"></param>
         /// <returns></returns>
         bool CanReadEnchant(string player, string enchantName, ICoreServerAPI api);
+        /// <summary>
+        /// Learn Enchanter's Manual journal entries for the given player.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        bool LearnAllEnchantersManuals(IServerPlayer player);
         #endregion
     }
 }

@@ -898,6 +898,25 @@ namespace KRPGLib.Enchantment
                 api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
             return false;
         }
+        /// <summary>
+        /// Learn Enchanter's Manual journal entries for the given player.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public bool LearnAllEnchantersManuals(IServerPlayer player)
+        {
+            ModJournal journal = sApi.ModLoader.GetModSystem<ModJournal>();
+            bool discovered = false;
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                List<int> chIDs = new List<int>();
+                chIDs.Add(pair.Value.LoreChapterID);
+                LoreDiscovery discovery = new LoreDiscovery() { Code = "enchantment", ChapterIds = chIDs };
+                if (journal.TryDiscoverLore(discovery, player)) discovered = true;
+            }
+
+            return discovered;
+        }
         #endregion
         #region Actions
         /// <summary>
