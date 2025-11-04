@@ -164,6 +164,17 @@ namespace KRPGLib.Enchantment
 
             return false;
         }
+        /// <summary>
+        /// Learn Enchanter's Manual journal entries for the given player.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool LearnEnchantsHandler(ICoreServerAPI api, TextCommandCallingArgs args)
+        {
+
+            return false;
+        }
         // Legacy command responses
         [Obsolete]
         public static string helpMessage =

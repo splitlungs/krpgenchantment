@@ -54,22 +54,22 @@ namespace KRPGLib.Enchantment
                     Config.Version = ConfigVersion;
                     Config.MaxEnchantsByCategory = new Dictionary<string, int>()
                     {
-                        {"ControlArea", -1 },
-                        {"ControlTarget", -1},
-                        {"DamageArea", -1},
-                        {"DageTarget", -1},
-                        {"DageTick", -1},
-                        {"HeArea", -1},
-                        {"HeTarget", -1},
-                        {"HeTick", -1},
-                        {"RestDamage", -1},
-                        {"Unersal", -1}
+                        { "ControlArea", -1 },
+                        { "ControlTarget", -1 },
+                        { "DamageArea", -1 },
+                        { "DamageTarget", -1 },
+                        { "DamageTick", -1 },
+                        { "HealArea", -1 },
+                        { "HealTarget", -1 },
+                        { "HealTick", -1 },
+                        { "ResistDamage", -1 },
+                        { "Universal", -1 }
                     };
                     Config.ValidReagents = new Dictionary<string, int>()
                     {
-                        {"game:gem-emerald-rough", 1 },
-                        { "game:gem-diamond-rough", 1},
-                        { "game:gem-olivine_peridot-rough", 1}
+                        { "game:gem-emerald-rough", 1 },
+                        { "game:gem-diamond-rough", 1 },
+                        { "game:gem-olivine_peridot-rough", 1 }
                     };
                     sApi.StoreModConfig(Config, ConfigFile);
 
