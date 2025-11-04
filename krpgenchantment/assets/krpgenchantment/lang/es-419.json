@@ -5,7 +5,8 @@
   "krpg-enchant": "Encantar",
   "enchantable": "Encantable",
   "reagent-charge-prefix": "Carga: ",
-  "block-charging-table": "Mesa de Carga de Reactivos",
+  "block-chargingtable": "Mesa de Carga de Reactivos",
+  "block-chargingtable-*-*": "Mesa de Carga de Reactivos",
 
   "enchantment-chilling": "Helado",
   "enchantment-durable": "Duradero",

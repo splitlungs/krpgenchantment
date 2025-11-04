@@ -5,7 +5,8 @@
   "krpg-enchant": "Verzaubern",
   "enchantable": "Verzauberbar",
   "reagent-charge-prefix": "Ladung: ",
-  "block-charging-table": "Reagenzien-Ladetisch",
+  "block-chargingtable": "Reagenzien-Ladetisch",
+  "block-chargingtable-*-*": "Reagenzien-Ladetisch",
 
   "enchantment-chilling": "Erstarrend",
   "enchantment-durable": "Haltbar",

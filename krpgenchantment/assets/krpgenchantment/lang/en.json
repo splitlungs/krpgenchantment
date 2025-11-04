@@ -5,7 +5,8 @@
   "krpg-enchant": "Enchant",
   "enchantable": "Enchantable",
   "reagent-charge-prefix": "Charge: ",
-  "block-charging-table": "Reagent Charging Table",
+  "block-chargingtable": "Reagent Charging Table",
+  "block-chargingtable-*-*": "Reagent Charging Table",
 
   "enchantment-chilling": "Chilling",
   "enchantment-durable": "Durable",

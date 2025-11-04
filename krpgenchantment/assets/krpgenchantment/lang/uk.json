@@ -5,7 +5,8 @@
   "krpg-enchant": "Зачарувати",
   "enchantable": "Зачарований",
   "reagent-charge-prefix": "заряд: ",
-  "block-charging-table": "Реагент заряд зачарування",
+  "block-chargingtable": "Реагент заряд зачарування",
+  "block-chargingtable-*-*": "Реагент заряд зачарування",
 
   "enchantment-chilling": "Охолодження",
   "enchantment-durable": "Міцний",

@@ -5,7 +5,8 @@
   "krpg-enchant": "Zaklinaj",
   "enchantable": "Można zakląć",
   "reagent-charge-prefix": "Ładunek: ",
-  "block-charging-table": "Stół do ładowania reagentów",
+  "block-chargingtable": "Stół do ładowania reagentów",
+  "block-chargingtable-*-*": "Stół do ładowania reagentów",
 
   "enchantment-chilling": "Mrożący",
   "enchantment-durable": "Wytrzymały",

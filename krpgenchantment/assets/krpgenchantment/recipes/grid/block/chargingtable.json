@@ -6,21 +6,14 @@
     "W": {
       "type": "item",
       "code": "game:plank-*",
+      "name": "wood",
+      "allowedVariants": [ "acacia", "aged", "baldcypress", "birch", "ebony", "kapok", "larch", "maple", "oak", "pine", "purpleheart", "redwood", "walnut" ],
       "quantity": 1
     },
     "T": {
       "type": "item",
       "code": "game:gear-temporal",
       "quantity": 1
-    },
-    "B": {
-      "type": "block",
-      "code": "game:bookshelf",
-      "quanityt": 1,
-      "attributes": {
-        "type": "1row1col",
-        "material": "oak"
-      }
     },
     "N": {
       "type": "item",
@@ -40,7 +33,7 @@
   },
   "output": {
     "type": "block",
-    "code": "krpgenchantment:charging-table",
+    "code": "krpgenchantment:chargingtable-{wood}-north",
     "quantity": 1
   }
 }
