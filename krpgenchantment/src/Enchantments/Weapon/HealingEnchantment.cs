@@ -57,6 +57,9 @@ namespace KRPGLib.Enchantment
             EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
             if (hp == null) return;
 
+            // Nullify base damage
+            parameters["damage"] = 0;
+
             // Configure Damage
             DamageSource source = enchant.ToDamageSource();
             source.Type = DamageType;

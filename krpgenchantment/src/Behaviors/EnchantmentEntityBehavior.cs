@@ -159,6 +159,10 @@ namespace KRPGLib.Enchantment
                 sapi.World.UnregisterGameTickListener(onTickID);
             }
         }
+        /// <summary>
+        /// Creates or updates an ActiveEnchantCache for each slot in the player's Character inventory.
+        /// </summary>
+        /// <param name="slotId"></param>
         public void GenerateGearEnchantCache(int slotId)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
@@ -179,6 +183,10 @@ namespace KRPGLib.Enchantment
             else
                 GearEnchantCache.Add(slotId, cache);
         }
+        /// <summary>
+        /// Creates or updates an ActiveEnchantCache for each slot in the player's Hotbar inventory.
+        /// </summary>
+        /// <param name="slotId"></param>
         public void GenerateHotbarEnchantCache(int slotId)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
