@@ -49,7 +49,11 @@ namespace KRPGLib.Enchantment
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
             bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
+            {
                 damage = parameters.GetFloat("damage");
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", damage);
+            }
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
@@ -70,7 +74,11 @@ namespace KRPGLib.Enchantment
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
             bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
+            {
                 damage = parameters.GetFloat("damage");
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", damage);
+            }
 
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
