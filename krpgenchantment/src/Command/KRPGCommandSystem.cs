@@ -93,6 +93,20 @@ namespace KRPGLib.Enchantment
                 return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-add-fail"));
             })
             .EndSubCommand()
+            .BeginSubCommand("charge")
+            .WithDescription(Lang.Get("krpgenchantment:cmd-e-charge-help"))
+            .RequiresPrivilege(Privilege.give)
+            .WithArgs(parsers.OptionalInt("power"))
+            .HandleWith(args =>
+            {
+                if (KRPGCommands.ChargeItemHandler(sApi, args))
+                {
+                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-e-charge-success"));
+                }
+
+                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-e-charge-fail"));
+            })
+            .EndSubCommand()
             .BeginSubCommand("list")
             .WithAlias("l")
             .WithDescription(Lang.Get("krpgenchantment:cmd-e-list-help"))

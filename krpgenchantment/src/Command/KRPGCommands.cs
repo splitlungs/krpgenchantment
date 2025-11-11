@@ -180,6 +180,36 @@ namespace KRPGLib.Enchantment
             bool discovered = api.EnchantAccessor().LearnAllEnchantersManuals(player);
             return discovered;
         }
+        /// <summary>
+        /// Set a charge value to the item in calling player's main hand.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool ChargeItemHandler(ICoreServerAPI api, TextCommandCallingArgs args)
+        {
+            if (!(args.Caller.Player is IServerPlayer player)) return false;
+            if (player.InventoryManager.ActiveHotbarSlot == null) return false;
+            if (player.InventoryManager.ActiveHotbarSlot.Empty == true) return false;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Event("[KRPGEnchantment] {0} is attempting to charge an item through commands.", args.Caller.GetName());
+
+            int toCharge = args[0].ToString().ToInt();
+            ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
+            ItemStack stack = slot.Itemstack.Clone();
+            stack.StackSize = stack.StackSize;
+            int charge = api.EnchantAccessor().SetReagentCharge(ref stack, toCharge);
+            if (charge == toCharge)
+            {
+                slot.Itemstack = stack.Clone();
+                slot.Itemstack.StackSize = stack.StackSize;
+                slot.MarkDirty();
+                return true;
+            }
+            return false;
+        }
+
         // Legacy command responses
         [Obsolete]
         public static string helpMessage =
