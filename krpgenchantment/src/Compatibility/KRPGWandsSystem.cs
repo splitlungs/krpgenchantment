@@ -31,13 +31,31 @@ namespace KRPGLib.Enchantment
                 WandsMod.OnDealWandDamage += OnProjectileDamaged;
             }
         }
+        /// <summary>
+        /// Delegate for wand hit target event, WandsMod.OnDealWandDamage.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="damageSource"></param>
+        /// <param name="slot"></param>
+        /// <param name="damage"></param>
         public void OnProjectileDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            if (sApi?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack) == null) return;
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack);
+            if (enchants == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] KRPGWands received OnProjectileDamaged event, but could not find Enchantments to try.");
+                return;
+            }
 
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchants = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, ref parameters);
-            damage = parameters.GetFloat("damage");
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            if (didEnchantments)
+            {
+                damage = parameters.GetFloat("damage");
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", damage);
+            }
         }
     }
 }
