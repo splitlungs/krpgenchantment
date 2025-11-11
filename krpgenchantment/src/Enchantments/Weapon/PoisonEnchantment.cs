@@ -41,7 +41,7 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
@@ -49,7 +49,7 @@ namespace KRPGLib.Enchantment
             {
                 { "DamageResist", "resistpoison" }, {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}, {"HungerMultiplier", 100}
             };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

@@ -31,7 +31,7 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
@@ -39,7 +39,7 @@ namespace KRPGLib.Enchantment
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
             };
-            Version = 1.00f;
+            Version = 1.01f;
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();

@@ -39,7 +39,7 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
             {
                 { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
             };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

@@ -43,7 +43,7 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
@@ -51,7 +51,7 @@ namespace KRPGLib.Enchantment
             {
                 {"TickDuration", 10000 }, { "PowerMultiplier", 1 } 
             };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

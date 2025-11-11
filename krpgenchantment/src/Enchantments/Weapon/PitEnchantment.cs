@@ -34,7 +34,7 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
@@ -42,7 +42,7 @@ namespace KRPGLib.Enchantment
             {
                 { "MulXZ", 0.50 }, {"MulY", 1.00 }
             };
-            Version = 1.00f;
+            Version = 1.01f;
             sApi = Api as IServerAPI;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
