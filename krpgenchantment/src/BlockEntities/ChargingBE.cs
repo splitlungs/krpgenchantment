@@ -71,6 +71,23 @@ namespace KRPGLib.Enchantment
                 return EnchantingConfigLoader.Config?.ValidReagents; 
             }
         }
+        public Dictionary<string, int> validChargeItems
+        {
+            get
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null;
+                return EnchantingConfigLoader.Config?.ChargeItemValues;
+            }
+        }
+        public int? MaxChargeValue
+        {
+            get
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null; //I dont know the purpose of this check, it may be unnecessary.
+                                                                      //if so, change function return to int
+                return EnchantingConfigLoader.Config?.MaxReagentCharge;
+            }
+        }
         public ChargingBE() : base()
         {
             inventory = new ChargingInventory(null, null, this);
@@ -149,7 +166,10 @@ namespace KRPGLib.Enchantment
                 Api.World.Logger.Event("[KRPGEnchantment] Attempting to charge a reagent: {0}.", InputSlot.Itemstack.Collectible.Code);
             ICoreServerAPI sApi = Api as ICoreServerAPI;
             ItemStack outStack = InputSlot.Itemstack.Clone();
+            //replacing this by total sum logic handled by ChargingInventory
+            /*
             int tGears = 0;
+            
             for(int i = 1; i < inventory.Slots.Length; i++)
             {
                 if (inventory.Slots[i].Empty) continue;
@@ -163,7 +183,19 @@ namespace KRPGLib.Enchantment
                     inventory.Slots[i].MarkDirty();
                 }
             }
-            int power = sApi.EnchantAccessor().SetReagentCharge(ref outStack, tGears);
+            */
+
+            int currentCharge = inventory.GetCurrentChargeSum();
+            if (currentCharge > 0) // if we got charge, "consume" all charging compounds
+            {
+                foreach (var slot in inventory.Slots)
+                {
+                    if (slot.Empty) continue;
+                    slot.TakeOutWhole();
+                    slot.MarkDirty();
+                }
+            }
+            int power = sApi.EnchantAccessor().SetReagentCharge(ref outStack, currentCharge); // not sure if this needs positive value check, will omit
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Charged Reagent Output {0} has a power of {1}", outStack.GetName(), power);
 
