@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,12 @@ namespace KRPGLib.Enchantment
         private const double ConfigVersion = 1.02d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
+
+        private static Dictionary<string, int> defaultChargeItems = new()
+        {
+            {"game:gear-temporal", 1 }
+        };
+
 
         ICoreServerAPI sApi;
 
@@ -110,6 +117,16 @@ namespace KRPGLib.Enchantment
                     if (Config.LegacyReagentPotential == true) tempConfig.LegacyReagentPotential = true;
                     if (Config.ChargeReagentHours != 1) tempConfig.ChargeReagentHours = Config.ChargeReagentHours;
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
+
+                    // Checking charging ingredients and adding them to the config
+                    foreach (KeyValuePair<string, int> chargeItem in defaultChargeItems)
+                    {
+                        if (!Config.ChargeItemValues.ContainsKey(chargeItem.Key))
+                        {
+                            tempConfig.ChargeItemValues.Add(chargeItem.Key, chargeItem.Value);
+                        }
+                    }
+
                     if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
