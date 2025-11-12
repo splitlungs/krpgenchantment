@@ -213,7 +213,7 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        int SetReagentCharge(ref ItemStack stack, int charge);
+        int SetReagentCharge(ref ItemStack stack, float charge);
         /// <summary>
         /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found.
         /// </summary>

@@ -66,9 +66,9 @@ namespace KRPGLib.Enchantment
             if (!result) return result;
             return result;
         }
-        public int GetCurrentChargeSum()
+        public float GetCurrentChargeSum()
         {
-            int ChargeSum = 0;
+            float ChargeSum = 0.0;
             foreach (var slot in slots)
             {
                 if (!slot.Empty) // TODO I don't have VS runtime, so specific function names are not available to me 
@@ -81,9 +81,9 @@ namespace KRPGLib.Enchantment
             return ChargeSum;
         }
         //would be used for slots accepting or disallowing charge compounds when over maximum
-        public bool NewChargeWithinMaximum(int addedCharge)
+        public bool NewChargeWithinMaximum(float addedCharge)
         {
-            int currentCharge = GetCurrentChargeSum();
+            float currentCharge = GetCurrentChargeSum();
             //two options here
             /* Option 1
             if (currentCharge < bEntity.MaxChargeValue)
@@ -209,7 +209,7 @@ namespace KRPGLib.Enchantment
 
 
             // checking every entry in the charging compound config
-            foreach (KeyValuePair<string, int> chargingCompound in bEntity.validChargeItems)
+            foreach (KeyValuePair<string, float> chargingCompound in bEntity.validChargeItems)
             {
                 if (sourceSlot.Itemstack.Collectible.Code = chargingCompound.Key)
                 {

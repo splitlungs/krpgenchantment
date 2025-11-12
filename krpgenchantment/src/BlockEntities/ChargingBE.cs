@@ -71,7 +71,7 @@ namespace KRPGLib.Enchantment
                 return EnchantingConfigLoader.Config?.ValidReagents; 
             }
         }
-        public Dictionary<string, int> validChargeItems
+        public Dictionary<string, float> validChargeItems
         {
             get
             {
@@ -185,7 +185,7 @@ namespace KRPGLib.Enchantment
             }
             */
 
-            int currentCharge = inventory.GetCurrentChargeSum();
+            float currentCharge = inventory.GetCurrentChargeSum();
             if (currentCharge > 0) // if we got charge, "consume" all charging compounds
             {
                 foreach (var slot in inventory.Slots)

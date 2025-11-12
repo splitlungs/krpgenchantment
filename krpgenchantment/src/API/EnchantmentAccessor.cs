@@ -830,7 +830,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public int SetReagentCharge(ref ItemStack inStack, int charge)
+        public int SetReagentCharge(ref ItemStack inStack, float charge)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Attempting to set a charge to {0}.", inStack.GetName());
@@ -844,13 +844,10 @@ namespace KRPGLib.Enchantment
             string s = inStack.Collectible.Code;
             if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(s) == true)
             {
-                // since the charge is calculated outside of the function, this part is now not needed
-                /*
-                float mul = EnchantingConfigLoader.Config.ChargePerGear; // this could be repurposed as "global charge multiplier"
-                int p = (int)MathF.Floor(numGears * mul);
-                */
+                float globalMultiplier = EnchantingConfigLoader.Config.GlobalChargeMultiplier;
                 int maxPower = EnchantingConfigLoader.Config.MaxReagentCharge;
-                power = Math.Min(charge, maxPower);
+                int p = (int)MathF.Floor(charge * globalMultiplier);
+                power = Math.Min(p, maxPower);
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.World.Logger.Event("[KRPGEnchantment] {0} is a ValidReagent and is being assigned a Charge of {1}.", inStack.GetName(), power);

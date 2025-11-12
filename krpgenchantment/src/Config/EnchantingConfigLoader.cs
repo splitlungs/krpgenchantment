@@ -21,7 +21,7 @@ namespace KRPGLib.Enchantment
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
-        private static Dictionary<string, int> defaultChargeItems = new()
+        private static Dictionary<string, float> defaultChargeItems = new()
         {
             {"game:gear-temporal", 1 }
         };
@@ -119,7 +119,7 @@ namespace KRPGLib.Enchantment
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
 
                     // Checking charging ingredients and adding them to the config
-                    foreach (KeyValuePair<string, int> chargeItem in defaultChargeItems)
+                    foreach (KeyValuePair<string, float> chargeItem in defaultChargeItems)
                     {
                         if (!Config.ChargeItemValues.ContainsKey(chargeItem.Key))
                         {
@@ -127,7 +127,8 @@ namespace KRPGLib.Enchantment
                         }
                     }
 
-                    if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
+                    if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
+
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
