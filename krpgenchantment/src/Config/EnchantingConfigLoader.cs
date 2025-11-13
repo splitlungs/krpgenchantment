@@ -72,6 +72,7 @@ namespace KRPGLib.Enchantment
                         { "ResistDamage", -1 },
                         { "Universal", -1 }
                     };
+                    Config.ChargeItemValues = new Dictionary<string, float>(defaultChargeItems);
                     Config.ValidReagents = new Dictionary<string, int>()
                     {
                         { "game:gem-emerald-rough", 1 },
@@ -119,12 +120,19 @@ namespace KRPGLib.Enchantment
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
 
                     // Checking charging ingredients and adding them to the config
-                    foreach (KeyValuePair<string, float> chargeItem in defaultChargeItems)
+                    if (!(Config.ChargeItemValues.Count() ==0))
                     {
-                        if (!Config.ChargeItemValues.ContainsKey(chargeItem.Key))
+                        foreach (KeyValuePair<string, float> chargeItem in defaultChargeItems)
                         {
-                            tempConfig.ChargeItemValues.Add(chargeItem.Key, chargeItem.Value);
+                            if (!Config.ChargeItemValues.ContainsKey(chargeItem.Key))
+                            {
+                                tempConfig.ChargeItemValues.Add(chargeItem.Key, chargeItem.Value);
+                            }
                         }
+                    }
+                    else
+                    {
+                        tempConfig.ChargeItemValues = new Dictionary<string, float>(defaultChargeItems);
                     }
 
                     if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
