@@ -1,6 +1,6 @@
 {
   "version": 0,
-  "file": "KRPGEnchantment/KRPGEnchantment_Config.json",
+  "file": "KRPGEnchantment\\KRPGEnchantment_Config.json",
   "patches": {},
   "settings": [
     {
@@ -8,8 +8,15 @@
       "title": "KRPGEnchantmentSettings"
     },
     {
-      "code": "EnchantTimeOverride",
-      "comment": "EnchantTimeOverrideComment",
+      "code": "EntityTickMs",
+      "comment": "EntityTickMsComment",
+      "type": "int",
+      "clientSide": false,
+      "default": 250
+    },
+    {
+      "code": "EnchantTimeHours",
+      "comment": "EnchantTimeHoursComment",
       "type": "float",
       "clientSide": false,
       "default": -1.0
@@ -55,6 +62,13 @@
       "type": "float",
       "clientSide": false,
       "default": 1.0
+    },
+    {
+      "code": "ResetEnchantConfigs",
+      "comment": "ResetEnchantConfigsComment",
+      "type": "bool",
+      "clientSide": false,
+      "default": false
     },
     {
       "code": "Debug",

@@ -18,7 +18,7 @@ using System.Collections;
 
 namespace KRPGLib.Enchantment
 {
-    public class ChargingBE : BlockEntityOpenableContainer
+    public class ChargingBE : BlockEntityOpenableContainer, IWrenchOrientable
     {
         // Config
         public int MsAssessTick = 1000;
@@ -41,7 +41,7 @@ namespace KRPGLib.Enchantment
         }
         public virtual string DialogTitle
         {
-            get { return Lang.Get("krpgenchantment:block-charging-table"); }
+            get { return Lang.Get("krpgenchantment:block-chargingtable"); }
         }
         public override string InventoryClassName
         {
@@ -63,7 +63,15 @@ namespace KRPGLib.Enchantment
         {
             return inventory[slot];
         }
-        public ChargingBE()
+        public Dictionary<string, int> validReagents 
+        { 
+            get 
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null;
+                return EnchantingConfigLoader.Config?.ValidReagents; 
+            }
+        }
+        public ChargingBE() : base()
         {
             inventory = new ChargingInventory(null, null, this);
             inventory.SlotModified += OnSlotModified;
@@ -105,6 +113,7 @@ namespace KRPGLib.Enchantment
         {
             base.Initialize(api);
             Api = api;
+            this.facing = (BlockFacing.FromCode(base.Block.Code.EndVariant()) ?? BlockFacing.NORTH);
             EnchantSound = new AssetLocation("game:sounds/effect/translocate-active");
             inventory.LateInitialize(Block.FirstCodePart() + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
 
@@ -116,6 +125,18 @@ namespace KRPGLib.Enchantment
             {
                 SoundTickListener = RegisterGameTickListener(TickSounds, MsSoundTick);
             }
+        }
+        private BlockFacing facing = BlockFacing.NORTH;
+        public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir)
+        {
+            this.facing = ((dir > 0) ? this.facing.GetCCW() : this.facing.GetCW());
+            this.Api.World.BlockAccessor.ExchangeBlock(this.Api.World.GetBlock(base.Block.CodeWithVariant("side", this.facing.Code)).Id, this.Pos);
+            this.MarkDirty(true, null);
+        }
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            UnregisterAllTickListeners();
         }
         /// <summary>
         /// Called by the ChargingBE to write the InputSlot's EnchantPotential value

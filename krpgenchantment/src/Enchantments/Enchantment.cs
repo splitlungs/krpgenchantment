@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using Vintagestory.GameContent;
 using Vintagestory.API.Server;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using HarmonyLib;
 using System.Reflection;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Enchantment.API;
 using System.IO;
-using System.Xml.Linq;
-using Newtonsoft.Json.Linq;
-using SkiaSharp;
-using System.Collections;
+using Vintagestory.API.Client;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -39,6 +35,9 @@ namespace KRPGLib.Enchantment
         public List<string> ValidToolTypes = new List<string>();
         // Configurable JSON multiplier for effects
         public EnchantModifiers Modifiers;
+        // Used to manage default configurations, as well as to force resets of individual enchantments.
+        // Setting to a value less than 1.00 will force a reset of the properties to default.
+        public float Version;
         public EnchantmentProperties Clone()
         {
             return CloneTo<EnchantmentProperties>();
@@ -102,19 +101,93 @@ namespace KRPGLib.Enchantment
         }
     }
     /// <summary>
-    /// Generic for creating Tick Registries
+    /// Stores data for Entities to process their TickRegistry.
     /// </summary>
-    public class EnchantTick : IDisposable
+    public class EnchantTick : IDisposable, IByteSerializable
     {
-        public EnchantmentSource Source;
+        // The Code of the Enchantment
+        public string Code;
+        // The Power or Tier of the Enchantment
+        public int Power;
+        // Used to define which inventory to search with InventoryManager
+        public string InventoryID;
+        // ID of the slot in the given inventory
+        public int SlotID;
+        // Unique ID of the source enchanted item
+        public int ItemID;
+        // Entity ID of the cause entity
+        public long CauseEntityID;
+        // Entity ID of the cause entity
+        public long TargetEntityID;
+        // Block Position for where the enchantment landed. Typically used in place of TargetEntity
+        public BlockPos TargetPos;
+        // public EnchantmentSource Source;
+        // When this is 0, the EnchantTick is disposed
         public int TicksRemaining;
+        // Set after processing a tick fully
         public long LastTickTime;
-
+        // How long it should take minimum before a tick can be triggered again
+        public long TickDuration;
+        // If true, it will not be removed if TicksRemaining is 0
+        public bool Persistent = false;
+        // If true, it will not be ticked when not in main hand
+        public bool IsHotbar = false;
+        // If true, it will not be ticked when not in off hand
+        public bool IsOffhand = false;
+        // Mark this tick to be cleaned in the next trash cycle
+        public bool IsTrash = false;
         public void Dispose()
         {
-            Source = null;
+            // Source = null;
+            Code = null;
+            Power = 0;
+            InventoryID = null;
+            SlotID = 0;
+            ItemID = 0;
+            CauseEntityID = 0;
+            TargetEntityID = 0;
+            TargetPos = null;
             TicksRemaining = 0;
             LastTickTime = 0;
+            TickDuration = 0;
+            Persistent = false;
+            IsHotbar = false;
+            IsOffhand = false;
+            IsTrash = true;
+        }
+        public void ToBytes(BinaryWriter writer)
+        {
+            writer.Write(Code);
+            writer.Write(Power);
+            writer.Write(InventoryID);
+            writer.Write(SlotID);
+            writer.Write(ItemID);
+            writer.Write(CauseEntityID);
+            writer.Write(TargetEntityID);
+            writer.Write(TicksRemaining);
+            writer.Write(LastTickTime);
+            writer.Write(TickDuration);
+            writer.Write(Persistent);
+            writer.Write(IsHotbar);
+            writer.Write(IsOffhand);
+            writer.Write(IsTrash);
+        }
+        public void FromBytes(BinaryReader reader, IWorldAccessor world)
+        {
+            Code = reader.ReadString();
+            Power = reader.ReadInt32();
+            InventoryID = reader.ReadString();
+            SlotID = reader.ReadInt32();
+            ItemID = reader.ReadInt32();
+            CauseEntityID = reader.ReadInt32();
+            TargetEntityID = reader.ReadInt32();
+            TicksRemaining = reader.ReadInt32();
+            LastTickTime = reader.ReadInt64();
+            TickDuration = reader.ReadInt64();
+            Persistent = reader.ReadBoolean();
+            IsHotbar = reader.ReadBoolean();
+            IsOffhand = reader.ReadBoolean();
+            IsTrash = reader.ReadBoolean();
         }
     }
     /// <summary>
@@ -142,6 +215,12 @@ namespace KRPGLib.Enchantment
         public List<string> ValidToolTypes { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         public EnchantModifiers Modifiers { get; set; }
+        // Used to manage default configurations, as well as to force resets of individual enchantments.
+        // Setting to a value less than 1.00 will force a reset of the properties to default.
+        public float Version { get; set; }
+        
+        // Properties moved to Modifiers and EnchantTick Registry moved to EnchantmentEntityBehavior
+        //
         // Used to manage generic ticks. You still have to register your tick method with the API.
         // public Dictionary<long, EnchantTick> TickRegistry { get; set; }
         // Properties loaded from JSON
@@ -160,6 +239,7 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void Initialize(EnchantmentProperties properties)
         {
+            // Load from properties, or reset if corrupt
             if (properties.Enabled == true) Enabled = properties.Enabled;
             else Enabled = false;
             if (properties.Code != null) Code = properties.Code;
@@ -176,14 +256,15 @@ namespace KRPGLib.Enchantment
             else ValidToolTypes = new List<string>();
             if (properties.Modifiers != null) Modifiers = properties.Modifiers;
             else Modifiers = new EnchantModifiers();
-            
-            ConfigParticles();
+            if (properties.Version >= Version) Version = properties.Version;
+            else Version = 0;
         }
         /// <summary>
         /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
         public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api)
         {
@@ -192,51 +273,58 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
 
-            // Setup Enchants
-            Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(inStack);
-            if (enchants != null)
+            try
             {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments on it. Processing exceptions.", enchants.Count);
-                enchants = RemoveHealOrDamage(enchants);
-                enchants = LimitEnchantCategory(enchants);
-                enchants = RemoveExisting(enchants, enchantPower);
-            }
-            else
-                enchants = new Dictionary<string, int>();
+                // Setup Enchants
+                Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(inStack);
+                if (enchants != null)
+                {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments on it. Processing exceptions.", enchants.Count);
+                    enchants = RemoveHealOrDamage(enchants, api);
+                    enchants = LimitEnchantCategory(enchants, api);
+                    enchants = RemoveExisting(enchants, enchantPower, api);
+                }
+                else
+                    enchants = new Dictionary<string, int>();
 
-            // Write the Enchantment
-            enchants.Add(Code, enchantPower);
-            string enchantString = "";
-            foreach (KeyValuePair<string, int> pair in enchants)
+                // Write the Enchantment
+                enchants.Add(Code, enchantPower);
+                string enchantString = "";
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    enchantString += pair.Key + ":" + pair.Value + ";";
+                }
+                ITreeAttribute tree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
+                tree.SetString("active", enchantString);
+                tree.RemoveAttribute("latentEnchantTime");
+                tree.RemoveAttribute("latentEnchants");
+                inStack.Attributes.MergeTree(tree);
+
+                return true;
+            }
+            catch (Exception ex)
             {
-                enchantString += pair.Key + ":" + pair.Value + ";";
+                api?.Logger.Error("[KRPGEnchantment] Error attempting TryEnchantItem: {0}", ex);
+                return false;
             }
-            ITreeAttribute tree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            tree.SetString("active", enchantString);
-            tree.RemoveAttribute("latentEnchantTime");
-            tree.RemoveAttribute("latentEnchants");
-            inStack.Attributes.MergeTree(tree);
-
-            return true;
-
         }
         /// <summary>
         /// Overwrites "Healing" or a "Damage" category enchant
         /// </summary>
         /// <param name="enchants"></param>
-        public virtual Dictionary<string, int> RemoveHealOrDamage(Dictionary<string, int> enchants)
+        public virtual Dictionary<string, int> RemoveHealOrDamage(Dictionary<string, int> enchants, ICoreServerAPI api)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to overwrite heal/damage enchants.");
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
+                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite heal/damage enchants.");
+            
             // TODO: Don't make these hard-coded. Maybe just search all categories for the word "damage"
             List<string> damageEnchants = new List<string>();
-            List<string> areaEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageArea");
+            List<string> areaEnchants = api.EnchantAccessor().GetEnchantmentsInCategory("DamageArea");
             if (areaEnchants != null) damageEnchants.AddRange(areaEnchants);
-            List<string> targetEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageTarget");
+            List<string> targetEnchants = api.EnchantAccessor().GetEnchantmentsInCategory("DamageTarget");
             if (targetEnchants != null) damageEnchants.AddRange(targetEnchants);
-            List<string> tickEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory("DamageTick");
+            List<string> tickEnchants = api.EnchantAccessor().GetEnchantmentsInCategory("DamageTick");
             if (tickEnchants != null) damageEnchants.AddRange(tickEnchants);
 
             if (damageEnchants.Count > 0)
@@ -261,27 +349,43 @@ namespace KRPGLib.Enchantment
         /// Removes a random Enchantment of a type as limited by MaxEnchantsByCategory in the main config file.
         /// </summary>
         /// <param name="enchants"></param>
-        public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants)
+        /// <param name="api"></param>
+        public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
-            foreach (KeyValuePair<string, int> pair1 in EnchantingConfigLoader.Config.MaxEnchantsByCategory)
+                api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
+
+            // Get the Maximum amount of allowed Enchantments in a single cateogry from config
+            Dictionary<string, int> maxEnchantsByCategory = EnchantingConfigLoader.Config?.MaxEnchantsByCategory;
+            foreach (KeyValuePair<string, int> pair1 in maxEnchantsByCategory)
             {
-                List<string> categoryEnchants = sApi.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
-                if (categoryEnchants != null && pair1.Value >= 0)
+                // Get each enchantment in the given category
+                List<string> categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
+                if (categoryEnchantNames == null) continue;
+                if (pair1.Value > 0)
                 {
+                    // Get each of the Enchants in this category that exist in the provided Enchants dictionary
                     List<string> activeEnchants = new List<string>();
                     foreach (KeyValuePair<string, int> pair2 in enchants)
                     {
-                        if (categoryEnchants.Contains(pair2.Key))
+                        if (categoryEnchantNames.Contains(pair2.Key))
                             activeEnchants.Add(pair2.Key);
                     }
-                    while (activeEnchants.Count >= pair1.Value)
+                    // If none are found, move on
+                    if (activeEnchants.Count < 1) continue;
+
+                    // Reduce down to Max from Config
+                    while (activeEnchants.Count > pair1.Value)
                     {
-                        int roll = Api.World.Rand.Next(0, activeEnchants.Count);
+                        int roll = api.World.Rand.Next(0, activeEnchants.Count);
                         enchants.Remove(activeEnchants[roll]);
                     }
+                }
+                // Remove the Enchant if category is disabled or missing
+                else
+                {
+                    // Should be safe if it fails to find the key
+                    enchants.Remove(pair1.Key);
                 }
             }
             return enchants;
@@ -290,10 +394,10 @@ namespace KRPGLib.Enchantment
         /// Overwrites "Healing" or a "Damage" category enchant
         /// </summary>
         /// <param name="enchants"></param>
-        public virtual Dictionary<string, int> RemoveExisting(Dictionary<string, int> enchants, int enchantPower)
+        public virtual Dictionary<string, int> RemoveExisting(Dictionary<string, int> enchants, int enchantPower, ICoreServerAPI api)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing enchants");
+                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing enchants");
             // Write Enchant - Overwrite if it exists first
             if (enchants.ContainsKey(Code)) enchants.Remove(Code);
 
@@ -326,14 +430,16 @@ namespace KRPGLib.Enchantment
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
         /// </summary>
         /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
         public virtual void OnTrigger(EnchantmentSource enchant)
         {
             try
             {
                 MethodInfo meth = this.GetType().GetMethod(enchant.Trigger,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-                meth.Invoke(this, new object[1] { enchant });
+                if (enchant != null)
+                    meth?.Invoke(this, new object[1] { enchant });
+                else
+                    Api.Logger.Error("[KRPGEnchantment] EnchantmentSource is corrupt. Failed to Trigger {0}", Code);
             }
             catch (Exception ex)
             {
@@ -350,7 +456,7 @@ namespace KRPGLib.Enchantment
         
         }
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is successfully attacked.
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
@@ -359,18 +465,48 @@ namespace KRPGLib.Enchantment
         
         }
         /// <summary>
-        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// Triggered when an entity wearing an enchanted item has already received damage.
         /// </summary>
-        /// <param name="deltaTime"></param>
-        /// <param name="eTick"></param>
-        public virtual void OnTick(float deltaTime, ref EnchantTick eTick)
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
 
         }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// </summary>
+        /// <param name="eTick"></param>
+        public virtual void OnTick(ref EnchantTick eTick)
+        {
+
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
+        /// Called by an ItemStack when a toggle is requested.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnToggle(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+
+        // Obsolete particles
+        /*
         protected AdvancedParticleProperties[] ParticleProps;
         protected static AdvancedParticleProperties[] PoisonParticleProps;
         protected bool resetLightHsv;
-
+        */
+        /*
         public virtual void ConfigParticles()
         {
             ParticleProps = new AdvancedParticleProperties[3];
@@ -517,16 +653,19 @@ namespace KRPGLib.Enchantment
                 SelfPropelled = true
             };
         }
-        public virtual void GenerateParticles(Entity entity, EnumDamageType damageType, float damage)
+        */
+        /*
+        public virtual void GenerateParticles(ICoreClientAPI api, Entity entity, EnumDamageType damageType, float damage)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
 
             int power = (int)MathF.Ceiling(damage);
+            int r = api.World.Rand.Next(ParticleProps.Length + 1);
 
             if (damageType == EnumDamageType.Fire)
             {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
+                int num = Math.Min(ParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
                 advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
@@ -657,5 +796,6 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
+        */
     }
 }

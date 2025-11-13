@@ -42,7 +42,8 @@ namespace KRPGLib.Enchantment
         /// <param name="OnToggled"></param>
         /// <param name="bounds"></param>
         /// <param name="toggleable"></param>
-        public SkiaToggleButtonGuiElement(ICoreClientAPI capi, int buttonID, string icon, string text, SKTypeface typeface , Action<bool, int> OnToggled, ElementBounds bounds, bool toggleable = false)
+        public SkiaToggleButtonGuiElement(ICoreClientAPI capi, int buttonID, string icon, string text, SKTypeface typeface , Action<bool, int> OnToggled, 
+            ElementBounds bounds, bool toggleable = false)
             : base(capi, bounds, text, typeface)
         {
             releasedTexture = new LoadedTexture(capi);
@@ -197,6 +198,14 @@ namespace KRPGLib.Enchantment
                 handler?.Invoke(On, this.ButtonID);
                 api.Gui.PlaySound("toggleswitch");
             }
+        }
+        public override void OnFocusGained()
+        {
+            base.OnFocusGained();
+        }
+        public override void OnFocusLost()
+        {
+            base.OnFocusLost();
         }
         /// <summary>
         /// Is it On or off?

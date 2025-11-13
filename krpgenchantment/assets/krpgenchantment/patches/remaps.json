@@ -1,0 +1,10 @@
+[
+  {
+    "file": "game:config/remaps.json",
+    "op": "addmerge",
+    "path": "/krpgenchantment:v1.2.17",
+    "value": [
+      "/bir remapq krpgenchantment:chargingtable-ebony-north krpgenchantment:charging-table force"
+    ]
+  }
+]

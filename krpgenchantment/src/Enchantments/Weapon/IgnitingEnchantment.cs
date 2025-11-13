@@ -19,7 +19,6 @@ namespace KRPGLib.Enchantment
     {
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
-        int TickFrequency { get { return Modifiers.GetInt("TickFrequency"); } }
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -35,21 +34,15 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 1 }, {"TickDuration", 12500 }, {"TickFrequency", 500 }
+                {"TickMultiplier", 1 }, {"TickDuration", 12500 }
             };
-            // Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
-        }
-        public override void Initialize(EnchantmentProperties properties)
-        {
-            base.Initialize(properties);
-            // We let the config initialize before registering the Tick Listener
-            // Api.World.RegisterGameTickListener(IgniteTick, TickFrequency);
+            Version = 1.01f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -57,34 +50,36 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Igniting enchantment.", enchant.TargetEntity.GetName());
 
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
-
-            int tickMax = (enchant.Power * TickMultiplier) -1;
-            if (eeb.TickRegistry.ContainsKey(Code))
+            if (eeb != null)
             {
-                eeb.TickRegistry[Code].TicksRemaining = tickMax;
-                eeb.TickRegistry[Code].Source = enchant.Clone();
+                EnchantTick eTick = enchant.ToEnchantTick();
+                int tickMax = (enchant.Power * TickMultiplier) - 1;
+                eTick.TicksRemaining = tickMax;
+                eTick.TickDuration = TickDuration;
+                if (eeb.TickRegistry.ContainsKey(Code))
+                {
+                    eeb.TickRegistry[Code] = eTick;
+                }
+                else if (tickMax > 1)
+                {
+                    eTick.LastTickTime = Api.World.ElapsedMilliseconds;
+                    eeb.TickRegistry.Add(enchant.Code, eTick);
+                    enchant.TargetEntity.Ignite();
+                }
+                else
+                    enchant.TargetEntity.Ignite();
             }
-            else if (tickMax > 1)
-            {
-                EnchantTick eTick =
-                    new EnchantTick() { TicksRemaining = tickMax, Source = enchant.Clone(), LastTickTime = Api.World.ElapsedMilliseconds };
-                //TickRegistry.Add(enchant.TargetEntity.EntityId, eTick);
-                eeb.TickRegistry.Add(enchant.Code, eTick);
-                enchant.TargetEntity.Ignite();
-            }
-            else
-                enchant.TargetEntity.Ignite();
         }
-        public override void OnTick(float deltaTime, ref EnchantTick eTick)
+        public override void OnTick(ref EnchantTick eTick)
         {
             long curDur = Api.World.ElapsedMilliseconds - eTick.LastTickTime;
             int tr = eTick.TicksRemaining;
 
             if (tr > 0 && curDur >= TickDuration)
             {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Igniting enchantment is performing an Ignite Tick on {0}.", eTick.Source.TargetEntity.GetName());
-                Entity entity = eTick.Source.TargetEntity;
+                // if (EnchantingConfigLoader.Config?.Debug == true)
+                //     Api.Logger.Event("[KRPGEnchantment] Igniting enchantment is performing an Ignite Tick on {0}.", eTick.Source.TargetEntity.GetName());
+                Entity entity = Api.World.GetEntityById(eTick.TargetEntityID);
                 if (entity == null)
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
@@ -102,10 +97,13 @@ namespace KRPGLib.Enchantment
                     Api.Logger.Event("[KRPGEnchantment] Igniting enchantment finished Ticking for {0}.", Code);
                 eTick.Dispose();
             }
+            else
+                eTick.LastTickTime = Api.World.ElapsedMilliseconds;
         }
         /// <summary>
         /// Attempt to set the target on fire. Power multiplies number of 12s refreshes.
         /// </summary>
+        // [Obsolete]
         // public void IgniteTick(float dt)
         // {
         //     foreach (KeyValuePair<long, EnchantTick> pair in TickRegistry) 

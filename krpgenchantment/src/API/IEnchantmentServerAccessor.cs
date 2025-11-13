@@ -28,6 +28,29 @@ namespace KRPGLib.Enchantment.API
         /// <param name="t"></param>
         bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
         #endregion
+        #region Enchanting
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="eName"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity);
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool RemoveAllEnchantsFromItem(ItemSlot inSlot, Entity entity);
+        /// <summary>
+        /// Resets all Latent Enchant attributes to null on the ItemStack in the slot provided.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        bool ResetLatentEnchantsOnItem(ItemSlot inSlot);
+        #endregion
         #region Actions
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
@@ -36,9 +59,18 @@ namespace KRPGLib.Enchantment.API
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants);
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
@@ -46,9 +78,18 @@ namespace KRPGLib.Enchantment.API
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
         /// <param name="targetEntity"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants);
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
@@ -62,6 +103,17 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
         /// <param name="stack"></param>
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
@@ -69,6 +121,17 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         /// <returns></returns>
         bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters);
         /// <summary>
         /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
         /// </summary>
@@ -79,7 +142,7 @@ namespace KRPGLib.Enchantment.API
         #endregion
         #region Getters
         /// <summary>
-        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// Returns the Enchantment Interface from the EnchantmentRegistry. Returns null if not found.
         /// </summary>
         /// <param name="enchantCode"></param>
         /// <returns></returns>
@@ -157,6 +220,11 @@ namespace KRPGLib.Enchantment.API
         /// <param name="category"></param>
         /// <returns></returns>
         List<string> GetEnchantmentsInCategory(string category);
+        /// <summary>
+        /// Returns a list of all Enchantment Categories among all registered Enchantments.
+        /// </summary>
+        /// <returns></returns>
+        List<string> GetEnchantmentCategories();
         #endregion
         #region Lore
         /// <summary>
@@ -171,8 +239,15 @@ namespace KRPGLib.Enchantment.API
         /// </summary>
         /// <param name="player"></param>
         /// <param name="enchantName"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
-        bool CanReadEnchant(string player, string enchantName);
+        bool CanReadEnchant(string player, string enchantName, ICoreServerAPI api);
+        /// <summary>
+        /// Learn Enchanter's Manual journal entries for the given player.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        bool LearnAllEnchantersManuals(IServerPlayer player);
         #endregion
     }
 }

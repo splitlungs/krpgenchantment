@@ -125,7 +125,8 @@ namespace KRPGLib.Enchantment
             GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
             for (int i = 0; i < Config.rowCount; i++)
             {
-                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, OnSelectEnchant, containerRowBounds, true));
+                scrollArea.Add(new SkiaToggleButtonGuiElement(capi, i, "", Config.enchantNamesEncrypted[i], customTypeface, 
+                    OnSelectEnchant, containerRowBounds, true));
                 if (Config.selectedEnchant != -1 && i == Config.selectedEnchant && Config.enchantNamesEncrypted[i] != "")
                 {
                     // capi.Logger.Warning("Found matching SkiaToggleButton. Attempting to set as the selectedEnchant.");
@@ -133,8 +134,10 @@ namespace KRPGLib.Enchantment
                     button.SetValue(true);
                 }
                 // SingleComposer.AddAutoSizeHoverText("TEST", CairoFont.WhiteMediumText(), 1, containerRowBounds, "enchant" + i);
+                // scrollArea.Add(new GuiElementHoverText(capi, "", CairoFont.WhiteMediumText(), 200, containerRowBounds));
                 containerRowBounds = containerRowBounds.BelowCopy();
             }
+            
 
             // 7. Compose
             SingleComposer.Compose();
@@ -156,6 +159,10 @@ namespace KRPGLib.Enchantment
             float scrollTotalHeight = rowHeight * Config.rowCount;
             SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
         }
+        private void OnOkClicked()
+        {
+            TryClose();
+        }
         public void Update(double inputProcessTime, double maxProcessTime, bool isEnchanting, string outputText, int selected, bool canRead)
         {
             this.Config.outputText = outputText;
@@ -176,7 +183,6 @@ namespace KRPGLib.Enchantment
 
             // capi.World.Logger.Event("[KRPGEnchantment] Attempting to write OutputText: {0}", Config.outputText);
             SingleComposer.GetDynamicText("outputText").SetNewText(Config.outputText, true, true);
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             SingleComposer.ReCompose();
         }
         /// <summary>
@@ -265,12 +271,7 @@ namespace KRPGLib.Enchantment
                 else
                     skiaButton.SetValue(false);
             }
-            // if (Config.selectedEnchant == index)
-            //     Config.selectedEnchant = -1;
-            // else
-            //     Config.selectedEnchant = index;
             Config.inputEnchantTime = 0;
-            // SingleComposer.GetCustomDraw("symbolDrawer").Redraw();
             // Click
             capi.Gui.PlaySound("toggleswitch");
             // Notify the table which one we clicked

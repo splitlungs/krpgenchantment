@@ -5,6 +5,9 @@ using Vintagestory.API.MathTools;
 
 namespace KRPGLib.Enchantment
 {
+    /// <summary>
+    /// Primary class for handling all core references to operate an Enchantment class trigger.
+    /// </summary>
     public class EnchantmentSource : DamageSource
     {
         // Defines the method called by the trigger.
@@ -13,12 +16,18 @@ namespace KRPGLib.Enchantment
         public string Code;
         // The Power or Tier of the Enchantment
         public int Power;
+        // The ItemSlot from which the Enchantment originated
+        public ItemSlot SourceSlot;
         // The ItemStack from which the Enchantment originated
         public ItemStack SourceStack;
         // Entity being affected by the Enchantment
         public Entity TargetEntity;
         // Location where an Enchantment should affect
         public BlockPos TargetPos;
+        /// <summary>
+        /// Creates a copy of this class
+        /// </summary>
+        /// <returns></returns>
         public EnchantmentSource Clone()
         {
             return new EnchantmentSource()
@@ -59,6 +68,35 @@ namespace KRPGLib.Enchantment
                 DamageTier = DamageTier,
                 KnockbackStrength = KnockbackStrength,
                 YDirKnockbackDiv = YDirKnockbackDiv
+            };
+        }
+        /// <summary>
+        /// Creates a valid EnchantTick from the EnchantSource. Default TicksRemaining = Power and all bools false, and SlotID is -1.
+        /// </summary>
+        /// <returns></returns>
+        public EnchantTick ToEnchantTick()
+        {
+            // Null safe slot check
+            // int slotID = -1;
+            // if (SourceSlot != null)
+            //     SourceSlot.Inventory.GetSlotId(SourceSlot);
+
+            return new EnchantTick()
+            {
+                Code = Code,
+                Power = Power,
+                InventoryID = SourceSlot?.Inventory?.InventoryID,
+                SlotID = -1,
+                ItemID = SourceStack.Id,
+                CauseEntityID = CauseEntity.EntityId,
+                TargetEntityID = TargetEntity.EntityId,
+                TargetPos = TargetPos,
+                LastTickTime = 0,
+                TicksRemaining = Power,
+                Persistent = false,
+                IsHotbar = false,
+                IsOffhand = false,
+                IsTrash = false
             };
         }
     }

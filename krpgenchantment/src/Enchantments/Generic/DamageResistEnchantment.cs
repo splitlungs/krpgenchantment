@@ -15,7 +15,7 @@ namespace KRPGLib.Enchantment
 {
     public class DamageResistEnchantment : Enchantment
     {
-        string DamageResist { get { return Modifiers.GetString("DamageResist"); } }
+        string DamageResist { get { return Modifiers.GetString("DamageResist").ToLowerInvariant(); } }
         float PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
         public DamageResistEnchantment(ICoreAPI api) : base(api)
         {
@@ -35,22 +35,27 @@ namespace KRPGLib.Enchantment
             {
                 { "DamageResist", "fire"}, { "PowerMultiplier", 0.1 }
             };
+            Version = 1.00f;
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an DamageResist enchantment.", enchant.TargetEntity.GetName());
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an {1} enchantment.", enchant.TargetEntity.GetName(), Code);
 
-            if (DamageResist.Contains(enchant.Type.ToString()))
+            // Extract the Damage Values
+            float dmg = parameters.GetFloat("damage");
+            string dmgType = parameters.GetString("type");
+
+            if (DamageResist == dmgType && dmg > 0)
             {
                 float resist = enchant.Power * PowerMultiplier;
-                float dmg = MathF.Min(((1 - resist) * (float)parameters["damage"]), 0);
+                resist = 1 - resist;
+                dmg = Math.Max(0f, dmg * resist);
                 parameters["damage"] = dmg;
-            }
 
-            if (EnchantingConfigLoader.Config.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Durable Enchantment processed with {0} damage to item {1}.", 
-                    parameters["damage"], enchant.SourceStack.GetName());
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] {0} Enchantment processed with {1} damage to {2}.", Code, dmg, enchant.TargetEntity.GetName());
+            }
         }
     }
 }

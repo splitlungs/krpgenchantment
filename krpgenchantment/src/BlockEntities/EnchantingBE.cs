@@ -342,7 +342,7 @@ namespace KRPGLib.Enchantment
                     ICoreServerAPI sApi = Api as ICoreServerAPI;
                     foreach (KeyValuePair<string, bool> keyValuePair in Readers)
                     {
-                        if (sApi.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment) == true)
+                        if (sApi.EnchantAccessor().CanReadEnchant(keyValuePair.Key, CurrentEnchantment, sApi) == true)
                             Readers[keyValuePair.Key] = true;
                         else
                             Readers[keyValuePair.Key] = false;
@@ -538,9 +538,9 @@ namespace KRPGLib.Enchantment
                     if (EnchantingConfigLoader.Config.Debug == true)
                         Api.Logger.Event("[KRPGEnchantment] Server received RClick. Removing player {0} from Readers list.", byPlayer.PlayerUID);
                 }
-                else if (clientDialog == null && !Readers.ContainsKey(byPlayer.PlayerUID))
+                else if (clientDialog == null && byPlayer?.PlayerUID != null && !Readers.ContainsKey(byPlayer.PlayerUID))
                 {
-                    bool canRead = sApi.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment);
+                    bool canRead = sApi.EnchantAccessor().CanReadEnchant(byPlayer.PlayerUID, CurrentEnchantment, sApi);
                     Readers.Add(byPlayer.PlayerUID, canRead);
                     if (EnchantingConfigLoader.Config.Debug == true)
                         Api.Logger.Event("[KRPGEnchantment] Server received RClick. Adding player {0} from Readers list with value of {1}.", byPlayer.PlayerUID, canRead);
@@ -700,7 +700,7 @@ namespace KRPGLib.Enchantment
                 foreach (KeyValuePair<string, bool> pair in Readers)
                 {
                     ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    sApi.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment);
+                    sApi.EnchantAccessor().CanReadEnchant(pair.Key, CurrentEnchantment, sApi);
                 }
             }
             else

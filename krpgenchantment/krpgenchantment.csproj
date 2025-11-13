@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
   </PropertyGroup>
@@ -24,7 +24,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Overhaullib">
-      <HintPath>..\..\..\Examples\overhaullib_0.2.8\Overhaullib.dll</HintPath>
+      <HintPath>..\..\..\Examples\overhaullib_1.12.19\Overhaullib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="protobuf-net">
@@ -111,7 +111,7 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\krpgenchantment\blocktypes\charging-table.json" />
+  <None Remove="assets\krpgenchantment\blocktypes\chargingtable.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-universal.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-weapon.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-2.json" />
@@ -126,6 +126,11 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-universal.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-weapon.json" />
   <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
+  <None Remove="assets\krpgenchantment\config\remaps.json" />
+  <None Remove="assets\krpgenchantment\lang\de.json" />
+  <None Remove="assets\krpgenchantment\lang\es-419.json" />
+  <None Remove="assets\krpgenchantment\lang\es-es.json" />
+  <None Remove="assets\krpgenchantment\lang\pl.json" />
   <None Remove="assets\krpgenchantment\lang\uk.json" />
   <None Remove="assets\krpgenchantment\patches\blackguardadditions\blackguardadditions-behaviors.json" />
   <None Remove="assets\krpgenchantment\patches\forlornadditions\forlornadditions-behaviors.json" />
@@ -157,8 +162,8 @@
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
   <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\krpgwands\wand-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\block\charging-table.json" />
-  <None Remove="assets\krpgenchantment\shapes\block\charging-table.json" />
+  <None Remove="assets\krpgenchantment\recipes\grid\block\chargingtable.json" />
+  <None Remove="assets\krpgenchantment\shapes\block\chargingtable.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
@@ -172,7 +177,6 @@
 
 <ItemGroup>
   <Folder Include="src\Enchantments\Accessory\" />
-  <Folder Include="src\Enchantments\Tool\" />
   <Folder Include="src\Enchantments\Ranged\" />
 </ItemGroup>
 

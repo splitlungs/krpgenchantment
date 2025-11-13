@@ -1,10 +1,13 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -69,7 +72,11 @@ namespace KRPGLib.Enchantment
     {
         ChargingBE bEntity;
         int stackNum;
-
+        string inputCode() 
+        {
+            if (!Empty) return this.itemstack?.Collectible.Code;
+            else return null;
+        }
         public ItemSlotAssessmentInput(InventoryBase inventory, ChargingBE assessmentTable, int itemNumber) : base(inventory)
         {
             MaxSlotStackSize = 1;
@@ -81,14 +88,38 @@ namespace KRPGLib.Enchantment
             bEntity = assessmentTable;
             stackNum = num;
         }
+        public override int GetRemainingSlotSpace(ItemStack forItemstack)
+        {
+            return Math.Max(0, MaxSlotStackSize - StackSize);
+        }
         public override bool CanHold(ItemSlot sourceSlot)
         {
             // if (bEntity.invLocked) return false;
             if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
-            foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                inventory.Api.Logger.Event("[KRPGEnchantment] Testing if ChargingTable CanHold {0}.", sourceSlot?.Itemstack?.Collectible.Code);
+
+            if (bEntity.validReagents == null) return false;
+
+            foreach (KeyValuePair<string, int> pair in bEntity.validReagents)
             {
-                if (sourceSlot.Itemstack.Collectible.Code == pair.Key) return true;
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    inventory.Api.Logger.Event("[KRPGEnchantment] {0} is a Valid Reagent with value of {1}.", pair.Key, pair.Value);
+            }
+
+            // Limit according to code and qty in configs
+            foreach (KeyValuePair<string, int> pair in bEntity.validReagents)
+            {
+                string code = sourceSlot?.Itemstack?.Collectible?.Code;
+                string code2 = pair.Key;
+                if (code == code2)
+                {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        inventory.Api.Logger.Event("[KRPGEnchantment] {0} is equal to {1}.", code, code2);
+                    MaxSlotStackSize = pair.Value;
+                    return true;
+                }
             }
 
             return false;
@@ -101,52 +132,16 @@ namespace KRPGLib.Enchantment
         {
             return base.CanTakeFrom(sourceSlot, priority);
         }
-
         public override void OnItemSlotModified(ItemStack stack)
         {
             base.OnItemSlotModified(stack);
         }
         protected override void ActivateSlotLeftClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {
-            if (inventory.Api.Side == EnumAppSide.Client) return;
+            if (!(inventory.Api is ICoreServerAPI sapi)) return;
 
-            if (Empty)
-            {
-                if (CanHold(sourceSlot))
-                {
-                    int val = Math.Min(sourceSlot.StackSize, MaxSlotStackSize);
-                    val = Math.Min(val, GetRemainingSlotSpace(sourceSlot.Itemstack));
-                    itemstack = sourceSlot.TakeOut(val);
-                    op.MovedQuantity = itemstack.StackSize;
-                    OnItemSlotModified(itemstack);
-                }
+            base.ActivateSlotLeftClick(sourceSlot, ref op);
 
-                return;
-            }
-
-            if (sourceSlot.Empty)
-            {
-                op.RequestedQuantity = StackSize;
-                TryPutInto(sourceSlot, ref op);
-                return;
-            }
-
-            int mergableQuantity = itemstack.Collectible.GetMergableQuantity(itemstack, sourceSlot.Itemstack, op.CurrentPriority);
-            if (mergableQuantity > 0)
-            {
-                int requestedQuantity = op.RequestedQuantity;
-                op.RequestedQuantity = GameMath.Min(mergableQuantity, sourceSlot.Itemstack.StackSize, GetRemainingSlotSpace(sourceSlot.Itemstack));
-                ItemStackMergeOperation op2 = (ItemStackMergeOperation)(op = op.ToMergeOperation(this, sourceSlot));
-                itemstack.Collectible.TryMergeStacks(op2);
-                sourceSlot.OnItemSlotModified(itemstack);
-                OnItemSlotModified(itemstack);
-                op.RequestedQuantity = requestedQuantity;
-            }
-            else
-            {
-                TryFlipWith(sourceSlot);
-            }
-            MarkDirty();
         }
         protected override void ActivateSlotRightClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
         {

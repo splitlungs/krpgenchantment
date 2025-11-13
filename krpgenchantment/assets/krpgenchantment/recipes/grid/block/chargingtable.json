@@ -1,26 +1,19 @@
 {
-  "ingredientPattern": "WTW,HNS,WBW",
+  "ingredientPattern": "WTW,HNS,WWW",
   "width": 3,
   "height": 3,
   "ingredients": {
     "W": {
-      "type": "block",
+      "type": "item",
       "code": "game:plank-*",
-      "quanityt": 1
+      "name": "wood",
+      "allowedVariants": [ "acacia", "aged", "baldcypress", "birch", "ebony", "kapok", "larch", "maple", "oak", "pine", "purpleheart", "redwood", "walnut" ],
+      "quantity": 1
     },
     "T": {
       "type": "item",
       "code": "game:gear-temporal",
-      "quanityt": 1
-    },
-    "B": {
-      "type": "block",
-      "code": "game:bookshelf",
-      "quanityt": 1,
-      "attributes": {
-        "type": "1row1col",
-        "material": "oak"
-      }
+      "quantity": 1
     },
     "N": {
       "type": "item",
@@ -40,7 +33,7 @@
   },
   "output": {
     "type": "block",
-    "code": "krpgenchantment:charging-table",
+    "code": "krpgenchantment:chargingtable-{wood}-north",
     "quantity": 1
   }
 }

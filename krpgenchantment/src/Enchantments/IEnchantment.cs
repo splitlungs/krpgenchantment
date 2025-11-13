@@ -34,16 +34,20 @@ namespace KRPGLib.Enchantment.API
         int MaxTier { get; set; }
         // Similar to "Attributes". You can set your own serializable values here
         EnchantModifiers Modifiers { get; set; }
-        // Configured in struct, assigned by config file
-        // ITreeAttribute Attributes { get; set; }
-        // Used to manage generic ticks. You still have to register your tick method with the API.
-        // Dictionary<long, EnchantTick> TickRegistry { get; set; }
+        // Used to manage default configurations, as well as to force resets of individual enchantments.
+        // Setting to a value less than 1.00 will force a reset of the properties to default.
+        float Version { get; set; }
+        /// <summary>
+        /// Verifies Properties data and assigns to the instantiated Enchantment class.
+        /// </summary>
+        /// <param name="properties"></param>
         void Initialize(EnchantmentProperties properties);
         /// <summary>
         /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
         bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api);
         #nullable enable
@@ -66,15 +70,33 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is successfully attacked.
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
+        /// Triggered when an entity wearing an enchanted item has already received damage.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
         /// </summary>
-        /// <param name="deltTime"></param>
-        void OnTick(float deltTime, ref EnchantTick eTick);
+        /// <param name="eTick"></param>
+        void OnTick(ref EnchantTick eTick);
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Called by an ItemStack when a toggle is requested.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnToggle(EnchantmentSource enchant, ref EnchantModifiers parameters);
     }
 }

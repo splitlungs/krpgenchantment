@@ -1,37 +1,46 @@
-﻿namespace KRPGLib.Enchantment
+﻿using System;
+
+namespace KRPGLib.Enchantment
 {
+    public enum EnchantTiers { O = 0, I = 1, II = 2, III = 3, IV = 4, V = 5 }
+    public enum EnchantColors { white = 0, cyan = 1, green = 2, purple = 3, red = 4, yellow = 5 }
+
+    [Obsolete]
     /// <summary>
     /// Authoritative list of available Enchantments.
     /// </summary>
     public enum EnumEnchantments
     {
         aiming, chilling, fast, durable, flaming, frost, harming, healing, knockback, igniting, lightning, pit, protection,
-        resistelectricity, resistfire, resistfrost, resistheal, resistinjury, resistpoison, running, shocking
+        resistelectricity, resistfire, resistfrost, resistheal, resistinjury, resistpoison, running, shocking, poison
     }
-
+    [Obsolete]
     public enum EnumEnchantArmor
     {
         fast, protection, resistelectricity, resistfire, resistfrost, resistheal, resistinjury, resistpoison, running
     }
+    [Obsolete]
     public enum EnumEnchantTool
     {
         efficient, productive
     }
+    [Obsolete]
     public enum EnumEnchantUniversal
     {
         durable
     }
+    [Obsolete]
     public enum EnumEnchantMelee
     {
-        chilling, flaming, frost, harming, healing, knockback, igniting, lightning, pit, shocking
+        chilling, flaming, frost, harming, healing, knockback, igniting, lightning, pit, shocking, poison
     }
+    [Obsolete]
     public enum EnumEnchantRanged
     {
-        aiming, fast
+        aiming, fast, poison
     }
-    public enum EnchantTiers { O = 0, I = 1, II = 2, III = 3, IV = 4, V = 5 }
-    public enum EnchantColors { white = 0, cyan = 1, green = 2, purple = 3, red = 4, yellow = 5 }
 
+    [Obsolete]
     public enum EnchantLore
     {
         chilling = 0, durable = 1, flaming = 2, frost = 3, harming = 4, healing = 5, igniting = 6, knockback = 7, lightning = 8, 

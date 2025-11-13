@@ -31,6 +31,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 1;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
+                "Armor-Head", "Armor-Body", "Armor-Legs",
                 "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield",
                 "Chisel", "Cleaver", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
@@ -39,13 +40,14 @@ namespace KRPGLib.Enchantment
                 "Spear",
                 "Bow", "Sling",
                 "Drill",
-                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Staff", "Warhammer",
+                "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand" };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
+            Version = 1.01f;
         }
-        public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public void OnDurability(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Durable enchantment.", enchant.TargetEntity.GetName());

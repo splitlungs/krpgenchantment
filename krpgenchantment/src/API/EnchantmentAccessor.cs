@@ -9,18 +9,14 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using Vintagestory.API;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
-using HarmonyLib;
 using KRPGLib.Enchantment.API;
-using Newtonsoft.Json;
-using Vintagestory.API.Config;
-using static System.Net.Mime.MediaTypeNames;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Util;
-using CombatOverhaul.Armor;
-using System.Collections;
+using HarmonyLib;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Vintagestory.API.MathTools;
 
 namespace KRPGLib.Enchantment
 {
@@ -63,11 +59,11 @@ namespace KRPGLib.Enchantment
                 this.EnchantCodeToTypeMapping[enchantClass] = t;
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
-                // Setup the Config
-                EnchantmentProperties props = Api.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
-                if (props == null)
+                // Reset the Configs if configured
+                if (EnchantingConfigLoader.Config?.ResetEnchantConfigs == true)
                 {
-                    props = new EnchantmentProperties()
+                    // Get Properties from default
+                    EnchantmentProperties props = new EnchantmentProperties()
                     {
                         Enabled = enchant.Enabled,
                         Code = enchant.Code,
@@ -78,10 +74,62 @@ namespace KRPGLib.Enchantment
                         ValidToolTypes = enchant.ValidToolTypes,
                         Modifiers = enchant.Modifiers
                     };
-
+                    // Init the props
+                    enchant.Initialize(props);
+                    // Store the properties back to JSON
                     Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    
+                    // Notify the main config that we completed a Reset
+                    KRPGEnchantConfig config = EnchantingConfigLoader.Config;
+                    config.ResetEnchantConfigs = false;
+                    Api.StoreModConfig(config, EnchantingConfigLoader.ConfigFile);
                 }
-                enchant.Initialize(props);
+                // Load normally if reset is not configured
+                else
+                {
+                    // Get the properties from file
+                    EnchantmentProperties props = Api.LoadModConfig<EnchantmentProperties>("KRPGEnchantment/Enchantments/" + configLocation);
+                    // Generate new if they're missing
+                    if (props == null)
+                    {
+                        props = new EnchantmentProperties()
+                        {
+                            Enabled = enchant.Enabled,
+                            Code = enchant.Code,
+                            Category = enchant.Category,
+                            LoreCode = enchant.LoreCode,
+                            LoreChapterID = enchant.LoreChapterID,
+                            MaxTier = enchant.MaxTier,
+                            ValidToolTypes = enchant.ValidToolTypes,
+                            Modifiers = enchant.Modifiers,
+                            Version = enchant.Version
+                        };
+                        // Write back to JSON
+                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    }
+                    // If there is a Version mismatch, reset the Enchantment's Properties
+                    if (props.Version < enchant.Version)
+                    {
+                        // Generate new properties
+                        props = new EnchantmentProperties()
+                        {
+                            Enabled = enchant.Enabled,
+                            Code = enchant.Code,
+                            Category = enchant.Category,
+                            LoreCode = enchant.LoreCode,
+                            LoreChapterID = enchant.LoreChapterID,
+                            MaxTier = enchant.MaxTier,
+                            ValidToolTypes = enchant.ValidToolTypes,
+                            Modifiers = enchant.Modifiers,
+                            Version = enchant.Version
+                        };
+                        // Write back to JSON
+                        Api.StoreModConfig(props, "KRPGEnchantment/Enchantments/" + configLocation);
+                    }
+                    // Initialize the properties
+                    enchant.Initialize(props);
+                }
+
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
@@ -96,12 +144,19 @@ namespace KRPGLib.Enchantment
                 return false;
             }
         }
+        [Obsolete]
         private Type GetEnchantmentClass(string enchantClass)
         {
             Type val = null;
             this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out val);
             return val;
         }
+        /// <summary>
+        /// Instantiates the given Enchantment class, as defined by the EnchantCodeToTypeMapping.
+        /// </summary>
+        /// <param name="enchantClass"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private Enchantment CreateEnchantment(string enchantClass)
         {
             Type enchantType;
@@ -152,7 +207,7 @@ namespace KRPGLib.Enchantment
         }
         */
         /// <summary>
-        /// Returns a List of Enchantments that can be written to the ItemStack, or null if something went wrong.
+        /// Returns a List of Enchantment codes that can be written to the ItemStack or null if something went wrong.
         /// </summary>
         /// <param name="inSlot"></param>
         /// <returns></returns>
@@ -166,7 +221,19 @@ namespace KRPGLib.Enchantment
                 if (ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
                 string toolType = GetToolType(inSlot.Itemstack);
-                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
+                if (toolType == null) continue;
+                bool validTool = false;
+                foreach (string s in ench.ValidToolTypes)
+                {
+                    string[] toolStrings = toolType.Split(";");
+                    // ToolType
+                    if (toolStrings[0] == "tool" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
+                    // Wearable
+                    else if (toolStrings[0] == "wearable" && toolStrings[1].CaseInsensitiveContains(s) != false) validTool = true;
+                    // Code
+                    else if (toolStrings[0] == "code" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
+                }
+                if (!validTool) continue;
                 // Write to the List if it passed
                 enchants.Add(pair.Key);
             }
@@ -187,7 +254,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can be Enchanted with {1}.", inStack.GetName(), rStack.GetName());
 
-            // Check against Max Enchantments Config option
+            // 1. Check against Max Enchantments Config option
             int maxEnchants = EnchantingConfigLoader.Config.MaxEnchantsPerItem;
             Dictionary<string, int> enchantments = sApi.EnchantAccessor().GetActiveEnchantments(inStack);
             if (enchantments != null && maxEnchants >= 0 && enchantments.Count >= maxEnchants)
@@ -199,7 +266,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} has {1} enchantments out of {2}.", inStack.GetName(), enchantments?.Count, maxEnchants);
 
-            // Check Reagent Quantity
+            // 2. Check Reagent Quantity
             int rQty = 0;
             foreach (KeyValuePair<string, int> pair in EnchantingConfigLoader.Config.ValidReagents)
             {
@@ -208,22 +275,29 @@ namespace KRPGLib.Enchantment
             }
             if (rQty < 0) return false;
 
-            // Get Reagent Potential
+            // 3. Get Reagent Potential
             int maxPot = GetReagentChargeOrPotential(rStack);
             if (maxPot <= 0) return false;
 
-            // Get Input Type
+            // 4. Get Input Type
             string toolType = GetToolType(inStack);
-            if (toolType == null) return false;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Input type is {0}.", toolType);
-            // Check against Enchantment
+
+            // 5. Check against Enchantment
             IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(enchant);
             if (ench == null || ench?.Enabled != true) return false;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Enchantment {0} is Enabled.", enchant);
-            // Check the item's type vs the Enchantment's type
-            if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) return false;
+
+            // 6. Check the item's type vs the Enchantment's type
+            bool validTool = false;
+            foreach (string s in ench.ValidToolTypes)
+            {
+                if (toolType.CaseInsensitiveContains(s)) validTool = true;
+            }
+            if (!validTool) return false;
+            // if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) return false;
             
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Enchant Check passed.", enchant);
@@ -278,19 +352,21 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public int GetReagentCharge(ItemStack reagent)
         {
-            int maxPot = 0;
-            ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
-            int rPot = tree.GetInt("charge");
-            if (rPot == 0)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
-                return 0;
-            }
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
+            ITreeAttribute tree = reagent.Attributes.GetTreeAttribute("enchantments");
+            if (tree == null) return 0;
 
-            return maxPot;
+            int rPot = tree.GetInt("charge", 0);
+            // Pulling logs because they got too heavy when calculating against all items
+            // if (rPot == 0)
+            // {
+            //     // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     //     Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
+            //     return 0;
+            // }
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
+
+            return rPot;
         }
         /// <summary>
         /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
@@ -315,7 +391,6 @@ namespace KRPGLib.Enchantment
             
             // Get Input Type
             var toolType = GetToolType(inSlot.Itemstack);
-            if (toolType == null) return null;
 
             // Setup a new ItemStack
             ItemStack outStack = inSlot.Itemstack.Clone();
@@ -331,7 +406,13 @@ namespace KRPGLib.Enchantment
                 IEnchantment ench = this.GetEnchantment(enchant.Key);
                 if (ench == null || ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
-                if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
+                bool validTool = false;
+                foreach (string s in ench.ValidToolTypes)
+                {
+                    if (toolType.CaseInsensitiveContains(s)) validTool = true;
+                }
+                if (!validTool) continue;
+                // if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
                 // Use provided Power or roll with reagent.
                 int power = enchant.Value;
                 if (power <= 0) power = api.World.Rand.Next(1, maxPot + 1);
@@ -344,6 +425,92 @@ namespace KRPGLib.Enchantment
             }
 
             return outStack;
+        }
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="eName"></param>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity)
+        {
+            if (inSlot?.Empty != false || entity == null) return false;
+            // Stop any active EnchantTicks
+            int stackID = inSlot.Itemstack.Id;
+            int slotID = inSlot.Inventory.GetSlotId(inSlot);
+            string codeID = eName + ":" + slotID + ":" + stackID;
+            entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            string a = tree.GetString("active", null);
+            if (a == null) return false;
+            string[] aStrings = a.Split(';');
+            string aa = null;
+            foreach (string s in aStrings)
+            {
+                string[] eStrings = s.Split(':');
+                if (!eStrings[0].EqualsFastIgnoreCase(eName))
+                    aa += s + ';';
+            }
+            // Fail if nothing was removed.
+            if (aa == null || aa.Equals(a)) return false;
+            tree.SetString("active", aa);
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
+            return true;
+        }
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool RemoveAllEnchantsFromItem(ItemSlot inSlot, Entity entity)
+        {
+            if (inSlot?.Empty != false || entity == null) return false;
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            string active = tree.GetString("active", null);
+            if (active == null) return false;
+            // Stop any active EnchantTicks
+            int stackID = inSlot.Itemstack.Id;
+            int slotID = inSlot.Inventory.GetSlotId(inSlot);
+            string[] aStrings = active.Split(';');
+            foreach (string s in aStrings)
+            {
+                string[] eStrings = s.Split(':');
+                string codeID = eStrings[0] + ":" + slotID + ":" + stackID;
+                entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
+            }
+            // Delete the Active string
+            tree.SetString("active", null);
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
+            return true;
+        }
+        /// <summary>
+        /// Resets all Latent Enchant attributes to null on the ItemStack in the slot provided.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <returns></returns>
+        public bool ResetLatentEnchantsOnItem(ItemSlot inSlot)
+        {
+            if (inSlot?.Empty != false) return false;
+            // Get Active enchants
+            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+            if (tree == null) return false;
+            // Delete the Active string
+            tree.SetString("latentEnchants", null);
+            tree.SetString("latentEnchantsEncrypted", null);
+            tree.SetDouble("latentEnchantTime", 0);
+            // Save
+            inSlot.Itemstack.Attributes.MergeTree(tree);
+            inSlot.MarkDirty();
+
+            return true;
         }
         /// <summary>
         /// Returns the quantity of a provided Reagent, as set in the Config under ValidReagents. Set to 0 to disable Reagent consumption. Returns -1 if nothing is found.
@@ -363,33 +530,53 @@ namespace KRPGLib.Enchantment
             return rQty;
         }
         /// <summary>
-        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns null if none can be found.
+        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found or null if no code is found.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
         public string GetToolType(ItemStack stack)
         {
+            if (stack == null) return null;
+
             // Block
             if (stack.Class == EnumItemClass.Block) return "block";
             // Tool or Weapon
             string s = null;
-            s = stack.Collectible.Tool?.ToString().ToLower();
-            if (s != null) return s;
-            // Wearables
-            s = stack.Attributes.GetString("clothescategory");
-            if (s != null) return s.ToLower();
-            // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
-            s = stack.Collectible?.Code;
+            s = stack.Collectible.Tool?.ToString()?.ToLower();
             if (s != null)
             {
-                if (s.Contains("cleaver")) return "cleaver";
+                s = s.Insert(0, "tool;");
+                return s;
             }
+            // Wearables
+            s = stack.ItemAttributes["clothescategory"].AsString()?.ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "wearable;");
+                return s;
+            }
+            string itemCode = stack.Collectible?.Code?.ToShortString();
+            // Wearables by Type - Not working?? Gotta use the ItemAttributes for some weird ass reason
+            // ITreeAttribute catByType = stack.Attributes?.GetTreeAttribute("clothesCategoryByType");
+            // if (catByType != null)
+            // {
+            //     s = catByType.GetString(itemCode)?.ToLower();
+            //     s = s.Insert(0, "wearable;");
+            //     return s;
+            // }
+            // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
+            if (itemCode != null)
+            {
+                itemCode = itemCode.Insert(0, "code;");
+                return s;
+            }
+
             return null;
         }
         #endregion
         #region Assessments
         /// <summary>
-        /// Returns the Enchantment Interface from the EnchantmentRegistry.
+        /// Returns the Enchantment Interface from the EnchantmentRegistry. Returns null if not found.
         /// </summary>
         /// <param name="enchantCode"></param>
         /// <returns></returns>
@@ -411,6 +598,19 @@ namespace KRPGLib.Enchantment
                     count++;
             }
             return count;
+        }
+        /// <summary>
+        /// Returns a list of all Enchantment Categories among all registered Enchantments.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetEnchantmentCategories()
+        {
+            List<string> categories = new List<string>();
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                if (pair.Value?.Category != null) categories.Add(pair.Value.Category);
+            }
+            return categories;
         }
         /// <summary>
         /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found or if run from client.
@@ -447,19 +647,6 @@ namespace KRPGLib.Enchantment
             ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null)
                 return null;
-            // Convert 0.6.x enchantments to 0.7.x "active" string. This will be removed in a later release.
-            string oldActive = null;
-            foreach (var val in Enum.GetValues(typeof(EnumEnchantments)))
-            {
-                int power = tree.GetInt(val.ToString());
-                if (power > 0)
-                {
-                    oldActive += val.ToString() + ":" + power + ";";
-                    tree.SetInt(val.ToString(), 0);
-                }
-            }
-            if (oldActive != null) tree.SetString("active", oldActive);
-            // Get Active Enchantments string
             string active = tree.GetString("active", null);
             if (active == null) return null;
             // Convert Active Enchantments string to Dictionary
@@ -536,11 +723,12 @@ namespace KRPGLib.Enchantment
             if (enchantable == true)
                 return true;
 
-            EnchantmentBehavior eb = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
-            if (eb != null)
-                enchantable = eb.Enchantable;
-            if (enchantable != true)
-                return false;
+            // Obsolete - Removing the EB
+            // EnchantmentBehavior eb = inSlot.Itemstack.Collectible.GetBehavior<EnchantmentBehavior>();
+            // if (eb != null)
+            //     enchantable = eb.Enchantable;
+            // if (enchantable != true)
+            //     return false;
 
             return true;
 
@@ -677,13 +865,15 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="player"></param>
         /// <param name="enchantName"></param>
+        /// <param name="api"></param>
         /// <returns></returns>
-        public bool CanReadEnchant(string player, string enchantName)
+        public bool CanReadEnchant(string player, string enchantName, ICoreServerAPI api)
         {
-            if (player != null && enchantName != null)
+            if (player != null && enchantName != null && api != null)
             {
+                string playerName = api.World?.PlayerByUid(player)?.PlayerName;
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", Api.World.PlayerByUid(player).PlayerName, enchantName);
+                    api.Logger.Event("[KRPGEnchantment] Attempting to check if {0} can read {1}.", playerName, enchantName);
 
                 // string[] text = enchantName.Split(":");
                 // string enchantCode = text[1].Replace("enchantment-", "");
@@ -693,20 +883,39 @@ namespace KRPGLib.Enchantment
                 if (enchantment.Enabled != true)
                     return false;
                 int id = enchantment.LoreChapterID;
-                ModJournal journal = Api.ModLoader.GetModSystem<ModJournal>();
+                ModJournal journal = api.ModLoader.GetModSystem<ModJournal>();
                 if (journal == null)
                 {
-                    Api.Logger.Warning("[KRPGEnchantment] Could not find ModJournal!");
+                    api.Logger.Warning("[KRPGEnchantment] Could not find ModJournal!");
                     return false;
                 }
                 bool canRead = journal.DidDiscoverLore(player, "enchantment", id);
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", Api.World.PlayerByUid(player).PlayerName, enchantName, canRead);
+                    api.Logger.Event("[KRPGEnchantment] Can the {0} read {1}? {2}", playerName, enchantName, canRead);
                 return canRead;
             }
-
-            Api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                api.Logger.Error("[KRPGEnchantment] Could not determine player or enchantName for CanReadEnchant api call.");
             return false;
+        }
+        /// <summary>
+        /// Learn Enchanter's Manual journal entries for the given player.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public bool LearnAllEnchantersManuals(IServerPlayer player)
+        {
+            ModJournal journal = sApi.ModLoader.GetModSystem<ModJournal>();
+            bool discovered = false;
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                List<int> chIDs = new List<int>();
+                chIDs.Add(pair.Value.LoreChapterID);
+                LoreDiscovery discovery = new LoreDiscovery() { Code = "enchantment", ChapterIds = chIDs };
+                if (journal.TryDiscoverLore(discovery, player)) discovered = true;
+            }
+
+            return discovered;
         }
         #endregion
         #region Actions
@@ -738,6 +947,51 @@ namespace KRPGLib.Enchantment
 
                     EnchantmentSource enchant = new EnchantmentSource()
                     {
+                        SourceSlot = slot,
+                        SourceStack = slot.Itemstack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity,
+                        DamageTier = pair.Value 
+                    };
+                    enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceSlot = slot,
                         SourceStack = slot.Itemstack,
                         Trigger = trigger,
                         Code = pair.Key,
@@ -800,6 +1054,50 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
         /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceStack = stack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity,
+                        DamageTier = pair.Value
+                    };
+
+                    enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
         /// <param name="slot"></param>
         /// <param name="trigger"></param>
         /// <param name="byEntity"></param>
@@ -826,6 +1124,54 @@ namespace KRPGLib.Enchantment
 
                     EnchantmentSource enchant = new EnchantmentSource()
                     {
+                        SourceSlot = slot,
+                        SourceStack = slot.Itemstack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity
+                    };
+                    if (parameters != null)
+                        enc.OnTrigger(enchant, ref parameters);
+                    else
+                        enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemSlot slot, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceSlot = slot,
                         SourceStack = slot.Itemstack,
                         Trigger = trigger,
                         Code = pair.Key,
@@ -891,6 +1237,53 @@ namespace KRPGLib.Enchantment
             return false;
         }
         /// <summary>
+        /// Bulk convenience processor for Enchantments. Returns false if it fails to run an Enchantment trigger.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="trigger"></param>
+        /// <param name="byEntity"></param>
+        /// <param name="targetEntity"></param>
+        /// <param name="parameters"></param>
+        /// <param name="enchants"></param>
+        /// <returns></returns>
+        public bool TryEnchantments(ItemStack stack, string trigger, Entity byEntity, Entity targetEntity, Dictionary<string, int> enchants, ref EnchantModifiers parameters)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] TryEnchantments has been called.");
+
+            if (enchants != null)
+            {
+                foreach (KeyValuePair<string, int> pair in enchants)
+                {
+                    IEnchantment enc = GetEnchantment(pair.Key);
+                    if (enc?.Enabled != true)
+                    {
+                        if (EnchantingConfigLoader.Config?.Debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Tried Enchantment {0}, but it was either Disabled or not get-able.", pair.Key);
+                        continue;
+                    }
+
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceStack = stack,
+                        Trigger = trigger,
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = byEntity,
+                        CauseEntity = byEntity,
+                        TargetEntity = targetEntity
+                    };
+
+                    if (parameters != null)
+                        enc.OnTrigger(enchant, ref parameters);
+                    else
+                        enc.OnTrigger(enchant);
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
         /// Generic convenience processor for Enchantments. Requires a pre-formed EnchantmentSource Returns false if it fails to run an Enchantment trigger.
         /// </summary>
         /// <param name="enchant"></param>
@@ -916,7 +1309,6 @@ namespace KRPGLib.Enchantment
         {
             // Path to the font file in the ModData folder
             string fontPath = System.IO.Path.Combine(cApi.GetOrCreateDataPath(System.IO.Path.Combine("ModData", "krpgenchantment", "fonts")), fName);
-
             // Download the file to the client's ModData if it doesn't exist
             if (!File.Exists(fontPath))
             {

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
@@ -15,7 +16,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 1.00d;
+        private const double ConfigVersion = 1.02d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
@@ -51,6 +52,25 @@ namespace KRPGLib.Enchantment
                 {
                     Config = new KRPGEnchantConfig();
                     Config.Version = ConfigVersion;
+                    Config.MaxEnchantsByCategory = new Dictionary<string, int>()
+                    {
+                        { "ControlArea", -1 },
+                        { "ControlTarget", -1 },
+                        { "DamageArea", -1 },
+                        { "DamageTarget", -1 },
+                        { "DamageTick", -1 },
+                        { "HealArea", -1 },
+                        { "HealTarget", -1 },
+                        { "HealTick", -1 },
+                        { "ResistDamage", -1 },
+                        { "Universal", -1 }
+                    };
+                    Config.ValidReagents = new Dictionary<string, int>()
+                    {
+                        { "game:gem-emerald-rough", 1 },
+                        { "game:gem-diamond-rough", 1 },
+                        { "game:gem-olivine_peridot-rough", 1 }
+                    };
                     sApi.StoreModConfig(Config, ConfigFile);
 
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
@@ -59,6 +79,7 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     // Enchant Config
+                    if (Config.EntityTickMs != 250) tempConfig.EntityTickMs = Config.EntityTickMs;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
@@ -98,7 +119,9 @@ namespace KRPGLib.Enchantment
                         tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
                     if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
                         tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
-
+                    // Force reset if they haven't done Enchantments 1.2.5 upgrade yet
+                    if (Config.Version < 1.01) tempConfig.ResetEnchantConfigs = true;
+                    else if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;
@@ -118,49 +141,51 @@ namespace KRPGLib.Enchantment
         }
 
 
-        public override void StartServerSide(ICoreServerAPI api)
-        {
-            api.ChatCommands.GetOrCreate("krpg")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .BeginSubCommand("enchantment")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .BeginSubCommand("reload")
-            .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
-            .RequiresPrivilege(Privilege.controlserver)
-            .HandleWith(_ =>
-            {
-                if (ReloadConfig())
-                {
-                    return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
-                }
+        // public override void StartServerSide(ICoreServerAPI api)
+        // {
+        //     // Obsolete
+        //     // This is now configured in KRPGCommandSystem
+        // 
+        //     // RegisterCommands(api);
+        // }
+        // [Obsolete]
+        // private void RegisterCommands(ICoreServerAPI api)
+        // {
+        //     api.ChatCommands.GetOrCreate("krpg")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .BeginSubCommand("enchantment")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .BeginSubCommand("reload")
+        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
+        //     .RequiresPrivilege(Privilege.controlserver)
+        //     .HandleWith(_ =>
+        //     {
+        //         if (ReloadConfig())
+        //         {
+        //             return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
+        //         }
+        //     
+        //         return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
+        //     })
+        //     .EndSubCommand()
+        //     .EndSubCommand()
+        //     .Validate();
+        // }
 
-                return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
-            })
-            .EndSubCommand()
-            .EndSubCommand()
-            .Validate();
-        }
-        private bool ReloadConfig()
+        public bool ReloadConfig()
         {
-            try
-            {
-                var configTemp = sApi.LoadModConfig<KRPGEnchantConfig>(ConfigFile);
-                Config.Reload(configTemp);
-
-                Config.Version = ConfigVersion;
-                sApi.StoreModConfig(Config, ConfigFile);
-                sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
-            }
-            catch (Exception e)
-            {
-                sApi.Logger.Error("[KRPGEnchantment] Error reloading KRPGEnchantment Recipe Config: ", e.ToString());
-                return false;
-            }
+            sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is being reloaded from JSON.");
+            LoadEnchantingConfig();
+            // Notify the masses
+            ConfigReloaded.Invoke();
 
             return true;
         }
 
+        public delegate void ConfigReloadDelegate();
+
+        public event ConfigReloadDelegate? ConfigReloaded;
     }
 }
