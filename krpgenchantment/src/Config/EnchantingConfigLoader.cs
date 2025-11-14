@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,12 @@ namespace KRPGLib.Enchantment
         private const double ConfigVersion = 1.02d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
+
+        private static Dictionary<string, float> defaultChargeItems = new()
+        {
+            {"game:gear-temporal", 1 }
+        };
+
 
         ICoreServerAPI sApi;
 
@@ -65,6 +72,7 @@ namespace KRPGLib.Enchantment
                         { "ResistDamage", -1 },
                         { "Universal", -1 }
                     };
+                    Config.ChargeItemValues = new Dictionary<string, float>(defaultChargeItems);
                     Config.ValidReagents = new Dictionary<string, int>()
                     {
                         { "game:gem-emerald-rough", 1 },
@@ -110,7 +118,25 @@ namespace KRPGLib.Enchantment
                     if (Config.LegacyReagentPotential == true) tempConfig.LegacyReagentPotential = true;
                     if (Config.ChargeReagentHours != 1) tempConfig.ChargeReagentHours = Config.ChargeReagentHours;
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
-                    if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
+
+                    // Checking charging ingredients and adding them to the config
+                    if (!(Config.ChargeItemValues.Count() ==0))
+                    {
+                        foreach (KeyValuePair<string, float> chargeItem in defaultChargeItems)
+                        {
+                            if (!Config.ChargeItemValues.ContainsKey(chargeItem.Key))
+                            {
+                                tempConfig.ChargeItemValues.Add(chargeItem.Key, chargeItem.Value);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        tempConfig.ChargeItemValues = new Dictionary<string, float>(defaultChargeItems);
+                    }
+
+                    if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
+
 
                     if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
                     if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
