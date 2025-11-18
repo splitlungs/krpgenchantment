@@ -847,7 +847,7 @@ namespace KRPGLib.Enchantment
                 float globalMultiplier = EnchantingConfigLoader.Config.GlobalChargeMultiplier;
                 int maxPower = EnchantingConfigLoader.Config.MaxReagentCharge;
                 int p = (int)MathF.Floor(charge * globalMultiplier);
-                power = Math.Min(p, maxPower);
+                power = Math.Min((p + GetReagentCharge(inStack)), maxPower) ; // Now it will add the already existing charge and cap it with the max charge
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.World.Logger.Event("[KRPGEnchantment] {0} is a ValidReagent and is being assigned a Charge of {1}.", inStack.GetName(), power);
