@@ -68,7 +68,7 @@ namespace KRPGLib.Enchantment
         }
         public float GetCurrentChargeSum()
         {
-            float ChargeSum = 0.0;
+            float ChargeSum = 0.0f;
             foreach (var slot in slots)
             {
                 if (!slot.Empty) // TODO I don't have VS runtime, so specific function names are not available to me 
@@ -206,31 +206,31 @@ namespace KRPGLib.Enchantment
             //    return false;
 
             //return base.CanHold(sourceSlot);
-
+            if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
             // checking every entry in the charging compound config
-            foreach (KeyValuePair<string, float> chargingCompound in bEntity.validChargeItems)
+            if (bEntity.validChargeItems.ContainsKey(sourceSlot?.Itemstack?.Collectible?.Code))
             {
-                if (sourceSlot.Itemstack.Collectible.Code = chargingCompound.Key)
+                // could also add an option to check if the rolling sum is greater than the config's max reagent setting,
+                // and if so also reject a new reagent
+                // Would need to call through to the inventory that contains this slot, and the slot would ask the inventory for charge
+                ChargingInventory owningInventory = (ChargingInventory)bEntity.Inventory;
+                if (owningInventory.NewChargeWithinMaximum(bEntity.validChargeItems.Get(sourceSlot.Itemstack.Collectible.Code)))
                 {
-                    // could also add an option to check if the rolling sum is greater than the config's max reagent setting,
-                    // and if so also reject a new reagent
-                    // Would need to call through to the inventory that contains this slot, and the slot would ask the inventory for charge
-                    ChargingInventory owningInventory = (ChargingInventory)bEntity.Inventory;
-                    if (owningInventory.NewChargeWithinMaximum(chargingCompound.Value))
-                    {
-                        return base.CanHold(sourceSlot);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    // otherwise just this
+                    MaxSlotStackSize = 1;
+                    return true;
                     //return base.CanHold(sourceSlot);
                 }
+                else
+                {
+                    return false;
+                }
+
+                // otherwise just this
+                //return base.CanHold(sourceSlot);
+
             }
-            // if none applied, this is not a valid charging item
+            // if none found, this is not a valid charging item
             
             return false;
         }
