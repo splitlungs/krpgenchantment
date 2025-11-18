@@ -17,13 +17,13 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 1.02d;
+        private const double ConfigVersion = 1.03d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
 
-        private static Dictionary<string, float> defaultChargeItems = new()
+        private static Dictionary<string, float> defaultChargeItems = new Dictionary<string, float>()
         {
-            {"game:gear-temporal", 1 }
+            {"game:gear-temporal", 1.0f }
         };
 
 
@@ -120,7 +120,10 @@ namespace KRPGLib.Enchantment
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
 
                     // Checking charging ingredients and adding them to the config
-                    if (!(Config.ChargeItemValues.Count() ==0))
+                    tempConfig.ChargeItemValues = new Dictionary<string, float>((Config.ChargeItemValues is null) ? defaultChargeItems : Config.ChargeItemValues);
+                    if (Config.ChargeItemValues?.Count > 0)
+                    {
+                        if (!(Config.ChargeItemValues.Count == 0))
                     {
                         foreach (KeyValuePair<string, float> chargeItem in defaultChargeItems)
                         {
@@ -130,9 +133,6 @@ namespace KRPGLib.Enchantment
                             }
                         }
                     }
-                    else
-                    {
-                        tempConfig.ChargeItemValues = new Dictionary<string, float>(defaultChargeItems);
                     }
 
                     if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
