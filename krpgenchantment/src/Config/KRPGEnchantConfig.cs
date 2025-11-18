@@ -24,7 +24,10 @@ namespace KRPGLib.Enchantment
         public bool LegacyReagentPotential = false;
         public double ChargeReagentHours = 1d;
         public int MaxReagentCharge = 5;
-        public float ChargePerGear = 1.00f;
+        public Dictionary<string, float> ChargeItemValues;
+        //public float ChargePerGear = 1.00f;
+        public float GlobalChargeMultiplier = 1.00f;
+
         public Dictionary<string, int> ValidReagents;
         // Forces the Enchantment class loader to reload all configs from default
         public bool ResetEnchantConfigs = true;
