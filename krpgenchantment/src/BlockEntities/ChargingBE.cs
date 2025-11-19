@@ -76,7 +76,7 @@ namespace KRPGLib.Enchantment
             get
             {
                 if (this.Api.Side != EnumAppSide.Server) return null;
-                return EnchantingConfigLoader.Config?.ChargeItemValues;
+                return EnchantingConfigLoader.Config?.ReagentChargeComponents;
             }
         }
         public int? MaxChargeValue
