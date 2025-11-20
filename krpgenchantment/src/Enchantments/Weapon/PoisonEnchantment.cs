@@ -44,12 +44,14 @@ namespace KRPGLib.Enchantment
                 "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand" };
+                "Wand",
+                "vanillaarmory:Club"
+            };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "resistpoison" }, {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}, {"HungerMultiplier", 100}
             };
-            Version = 1.02f;
+            Version = 1.03f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

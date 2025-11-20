@@ -34,12 +34,14 @@ namespace KRPGLib.Enchantment
                 "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand" };
+                "Wand",
+                "vanillaarmory:Club"
+            };
             Modifiers = new EnchantModifiers()
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
             };
-            Version = 1.01f;
+            Version = 1.02f;
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();

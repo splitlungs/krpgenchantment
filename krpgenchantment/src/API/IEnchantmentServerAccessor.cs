@@ -206,6 +206,7 @@ namespace KRPGLib.Enchantment.API
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>
         /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
         /// <returns></returns>
         bool AssessItem(ItemSlot inSlot, ItemSlot rSlot);
         /// <summary>

@@ -1,24 +1,18 @@
-﻿using HarmonyLib;
-using KRPGLib.Enchantment.API;
+﻿using KRPGLib.Enchantment.API;
 using SkiaSharp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KRPGLib.Enchantment
 {
@@ -186,28 +180,6 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Enchanting
-        /*
-        [Obsolete]
-        /// <summary>
-        /// Returns a List of EnchantingRecipes that match the provided slots, or null if something went wrong.
-        /// </summary>
-        /// <param name="inSlot"></param>
-        /// <param name="rSlot"></param>
-        /// <returns></returns>
-        public List<EnchantingRecipe> GetValidEnchantingRecipes(ItemSlot inSlot, ItemSlot rSlot)
-        {
-            return sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().GetValidEnchantingRecipes(inSlot, rSlot);
-        }
-        [Obsolete]
-        /// <summary>
-        /// Registers the provided EnchantingRecipe to the server.
-        /// </summary>
-        /// <param name="recipe"></param>
-        public void RegisterEnchantingRecipe(EnchantingRecipe recipe)
-        {
-            sApi.ModLoader.GetModSystem<EnchantingRecipeSystem>().RegisterEnchantingRecipe(recipe);
-        }
-        */
         /// <summary>
         /// Returns a List of Enchantment codes that can be written to the ItemStack or null if something went wrong.
         /// </summary>
@@ -216,18 +188,22 @@ namespace KRPGLib.Enchantment
         public List<string> GetValidEnchantments(ItemSlot inSlot)
         {
             if (inSlot.Empty) return null;
+            // Get the Tool Type string first & reject if we can't get it
+            string toolType = GetToolType(inSlot.Itemstack);
+            if (toolType == null) return null;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Getting Valid Enchantments for {0} with ToolType string {1}.", inSlot.Itemstack.GetName(), toolType);
+            string[] toolStrings = toolType.Split(";");
+            // Loop the Enchantment Registry and fill out an Enchant dict to hand back to the requester
             List<string> enchants = new List<string>();
             foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
             {
                 IEnchantment ench = GetEnchantment(pair.Key);
                 if (ench?.Enabled != true) continue;
                 // Check the item's type vs the Enchantment's type
-                string toolType = GetToolType(inSlot.Itemstack);
-                if (toolType == null) continue;
                 bool validTool = false;
                 foreach (string s in ench.ValidToolTypes)
                 {
-                    string[] toolStrings = toolType.Split(";");
                     // ToolType
                     if (toolStrings[0] == "tool" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
                     // Wearable
@@ -356,18 +332,7 @@ namespace KRPGLib.Enchantment
         {
             ITreeAttribute tree = reagent.Attributes.GetTreeAttribute("enchantments");
             if (tree == null) return 0;
-
             int rPot = tree.GetInt("charge", 0);
-            // Pulling logs because they got too heavy when calculating against all items
-            // if (rPot == 0)
-            // {
-            //     // if (EnchantingConfigLoader.Config?.Debug == true)
-            //     //     Api.Logger.Event("[KRPGEnchantment] Reagent {0} does not have any Charge value.", reagent.GetName());
-            //     return 0;
-            // }
-            // if (EnchantingConfigLoader.Config?.Debug == true)
-            //     Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", maxPot);
-
             return rPot;
         }
         /// <summary>
@@ -551,13 +516,12 @@ namespace KRPGLib.Enchantment
                 return s;
             }
             // Wearables
-            s = stack.ItemAttributes["clothescategory"].AsString()?.ToLower();
-            if (s != null)
+            s = stack.ItemAttributes["clothescategory"]?.AsString()?.ToLower();
+            if (s != null || s == "")
             {
                 s = s.Insert(0, "wearable;");
                 return s;
             }
-            string itemCode = stack.Collectible?.Code?.ToShortString();
             // Wearables by Type - Not working?? Gotta use the ItemAttributes for some weird ass reason
             // ITreeAttribute catByType = stack.Attributes?.GetTreeAttribute("clothesCategoryByType");
             // if (catByType != null)
@@ -566,13 +530,13 @@ namespace KRPGLib.Enchantment
             //     s = s.Insert(0, "wearable;");
             //     return s;
             // }
-            // Class fallback - Some items just don't have tool times. idk, it's kinda inconsistent
-            if (itemCode != null)
+            // Item Code fallback - Some items just don't have tool entries. idk, it's kinda inconsistent
+            s = stack.Collectible.Code.Domain + ":" + stack.Collectible.FirstCodePart();
+            if (s != null)
             {
-                itemCode = itemCode.Insert(0, "code;");
+                s = s.Insert(0, "code;");
                 return s;
             }
-
             return null;
         }
         #endregion
@@ -739,6 +703,7 @@ namespace KRPGLib.Enchantment
         /// Returns True if we successfully wrote new LatentEnchants to the item, or False if not.
         /// </summary>
         /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
         /// <returns></returns>
         public bool AssessItem(ItemSlot inSlot, ItemSlot rSlot)
         {
@@ -776,7 +741,7 @@ namespace KRPGLib.Enchantment
                 sApi.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
 
             // Get the Valid Recipes
-            List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(inSlot);
+            List<string> enchants = GetValidEnchantments(inSlot);
             if (enchants == null) return false;
             if (enchants.Count <= 0) return false;
             // List<EnchantingRecipe> recipes = GetValidEnchantingRecipes(inSlot, rSlot);

@@ -32,7 +32,7 @@ namespace KRPGLib.Enchantment
                 "Armor-Head", "Armor-Body", "Armor-Legs",
                 "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield",
-                "Buckler", "Forlorn-Shield"
+                "vanillaarmory:Buckler", "vanillaarmory:Forlorn"
             };
             Modifiers = new EnchantModifiers()
             { 
