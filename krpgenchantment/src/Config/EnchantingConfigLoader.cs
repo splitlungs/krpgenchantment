@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +17,37 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        private const double ConfigVersion = 1.02d;
-        public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         public static KRPGEnchantConfig Config { get; set; } = null!;
+        public const double ConfigVersion = 1.03d;
+        public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
 
-        ICoreServerAPI sApi;
+        // We cannot initialize dictionaries in the Config class, and must do so here
+        private Dictionary<string, int> defaultMaxEnchantsByCategory = new Dictionary<string, int>()
+        {
+            { "ControlArea", -1 },
+            { "ControlTarget", -1 },
+            { "DamageArea", -1 },
+            { "DamageTarget", -1 },
+            { "DamageTick", -1 },
+            { "HealArea", -1 },
+            { "HealTarget", -1 },
+            { "HealTick", -1 },
+            { "ResistDamage", -1 },
+            { "Universal", -1 }
+        };
+        private Dictionary<string, float> defaultReagentChargeComponents = new Dictionary<string, float>()
+        {
+            {"game:gear-temporal", 1.0f }
+        };
+        private Dictionary<string, int> defaultValidReagents = new Dictionary<string, int>()
+        {
+            { "game:gem-emerald-rough", 1 },
+            { "game:gem-diamond-rough", 1 },
+            { "game:gem-olivine_peridot-rough", 1 }
+        };
+
+        
+        private ICoreServerAPI sApi;
 
         // Load before anything else, especially before ConfigLib does anything.
         public override double ExecuteOrder()
@@ -33,8 +60,6 @@ namespace KRPGLib.Enchantment
             return side == EnumAppSide.Server;
         }
 
-        bool classExclusiveRecipes = true;
-
         public override void AssetsLoaded(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
@@ -42,7 +67,9 @@ namespace KRPGLib.Enchantment
 
             LoadEnchantingConfig();
         }
-
+        /// <summary>
+        /// Lods the KRPGEnchantment_Config.json file to static Config. Will attempt to upgrade an old file or make a new one if it's not present.
+        /// </summary>
         public void LoadEnchantingConfig()
         {
             try
@@ -52,25 +79,9 @@ namespace KRPGLib.Enchantment
                 {
                     Config = new KRPGEnchantConfig();
                     Config.Version = ConfigVersion;
-                    Config.MaxEnchantsByCategory = new Dictionary<string, int>()
-                    {
-                        { "ControlArea", -1 },
-                        { "ControlTarget", -1 },
-                        { "DamageArea", -1 },
-                        { "DamageTarget", -1 },
-                        { "DamageTick", -1 },
-                        { "HealArea", -1 },
-                        { "HealTarget", -1 },
-                        { "HealTick", -1 },
-                        { "ResistDamage", -1 },
-                        { "Universal", -1 }
-                    };
-                    Config.ValidReagents = new Dictionary<string, int>()
-                    {
-                        { "game:gem-emerald-rough", 1 },
-                        { "game:gem-diamond-rough", 1 },
-                        { "game:gem-olivine_peridot-rough", 1 }
-                    };
+                    Config.MaxEnchantsByCategory = new Dictionary<string, int>(defaultMaxEnchantsByCategory);
+                    Config.ReagentChargeComponents = new Dictionary<string, float>(defaultReagentChargeComponents);
+                    Config.ValidReagents = new Dictionary<string, int>(defaultValidReagents);
                     sApi.StoreModConfig(Config, ConfigFile);
 
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
@@ -85,48 +96,68 @@ namespace KRPGLib.Enchantment
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
 
-                    if (Config.MaxEnchantsByCategory?.Count > 0) tempConfig.MaxEnchantsByCategory = Config.MaxEnchantsByCategory;
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-                        tempConfig.MaxEnchantsByCategory.Add("ControlArea", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("ControlTarget"))
-                        tempConfig.MaxEnchantsByCategory.Add("ControlTarget", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageArea")) 
-                        tempConfig.MaxEnchantsByCategory.Add("DamageArea", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageTarget"))
-                        tempConfig.MaxEnchantsByCategory.Add("DamageTarget", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("DamageTick"))
-                        tempConfig.MaxEnchantsByCategory.Add("DamageTick", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealArea"))
-                        tempConfig.MaxEnchantsByCategory.Add("HealArea", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealTarget"))
-                        tempConfig.MaxEnchantsByCategory.Add("HealTarget", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("HealTick"))
-                        tempConfig.MaxEnchantsByCategory.Add("HealTick", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("ResistDamage"))
-                        tempConfig.MaxEnchantsByCategory.Add("ResistDamage", -1);
-                    if (!Config.MaxEnchantsByCategory.ContainsKey("Universal"))
-                        tempConfig.MaxEnchantsByCategory.Add("Universal", -1);
-                    // ReagentConfig
+                    // Enchantment Category Limiters - Default
+                    if (Config.MaxEnchantsByCategory is null)
+                    {
+                        tempConfig.MaxEnchantsByCategory = new Dictionary<string, int>(defaultMaxEnchantsByCategory);
+                    }
+                    else // Enchantment Category Limiters - Update
+                    {
+                        tempConfig.MaxEnchantsByCategory = Config.MaxEnchantsByCategory;
+                        foreach (KeyValuePair<string, int> pair in defaultMaxEnchantsByCategory)
+                        {
+                            if (Config.MaxEnchantsByCategory.ContainsKey(pair.Key) != true)
+                                tempConfig.MaxEnchantsByCategory.Add(pair.Key, pair.Value);
+                        }
+                    }
+
+                    // Reagent Charge Config
                     if (Config.LegacyReagentPotential == true) tempConfig.LegacyReagentPotential = true;
                     if (Config.ChargeReagentHours != 1) tempConfig.ChargeReagentHours = Config.ChargeReagentHours;
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
-                    if (Config.ChargePerGear != 1.00) tempConfig.ChargePerGear = Config.ChargePerGear;
+                    if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
 
-                    if (Config.ValidReagents?.Count > 0) tempConfig.ValidReagents = Config.ValidReagents;
-                    if (!Config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-emerald-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("game:gem-diamond-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-diamond-rough", 1);
-                    if (!Config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
-                        tempConfig.ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
+                    // Reagent Charge Components - Default
+                    if (Config.ReagentChargeComponents is null)
+                    {
+                        tempConfig.ReagentChargeComponents = new Dictionary<string, float>(defaultReagentChargeComponents);
+                    }
+                    else // Reagent Charge Components - Update
+                    {
+                        tempConfig.ReagentChargeComponents = Config.ReagentChargeComponents;
+                        foreach (KeyValuePair<string, float> pair in defaultReagentChargeComponents)
+                        {
+                            if (Config.ReagentChargeComponents.ContainsKey(pair.Key) != true)
+                                tempConfig.ReagentChargeComponents.Add(pair.Key, pair.Value);
+                        }
+                    }
+
+                    // Valid Reagents - Default
+                    if (Config.ValidReagents is null)
+                    {
+                        tempConfig.ValidReagents = new Dictionary<string, int>(defaultValidReagents);
+                    }
+                    else // Valid Reagents - Update
+                    {
+                        tempConfig.ValidReagents = new Dictionary<string, int>(Config.ValidReagents);
+                        foreach (KeyValuePair<string, int> pair in defaultValidReagents)
+                        {
+                            if (Config.ValidReagents.ContainsKey(pair.Key) != true)
+                                tempConfig.ValidReagents.Add(pair.Key, pair.Value);
+                        }
+                    }
+
                     // Force reset if they haven't done Enchantments 1.2.5 upgrade yet
                     if (Config.Version < 1.01) tempConfig.ResetEnchantConfigs = true;
                     else if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
+                    
+                    // System Options
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;
                     Config = tempConfig;
-                    sApi.StoreModConfig(Config, ConfigFile);
 
+                    // Write back to JSON
+                    sApi.StoreModConfig(Config, ConfigFile);
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is outdated. Migrated to version {0} successfully.", ConfigVersion);
                 }
                 else
@@ -137,43 +168,11 @@ namespace KRPGLib.Enchantment
                 sApi.Logger.Error("[KRPGEnchantment] Error loading KRPGEnchantConfig: {0}", e);
                 return;
             }
-            classExclusiveRecipes = sApi.World.Config.GetBool("classExclusiveRecipes", true);
         }
-
-
-        // public override void StartServerSide(ICoreServerAPI api)
-        // {
-        //     // Obsolete
-        //     // This is now configured in KRPGCommandSystem
-        // 
-        //     // RegisterCommands(api);
-        // }
-        // [Obsolete]
-        // private void RegisterCommands(ICoreServerAPI api)
-        // {
-        //     api.ChatCommands.GetOrCreate("krpg")
-        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-krpg"))
-        //     .RequiresPrivilege(Privilege.controlserver)
-        //     .BeginSubCommand("enchantment")
-        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-enchantment"))
-        //     .RequiresPrivilege(Privilege.controlserver)
-        //     .BeginSubCommand("reload")
-        //     .WithDescription(Lang.Get("krpgenchantment:dsc-cmd-reload-config"))
-        //     .RequiresPrivilege(Privilege.controlserver)
-        //     .HandleWith(_ =>
-        //     {
-        //         if (ReloadConfig())
-        //         {
-        //             return TextCommandResult.Success(Lang.Get("krpgenchantment:cmd-reloadcfg-msg"));
-        //         }
-        //     
-        //         return TextCommandResult.Error(Lang.Get("krpgenchantment:cmd-reloadcfg-fail"));
-        //     })
-        //     .EndSubCommand()
-        //     .EndSubCommand()
-        //     .Validate();
-        // }
-
+        /// <summary>
+        /// Reloads the config from the server, then notifies ConfigReloaded delegates.
+        /// </summary>
+        /// <returns></returns>
         public bool ReloadConfig()
         {
             sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file is being reloaded from JSON.");
@@ -185,7 +184,6 @@ namespace KRPGLib.Enchantment
         }
 
         public delegate void ConfigReloadDelegate();
-
         public event ConfigReloadDelegate? ConfigReloaded;
     }
 }

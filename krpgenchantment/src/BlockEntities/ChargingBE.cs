@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using ProtoBuf;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using Vintagestory.GameContent;
-using System.Linq;
-using System.Text;
-using ProtoBuf;
 using Vintagestory.API.Util;
-using System.Data;
-using Vintagestory.API.Common.Entities;
-using System.Globalization;
-using System.Collections;
+using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
@@ -71,15 +72,39 @@ namespace KRPGLib.Enchantment
                 return EnchantingConfigLoader.Config?.ValidReagents; 
             }
         }
+        public Dictionary<string, float> validChargeItems
+        {
+            get
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null;
+                return EnchantingConfigLoader.Config?.ReagentChargeComponents;
+            }
+        }
+        public int? MaxChargeValue
+        {
+            get
+            {
+                if (this.Api.Side != EnumAppSide.Server) return null; //I dont know the purpose of this check, it may be unnecessary.
+                                                                      //if so, change function return to int
+                return EnchantingConfigLoader.Config?.MaxReagentCharge;
+            }
+        }
         public ChargingBE() : base()
         {
             inventory = new ChargingInventory(null, null, this);
             inventory.SlotModified += OnSlotModified;
         }
+        /// <summary>
+        /// Returns false if any slot is occupied by an item.
+        /// </summary>
         public bool ReagentSlotsEmpty
         {
             get { return GetReagentSlotsEmpty(); }
         }
+        /// <summary>
+        /// Returns false if any slot is occupied by an item.
+        /// </summary>
+        /// <returns></returns>
         private bool GetReagentSlotsEmpty()
         {
             bool foundItems = true;
@@ -143,34 +168,76 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void chargeInput()
         {
-            if (Api.Side != EnumAppSide.Server) return;
+            if (!(Api is ICoreServerAPI sApi)) return;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Attempting to charge a reagent: {0}.", InputSlot.Itemstack.Collectible.Code);
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            
             ItemStack outStack = InputSlot.Itemstack.Clone();
-            int tGears = 0;
-            for(int i = 1; i < inventory.Slots.Length; i++)
+            int sum = GetCurrentChargeSum();
+            // Escape if 0 or less. Something must have gone wrong
+            if (sum <= 0)
             {
-                if (inventory.Slots[i].Empty) continue;
-
-                if (inventory.Slots[i].Itemstack.Collectible.Code.Equals("game:gear-temporal"))
-                {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        Api.World.Logger.Event("[KRPGEnchantment] Temporal Gear has been found while attempting to charge a reagent");
-                    tGears++;
-                    inventory.Slots[i].TakeOutWhole();
-                    inventory.Slots[i].MarkDirty();
-                }
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.World.Logger.Error("[KRPGEnchantment] Failed to charge a reagent! Could not calculate the component charge total");
+                return;
             }
-            int power = sApi.EnchantAccessor().SetReagentCharge(ref outStack, tGears);
+            // Reagent prior charge
+            int chargePre = Api.EnchantAccessor().GetReagentCharge(InputSlot.Itemstack);
+            sum += chargePre;
+            // Attempt to Set the Charge
+            int power = sApi.EnchantAccessor().SetReagentCharge(ref outStack, sum);
+            if (sum <= 0)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.World.Logger.Error("[KRPGEnchantment] Failed to charge reagent: {0}!", outStack.GetName());
+                return;
+            }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Charged Reagent Output {0} has a power of {1}", outStack.GetName(), power);
-
+            // Remove all items AFTER we've confirmed we can set the charge
+            foreach (var slot in inventory.Slots)
+            {
+                if (slot.Empty) continue;
+                slot.TakeOutWhole();
+                slot.MarkDirty();
+            }
+            // Write back
             InputSlot.Itemstack = outStack.Clone();
             InputSlot.MarkDirty();
             MarkDirty();
+        }
+        /// <summary>
+        /// Returns the sum of all charge components, not including existing reagent charge value. Applies Global Multiplier and normalizes.
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrentChargeSum()
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.World.Logger.Event("[KRPGEnchantment] Attempting to determine a reagent charge sum for all components in ChargingTable.");
 
+            float gMul = EnchantingConfigLoader.Config.GlobalChargeMultiplier;
+            float rCharge = 0f;
+            // Component Charge - Multiply each component individually
+            foreach (ItemSlot slot in ReagentSlots)
+            {
+                if (slot.Empty) continue;
+                string s = slot.Itemstack.Collectible.Code;
+                if (EnchantingConfigLoader.Config?.ReagentChargeComponents.ContainsKey(s) == true)
+                {
+                    float cCharge = EnchantingConfigLoader.Config.ReagentChargeComponents[s];
+                    rCharge += cCharge * gMul;
+                }
+            }
+            // Bail if we failed to get the components for some reason
+            if (rCharge <= 0f) return 0;
+            // Prepare returns
+            int charge = (int)MathF.Floor(rCharge);
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.World.Logger.Event("[KRPGEnchantment] Total available Charge is: {0}.", charge);
+
+            return charge;
         }
         /// <summary>
         /// Upkeep method for the Enchanting Table. Runs every 1000ms.

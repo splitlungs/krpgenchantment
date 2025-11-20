@@ -46,12 +46,14 @@ namespace KRPGLib.Enchantment
                 "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand" };
+                "Wand",
+                "Buckler", "Forlorn-Shield"
+            };
             Modifiers = new EnchantModifiers 
             {
                 {"TickDuration", 10000 }, { "PowerMultiplier", 1 } 
             };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

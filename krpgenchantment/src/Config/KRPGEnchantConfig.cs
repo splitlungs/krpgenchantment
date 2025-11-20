@@ -11,6 +11,9 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
+    /// <summary>
+    /// Defines all possible configurations options in the primary config file.
+    /// </summary>
     public class KRPGEnchantConfig
     {
         // Enchantment Config
@@ -24,7 +27,8 @@ namespace KRPGLib.Enchantment
         public bool LegacyReagentPotential = false;
         public double ChargeReagentHours = 1d;
         public int MaxReagentCharge = 5;
-        public float ChargePerGear = 1.00f;
+        public float GlobalChargeMultiplier = 1.00f;
+        public Dictionary<string, float> ReagentChargeComponents;
         public Dictionary<string, int> ValidReagents;
         // Forces the Enchantment class loader to reload all configs from default
         public bool ResetEnchantConfigs = true;
@@ -41,55 +45,5 @@ namespace KRPGLib.Enchantment
                 IsDirty = true;
             }
         }
-        // internal void Reload(KRPGEnchantConfig config)
-        // {
-        //     if (config != null) 
-        //     {
-        //         // Enchant Config
-        //         if (config.EntityTickMs != 250) EntityTickMs = config.EntityTickMs;
-        //         if (config.MaxEnchantsPerItem >= 0) MaxEnchantsPerItem = config.MaxEnchantsPerItem;
-        //         if (config.EnchantTimeHours != 1) EnchantTimeHours = config.EnchantTimeHours;
-        //         if (config.LatentEnchantResetDays >= 0) LatentEnchantResetDays = config.LatentEnchantResetDays;
-        //         if (config.MaxLatentEnchants != 3) MaxLatentEnchants = config.MaxLatentEnchants;
-        // 
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("ControlArea"))
-        //             MaxEnchantsByCategory.Add("ControlArea", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("ControlTarget"))
-        //             MaxEnchantsByCategory.Add("ControlTarget", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("DamageArea"))
-        //             MaxEnchantsByCategory.Add("DamageArea", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("DamageTarget"))
-        //             MaxEnchantsByCategory.Add("DamageTarget", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("DamageTick"))
-        //             MaxEnchantsByCategory.Add("DamageTick", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("HealArea"))
-        //             MaxEnchantsByCategory.Add("HealArea", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("HealTarget"))
-        //             MaxEnchantsByCategory.Add("HealTarget", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("HealTick"))
-        //             MaxEnchantsByCategory.Add("HealTick", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("ResistDamage"))
-        //             MaxEnchantsByCategory.Add("ResistDamage", -1);
-        //         if (!config.MaxEnchantsByCategory.ContainsKey("Universal"))
-        //             MaxEnchantsByCategory.Add("Universal", -1);
-        //         // Reagent Config
-        //         if (config.LegacyReagentPotential == true) LegacyReagentPotential = true;
-        //         if (config.ChargeReagentHours != 1) ChargeReagentHours = config.ChargeReagentHours;
-        //         if (config.MaxReagentCharge != 5) MaxReagentCharge = config.MaxReagentCharge;
-        //         if (config.ChargePerGear != 1.00) ChargePerGear = config.ChargePerGear;
-        // 
-        //         if (config.ValidReagents?.Count > 0) ValidReagents = config.ValidReagents;
-        //         if (!config.ValidReagents.ContainsKey("game:gem-emerald-rough"))
-        //             ValidReagents.Add("game:gem-emerald-rough", 1);
-        //         if (!config.ValidReagents.ContainsKey("game:gem-diamond-rough"))
-        //             ValidReagents.Add("game:gem-diamond-rough", 1);
-        //         if (!config.ValidReagents.ContainsKey("game:gem-olivine_peridot-rough"))
-        //             ValidReagents.Add("game:gem-olivine_peridot-rough", 1);
-        // 
-        //         if (config.ResetEnchantConfigs == true) ResetEnchantConfigs = true;
-        //         if (config.Debug == true) Debug = true;
-        //         
-        //     }
-        // }
     }
 }

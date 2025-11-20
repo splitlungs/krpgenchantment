@@ -34,12 +34,14 @@ namespace KRPGLib.Enchantment
             ValidToolTypes = new List<string>() {
                 "Armor-Head", "Armor-Body", "Armor-Legs",
                 "ArmorHead", "ArmorBody", "ArmorLegs",
-                "Shield" };
+                "Shield",
+                "Buckler", "Forlorn-Shield"
+            };
             Modifiers = new EnchantModifiers()
             {
                 { "DamageResist", "poison"}, { "PowerMultiplier", 0.1 }
             };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

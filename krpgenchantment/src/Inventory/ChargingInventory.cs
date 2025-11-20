@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -159,12 +160,19 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanHold(ItemSlot sourceSlot)
         {
-            // if (bEntity.invLocked) return false;
+            if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
-            if (sourceSlot.Itemstack.Collectible.Code != "game:gear-temporal")
-                return false;
-
-            return base.CanHold(sourceSlot);
+            string cCode = sourceSlot?.Itemstack?.Collectible?.Code;
+            // Check if it's a valid 
+            if (bEntity.validChargeItems.ContainsKey(cCode))
+            {
+                // Limiting the charge components here would just cause people to ask why they can't fill all the slots.
+                // There should be some visual indicators, such as a glow around the slot to denote its possible charge.
+                MaxSlotStackSize = 1;
+                return true;
+            }
+            // if none found, this is not a valid charging item
+            return false;
         }
         public override bool CanTake()
         {
@@ -172,7 +180,6 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanTakeFrom(ItemSlot sourceSlot, EnumMergePriority priority = EnumMergePriority.AutoMerge)
         {
-            // return sourceSlot.Itemstack?.Collectible is ReagentItem && base.CanTakeFrom(sourceSlot, priority);
             return base.CanTakeFrom(sourceSlot, priority);
         }
         protected override void ActivateSlotLeftClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
