@@ -102,6 +102,9 @@ namespace KRPGLib.Enchantment
                 SourceEntity = byEntity,
                 Type = EnumDamageType.Injury
             };
+            // Bail if we shouldn't deal the damage.
+            if (!entity.ShouldReceiveDamage(source, dmg)) return;
+
             hp.OnEntityReceiveDamage(source, ref dmg);
 
             // Particle if damaged
