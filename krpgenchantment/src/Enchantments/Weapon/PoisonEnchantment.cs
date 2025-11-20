@@ -92,8 +92,6 @@ namespace KRPGLib.Enchantment
             EntityBehaviorHealth hp = entity.GetBehavior<EntityBehaviorHealth>();
             if (hp == null) return;
 
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, EnumDamageType.Injury.ToString());
             DamageSource source = new DamageSource()
             {
                 DamageTier = power +1,
@@ -104,6 +102,9 @@ namespace KRPGLib.Enchantment
             };
             // Bail if we shouldn't deal the damage.
             if (!entity.ShouldReceiveDamage(source, dmg)) return;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, EnumDamageType.Injury.ToString());
 
             hp.OnEntityReceiveDamage(source, ref dmg);
 
