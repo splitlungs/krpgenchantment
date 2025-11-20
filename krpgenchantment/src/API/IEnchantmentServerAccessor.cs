@@ -211,9 +211,10 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Call to assign a reagent charge attribute to an item. Returns the value assigned or 0 if it is not valid.
         /// </summary>
-        /// <param name="stack"></param>
+        /// <param name="inStack"></param>
+        /// <param name="charge"=</param>
         /// <returns></returns>
-        int SetReagentCharge(ref ItemStack stack, float charge);
+        int SetReagentCharge(ref ItemStack inStack, int charge);
         /// <summary>
         /// Returns all EnchantmentRegistry keys with an Enchantment containing the provided category. Returns null if none are found.
         /// </summary>

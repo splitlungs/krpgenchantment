@@ -66,46 +66,6 @@ namespace KRPGLib.Enchantment
             if (!result) return result;
             return result;
         }
-        public float GetCurrentChargeSum()
-        {
-            float ChargeSum = 0.0f;
-            foreach (var slot in slots)
-            {
-                if (!slot.Empty) // TODO I don't have VS runtime, so specific function names are not available to me 
-                {
-                    // assume the slot is containing a valid charging compound,
-                    // since its handled in the slot's check below
-                    ChargeSum += bEntity.validChargeItems.TryGetValue(slot.Itemstack.Collectible.Code);
-                }
-            }
-            return ChargeSum;
-        }
-        //would be used for slots accepting or disallowing charge compounds when over maximum
-        public bool NewChargeWithinMaximum(float addedCharge)
-        {
-            float currentCharge = GetCurrentChargeSum();
-            //two options here
-            /* Option 1
-            if (currentCharge < bEntity.MaxChargeValue)
-            {
-                return true; //Accept any value while under maximum, so the player can get max charge even if some is wasted
-            }
-            else
-            {
-                return false; //otherwise reject
-            }
-            */
-
-            //Option 2
-            if (currentCharge + addedCharge <= bEntity.MaxChargeValue)
-            {
-                return true; //Strictly allow charge within maximum
-            }
-            else
-            {
-                return false;
-            }
-        }
     }
     #endregion
     #region Slots
@@ -200,38 +160,18 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanHold(ItemSlot sourceSlot)
         {
-            // if (bEntity.invLocked) return false;
-
-            //if (sourceSlot.Itemstack.Collectible.Code != "game:gear-temporal")
-            //    return false;
-
-            //return base.CanHold(sourceSlot);
             if (this.inventory.Api.Side != EnumAppSide.Server) return false;
 
-            // checking every entry in the charging compound config
-            if (bEntity.validChargeItems.ContainsKey(sourceSlot?.Itemstack?.Collectible?.Code))
+            string cCode = sourceSlot?.Itemstack?.Collectible?.Code;
+            // Check if it's a valid 
+            if (bEntity.validChargeItems.ContainsKey(cCode))
             {
-                // could also add an option to check if the rolling sum is greater than the config's max reagent setting,
-                // and if so also reject a new reagent
-                // Would need to call through to the inventory that contains this slot, and the slot would ask the inventory for charge
-                ChargingInventory owningInventory = (ChargingInventory)bEntity.Inventory;
-                if (owningInventory.NewChargeWithinMaximum(bEntity.validChargeItems.Get(sourceSlot.Itemstack.Collectible.Code)))
-                {
-                    MaxSlotStackSize = 1;
-                    return true;
-                    //return base.CanHold(sourceSlot);
-                }
-                else
-                {
-                    return false;
-                }
-
-                // otherwise just this
-                //return base.CanHold(sourceSlot);
-
+                // Limiting the charge components here would just cause people to ask why they can't fill all the slots.
+                // There should be some visual indicators, such as a glow around the slot to denote its possible charge.
+                MaxSlotStackSize = 1;
+                return true;
             }
             // if none found, this is not a valid charging item
-            
             return false;
         }
         public override bool CanTake()
@@ -240,7 +180,6 @@ namespace KRPGLib.Enchantment
         }
         public override bool CanTakeFrom(ItemSlot sourceSlot, EnumMergePriority priority = EnumMergePriority.AutoMerge)
         {
-            // return sourceSlot.Itemstack?.Collectible is ReagentItem && base.CanTakeFrom(sourceSlot, priority);
             return base.CanTakeFrom(sourceSlot, priority);
         }
         protected override void ActivateSlotLeftClick(ItemSlot sourceSlot, ref ItemStackMoveOperation op)

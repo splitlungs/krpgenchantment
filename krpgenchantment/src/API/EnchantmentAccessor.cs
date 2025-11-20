@@ -1,22 +1,24 @@
-﻿using SkiaSharp;
+﻿using HarmonyLib;
+using KRPGLib.Enchantment.API;
+using SkiaSharp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Datastructures;
-using Vintagestory.API.Server;
-using Vintagestory.GameContent;
-using System.Runtime.CompilerServices;
-using KRPGLib.Enchantment.API;
 using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Util;
-using HarmonyLib;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
+using Vintagestory.GameContent;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KRPGLib.Enchantment
 {
@@ -828,9 +830,10 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Call to assign a reagent charge attribute to an item. Returns the value assigned or 0 if it is not valid.
         /// </summary>
-        /// <param name="stack"></param>
+        /// <param name="inStack"></param>
+        /// <param name="charge"=</param>
         /// <returns></returns>
-        public int SetReagentCharge(ref ItemStack inStack, float charge)
+        public int SetReagentCharge(ref ItemStack inStack, int charge)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Attempting to set a charge to {0}.", inStack.GetName());
@@ -838,25 +841,23 @@ namespace KRPGLib.Enchantment
             ITreeAttribute tree = inStack?.Attributes?.GetOrAddTreeAttribute("enchantments");
             if (tree == null)
                 return 0;
-            // Return an existing Potential or roll a new one
-            int power = 0;
+            
             // Set Charge attribute, based on config
             string s = inStack.Collectible.Code;
-            if (EnchantingConfigLoader.Config.ValidReagents.ContainsKey(s) == true)
+            // Verify it's a valid reagent one last time. Necessary for chat commands
+            if (EnchantingConfigLoader.Config.ValidReagents?.ContainsKey(s) == true)
             {
-                float globalMultiplier = EnchantingConfigLoader.Config.GlobalChargeMultiplier;
-                int maxPower = EnchantingConfigLoader.Config.MaxReagentCharge;
-                int p = (int)MathF.Floor(charge * globalMultiplier);
-                power = Math.Min((p + GetReagentCharge(inStack)), maxPower) ; // Now it will add the already existing charge and cap it with the max charge
-
+                // They should still be constrained by MaxReagentCharge
+                charge = Math.Min(charge, EnchantingConfigLoader.Config.MaxReagentCharge);
+            
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.World.Logger.Event("[KRPGEnchantment] {0} is a ValidReagent and is being assigned a Charge of {1}.", inStack.GetName(), power);
+                    Api.World.Logger.Event("[KRPGEnchantment] {0} is a ValidReagent and is being assigned a Charge of {1}.", inStack.GetName(), charge);
             }
             // Write back to Attributes
-            tree.SetInt("charge", power);
+            tree.SetInt("charge", charge);
             inStack.Attributes?.MergeTree(tree);
             // Return for convenience
-            return power;
+            return charge;
         }
         #endregion
         #region Lore
