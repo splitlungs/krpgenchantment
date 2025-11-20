@@ -27,8 +27,6 @@ namespace KRPGLib.Enchantment
         public bool LegacyReagentPotential = false;
         public double ChargeReagentHours = 1d;
         public int MaxReagentCharge = 5;
-        // OBSOLETE
-        // public float ChargePerGear;
         public float GlobalChargeMultiplier = 1.00f;
         public Dictionary<string, float> ReagentChargeComponents;
         public Dictionary<string, int> ValidReagents;
