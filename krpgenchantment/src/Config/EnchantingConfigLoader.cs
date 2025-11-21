@@ -182,8 +182,8 @@ namespace KRPGLib.Enchantment
 
             return true;
         }
-
+        // We don't have any subscribers *just yet*, but exists for when I update config management again
         public delegate void ConfigReloadDelegate();
-        public event ConfigReloadDelegate? ConfigReloaded;
+        public event ConfigReloadDelegate ConfigReloaded;
     }
 }

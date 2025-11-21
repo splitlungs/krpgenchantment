@@ -37,9 +37,11 @@ namespace KRPGLib.Enchantment
                 "Halberd", "Mace", "Pike", "Polearm", "Poleaxe", "Quarterstaff", "Sabre", "Staff", "Warhammer",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand" };
+                "Wand",
+                "vanillaarmory:Club"
+            };
             Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 1 },  { "VerticalMultiplier", 0.1 } };
-            Version = 1.03f;
+            Version = 1.04f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

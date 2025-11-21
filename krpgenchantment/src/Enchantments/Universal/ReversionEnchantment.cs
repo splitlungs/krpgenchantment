@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "Buckler", "Forlorn-Shield"
+                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club"
             };
             Modifiers = new EnchantModifiers 
             {
