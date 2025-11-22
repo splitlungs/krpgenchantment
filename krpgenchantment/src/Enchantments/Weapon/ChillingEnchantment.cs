@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class ChillingEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Reduces the target's internal temperature OnAttack.
+        /// </summary>
+        /// <param name="api"></param>
         public ChillingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

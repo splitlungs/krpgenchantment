@@ -21,7 +21,7 @@ namespace KRPGLib.Enchantment
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         int PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
         /// <summary>
-        /// Rolls a % chance to negate item damage.
+        /// Restores item durability in temporally unstable areas.
         /// </summary>
         /// <param name="api"></param>
         public ReversionEnchantment(ICoreAPI api) : base(api)

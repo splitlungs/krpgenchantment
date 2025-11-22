@@ -18,7 +18,7 @@ namespace KRPGLib.Enchantment
     public class EnchantingConfigLoader : ModSystem
     {
         public static KRPGEnchantConfig Config { get; set; } = null!;
-        public const double ConfigVersion = 1.03d;
+        public const double ConfigVersion = 1.04d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
 
         // We cannot initialize dictionaries in the Config class, and must do so here
@@ -45,8 +45,17 @@ namespace KRPGLib.Enchantment
             { "game:gem-diamond-rough", 1 },
             { "game:gem-olivine_peridot-rough", 1 }
         };
+        // This is really just a Min-Max of the Reagent's Charge divided by 2 and rounded up to the Charge value.
+        private Dictionary<int, int> defaultChargeScales = new Dictionary<int, int>()
+        {
+            { 1, 1 },
+            { 1, 2 },
+            { 2, 3 },
+            { 2, 4 },
+            { 3, 5 }
+        };
 
-        
+
         private ICoreServerAPI sApi;
 
         // Load before anything else, especially before ConfigLib does anything.
@@ -82,6 +91,7 @@ namespace KRPGLib.Enchantment
                     Config.MaxEnchantsByCategory = new Dictionary<string, int>(defaultMaxEnchantsByCategory);
                     Config.ReagentChargeComponents = new Dictionary<string, float>(defaultReagentChargeComponents);
                     Config.ValidReagents = new Dictionary<string, int>(defaultValidReagents);
+                    Config.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
                     sApi.StoreModConfig(Config, ConfigFile);
 
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
@@ -146,6 +156,33 @@ namespace KRPGLib.Enchantment
                                 tempConfig.ValidReagents.Add(pair.Key, pair.Value);
                         }
                     }
+
+                    // Charge to Enchant Tier Scales - Default
+                    if (Config.ChargeScales is null)
+                    {
+                        tempConfig.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
+                    }
+                    // Charge Scales - Update ONLY IF they don't qualify for their current MaxCharge
+                    else if (tempConfig.ChargeScales.Count < tempConfig.MaxReagentCharge)
+                    {
+                        tempConfig.ChargeScales = new Dictionary<int, int>(Config.ChargeScales);
+                        if (tempConfig.ChargeScales.Count < tempConfig.MaxReagentCharge)
+                        {
+                            for (int i = tempConfig.ChargeScales.Count; i < tempConfig.MaxReagentCharge; i++)
+                            {
+                                int j = (int)MathF.Ceiling((i / 2));
+                                tempConfig.ChargeScales.Add(j, i);
+                            }
+                        }
+                    }
+                    // Charge Scales - Leave it alone if it's valid
+                    else if (tempConfig.ChargeScales.Count == tempConfig.MaxReagentCharge)
+                    {
+                        tempConfig.ChargeScales = new Dictionary<int, int>(Config.ChargeScales);
+                    }
+                    // Charge Scales - How did we get here? idk, this is just a fall-back if something goes horribly wrong
+                    else
+                        tempConfig.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
 
                     // Force reset if they haven't done Enchantments 1.2.5 upgrade yet
                     if (Config.Version < 1.01) tempConfig.ResetEnchantConfigs = true;
