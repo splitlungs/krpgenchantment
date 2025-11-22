@@ -30,7 +30,8 @@ namespace KRPGLib.Enchantment
         public float GlobalChargeMultiplier = 1.00f;
         public Dictionary<string, float> ReagentChargeComponents;
         public Dictionary<string, int> ValidReagents;
-        public Dictionary<int, int> ChargeScales;
+        // public Dictionary<int, int> ChargeScales;
+        public int[,] ChargeScales;
         // Forces the Enchantment class loader to reload all configs from default
         public bool ResetEnchantConfigs = true;
         // Deboog

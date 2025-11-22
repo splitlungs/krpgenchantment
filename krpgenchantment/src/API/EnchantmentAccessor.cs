@@ -254,7 +254,7 @@ namespace KRPGLib.Enchantment
             if (rQty < 0) return false;
 
             // 3. Get Reagent Potential
-            int maxPot = GetReagentChargeOrPotential(rStack);
+            int maxPot = GetReagentChargePotential(rStack);
             if (maxPot <= 0) return false;
 
             // 4. Get Input Type
@@ -286,7 +286,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="reagent"></param>
         /// <returns></returns>
-        public int GetReagentChargeOrPotential(ItemStack reagent)
+        public int GetReagentChargePotential(ItemStack reagent)
         {
             ITreeAttribute tree = reagent.Attributes.GetOrAddTreeAttribute("enchantments");
             int rPot = tree.GetInt("charge", 0);
@@ -312,13 +312,27 @@ namespace KRPGLib.Enchantment
                         }
                 }
             }
-            // 1.0.x style Charge values
+
+            // OBSOLETE - 1.0.x style Charge values 
+            // if (rPot != 0)
+            // {
+            //     if (EnchantingConfigLoader.Config?.Debug == true)
+            //         Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", rPot);
+            //     return rPot;
+            // }
+
+            // 1.2.22+ style Charge values
             if (rPot != 0)
             {
+                int minPower = EnchantingConfigLoader.Config.ChargeScales[rPot - 1, 0];
+                int maxPower = EnchantingConfigLoader.Config.ChargeScales[rPot - 1, 1];
+                int power = Api.World.Rand.Next(minPower, maxPower + 1);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Reagent Max Charge is {0}", rPot);
                 return rPot;
             }
+
+            // Something went wrong if we got here
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} does not have a reagent charge or potential value.", reagent.GetName());
             return 0;
@@ -338,6 +352,7 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="inSlot"></param>
         /// <param name="rSlot"></param>
         /// <param name="enchantments"></param>
@@ -352,9 +367,9 @@ namespace KRPGLib.Enchantment
             // int rQty = GetReagentQuantity(rSlot.Itemstack);
 
             // Get Reagent Potential
-            int maxPot = GetReagentChargeOrPotential(rSlot.Itemstack);
+            int rCharge = GetReagentChargePotential(rSlot.Itemstack);
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Setting Max Potential to {0}.", maxPot);
+                api.Logger.Event("[KRPGEnchantment] Reagent Charge or Potential is {0}.", rCharge);
             
             // Get Input Type
             var toolType = GetToolType(inSlot.Itemstack);
@@ -380,9 +395,9 @@ namespace KRPGLib.Enchantment
                 }
                 if (!validTool) continue;
                 // if (!ench.ValidToolTypes.Contains(toolType, StringComparer.OrdinalIgnoreCase)) continue;
-                // Use provided Power or roll with reagent.
-                int power = enchant.Value;
-                if (power <= 0) power = api.World.Rand.Next(1, maxPot + 1);
+                // Limit by Enchantment config
+                int power = 0;
+                if (rCharge <= 0) power = Math.Min(rCharge, ench.MaxTier);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Attempting to write {0}: {1} to item.", enchant.Key, enchant.Value);
                 // Try to Enchant the item
