@@ -48,7 +48,7 @@ namespace KRPGLib.Enchantment.API
         /// <returns></returns>
         List<string> GetLatentEnchants(ItemSlot inSlot, bool encrypt);
         /// <summary>
-        /// Returns the maximum tier enchantment a Reagent can power. Returns 0 if not found.
+        /// Returns the Charge attribute off the given item. Returns 0 if not found.
         /// </summary>
         /// <param name="reagent"></param>
         /// <returns></returns>

@@ -292,7 +292,8 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Enchanting Table is attempting to enchant an item.");
             ICoreServerAPI sApi = Api as ICoreServerAPI;
-            ItemStack outStack = sApi.EnchantAccessor().EnchantItem(sApi, InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
+            ItemStack outStack = sApi.EnchantAccessor()
+                .EnchantItem(sApi, InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
             // ItemStack outStack = CurrentRecipe.OutStack(sApi, InputSlot, ReagentSlot).Clone();
             if (OutputSlot.Empty)
             {

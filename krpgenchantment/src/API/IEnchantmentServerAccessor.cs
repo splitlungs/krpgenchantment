@@ -30,6 +30,14 @@ namespace KRPGLib.Enchantment.API
         #endregion
         #region Enchanting
         /// <summary>
+        /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="rSlot"></param>
+        /// <param name="enchantments"></param>
+        /// <returns></returns>
+        ItemStack EnchantItem(ICoreServerAPI api, ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments);
+        /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
         /// </summary>
         /// <param name="eName"></param>
@@ -168,13 +176,12 @@ namespace KRPGLib.Enchantment.API
         /// <returns></returns>
         int GetReagentQuantity(ItemStack stack);
         /// <summary>
-        /// Returns an enchanted ItemStack. Provide int greater than 0 to override reagent potential.
+        /// Returns Reagent Power for Enchanting. Returns either Legacy Potential, weighted random Charge, or 0 if neither are found.
         /// </summary>
-        /// <param name="inSlot"></param>
-        /// <param name="rSlot"></param>
-        /// <param name="enchantments"></param>
+        /// <param name="api"></param>
+        /// <param name="reagent"></param>
         /// <returns></returns>
-        ItemStack EnchantItem(ICoreServerAPI api, ItemSlot inSlot, ItemSlot rSlot, Dictionary<string, int> enchantments);
+        int GetReagentPower(ICoreServerAPI api, ItemStack reagent);
         /// <summary>
         /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns null if none can be found.
         /// </summary>
