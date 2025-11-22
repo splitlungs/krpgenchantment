@@ -46,14 +46,6 @@ namespace KRPGLib.Enchantment
             { "game:gem-olivine_peridot-rough", 1 }
         };
         // This is really just a Min-Max of the Reagent's Charge divided by 2 and rounded up to the Charge value.
-        // private Dictionary<int, int> defaultChargeScales = new Dictionary<int, int>()
-        // {
-        //     { 1, 1 },
-        //     { 1, 2 },
-        //     { 2, 3 },
-        //     { 2, 4 },
-        //     { 3, 5 }
-        // };
         private int[,] defaultChargeScales =
         {
             {1,1},
@@ -164,33 +156,6 @@ namespace KRPGLib.Enchantment
                                 tempConfig.ValidReagents.Add(pair.Key, pair.Value);
                         }
                     }
-
-                    // // Charge to Enchant Tier Scales - Default
-                    // if (Config.ChargeScales is null)
-                    // {
-                    //     tempConfig.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
-                    // }
-                    // // Charge Scales - Update ONLY IF they don't qualify for their current MaxCharge
-                    // else if (tempConfig.ChargeScales.Count < tempConfig.MaxReagentCharge)
-                    // {
-                    //     tempConfig.ChargeScales = new Dictionary<int, int>(Config.ChargeScales);
-                    //     if (tempConfig.ChargeScales.Count < tempConfig.MaxReagentCharge)
-                    //     {
-                    //         for (int i = tempConfig.ChargeScales.Count; i < tempConfig.MaxReagentCharge; i++)
-                    //         {
-                    //             int j = (int)MathF.Ceiling((i / 2));
-                    //             tempConfig.ChargeScales.Add(j, i);
-                    //         }
-                    //     }
-                    // }
-                    // // Charge Scales - Leave it alone if it's valid
-                    // else if (tempConfig.ChargeScales.Count == tempConfig.MaxReagentCharge)
-                    // {
-                    //     tempConfig.ChargeScales = new Dictionary<int, int>(Config.ChargeScales);
-                    // }
-                    // // Charge Scales - How did we get here? idk, this is just a fall-back if something goes horribly wrong
-                    // else
-                    //     tempConfig.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
 
                     // Charge to Enchant Tier Scales - Default
                     if (Config.ChargeScales is null)
