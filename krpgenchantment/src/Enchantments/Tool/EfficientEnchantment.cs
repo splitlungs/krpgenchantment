@@ -39,8 +39,8 @@ namespace KRPGLib.Enchantment
             Version = 1.00f;
         }
         public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        { 
-            
+        {
+            // enchant.SourceSlot.Itemstack
         }
     }
 }

@@ -30,6 +30,9 @@ namespace KRPGLib.Enchantment
             {
                 string eCode = args[0].ToString().ToLower();
                 int ePower = args[1].ToString().ToInt();
+                bool force = false;
+                if (args[2] != null)
+                    force = args[2].ToString().ToLower().Equals("force");
 
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] {0} is attempting to add {1} {2} to {3} through commands.", args.Caller.GetName(), eCode, ePower, activeSlot?.Itemstack?.GetName());
@@ -37,7 +40,7 @@ namespace KRPGLib.Enchantment
                 ItemStack outStack = activeSlot.Itemstack;
                 IEnchantment ench = api.EnchantAccessor().GetEnchantment(eCode);
                 if (ench == null) return false;
-                bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, api);
+                bool didEnchant = ench.TryEnchantItem(ref outStack, ePower, force, api);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
                 if (didEnchant == true)

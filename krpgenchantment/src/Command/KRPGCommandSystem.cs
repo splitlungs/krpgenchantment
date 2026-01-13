@@ -81,7 +81,7 @@ namespace KRPGLib.Enchantment
             .BeginSubCommand("add")
             .WithDescription(Lang.Get("krpgenchantment:cmd-e-add-help"))
             .RequiresPrivilege(Privilege.give)
-            .WithArgs(parsers.OptionalWord("name"), parsers.OptionalInt("power"))
+            .WithArgs(parsers.Word("name"), parsers.Int("power"), parsers.OptionalWord("force"))
             .HandleWith(args =>
             {
                 // sApi.Logger.Event("Arg0 is {0} and Arg1 is {1}", args[0].ToString().ToLower(), args[1]);

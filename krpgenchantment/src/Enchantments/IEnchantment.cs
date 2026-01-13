@@ -43,13 +43,14 @@ namespace KRPGLib.Enchantment.API
         /// <param name="properties"></param>
         void Initialize(EnchantmentProperties properties);
         /// <summary>
-        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// Attempt to write this Enchantment to provided ItemStack. Returns false if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="force"></param>
         /// <param name="api"></param>
         /// <returns></returns>
-        bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api);
+        bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api);
         #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.

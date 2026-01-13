@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Vintagestory.GameContent;
 using Vintagestory.API.Server;
 using Vintagestory.API.Common;
@@ -260,55 +261,145 @@ namespace KRPGLib.Enchantment
             else Version = 0;
         }
         /// <summary>
-        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// Attempt to write this Enchantment to provided ItemStack. Returns false if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="force"></param>
         /// <param name="api"></param>
         /// <returns></returns>
-        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api)
+        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
-            if (inStack == null) return false;
+            if (inStack == null)
+                return false;
 
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
+            var config = EnchantingConfigLoader.Config;
+            bool debug = config?.Debug == true;
+
+            if (debug)
+                api.Logger.Event("[KRPGEnchantment] Enchantment {0} attempting to enchant item {1}.", Code, inStack.GetName());
 
             try
             {
-                // Setup Enchants
-                Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(inStack);
-                if (enchants != null)
+                // Get or create enchant dictionary
+                var enchants = api.EnchantAccessor().GetActiveEnchantments(inStack) ?? new Dictionary<string, int>();
+                if (enchants.Count > 0 && debug)
+                    api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments. Processing limiters.", enchants.Count);
+
+                // Only avoid limiters if told to. Accessible through commands
+                if (force)
                 {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments on it. Processing exceptions.", enchants.Count);
-                    enchants = RemoveHealOrDamage(enchants, api);
-                    enchants = LimitEnchantCategory(enchants, api);
+                    // We still need to remove existing if we're bypassing limits
                     enchants = RemoveExisting(enchants, enchantPower, api);
+                    enchants.Add(Code, enchantPower);
                 }
                 else
-                    enchants = new Dictionary<string, int>();
-
-                // Write the Enchantment
-                enchants.Add(Code, enchantPower);
-                string enchantString = "";
-                foreach (KeyValuePair<string, int> pair in enchants)
                 {
-                    enchantString += pair.Key + ":" + pair.Value + ";";
+                    // Singleton limiter
+                    enchants = RemoveExisting(enchants, enchantPower, api);
+                    enchants = RemoveHealOrDamage(enchants, api);
+                    enchants.Add(Code, enchantPower);
+                    // Standard limiters
+                    enchants = LimitEnchantsCategory(enchants, api);
                 }
+
+                // Serialize enchantments
+                var sb = new StringBuilder(enchants.Count * 16);
+                foreach (var pair in enchants)
+                    sb.Append(pair.Key).Append(':').Append(pair.Value).Append(';');
+
+                // Write attributes
                 ITreeAttribute tree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
-                tree.SetString("active", enchantString);
+                tree.SetString("active", sb.ToString());
                 tree.RemoveAttribute("latentEnchantTime");
                 tree.RemoveAttribute("latentEnchants");
                 inStack.Attributes.MergeTree(tree);
-
                 return true;
             }
             catch (Exception ex)
             {
-                api?.Logger.Error("[KRPGEnchantment] Error attempting TryEnchantItem: {0}", ex);
+                api?.Logger.Error("[KRPGEnchantment] Error in TryEnchantItem: {0}",ex);
                 return false;
             }
         }
+        
+        /// <summary>
+        /// Overwrites "Healing" or a "Damage" category enchant
+        /// </summary>
+        /// <param name="enchants"></param>
+        // public virtual Dictionary<string, int> RemoveHealOrDamage( Dictionary<string, int> enchants, ICoreServerAPI api)
+        // {
+        //     var config = EnchantingConfigLoader.Config;
+        //     bool debug = config?.Debug == true;
+        // 
+        //     if (debug)
+        //         api.Logger.Event("[KRPGEnchantment] Resolving Healing vs Damage enchantments.");
+        // 
+        //     var enchantAccessor = api.EnchantAccessor();
+        // 
+        //     // Define categories explicitly
+        //     var healingEnchants = enchantAccessor.GetEnchantmentsInCategory("Healing");
+        //     if (healingEnchants == null)
+        //         return enchants;
+        // 
+        //     // Build damage set
+        //     var damageSet = BuildDamageEnchantSet(api);
+        // 
+        //     if (damageSet.Count == 0)
+        //         return enchants;
+        // 
+        //     bool isHealingEnchant = healingEnchants.Contains(Code);
+        //     bool isDamageEnchant = damageSet.Contains(Code);
+        // 
+        //     // Not relevant → do nothing
+        //     if (!isHealingEnchant && !isDamageEnchant)
+        //         return enchants;
+        // 
+        //     // Healing overwrites Damage
+        //     if (isHealingEnchant)
+        //     {
+        //         foreach (var dmg in damageSet)
+        //         {
+        //             if (enchants.Remove(dmg) && debug)
+        //                 api.Logger.Event("[KRPGEnchantment] Removed damage enchant {0} due to healing overwrite.", dmg);
+        //         }
+        // 
+        //         return enchants;
+        //     }
+        // 
+        //     // Damage overwrites Healing
+        //     foreach (var heal in healingEnchants)
+        //     {
+        //         if (enchants.Remove(heal) && debug)
+        //             api.Logger.Event( "[KRPGEnchantment] Removed healing enchant {0} due to damage overwrite.", heal);
+        //     }
+        // 
+        //     return enchants;
+        // }
+        /// <summary>
+        /// Builds a HashSet of all enchantments belonging to Damage-related categories.
+        /// </summary>
+        // protected virtual HashSet<string> BuildDamageEnchantSet(ICoreServerAPI api)
+        // {
+        //     var enchantAccessor = api.EnchantAccessor();
+        //     var damageSet = new HashSet<string>();
+        // 
+        //     void AddCategory(string category)
+        //     {
+        //         var enchants = enchantAccessor.GetEnchantmentsInCategory(category);
+        //         if (enchants == null) return;
+        // 
+        //         foreach (var e in enchants)
+        //             damageSet.Add(e);
+        //     }
+        // 
+        //     AddCategory("DamageArea");
+        //     AddCategory("DamageTarget");
+        //     AddCategory("DamageTick");
+        // 
+        //     return damageSet;
+        // }
+
         /// <summary>
         /// Overwrites "Healing" or a "Damage" category enchant
         /// </summary>
@@ -350,44 +441,131 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="enchants"></param>
         /// <param name="api"></param>
-        public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
+        // [Obsolete]
+        // public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
+        // {
+        //     if (EnchantingConfigLoader.Config?.Debug == true)
+        //         api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
+        // 
+        //     // Get the Maximum amount of allowed Enchantments in a single cateogry from config
+        //     Dictionary<string, int> maxEnchantsByCategory = EnchantingConfigLoader.Config?.MaxEnchantsByCategory;
+        //     foreach (KeyValuePair<string, int> pair1 in maxEnchantsByCategory)
+        //     {
+        //         // Get each enchantment in the given category
+        //         List<string> categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
+        //         if (categoryEnchantNames == null) continue;
+        //         if (pair1.Value > 0)
+        //         {
+        //             // Get each of the Enchants in this category that exist in the provided Enchants dictionary
+        //             List<string> activeEnchants = new List<string>();
+        //             foreach (KeyValuePair<string, int> pair2 in enchants)
+        //             {
+        //                 if (categoryEnchantNames.Contains(pair2.Key))
+        //                     activeEnchants.Add(pair2.Key);
+        //             }
+        //             // If none are found, move on
+        //             if (activeEnchants.Count < 1) continue;
+        // 
+        //             // Reduce down to Max from Config
+        //             while (activeEnchants.Count > pair1.Value)
+        //             {
+        //                 int roll = api.World.Rand.Next(0, activeEnchants.Count);
+        //                 enchants.Remove(activeEnchants[roll]);
+        // 
+        //                 if (EnchantingConfigLoader.Config?.Debug == true)
+        //                     api.Logger.Event("[KRPGEnchantment] Limiting {0} in {1} category.", activeEnchants[roll], pair1.Key);
+        //             }
+        //         }
+        //         // Remove the Enchant if category is disabled or missing
+        //         else
+        //         {
+        //             if (EnchantingConfigLoader.Config?.Debug == true)
+        //                 api.Logger.Event("[KRPGEnchantment] Failed to find the {0} category for cleanup", pair1.Key);
+        //             // Should be safe if it fails to find the key
+        //             // enchants.Remove(pair1.Key);
+        //         }
+        //     }
+        //     return enchants;
+        // }
+
+        /// <summary>
+        /// Removes random enchantments to enforce MaxEnchantsByCategory limits.
+        /// </summary>
+        /// <param name="enchants"></param>
+        /// <param name="api"></param>
+        public virtual Dictionary<string, int> LimitEnchantsCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
         {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
+            var config = EnchantingConfigLoader.Config;
+            if (config == null || enchants.Count == 0)
+                return enchants;
 
-            // Get the Maximum amount of allowed Enchantments in a single cateogry from config
-            Dictionary<string, int> maxEnchantsByCategory = EnchantingConfigLoader.Config?.MaxEnchantsByCategory;
-            foreach (KeyValuePair<string, int> pair1 in maxEnchantsByCategory)
+            bool debug = config.Debug;
+
+            if (debug)
+                api.Logger.Event("[KRPGEnchantment] Limiting enchantments by category.");
+
+            var maxEnchantsByCategory = config.MaxEnchantsByCategory;
+            var rand = api.World.Rand;
+
+            foreach (var categoryLimit in maxEnchantsByCategory)
             {
-                // Get each enchantment in the given category
-                List<string> categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
-                if (categoryEnchantNames == null) continue;
-                if (pair1.Value > 0)
-                {
-                    // Get each of the Enchants in this category that exist in the provided Enchants dictionary
-                    List<string> activeEnchants = new List<string>();
-                    foreach (KeyValuePair<string, int> pair2 in enchants)
-                    {
-                        if (categoryEnchantNames.Contains(pair2.Key))
-                            activeEnchants.Add(pair2.Key);
-                    }
-                    // If none are found, move on
-                    if (activeEnchants.Count < 1) continue;
+                string category = categoryLimit.Key;
+                int maxAllowed = categoryLimit.Value;
 
-                    // Reduce down to Max from Config
-                    while (activeEnchants.Count > pair1.Value)
-                    {
-                        int roll = api.World.Rand.Next(0, activeEnchants.Count);
-                        enchants.Remove(activeEnchants[roll]);
-                    }
-                }
-                // Remove the Enchant if category is disabled or missing
-                else
+                var categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(category);
+                if (categoryEnchantNames == null || categoryEnchantNames.Count == 0)
+                    continue;
+                
+                // Only enforce limits for the category of the newly added enchant
+                if (!categoryEnchantNames.Contains(Code))
+                    continue;
+
+                // Convert once for O(1) lookups
+                var categorySet = new HashSet<string>(categoryEnchantNames);
+
+                // Collect active enchants in this category
+                var activeEnchants = new List<string>();
+                foreach (var enchant in enchants.Keys)
                 {
-                    // Should be safe if it fails to find the key
-                    enchants.Remove(pair1.Key);
+                    if (categorySet.Contains(enchant))
+                        activeEnchants.Add(enchant);
+                }
+                if (activeEnchants.Count == 0)
+                    continue;
+
+                // Category disallowed
+                if (maxAllowed == 0)
+                {
+                    foreach (var enchant in activeEnchants)
+                    {
+                        enchants.Remove(enchant);
+                        if (debug)
+                            api.Logger.Event("[KRPGEnchantment] Removed {0} (category {1} disabled).",enchant, category);
+                    }
+                    continue;
+                }
+
+                // Category limiter disabled
+                else if (maxAllowed < 0)
+                    continue;
+
+                // Protect the newly-added enchant
+                activeEnchants.RemoveAll(e => e.EqualsFastIgnoreCase(Code));
+
+                // Trim down to maxAllowed
+                while (activeEnchants.Count + 1 > maxAllowed)
+                {
+                    int index = rand.Next(activeEnchants.Count);
+                    string removedEnchant = activeEnchants[index];
+
+                    enchants.Remove(removedEnchant);
+                    activeEnchants.RemoveAt(index);
+
+                    if (debug)
+                        api.Logger.Event("[KRPGEnchantment] Limiting {0} in {1} category.",removedEnchant, category);
                 }
             }
+
             return enchants;
         }
         /// <summary>
@@ -397,7 +575,7 @@ namespace KRPGLib.Enchantment
         public virtual Dictionary<string, int> RemoveExisting(Dictionary<string, int> enchants, int enchantPower, ICoreServerAPI api)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing enchants");
+                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing matching enchantment.");
             // Write Enchant - Overwrite if it exists first
             if (enchants.ContainsKey(Code)) enchants.Remove(Code);
 

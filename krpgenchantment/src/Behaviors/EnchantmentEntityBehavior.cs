@@ -78,7 +78,6 @@ namespace KRPGLib.Enchantment
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             Api = entity.Api;
-
             // Well look what I fuckin found in EntityPlayer. I don't remember any patch notes about this shit
             // entity.Stats.Register("healingeffectivness").Register("maxhealthExtraPoints").Register("walkspeed");
         }
@@ -417,7 +416,6 @@ namespace KRPGLib.Enchantment
             // foreach (IAttribute attribute in enchantTicks.Values)
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
-                
                 // 2a. Trash Checks
                 // If marked to be removed
                 if (pair.Value.IsTrash == true)
@@ -480,7 +478,7 @@ namespace KRPGLib.Enchantment
                 TickRegistry.Remove(s);
                 // enchantTicks.RemoveAttribute(s);
             }
-            // 4. Write back to the entity
+            // 4. Write back to the entity - Obsolete
             // entity.WatchedAttributes.MergeTree(enchantTicks);
         }
         #endregion

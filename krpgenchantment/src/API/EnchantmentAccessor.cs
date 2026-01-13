@@ -406,7 +406,7 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Attempting to write {0}: {1} to item.", enchant.Key, enchant.Value);
                 // Try to Enchant the item
-                bool didEnchant = ench.TryEnchantItem(ref outStack, power, api);
+                bool didEnchant = ench.TryEnchantItem(ref outStack, power, false, api);
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     api.Logger.Event("[KRPGEnchantment] Write completed with status: {0}.", didEnchant);
             }

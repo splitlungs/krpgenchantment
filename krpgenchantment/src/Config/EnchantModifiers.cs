@@ -70,7 +70,7 @@ namespace KRPGLib.Enchantment
         public bool GetBool(string key)
         {
             if (!this.ContainsKey(key)) return false;
-            return this[key].ToString().ToLower().Contains("true");
+            return this[key].ToString().ToLower().Equals("true");
         }
     }
 }
