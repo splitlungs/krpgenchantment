@@ -98,7 +98,7 @@ namespace KRPGLib.Enchantment
                     if (slot?.Itemstack != null)
                     {
                         // Trigger OnEquip since we just logged in
-                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
+                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "equip", true } };
                         bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
                     }
                     GenerateGearEnchantCache(slotId);
@@ -123,7 +123,7 @@ namespace KRPGLib.Enchantment
                         // Trigger OnEquip since we just logged in
                         bool isOffhand = false;
                         if (slotId == offHandID) isOffhand = true;
-                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffHand", isOffhand } };
+                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffHand", isOffhand }, { "equip", true } };
                         bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
                     }
                     GenerateHotbarEnchantCache(slotId);
@@ -243,7 +243,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} gear modified slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
             // ItemSlot slot = gearInventory[slotId];
-            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false }, { "equip", true } };
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(gearInventory[slotId], "OnEquip", entity, entity, ref parameters);
             if (didEnchants == true)
             {
@@ -294,7 +294,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} modified hotbar slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
 
-            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffhand", isOffhand } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffhand", isOffhand }, { "equip", true } };
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(hotbarInventory[slotId], "OnEquip", entity, entity, ref parameters);
             if (didEnchants == true)
             {
