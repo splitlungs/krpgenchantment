@@ -25,7 +25,7 @@ namespace KRPGLib.Enchantment
         public EfficientEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
-            Enabled = false;
+            Enabled = true;
             Code = "efficient";
             Category = "Gathering";
             LoreCode = "enchantment-efficient";
@@ -39,30 +39,30 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.20f } };
             Version = 1.00f;
         }
-        public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        {
-            // int toolTierPlus = enchant.SourceSlot.Itemstack.Item.ToolTier + enchant.Power;
-            // enchant.SourceSlot.Itemstack.Item.GetMiningSpeed
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
-            EntityPlayer entity = sApi.World.GetEntityById(enchant.CauseEntity.EntityId) as EntityPlayer;
-            ItemStack stack = enchant.SourceStack;
-            bool doEquip = parameters.GetBool("equip");
-            float traitRate = 0f;
-            if (doEquip == true)
-            {
-        
-                traitRate = entity.Stats.GetBlended("miningSpeedMul");
-                if (EnchantingConfigLoader.Config.Debug == true)
-                    sApi.Logger.Event("[KRPGEnchantment] Equipping an Efficient enchantment. Pre-equip MiningSpeedMul is {0}.", traitRate);
-                entity.Stats.Set("miningSpeedMul", "KRPGMSMul", enchant.Power, true);
-                // stack.Item.GetMiningSpeed
-            }
-            else
-                entity.Stats.Set("miningSpeedMul", "KRPGMSMul", 1f, true);
-        
-            traitRate = entity.Stats.GetBlended("miningSpeedMul");
-            if (EnchantingConfigLoader.Config.Debug == true)
-                sApi.Logger.Event("[KRPGEnchantment] Post-equip MiningSpeedMul is {0}.", traitRate);
-        }
+        // public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        // {
+        //     // int toolTierPlus = enchant.SourceSlot.Itemstack.Item.ToolTier + enchant.Power;
+        //     // enchant.SourceSlot.Itemstack.Item.GetMiningSpeed
+        //     ICoreServerAPI sApi = Api as ICoreServerAPI;
+        //     EntityPlayer entity = sApi.World.GetEntityById(enchant.CauseEntity.EntityId) as EntityPlayer;
+        //     ItemStack stack = enchant.SourceStack;
+        //     bool doEquip = parameters.GetBool("equip");
+        //     float traitRate = 0f;
+        //     if (doEquip == true)
+        //     {
+        // 
+        //         traitRate = entity.Stats.GetBlended("miningSpeedMul");
+        //         if (EnchantingConfigLoader.Config.Debug == true)
+        //             sApi.Logger.Event("[KRPGEnchantment] Equipping an Efficient enchantment. Pre-equip MiningSpeedMul is {0}.", traitRate);
+        //         entity.Stats.Set("miningSpeedMul", "KRPGMSMul", enchant.Power, true);
+        //         // stack.Item.GetMiningSpeed
+        //     }
+        //     else
+        //         entity.Stats.Set("miningSpeedMul", "KRPGMSMul", 1f, true);
+        // 
+        //     traitRate = entity.Stats.GetBlended("miningSpeedMul");
+        //     if (EnchantingConfigLoader.Config.Debug == true)
+        //         sApi.Logger.Event("[KRPGEnchantment] Post-equip MiningSpeedMul is {0}.", traitRate);
+        // }
     }
 }

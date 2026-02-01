@@ -103,6 +103,7 @@
   "krpgenchantment:lore-enchantment-shocking": "18. Shocking",
   "krpgenchantment:lore-enchantment-poison": "19. Poison",
   "krpgenchantment:lore-enchantment-reversion": "20. Reversion",
+  "krpgenchantment:lore-enchantment-efficient": "21. Efficient",
 
   "craftinginfo-enchanting-title": "Enchanting",
   "craftinginfo-enchanting-text": "<strong>Enchanting</strong><br> <br>To begin enchanting, you will need an <a href=\"handbook://block-krpgenchantment:enchanting-table\">Enchanting Table</a> and a <a href=\"handbook://block-krpgenchantment:charging-table\">Charging Table</a>. <br>Once you have your Enchanting Table, you will need to place a number of reagents and a target item for the enchantment. By default, a valid reagent would be a charged gemstone, like emerald, peridot, or diamond. In order to charge a gemstone, you will need to place it in the charging table, surrounded by a number of <a href=\"handbook://item-game:gear-temporal\">Temporal Gears</a> <br><br>By default, the strength of the enchantment is random, based off the Charge value of the reagent. Most enchantments take 1 in-game hour to charge and enchant. <br><br>You can find details on enchantments on the <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",
