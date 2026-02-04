@@ -31,7 +31,8 @@ namespace KRPGLib.Enchantment
             api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
             
             // if (api.Side != EnumAppSide.Server) return;
-            RegisterEnchantmentBehaviors(api);
+            RegisterEnchantmentCollectibleBehaviors(api);
+            RegisterEnchantmentBlockBehaviors(api);
         }
         public override void StartPre(ICoreAPI api)
         {
@@ -103,7 +104,7 @@ namespace KRPGLib.Enchantment
             Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment loaded.");
         }
         
-        private void RegisterEnchantmentBehaviors(ICoreAPI api)
+        private void RegisterEnchantmentCollectibleBehaviors(ICoreAPI api)
         {
             // Setup Enchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)
@@ -118,8 +119,24 @@ namespace KRPGLib.Enchantment
                     }, "InjectGlobalBehaviors");
                 }
             }
-        
-            api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment behaviors loaded.");
+            api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment collectible behaviors loaded.");
+        }
+        private void RegisterEnchantmentBlockBehaviors(ICoreAPI api)
+        {
+            // Setup Enchantment Behaviors on ALL collectibles
+            foreach (Block obj in api.World.Blocks)
+            {
+                if (obj.HasBehavior<EnchantmentBlockBehavior>() != true)
+                {
+                    EnchantmentBlockBehavior eb = new EnchantmentBlockBehavior(obj);
+                    eb.OnLoaded(api);
+                    api.Event.EnqueueMainThreadTask(() =>
+                    {
+                        obj.BlockBehaviors = obj.BlockBehaviors.AddToArray(eb);
+                    }, "InjectGlobalBehaviors");
+                }
+            }
+            api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment block behaviors loaded.");
         }
         private static void DoHarmonyPatch(ICoreAPI api)
         {
