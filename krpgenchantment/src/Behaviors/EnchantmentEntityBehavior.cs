@@ -263,6 +263,14 @@ namespace KRPGLib.Enchantment
             // 1. If Slot is empty, Remove any ticks registered to the slot
             if (hotbarInventory?[slotId]?.Empty == true)
             {
+                // WIP: Trigger UnEquip for any enchantments that were on the old item
+                // if (HotbarEnchantCache[slotId]?.Enchantments != null && HotbarEnchantCache[slotId].ItemId != -1)
+                // {
+                //     // Get the old item from cache if possible, or create dummy parameters
+                //     EnchantModifiers parameters2 = new EnchantModifiers() { { "IsHotbar", true }, { "equip", false } };
+                //     ItemStack dummyStack = new ItemStack();
+                //     bool didEnchants2 = sapi.EnchantAccessor().TryEnchantments(dummyStack, "OnEquip", entity, entity, ref parameters2);
+                // }
                 foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
                 {
                     string eCode = pair.Key;
@@ -274,7 +282,8 @@ namespace KRPGLib.Enchantment
                 }
                 // Update the cache
                 GenerateHotbarEnchantCache(slotId);
-                // Don't trigger OnEquip
+                // Don't trigger OnEquip - YET. Maybe something to toggle held item buffs
+                // entity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
                 return;
             }
 
@@ -305,11 +314,34 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
         }
+        public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
+        {
+            base.DidAttack(source, targetEntity, ref handled);
+        }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (mode != EnumInteractMode.Attack || itemslot.Empty == true || entity?.World.Side != EnumAppSide.Server)
-                return;
-
+            if (!(Api is ICoreServerAPI sapi)) return;
+            // Temporary buffs for holding a tool
+            // int slotId = hotbarInventory.GetSlotId(itemslot);
+            // if ((HotbarEnchantCache[slotId]?.Enchantments?.TryGetValue("efficient", out int power)) == true)
+            // {
+            //     EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "equip", true } };
+            //     bool didEnchants = sapi.EnchantAccessor().TryEnchantments(hotbarInventory[slotId], "OnEquip", entity, entity, ref parameters);
+            //     if (didEnchants == true)
+            //     {
+            //         if (EnchantingConfigLoader.Config?.Debug == true)
+            //             Api.Logger.Event("[KRPGEnchantment] {0} is generating an ActiveEnchantCache for {1}.", entity.GetName(), hotbarInventory[slotId].Itemstack?.GetName());
+            //     }
+            // }
+            // else
+            // {
+            //     entity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
+            //     entity.Stats.Remove("miningSpeedMul", "krpgEfficientMul");
+            // }
+            // OnAttack triggers
+            if (mode != EnumInteractMode.Attack || itemslot.Empty == true) return;
+            // TODO: Update for ActiveEnchantCache
+            //
             // Get Enchantments
             handled = EnumHandling.Handled;
             Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
@@ -317,9 +349,8 @@ namespace KRPGLib.Enchantment
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     byEntity.Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
-
-                ICoreServerAPI sapi = Api as ICoreServerAPI;
-                // Translate Handling through Int value in Enchantments.
+                
+                // Translate Handling through Int32 value in Enchantments.
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
                 EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
@@ -390,7 +421,37 @@ namespace KRPGLib.Enchantment
                     dmg = parameters.GetFloat("damage");
             }
         }
+        public override void OnReceivedServerPacket(int packetid, byte[] data, ref EnumHandling handled)
+        {
+            switch(packetid)
+            {
+                case 1616: {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Received Server packet 1616. Attempting to Particle");
+                    ParticlePacket packet = SerializerUtil.Deserialize<ParticlePacket>(data);
+                    float amount = packet.Amount;
+                    EnumDamageType type = packet.DamageType;
+                    GenerateParticles(type, amount);
+                    break;
+                }
+                case 1617: {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Received Server packet 1617. Attempting to ");
+                    
+                    // Saving this for later future endeavors
+                    // 
+                    // EnchantPacket packet = SerializerUtil.Deserialize<EnchantPacket>(data);
+                    // string eCode = packet.Code;
+                    // int ePower = packet.Power;
 
+                    break;
+                }
+            }
+        }
+        public override void OnReceivedClientPacket(IServerPlayer player, int packetid, byte[] data, ref EnumHandling handled)
+        {
+            base.OnReceivedClientPacket(player, packetid, data, ref handled);
+        }
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;
         private long lastTickMs = 0;
@@ -398,6 +459,25 @@ namespace KRPGLib.Enchantment
         {
             // 0. Safety check
             if (!(Api is ICoreServerAPI sapi)) return;
+            // 0.1 Temporary fix for testing MiningSpeed buffs
+            // if (IsPlayer == true)
+            // {
+            //     int slID = player.InventoryManager.ActiveHotbarSlotNumber;
+            //     
+            //     if (HotbarEnchantCache[slID]?.Enchantments?.TryGetValue("efficient", out int power) == true)
+            //     {
+            //         IEnchantment ench = sapi.EnchantAccessor().GetEnchantment("efficient");
+            //         if (ench?.Modifiers== null) return;
+            //         float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
+            //         float mSpeed = power * eMul;
+            //         entity.Stats.Set("miningSpeedMul", "krpgEfficientMul", mSpeed, true);
+            //     }
+            //     else
+            //     {
+            //         entity.Stats.Remove("miningSpeedMul", "krpgEfficientMul");
+            //     }
+            // }
+            // 0.2 Verify the TickRegistry
             if (TickRegistry?.Count <= 0) return;
             // if (dt < TickTime) return;
             long curTime = sapi.World.ElapsedMilliseconds;
@@ -483,18 +563,6 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Particles
-        public override void OnReceivedServerPacket(int packetid, byte[] data, ref EnumHandling handled)
-        {
-            if (packetid == 1616)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Received Server packet 1616. Attempting to Particle");
-                ParticlePacket packet = SerializerUtil.Deserialize<ParticlePacket>(data);
-                float amount = packet.Amount;
-                EnumDamageType type = packet.DamageType;
-                GenerateParticles(type, amount);
-            }
-        }
         public void GenerateParticles(EnumDamageType damageType, float damage)
         {
             if (!(Api is ICoreClientAPI api)) return;

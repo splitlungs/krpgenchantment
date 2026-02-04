@@ -32,37 +32,13 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 20;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
-                "Chisel", "Cleaver", "Hammer", "Hoe", "Meter", "Pickaxe", "Probe", "Saw", "Scythe", "Shears", "Shovel", "Sickle", "Wrench",
+                "Cleaver", "Hoe", "Pickaxe", "Probe", "Scythe", "Shears", "Shovel", "Sickle",
                 "Knife", "Axe",
-                "Drill",
+                "Drill"
                 };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.20f } };
             Version = 1.00f;
         }
-        // public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        // {
-        //     // int toolTierPlus = enchant.SourceSlot.Itemstack.Item.ToolTier + enchant.Power;
-        //     // enchant.SourceSlot.Itemstack.Item.GetMiningSpeed
-        //     ICoreServerAPI sApi = Api as ICoreServerAPI;
-        //     EntityPlayer entity = sApi.World.GetEntityById(enchant.CauseEntity.EntityId) as EntityPlayer;
-        //     ItemStack stack = enchant.SourceStack;
-        //     bool doEquip = parameters.GetBool("equip");
-        //     float traitRate = 0f;
-        //     if (doEquip == true)
-        //     {
-        // 
-        //         traitRate = entity.Stats.GetBlended("miningSpeedMul");
-        //         if (EnchantingConfigLoader.Config.Debug == true)
-        //             sApi.Logger.Event("[KRPGEnchantment] Equipping an Efficient enchantment. Pre-equip MiningSpeedMul is {0}.", traitRate);
-        //         entity.Stats.Set("miningSpeedMul", "KRPGMSMul", enchant.Power, true);
-        //         // stack.Item.GetMiningSpeed
-        //     }
-        //     else
-        //         entity.Stats.Set("miningSpeedMul", "KRPGMSMul", 1f, true);
-        // 
-        //     traitRate = entity.Stats.GetBlended("miningSpeedMul");
-        //     if (EnchantingConfigLoader.Config.Debug == true)
-        //         sApi.Logger.Event("[KRPGEnchantment] Post-equip MiningSpeedMul is {0}.", traitRate);
-        // }
+        // There isn't really much to do here. EnchantmentBehavior handles it, as configured by the OnLoaded override.
     }
 }

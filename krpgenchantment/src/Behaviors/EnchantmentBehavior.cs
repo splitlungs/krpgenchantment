@@ -15,9 +15,11 @@ using KRPGLib.Enchantment.API;
 // using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Vintagestory.API.Server;
+using Vintagestory.API.Net;
 using Cairo;
 using static System.Net.Mime.MediaTypeNames;
 using System.Reflection.Metadata;
+using System.IO;
 
 namespace KRPGLib.Enchantment
 {
@@ -31,6 +33,7 @@ namespace KRPGLib.Enchantment
         public Dictionary<string, int> Enchantments = null;
         public bool Enchantable = false;
         public bool IsReagent = false;
+        public float MiningSpeedMul = 1f;
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
         }
@@ -51,13 +54,14 @@ namespace KRPGLib.Enchantment
             sApi = api as ICoreServerAPI;
             if (EnchantingConfigLoader.Config?.ValidReagents.ContainsKey(collObj.Code) == true) 
                 IsReagent = true;
-            
+            // Configure the Efficiency multiplier
+            IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
+            MiningSpeedMul = ench.Modifiers.GetFloat("PowerMultiplier");
         }
-        
         public override void OnDamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount, ref EnumHandling bhHandling)
         {
             if (!(world.Api is ICoreServerAPI api)) return;
-
+            
             bhHandling = EnumHandling.Handled;
             Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants == null) return;
@@ -81,7 +85,6 @@ namespace KRPGLib.Enchantment
                     amount = parameters.GetInt("damage");
                 }
             }
-
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
@@ -106,6 +109,72 @@ namespace KRPGLib.Enchantment
                 dsc.AppendLine(s);
             }
         }
+        // NOTE: We cannot apply the mining speed buff from the EnchantmentBehavior, because it's generally Client-side only
+        // Think of this Behavior as a view that can be configured once at Initialize, I guess
+        // It would be really nice if the overrides worked like you'd think, but so it is
+        /*
+        public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handHandling, ref EnumHandling handling)
+        {
+            if (!(Api is ICoreServerAPI sApi)) return;
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
+            if (enchants?.TryGetValue("efficient", out int power) == true)
+            {
+                // IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
+                // float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
+                float mSpeed = power * 10;
+                handling = EnumHandling.Handled;
+                handHandling = EnumHandHandling.Handled;
+                byEntity.Stats.Set("miningSpeedMul", "enchantEfficientMul", mSpeed, true);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
+            }
+            else
+            {
+                handling = EnumHandling.Handled;
+                byEntity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
+            }
+            base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
+        }
+        public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling, ref EnumHandling handling)
+        {
+            if (!(Api is ICoreServerAPI sApi)) return;
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
+            if (enchants?.TryGetValue("efficient", out int power) == true)
+            {
+                IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
+                float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
+                float mSpeed = power * eMul;
+                handling = EnumHandling.Handled;
+                handHandling = EnumHandHandling.Handled;
+                byEntity.Stats.Set("miningSpeedMul", "enchantEfficientMul", mSpeed, true);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
+            }
+            base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
+        }
+        public override bool OnHeldAttackStep(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            return base.OnHeldAttackStep(secondsPassed, slot, byEntity, blockSelection, entitySel, ref handling);
+        }
+        public override bool OnHeldAttackCancel(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, EnumItemUseCancelReason cancelReason, ref EnumHandling handling)
+        {
+            if (!(Api is ICoreServerAPI sApi)) return base.OnHeldAttackCancel(secondsPassed, slot, byEntity, blockSelection, entitySel, cancelReason, ref handling);
+            handling = EnumHandling.Handled;
+            byEntity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Removed an Efficient MiningSpeedMul.");
+            return base.OnHeldAttackCancel(secondsPassed, slot, byEntity, blockSelection, entitySel, cancelReason, ref handling);
+        }
+        public override void OnHeldAttackStop(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
+        {
+            if (!(Api is ICoreServerAPI sApi)) return;
+            handling = EnumHandling.Handled;
+            byEntity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Removed an Efficient MiningSpeedMul.");
+            base.OnHeldAttackStop(secondsPassed, slot, byEntity, blockSelection, entitySel, ref handling);
+        }
+        */
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
             // Specific use on self for KRPG Wands
@@ -127,40 +196,35 @@ namespace KRPGLib.Enchantment
 
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
         }
+        // public override float OnBlockBreaking(IPlayer player, BlockSelection blockSel, ItemSlot itemslot, float remainingResistance, float dt, int counter, ref EnumHandling handled)
+        // {
+        //     if (!(Api is ICoreServerAPI sApi)) 
+        //         return base.OnBlockBreaking(player, blockSel, itemslot, remainingResistance, dt, counter, ref handled);
+        //     
+        //     Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(itemslot?.Itemstack);
+        //     if (enchants?.TryGetValue("efficient", out int power) == true)
+        //     {
+        //         IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
+        //         float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
+        //         float mSpeed = power * eMul;
+        //         handled = EnumHandling.Handled;
+        //         if (EnchantingConfigLoader.Config?.Debug == true)
+        //             Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
+        //         return base.OnBlockBreaking(player, blockSel, itemslot, remainingResistance, dt * mSpeed, counter, ref handled);
+        //     }
+        //     return base.OnBlockBreaking(player, blockSel, itemslot, remainingResistance, dt, counter, ref handled);
+        // }
         public override float OnGetMiningSpeed(IItemStack itemstack, BlockSelection blockSel, Block block, IPlayer forPlayer, ref EnumHandling bhHandling)
         {
-            // if (!(Api is ICoreServerAPI sApi)) return base.OnGetMiningSpeed(itemstack, blockSel, block, forPlayer, ref bhHandling);
-            // forPlayer.Entity.Stats.Set("miningSpeedMul", "KRPGMSMul", 1f, true);
             Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments((ItemStack)itemstack);
             if (enchants?.TryGetValue("efficient", out int power) == true)
             {
-                // if (EnchantingConfigLoader.Config?.Debug == true)
-                //     sApi.Logger.Event("[KRPGEnchantment] Applying an Efficient enchantment. Pre MiningSpeedMul is {0}.", mSpeed);
-                // IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
-                // if (ench?.Modifiers == null) return base.OnGetMiningSpeed(itemstack, blockSel, block, forPlayer, ref bhHandling);
-                // Material based configuration
-                // float traitRate = 1f;
-                // EnumBlockMaterial material = block.GetBlockMaterial(sApi.World.BlockAccessor, blockSel.Position);
-                // if (material == EnumBlockMaterial.Ore || material == EnumBlockMaterial.Stone)
-                // {
-                //     traitRate = forPlayer.Entity.Stats.GetBlended("miningSpeedMul");
-                // }
-                // float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
-                float mSpeed = power + 1;
+                float mSpeed = power * MiningSpeedMul;
                 bhHandling = EnumHandling.Handled;
-                // Dictionary<EnumBlockMaterial, float> miningSpeed = itemstack.Collectible.MiningSpeed;
-                // foreach (KeyValuePair<EnumBlockMaterial, float> pair in miningSpeed)
-                // {
-                //     itemstack.Item.MiningSpeed[pair.Key] = pair.Value * mSpeed;
-                // }
-                // bhHandling = EnumHandling.PreventDefault;
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
-                
-                // forPlayer.Entity.Stats.Set("miningSpeedMul", "KRPGMSMul", mSpeed, false);
-                return mSpeed;
+                return mSpeed + base.OnGetMiningSpeed(itemstack, blockSel, block, forPlayer, ref bhHandling);
             }
-        
             return base.OnGetMiningSpeed(itemstack, blockSel, block, forPlayer, ref bhHandling);
         }
         #region Retired

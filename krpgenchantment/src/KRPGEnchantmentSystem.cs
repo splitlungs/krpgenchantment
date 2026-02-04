@@ -18,7 +18,7 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreClientAPI cApi;
         public ICoreServerAPI sApi;
-        public IWorldAccessor world;
+        // public IWorldAccessor world;
         /// <summary>
         /// Primary API for all Enchantment tasks
         /// </summary>
@@ -26,7 +26,6 @@ namespace KRPGLib.Enchantment
         private static Harmony harmony;
         private COSystem combatOverhaul;
         private KRPGWandsSystem krpgWands;
-
         public override void AssetsFinalize(ICoreAPI api)
         {
             api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
@@ -59,7 +58,6 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.sApi = api;
             RegisterCompatibility();
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
-            
         }
         /// <summary>
         /// Instantiate compatibility scripts.
@@ -110,10 +108,6 @@ namespace KRPGLib.Enchantment
             // Setup Enchantment Behaviors on ALL collectibles
             foreach (CollectibleObject obj in api.World.Collectibles)
             {
-                // We have to skip ingots because it breaks their AlloyFor in the Handbook for some reason.
-                // Likely VS is caching an index at load or something
-                // if (obj.Code.Path.Contains("ingot") || obj.HasBehavior<EnchantmentBehavior>()) continue;
-
                 if (obj.HasBehavior<EnchantmentBehavior>() != true)
                 {
                     EnchantmentBehavior eb = new EnchantmentBehavior(obj);

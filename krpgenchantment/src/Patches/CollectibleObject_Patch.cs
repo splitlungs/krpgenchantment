@@ -18,29 +18,10 @@ using System.Reflection;
 
 namespace KRPGLib.Enchantment
 {
-    [HarmonyPatch(typeof(CollectibleObject))]
+    /*
+    [HarmonyPatch]
     public class CollectibleObject_Patch
     {
-        // [HarmonyPostfix]
-        // [HarmonyPatch("GetMiningSpeed")]
-        // public static void Postfix(ref float __result, IItemStack itemstack, ICoreAPI ___api)
-        // {
-        //     if (!(___api is ICoreServerAPI sApi)) return;
-        //     
-        //     if (EnchantingConfigLoader.Config?.Debug == true)
-        //         sApi.Logger.Event("[KRPGEnchantment] Applying an Efficient enchantment. Pre MiningSpeedMul is {0}.", __result);
-        //     Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments((ItemStack)itemstack);
-        //     if (enchants?.TryGetValue("efficient", out int power) == true)
-        //     {
-        //         KRPGLib.Enchantment.API.IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
-        //         if (ench?.Modifiers == null) return;
-        //         float eMul = ench.Modifiers.GetFloat("PowerMultiplier");
-        //         float mSpeed = eMul * power;
-        //         __result += mSpeed;
-        //     }
-        //     if (EnchantingConfigLoader.Config?.Debug == true)
-        //         sApi.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", __result);
-        // }
         // OBSOLETE - Now triggered through "EnchantmentEntityBehavior.OnEntityReceiveDamage" override
         // [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
         // public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
@@ -71,4 +52,5 @@ namespace KRPGLib.Enchantment
         //     return true;
         // }
     }
+    */
 }
