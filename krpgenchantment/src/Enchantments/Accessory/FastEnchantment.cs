@@ -28,10 +28,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 22;
             MaxTier = 5;
             ValidToolTypes = new List<string> {
-                "Arm", "Emblem", "Neck", "Waist",
-                "Armor-Legs",
-                "ArmorLegs",
-                "vanillaarmory:Forlorn-Legs"
+                "Arm", "Emblem", "Neck", "Waist"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
             Version = 1.00f;
