@@ -39,6 +39,6 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.20f } };
             Version = 1.00f;
         }
-        // There isn't really much to do here. EnchantmentBehavior handles it, as configured by the OnLoaded override.
+        // There isn't really much to do here. EnchantmentBehavior.GetMiningSpeed() override handles it, as configured by the OnLoaded override.
     }
 }

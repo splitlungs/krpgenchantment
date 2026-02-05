@@ -530,11 +530,20 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
-        /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
+        /// Called by the Enchantment Entity behavior when an entity adds an enchanted item to an equip slot.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         public virtual void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity removes an enchanted item from an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
 
         }

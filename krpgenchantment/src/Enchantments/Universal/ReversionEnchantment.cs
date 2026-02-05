@@ -79,12 +79,6 @@ namespace KRPGLib.Enchantment
                     // { LastTickTime = 0, Source = enchant, TicksRemaining = 0, Persistent = true, IsHotbar = parameters.GetBool("IsHotbar") };
                     eeb.TickRegistry.Add(codeID, eTick);
                 }
-                // Toggle Off - Failsafe
-                // else
-                // {
-                //     eeb.TickRegistry[codeID].Dispose();
-                //     eeb.TickRegistry.Remove(codeID);
-                // }
             }
             // Toggle Off - If Empty
             else
@@ -92,6 +86,20 @@ namespace KRPGLib.Enchantment
                 eeb.TickRegistry[codeID].Dispose();
             }
         }
+        // TODO: Setup for UnEquip to control the tick dispose
+        //
+        // public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        // {
+        //     // TEMP FOR TESTING
+        //     EnchantmentEntityBehavior eeb = enchant?.CauseEntity?.GetBehavior<EnchantmentEntityBehavior>();
+        //     if (eeb == null) return;
+        //     // Get ID
+        //     string codeID = parameters.GetString("tickID");
+        //     if (EnchantingConfigLoader.Config?.Debug == true)
+        //         Api.Logger.Event("[KRPGEnchantment] CodeID for Reversion Tick is {0}.", codeID);
+        //     if (enchant.SourceSlot.Empty)
+        //         eeb.TickRegistry[codeID].Dispose();
+        // }
         public override void OnTick(ref EnchantTick eTick)
         {
             if (!(Api is ICoreServerAPI api))

@@ -94,6 +94,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity removes an enchanted item from an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
         /// Called by an ItemStack when a toggle is requested.
         /// </summary>
         /// <param name="enchant"></param>

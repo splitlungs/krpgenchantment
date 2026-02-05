@@ -88,7 +88,7 @@ namespace KRPGLib.Enchantment
             if (byPlayer?.InventoryManager?.ActiveHotbarSlot == null) return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
 
             ItemStack itemstack = byPlayer?.InventoryManager?.ActiveHotbarSlot?.Itemstack;
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(itemstack);
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(itemstack);
             if (enchants?.TryGetValue("fortunate", out int power) == true)
             {
                 float dMul = power * DropsMul;

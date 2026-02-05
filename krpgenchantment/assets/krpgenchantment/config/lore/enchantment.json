@@ -22,6 +22,13 @@
 		"krpgenchantment:lore-enchantment-resistpoison",
 		"krpgenchantment:lore-enchantment-shocking",
 		"krpgenchantment:lore-enchantment-poison",
-		"krpgenchantment:lore-enchantment-reversion"
+		"krpgenchantment:lore-enchantment-reversion",
+		"krpgenchantment:lore-enchantment-efficient",
+  		"krpgenchantment:lore-enchantment-fortunate",
+  		"krpgenchantment:lore-enchantment-fast",
+  		"krpgenchantment:lore-enchantment-falselife",
+  		"krpgenchantment:lore-enchantment-sustaining",
+  		"krpgenchantment:lore-enchantment-accurate",
+  		"krpgenchantment:lore-enchantment-quickdraw"
 	]
 }

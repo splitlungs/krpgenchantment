@@ -81,6 +81,7 @@ namespace KRPGLib.Enchantment
             // Well look what I fuckin found in EntityPlayer. I don't remember any patch notes about this shit
             // entity.Stats.Register("healingeffectivness").Register("maxhealthExtraPoints").Register("walkspeed");
         }
+        #region Setup
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
@@ -98,7 +99,7 @@ namespace KRPGLib.Enchantment
                     if (slot?.Itemstack != null)
                     {
                         // Trigger OnEquip since we just logged in
-                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "equip", true } };
+                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false } };
                         bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
                     }
                     GenerateGearEnchantCache(slotId);
@@ -123,7 +124,7 @@ namespace KRPGLib.Enchantment
                         // Trigger OnEquip since we just logged in
                         bool isOffhand = false;
                         if (slotId == offHandID) isOffhand = true;
-                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffHand", isOffhand }, { "equip", true } };
+                        EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffHand", isOffhand } };
                         bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnEquip", entity, entity, ref parameters);
                     }
                     GenerateHotbarEnchantCache(slotId);
@@ -206,6 +207,7 @@ namespace KRPGLib.Enchantment
             else
                 HotbarEnchantCache.Add(slotId, cache);
         }
+        #endregion
         #region Triggers
         public void OnGearModified(int slotId)
         {
@@ -215,8 +217,34 @@ namespace KRPGLib.Enchantment
             if (gearInventory?[slotId] == null) return;
 
             // 1. If Slot is empty, Remove any ticks registered to the slot
-            if (gearInventory?[slotId]?.Empty == true)
+            if (gearInventory[slotId].Empty == true)
             {
+                // 1.1 Trigger UnEquip
+                // ItemStack dummyStack = new ItemStack();
+                // string enchantString = "";
+                foreach (KeyValuePair<string, int> pair in GearEnchantCache[slotId].Enchantments)
+                {
+                    // dummyStack.Attributes.GetOrAddTreeAttribute("enchantments");
+                    // enchantString += pair.Key + ":" + pair.Value + ";";
+                    EnchantmentSource enchant = new EnchantmentSource()
+                    {
+                        SourceSlot = gearInventory[slotId],
+                        Trigger = "OnUnEquip",
+                        Code = pair.Key,
+                        Power = pair.Value,
+                        SourceEntity = entity,
+                        CauseEntity = entity,
+                        TargetEntity = entity,
+                        DamageTier = pair.Value 
+                    };
+                    EnchantModifiers parameters2 = new EnchantModifiers() { { "IsHotbar", false } };
+                    sapi.EnchantAccessor().TryEnchantment(enchant, ref parameters2);
+                }
+                // dummyStack.Attributes.GetOrAddTreeAttribute("enchantment").SetString("active", enchantString);
+                // EnchantModifiers parameters1 = new EnchantModifiers() {  };
+                // sapi.EnchantAccessor().TryEnchantments(dummyStack, "OnUnEquip", entity, entity, ref parameters1);
+                
+                // 1.2 Cleanup tick registry manually
                 foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
                 {
                     string eCode = pair.Key;
@@ -226,14 +254,13 @@ namespace KRPGLib.Enchantment
                         TickRegistry[pair.Key].Dispose();
                     }
                 }
-                // Update the cache
+                // Update the cache and exit
                 GenerateGearEnchantCache(slotId);
-                // Don't trigger OnEquip
                 return;
             }
 
             // 2. Item is still equipped
-            if (gearInventory?[slotId]?.Itemstack?.Id == GearEnchantCache[slotId]?.ItemId) return;
+            if (gearInventory[slotId].Itemstack.Id == GearEnchantCache[slotId].ItemId) return;
 
             // Armor slots, probably
             // 12.Head 13.Body 14.Legs
@@ -243,7 +270,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Player {0} gear modified slot {1}. Attempting to trigger OnEquip enchantments.", player.PlayerUID, slotId);
             // ItemSlot slot = gearInventory[slotId];
-            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false }, { "equip", true } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false } };
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(gearInventory[slotId], "OnEquip", entity, entity, ref parameters);
             if (didEnchants == true)
             {
@@ -261,15 +288,15 @@ namespace KRPGLib.Enchantment
             if (hotbarInventory?[slotId] == null) return;
 
             // 1. If Slot is empty, Remove any ticks registered to the slot
-            if (hotbarInventory?[slotId]?.Empty == true)
+            if (hotbarInventory[slotId].Empty == true)
             {
                 // WIP: Trigger UnEquip for any enchantments that were on the old item
                 // if (HotbarEnchantCache[slotId]?.Enchantments != null && HotbarEnchantCache[slotId].ItemId != -1)
                 // {
                 //     // Get the old item from cache if possible, or create dummy parameters
-                //     EnchantModifiers parameters2 = new EnchantModifiers() { { "IsHotbar", true }, { "equip", false } };
+                //     EnchantModifiers parameters2 = new EnchantModifiers() { { "IsHotbar", true } };
                 //     ItemStack dummyStack = new ItemStack();
-                //     bool didEnchants2 = sapi.EnchantAccessor().TryEnchantments(dummyStack, "OnEquip", entity, entity, ref parameters2);
+                //     bool didEnchants2 = sapi.EnchantAccessor().TryEnchantments(dummyStack, "OnUnEquip", entity, entity, ref parameters2);
                 // }
                 foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
                 {
@@ -280,15 +307,13 @@ namespace KRPGLib.Enchantment
                         TickRegistry[pair.Key].Dispose();
                     }
                 }
-                // Update the cache
+                // Update the cache and exit
                 GenerateHotbarEnchantCache(slotId);
-                // Don't trigger OnEquip - YET. Maybe something to toggle held item buffs
-                // entity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
                 return;
             }
 
             // 2. Item is still equipped
-            if (hotbarInventory?[slotId]?.Itemstack?.Id == HotbarEnchantCache[slotId]?.ItemId) return;
+            if (hotbarInventory[slotId]?.Itemstack.Id == HotbarEnchantCache[slotId].ItemId) return;
 
             // 11. Offhand, probably
             // int activeSlot = player.InventoryManager.ActiveHotbarSlotNumber;
@@ -314,6 +339,36 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
         }
+        /// <summary>
+        /// Attempt to register a formated EnchantTick into this entity's TickRegistry.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="tickDuration"></param>
+        /// <param name="persistent"></param>
+        /// <param name="isHotbar"></param>
+        /// <param name="isOffhand"></param>
+        public void RegisterEnchantTick(EnchantmentSource enchant, long tickDuration, bool persistent, bool isHotbar, bool isOffhand)
+        {
+            // Get ID's
+            int stackID = enchant.SourceStack.Id;
+            int slotID = enchant.SourceSlot.Inventory.GetSlotId(enchant.SourceSlot);
+            string codeID = enchant.Code + ":" + slotID + ":" + stackID;
+            // Toggle On
+            if (!TickRegistry.ContainsKey(codeID))
+            {
+                EnchantTick eTick = enchant.ToEnchantTick();
+                eTick.SlotID = slotID;
+                eTick.Persistent = persistent;
+                eTick.IsHotbar = isHotbar;
+                eTick.IsOffhand = isOffhand;
+                eTick.TickDuration = tickDuration;
+                TickRegistry.Add(codeID, eTick);
+            }
+        }
+        public void RemoveEnchantTick()
+        {
+            
+        }
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
             base.DidAttack(source, targetEntity, ref handled);
@@ -321,23 +376,6 @@ namespace KRPGLib.Enchantment
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
-            // Temporary buffs for holding a tool
-            // int slotId = hotbarInventory.GetSlotId(itemslot);
-            // if ((HotbarEnchantCache[slotId]?.Enchantments?.TryGetValue("efficient", out int power)) == true)
-            // {
-            //     EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "equip", true } };
-            //     bool didEnchants = sapi.EnchantAccessor().TryEnchantments(hotbarInventory[slotId], "OnEquip", entity, entity, ref parameters);
-            //     if (didEnchants == true)
-            //     {
-            //         if (EnchantingConfigLoader.Config?.Debug == true)
-            //             Api.Logger.Event("[KRPGEnchantment] {0} is generating an ActiveEnchantCache for {1}.", entity.GetName(), hotbarInventory[slotId].Itemstack?.GetName());
-            //     }
-            // }
-            // else
-            // {
-            //     entity.Stats.Remove("miningSpeedMul", "enchantEfficientMul");
-            //     entity.Stats.Remove("miningSpeedMul", "krpgEfficientMul");
-            // }
             // OnAttack triggers
             if (mode != EnumInteractMode.Attack || itemslot.Empty == true) return;
             // TODO: Update for ActiveEnchantCache
