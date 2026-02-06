@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class SustainingEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Provides hunger rate modifiers the entity who triggers OnEquip.
+        /// </summary>
+        /// <param name="api"></param>
         public SustainingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

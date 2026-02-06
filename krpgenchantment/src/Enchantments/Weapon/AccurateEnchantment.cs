@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class AccurateEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Provides ranged weapon accuracy modifiers the entity who triggers OnEquip.
+        /// </summary>
+        /// <param name="api"></param>
         public AccurateEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

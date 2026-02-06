@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class FastEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Provides walk speed modifiers the entity who triggers OnEquip.
+        /// </summary>
+        /// <param name="api"></param>
         public FastEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

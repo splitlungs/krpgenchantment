@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class QuickDrawEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Provides ranged weapon draw speed modifiers the entity who triggers OnEquip.
+        /// </summary>
+        /// <param name="api"></param>
         public QuickDrawEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config

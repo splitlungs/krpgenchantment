@@ -18,6 +18,10 @@ namespace KRPGLib.Enchantment
     public class FalseLifeEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        /// <summary>
+        /// Provides max life modifiers the entity who triggers OnEquip.
+        /// </summary>
+        /// <param name="api"></param>
         public FalseLifeEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
