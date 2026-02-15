@@ -111,7 +111,7 @@ namespace KRPGLib.Enchantment
         }
         void RemoveAllMultipliers(Entity entity)
         {
-            entity.Stats.Remove("hungerrate", "krpge" + Code);
+            entity.Stats.Remove("walkspeed", "krpge" + Code);
         }
     }
 }
