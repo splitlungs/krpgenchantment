@@ -93,6 +93,7 @@ namespace KRPGLib.Enchantment
             {
                 if (slot.Empty) continue;
                 Dictionary<string, int> enc = Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack);
+                if (enc == null) continue;
                 if (enc.TryGetValue(Code, out int p) == false) continue;
                 powers.Add(p);
             }

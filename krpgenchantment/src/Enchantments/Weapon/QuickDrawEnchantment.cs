@@ -45,28 +45,37 @@ namespace KRPGLib.Enchantment
             bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
             EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
-            if (eeb == null) return;
-            if (IsHotbar == true)
+            if (IsHotbar == false || eeb == null) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
+            // Write to entity
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
             {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
-                string slotID = eeb.gearInventory.GetSlotId(enchant.SourceSlot).ToString();
-                entity.Stats.Set("rangedWeaponsSpeed", "krpgRangedSpeed" + slotID, enchant.Power * PowerMultiplier, true);
+                entity.Stats.Set("bowsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                entity.Stats.Set("crossbowsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                entity.Stats.Set("firearmsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
             }
+            else
+                entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, enchant.Power * PowerMultiplier, true);
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
             EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
-            if (eeb == null) return;
-            if (IsHotbar == true)
-            {
-                if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
-                string slotID = eeb.gearInventory.GetSlotId(enchant.SourceSlot).ToString();
-                entity.Stats.Remove("rangedWeaponsSpeed", "krpgRangedSpeed" + slotID);
-            }
+            if (IsHotbar == false || eeb == null) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
+            // Write to entity
+            RemoveAllMultipliers(entity);
+        }
+        void RemoveAllMultipliers(Entity entity)
+        {
+            // Remove all, just in case someone is hot swapping CO between triggers
+            entity.Stats.Remove("bowsProficiency", "krpge" + Code);
+            entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
+            entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
+            entity.Stats.Remove("rangedWeaponsSpeed", "krpge" + Code);
         }
     }
 }

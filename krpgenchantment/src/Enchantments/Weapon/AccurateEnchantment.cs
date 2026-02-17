@@ -48,8 +48,11 @@ namespace KRPGLib.Enchantment
             if (IsHotbar == false || eeb == null) return;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
-            string slotID = eeb.hotbarInventory.GetSlotId(enchant.SourceSlot).ToString();
-            entity.Stats.Set("rangedWeaponsAcc", "krpgRangedAcc" + slotID, enchant.Power * PowerMultiplier, true);
+            // Write to entity
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
+                entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+            else
+                entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, enchant.Power * PowerMultiplier, true);
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -59,12 +62,14 @@ namespace KRPGLib.Enchantment
             if (IsHotbar == false || eeb == null) return;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
-            string slotID = eeb.hotbarInventory.GetSlotId(enchant.SourceSlot).ToString();
-            entity.Stats.Remove("rangedWeaponsAcc", "krpge" + Code);
+            // Write to entity
+            RemoveAllMultipliers(entity);
         }
         void RemoveAllMultipliers(Entity entity)
         {
-            entity.Stats.Remove("hungerrate", "krpge" + Code);
+            // Remove both, just in case someone is hot swapping CO between triggers
+            entity.Stats.Remove("rangedWeaponsAcc", "krpge" + Code);
+            entity.Stats.Remove("steadyAim", "krpge" + Code);
         }
     }
 }

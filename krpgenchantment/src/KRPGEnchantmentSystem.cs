@@ -18,14 +18,10 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreClientAPI cApi;
         public ICoreServerAPI sApi;
-        // public IWorldAccessor world;
-        /// <summary>
-        /// Primary API for all Enchantment tasks
-        /// </summary>
         public EnchantmentAccessor EnchantAccessor { get; private set; }
+        public COSystem combatOverhaul { get; private set; }
+        public KRPGWandsSystem krpgWands { get; private set; }
         private static Harmony harmony;
-        private COSystem combatOverhaul;
-        private KRPGWandsSystem krpgWands;
         public override void AssetsFinalize(ICoreAPI api)
         {
             api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
