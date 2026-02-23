@@ -50,7 +50,7 @@ namespace KRPGLib.Enchantment
                 return;
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
+                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Limit per config
             List<int> powers = GetTotalPowers(entity);
             if (powers == null) return;

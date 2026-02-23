@@ -12,6 +12,7 @@ using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
 using Vintagestory.API.Util;
 using Vintagestory.API.Config;
+using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment
 {
@@ -27,7 +28,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "quickdraw";
-            Category = "Universal";
+            Category = "Enhancement";
             LoreCode = "enchantment-quickdraw";
             LoreChapterID = 26;
             MaxTier = 5;
@@ -40,6 +41,18 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
             Version = 1.00f;
         }
+        public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        {
+            bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
+            if (didEnch == true)
+            {
+                ITreeAttribute tree =  inStack.Attributes.GetTreeAttribute("statModifier");
+                tree.SetFloat("bowsProficiency", enchantPower * PowerMultiplier);
+                return true;
+            }
+            else
+                return false;
+        }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             bool IsHotbar = parameters.GetBool("IsHotbar");
@@ -47,7 +60,11 @@ namespace KRPGLib.Enchantment
             EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
             if (IsHotbar == false || eeb == null) return;
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
+            {
+                // float f = enchant.SourceStack.Collectible.Attributes?["statModifier"]["rangedWeaponsSpeed"].AsFloat() ?? 0f;
+                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
+
+            }
             // Write to entity
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
             {
@@ -56,7 +73,10 @@ namespace KRPGLib.Enchantment
                 entity.Stats.Set("firearmsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
             }
             else
-                entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+            {
+                // entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                // enchant.SourceStack.Attributes.GetTreeAttribute("statModifier").SetFloat("rangedWeaponsSpeed", enchant.Power * PowerMultiplier);
+            }
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

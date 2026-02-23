@@ -83,6 +83,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity dies.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnDeath(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
         /// </summary>
         /// <param name="eTick"></param>

@@ -504,15 +504,6 @@ namespace KRPGLib.Enchantment
         
         }
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
-        /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
-        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        {
-        
-        }
-        /// <summary>
         /// Triggered when an entity wearing an enchanted item has already received damage.
         /// </summary>
         /// <param name="enchant"></param>
@@ -522,12 +513,13 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
-        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// Called by the Enchantment Entity behavior when an entity dies.
         /// </summary>
-        /// <param name="eTick"></param>
-        public virtual void OnTick(ref EnchantTick eTick)
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnDeath(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-
+            
         }
         /// <summary>
         /// Called by the Enchantment Entity behavior when an entity adds an enchanted item to an equip slot.
@@ -548,6 +540,23 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// </summary>
+        /// <param name="eTick"></param>
+        public virtual void OnTick(ref EnchantTick eTick)
+        {
+
+        }
+        /// <summary>
         /// Called by an ItemStack when a toggle is requested.
         /// </summary>
         /// <param name="enchant"></param>
@@ -556,303 +565,5 @@ namespace KRPGLib.Enchantment
         {
 
         }
-
-        // Obsolete particles
-        /*
-        protected AdvancedParticleProperties[] ParticleProps;
-        protected static AdvancedParticleProperties[] PoisonParticleProps;
-        protected bool resetLightHsv;
-        */
-        /*
-        public virtual void ConfigParticles()
-        {
-            ParticleProps = new AdvancedParticleProperties[3];
-            ParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            PoisonParticleProps = new AdvancedParticleProperties[3];
-            PoisonParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            PoisonParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            PoisonParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-        }
-        */
-        /*
-        public virtual void GenerateParticles(ICoreClientAPI api, Entity entity, EnumDamageType damageType, float damage)
-        {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
-
-            int power = (int)MathF.Ceiling(damage);
-            int r = api.World.Rand.Next(ParticleProps.Length + 1);
-
-            if (damageType == EnumDamageType.Fire)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Frost)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Electricity)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Heal)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Injury)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Poison)
-            {
-                int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-        }
-        */
     }
 }

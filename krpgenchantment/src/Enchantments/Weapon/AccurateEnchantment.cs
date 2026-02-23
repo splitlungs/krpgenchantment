@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "accurate";
-            Category = "Universal";
+            Category = "Enhancement";
             LoreCode = "enchantment-accurate";
             LoreChapterID = 25;
             MaxTier = 5;
@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
             EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
             if (IsHotbar == false || eeb == null) return;
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {1}.", Code, enchant.Power, entity.EntityId);
+                Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Write to entity
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
                 entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);

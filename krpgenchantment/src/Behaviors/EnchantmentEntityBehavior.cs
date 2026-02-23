@@ -141,9 +141,40 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
+            // All entities
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            {
+                if (pair.Value.Persistent) continue;
+                pair.Value.IsTrash = true;
+            }
+            // Only players wear/hold items (so far)
+            if (IsPlayer)
+            {
+                foreach (KeyValuePair<int, ActiveEnchantCache> pair in GearEnchantCache)
+                {
+                    EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", false }, { "IsOffhand", false } };
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key], "OnDeath", damageSourceForDeath.CauseEntity, entity, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        sapi.Logger.Event("[KRPGEnchantment] {0} succesfully triggered OnDeath for {1}.", entity.GetName(), gearInventory[pair.Key].Itemstack?.GetName());
+                }
+                if (player.InventoryManager.ActiveHotbarSlot?.Itemstack != null)
+                {
+                    EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffhand", false } };
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(player.InventoryManager.ActiveHotbarSlot, "OnDeath", damageSourceForDeath.CauseEntity, entity, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        sapi.Logger.Event("[KRPGEnchantment] {0} succesfully triggered OnDeath  for {1}.", entity.GetName(), player.InventoryManager.ActiveHotbarSlot.Itemstack?.GetName());
+                }
+                // Only process off hand if not two-handed main hand
+                if (!(player.InventoryManager.OffhandHotbarSlot?.Itemstack?.Id == player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Id))
+                {
+                    EnchantModifiers parameters = new EnchantModifiers() { { "IsHotbar", true }, { "IsOffhand", true } };
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(player.InventoryManager.OffhandHotbarSlot, "OnDeath", damageSourceForDeath.CauseEntity, entity, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        sapi.Logger.Event("[KRPGEnchantment] {0} succesfully triggered OnDeath for {1}.", entity.GetName(), player.InventoryManager.ActiveHotbarSlot.Itemstack?.GetName());
+                }
+            }
             base.OnEntityDeath(damageSourceForDeath);
-            // TODO: Make a way to check if the ticks should be cleared on death or not.
-            // TickRegistry?.Clear();
         }
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
