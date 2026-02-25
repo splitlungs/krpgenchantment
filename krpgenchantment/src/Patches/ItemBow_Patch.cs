@@ -24,7 +24,7 @@ namespace KRPGLib.Enchantment
         public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
             if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
-            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null) return;
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().combatOverhaul != null) return;
             if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
             byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack);
             byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.Api.World.ElapsedMilliseconds);

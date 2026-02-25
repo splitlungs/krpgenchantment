@@ -16,8 +16,8 @@ namespace KRPGLib.Enchantment
     {
         // Trigger OnAttack for non-entities. It's pretty greasey right now, triggering on itself.
         // TODO: Make proper BlockEntity or BlockPos triggers
-        [HarmonyPostfix]
         [HarmonyPatch(typeof(EntityProjectile), "TryAttackEntity")]
+        [HarmonyPostfix]
         public void TryAttackEntity_Postfix(EntityProjectile __instance, double impactSpeed, ref bool __result)
         {
             if (!(__instance.Api is ICoreServerAPI sapi)) return; 
@@ -47,8 +47,8 @@ namespace KRPGLib.Enchantment
             }
         }
         // Remove damage from Healing enchanted projectile
-        [HarmonyPrefix]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
+        [HarmonyPrefix]
         public static bool impactOnEntity_Prefix(EntityProjectile __instance, Entity entity)
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return true;
@@ -79,8 +79,8 @@ namespace KRPGLib.Enchantment
             return true;
         }
         // Trigger "OnAttack" enchants when an entity has been hit
-        [HarmonyPostfix]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
+        [HarmonyPostfix]
         public static void impactOnEntity_Postfix(EntityProjectile __instance, Entity entity)
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return;

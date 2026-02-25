@@ -18,9 +18,9 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreClientAPI cApi;
         public ICoreServerAPI sApi;
-        public EnchantmentAccessor EnchantAccessor { get; private set; }
-        public COSystem combatOverhaul { get; private set; }
-        public KRPGWandsSystem krpgWands { get; private set; }
+        public EnchantmentAccessor EnchantAccessor { get; private set; } = null;
+        public COSystem combatOverhaul { get; private set; } = null;
+        public KRPGWandsSystem krpgWands { get; private set; } = null;
         private static Harmony harmony;
         public override void AssetsFinalize(ICoreAPI api)
         {
@@ -142,7 +142,7 @@ namespace KRPGLib.Enchantment
                 try
                 {
                     // Special bypass for OnHeldAttack/InteractCancel/Stop or if I find another large chunk of base skippers
-                    PatchOnlyOverrides();
+                    // PatchOnlyOverrides();
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
                     
                     Console.WriteLine("[KRPGEnchantment] KRPG Enchantment Harmony patches applied successfully.");
@@ -156,56 +156,51 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Can you believe a computer fried this rice? I'm surprised it worked, honestly.
         /// Specifically patches override methods so as to avoid accidental base calls
+        /// Edit: Turns out it wasn't working somehow and preventing other patches from working. Fucking hell
         /// </summary>
-        private static void PatchOnlyOverrides()
-        {
-            var baseType = typeof(CollectibleObject);
-
-            var parameterTypes = new Type[]
-            {
-                typeof(float),
-                typeof(ItemSlot),
-                typeof(EntityAgent),
-                typeof(BlockSelection),
-                typeof(EntitySelection)
-            };
-
-            var postfixMethod = AccessTools.Method(
-                typeof(CollectibleObject_Patch),
-                nameof(CollectibleObject_Patch.OnHeldInteractStop_Postfix)
-            );
-
-            var postfix = new HarmonyMethod(postfixMethod);
-
-            foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
-                         .SelectMany(a => SafeGetTypes(a))
-                         .Where(t =>
-                             t != null &&
-                             !t.IsAbstract &&
-                             t != baseType &&
-                             baseType.IsAssignableFrom(t)))
-            {
-                var method = AccessTools.DeclaredMethod(
-                    type,
-                    "OnHeldInteractStop",
-                    parameterTypes
-                );
-
-                if (method == null)
-                    continue;
-
-                // Only patch true overrides (not inherited base)
-                if (method.GetBaseDefinition().DeclaringType == baseType)
-                {
-                    harmony.Patch(method, postfix: postfix);
-                }
-            }
-        }
-        private static Type[] SafeGetTypes(Assembly assembly)
-        {
-            try { return assembly.GetTypes(); }
-            catch { return Array.Empty<Type>(); }
-        }
+        // private static void PatchOnlyOverrides()
+        // {
+        //     var baseType = typeof(CollectibleObject);
+        //     var parameterTypes = new Type[]
+        //     {
+        //         typeof(float),
+        //         typeof(ItemSlot),
+        //         typeof(EntityAgent),
+        //         typeof(BlockSelection),
+        //         typeof(EntitySelection)
+        //     };
+        //     var postfixMethod = AccessTools.Method(
+        //         typeof(CollectibleObject_Patch),
+        //         nameof(CollectibleObject_Patch.OnHeldInteractStop_Postfix)
+        //     );
+        //     var postfix = new HarmonyMethod(postfixMethod);
+        //     foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
+        //                  .SelectMany(a => SafeGetTypes(a))
+        //                  .Where(t =>
+        //                      t != null &&
+        //                      !t.IsAbstract &&
+        //                      t != baseType &&
+        //                      baseType.IsAssignableFrom(t)))
+        //     {
+        //         var method = AccessTools.DeclaredMethod(
+        //             type,
+        //             "OnHeldInteractStop",
+        //             parameterTypes
+        //         );
+        //         if (method == null)
+        //             continue;
+        //         // Only patch true overrides (not inherited base)
+        //         if (method.GetBaseDefinition().DeclaringType == baseType)
+        //         {
+        //             harmony.Patch(method, postfix: postfix);
+        //         }
+        //     }
+        // }
+        // private static Type[] SafeGetTypes(Assembly assembly)
+        // {
+        //     try { return assembly.GetTypes(); }
+        //     catch { return Array.Empty<Type>(); }
+        // }
         public override void Dispose()
         {
             harmony?.UnpatchAll("KRPGEnchantmentPatch");

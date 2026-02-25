@@ -17,7 +17,6 @@ using System.Runtime.CompilerServices;
 
 namespace KRPGLib.Enchantment
 {
-    /*
     [HarmonyPatch]
     public class ItemSpear_Patch
     {
@@ -30,5 +29,4 @@ namespace KRPGLib.Enchantment
             bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
         }
     }
-    */
 }
