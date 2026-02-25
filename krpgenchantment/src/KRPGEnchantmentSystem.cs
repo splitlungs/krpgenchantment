@@ -82,7 +82,7 @@ namespace KRPGLib.Enchantment
             if (eb != null)
                 eb.RegisterPlayer(byPlayer);
             else
-                sApi.Logger.Warning("[KRPGEnchantment] No EnchantmentEntityBehavior found on Player {0} during Registration.", byPlayer.PlayerUID);
+                sApi.Logger.Error("[KRPGEnchantment] No EnchantmentEntityBehavior found on Player {0} during Registration.", byPlayer.PlayerUID);
         }
         public override void Start(ICoreAPI api)
         {
@@ -141,7 +141,10 @@ namespace KRPGLib.Enchantment
                 KRPGEnchantmentSystem.harmony = new Harmony("KRPGEnchantmentPatch");
                 try
                 {
+                    // Special bypass for OnHeldAttack/InteractCancel/Stop or if I find another large chunk of base skippers
+                    PatchOnlyOverrides();
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
+                    
                     Console.WriteLine("[KRPGEnchantment] KRPG Enchantment Harmony patches applied successfully.");
                 }
                 catch (Exception ex)
@@ -149,6 +152,59 @@ namespace KRPGLib.Enchantment
                     Console.WriteLine($"Exception during patching: {ex}");
                 }
             }
+        }
+        /// <summary>
+        /// Can you believe a computer fried this rice? I'm surprised it worked, honestly.
+        /// Specifically patches override methods so as to avoid accidental base calls
+        /// </summary>
+        private static void PatchOnlyOverrides()
+        {
+            var baseType = typeof(CollectibleObject);
+
+            var parameterTypes = new Type[]
+            {
+                typeof(float),
+                typeof(ItemSlot),
+                typeof(EntityAgent),
+                typeof(BlockSelection),
+                typeof(EntitySelection)
+            };
+
+            var postfixMethod = AccessTools.Method(
+                typeof(CollectibleObject_Patch),
+                nameof(CollectibleObject_Patch.OnHeldInteractStop_Postfix)
+            );
+
+            var postfix = new HarmonyMethod(postfixMethod);
+
+            foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
+                         .SelectMany(a => SafeGetTypes(a))
+                         .Where(t =>
+                             t != null &&
+                             !t.IsAbstract &&
+                             t != baseType &&
+                             baseType.IsAssignableFrom(t)))
+            {
+                var method = AccessTools.DeclaredMethod(
+                    type,
+                    "OnHeldInteractStop",
+                    parameterTypes
+                );
+
+                if (method == null)
+                    continue;
+
+                // Only patch true overrides (not inherited base)
+                if (method.GetBaseDefinition().DeclaringType == baseType)
+                {
+                    harmony.Patch(method, postfix: postfix);
+                }
+            }
+        }
+        private static Type[] SafeGetTypes(Assembly assembly)
+        {
+            try { return assembly.GetTypes(); }
+            catch { return Array.Empty<Type>(); }
         }
         public override void Dispose()
         {

@@ -13,9 +13,43 @@ namespace KRPGLib.Enchantment
 {
     [HarmonyPatch]
     public class EntityProjectile_Patch
-    {       
+    {
+        // Trigger OnAttack for non-entities. It's pretty greasey right now, triggering on itself.
+        // TODO: Make proper BlockEntity or BlockPos triggers
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(EntityProjectile), "TryAttackEntity")]
+        public void TryAttackEntity_Postfix(EntityProjectile __instance, double impactSpeed, ref bool __result)
+        {
+            if (!(__instance.Api is ICoreServerAPI sapi)) return; 
+            if (__result == true) return;
+            // Hit someTHING
+            if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
+            {
+                EnchantModifiers parameters = new EnchantModifiers();
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, __instance, ref parameters);
+                if (!didEnchants)
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
+            }
+            else
+            {
+                // Get Bow & Timer
+                ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
+                long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
+                if (weaponStack == null || (sapi.World.ElapsedMilliseconds - timestamp) > 6000) return;
+
+                EnchantModifiers parameters = new EnchantModifiers();
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", __instance, __instance, ref parameters);
+                if (!didEnchants)
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", weaponStack.GetName());
+
+                __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
+                __instance.FiredBy.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", 0);
+            }
+        }
+        // Remove damage from Healing enchanted projectile
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
-        public static bool Prefix(EntityProjectile __instance, Entity entity)
+        public static bool impactOnEntity_Prefix(EntityProjectile __instance, Entity entity)
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return true;
 
@@ -44,9 +78,10 @@ namespace KRPGLib.Enchantment
             }
             return true;
         }
-
+        // Trigger "OnAttack" enchants when an entity has been hit
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
-        public static void Postfix(EntityProjectile __instance, Entity entity)
+        public static void impactOnEntity_Postfix(EntityProjectile __instance, Entity entity)
         {
             if (__instance.Api.Side != EnumAppSide.Server || entity == null) return;
 

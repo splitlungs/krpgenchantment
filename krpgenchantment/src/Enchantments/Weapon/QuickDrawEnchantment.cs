@@ -41,49 +41,50 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
             Version = 1.00f;
         }
-        public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        // public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        // {
+        //     bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
+        //     if (didEnch == true)
+        //     {
+        //         ITreeAttribute tree =  inStack.Attributes.GetTreeAttribute("statModifier");
+        //         tree.SetFloat("bowsProficiency", enchantPower * PowerMultiplier);
+        //         return true;
+        //     }
+        //     else
+        //         return false;
+        // }
+        public void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-            bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
-            if (didEnch == true)
-            {
-                ITreeAttribute tree =  inStack.Attributes.GetTreeAttribute("statModifier");
-                tree.SetFloat("bowsProficiency", enchantPower * PowerMultiplier);
-                return true;
-            }
-            else
-                return false;
-        }
-        public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        {
-            bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
-            EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
-            if (IsHotbar == false || eeb == null) return;
             if (EnchantingConfigLoader.Config?.Debug == true)
             {
                 // float f = enchant.SourceStack.Collectible.Attributes?["statModifier"]["rangedWeaponsSpeed"].AsFloat() ?? 0f;
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
-
             }
             // Write to entity
+            float mul = enchant.Power *PowerMultiplier;
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
             {
-                entity.Stats.Set("bowsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-                entity.Stats.Set("crossbowsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-                entity.Stats.Set("firearmsProficiency", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
+                entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
+                entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
             }
             else
             {
-                // entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-                // enchant.SourceStack.Attributes.GetTreeAttribute("statModifier").SetFloat("rangedWeaponsSpeed", enchant.Power * PowerMultiplier);
+                entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, mul, true);
             }
         }
-        public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-            bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
-            EnchantmentEntityBehavior eeb = entity?.GetBehavior<EnchantmentEntityBehavior>();
-            if (IsHotbar == false || eeb == null) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
+            // Write to entity
+            RemoveAllMultipliers(entity);
+        }
+        public void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
             // Write to entity

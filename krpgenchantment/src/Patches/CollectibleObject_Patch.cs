@@ -18,39 +18,48 @@ using System.Reflection;
 
 namespace KRPGLib.Enchantment
 {
-    /*
     [HarmonyPatch]
     public class CollectibleObject_Patch
     {
+        // Patches only on derived types
+        [HarmonyPostfix]
+        public static void OnHeldInteractStop_Postfix(CollectibleObject __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        {
+            if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
+            if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
+        }
         // OBSOLETE - Now triggered through "EnchantmentEntityBehavior.OnEntityReceiveDamage" override
-        // [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
-        // public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
-        // {
-        //     if (world.Side != EnumAppSide.Server) return true;
-        //     ICoreServerAPI sApi = world.Api as ICoreServerAPI;
-        //     Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
-        //     if (enchants == null)
-        //         return true;
-        //     int durable = enchants.GetValueOrDefault("durable", 0);
-        //     if (durable > 0)
-        //     {
-        //         EnchantmentSource enchant = new EnchantmentSource() {
-        //             SourceStack = itemslot.Itemstack,
-        //             TargetEntity = byEntity,
-        //             Trigger = "OnDurability",
-        //             Code = "durable",
-        //             Power = durable };
-        //         int dmg = amount;
-        //         EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-        //         bool didEnchantment = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
-        //         if (didEnchantment == true)
-        //         {
-        //             amount = parameters.GetInt("damage");
-        //             return false; // Only skip if we 
-        //         }
-        //     }
-        //     return true;
-        // }
+        /*
+        [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
+        public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
+        {
+            if (world.Side != EnumAppSide.Server) return true;
+            ICoreServerAPI sApi = world.Api as ICoreServerAPI;
+            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
+            if (enchants == null)
+                return true;
+            int durable = enchants.GetValueOrDefault("durable", 0);
+            if (durable > 0)
+            {
+                EnchantmentSource enchant = new EnchantmentSource() {
+                    SourceStack = itemslot.Itemstack,
+                    TargetEntity = byEntity,
+                    Trigger = "OnDurability",
+                    Code = "durable",
+                    Power = durable };
+                int dmg = amount;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+                bool didEnchantment = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
+                if (didEnchantment == true)
+                {
+                    amount = parameters.GetInt("damage");
+                    return false; // Only skip if we 
+                }
+            }
+            return true;
+        }
+        */
     }
-    */
 }

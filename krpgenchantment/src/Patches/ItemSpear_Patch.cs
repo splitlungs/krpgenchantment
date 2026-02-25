@@ -17,17 +17,18 @@ using System.Runtime.CompilerServices;
 
 namespace KRPGLib.Enchantment
 {
+    /*
     [HarmonyPatch]
-    public class ItemBow_Patch
+    public class ItemSpear_Patch
     {
-        [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
-        public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        [HarmonyPatch(typeof(ItemSpear), "OnHeldInteractStop")]
+        public static void Postfix(ItemSpear __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
             if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
-            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null) return;
             if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
-            byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack);
-            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.Api.World.ElapsedMilliseconds);
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
         }
     }
+    */
 }

@@ -423,11 +423,6 @@ namespace KRPGLib.Enchantment
         public bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity)
         {
             if (inSlot?.Empty != false || entity == null) return false;
-            // Stop any active EnchantTicks
-            int stackID = inSlot.Itemstack.Id;
-            int slotID = inSlot.Inventory.GetSlotId(inSlot);
-            string codeID = eName + ":" + slotID + ":" + stackID;
-            entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
             // Get Active enchants
             ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null) return false;
@@ -462,19 +457,10 @@ namespace KRPGLib.Enchantment
             if (tree == null) return false;
             string active = tree.GetString("active", null);
             if (active == null) return false;
-            // Stop any active EnchantTicks
-            int stackID = inSlot.Itemstack.Id;
-            int slotID = inSlot.Inventory.GetSlotId(inSlot);
-            string[] aStrings = active.Split(';');
-            foreach (string s in aStrings)
-            {
-                string[] eStrings = s.Split(':');
-                string codeID = eStrings[0] + ":" + slotID + ":" + stackID;
-                entity.GetBehavior<EnchantmentEntityBehavior>().TickRegistry.Remove(codeID);
-            }
             // Delete the Active string
             tree.SetString("active", null);
             inSlot.Itemstack.Attributes.MergeTree(tree);
+            // MarkDirty so EnchantmentEntitybehavior can cleanup
             inSlot.MarkDirty();
             return true;
         }

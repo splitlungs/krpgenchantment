@@ -85,10 +85,8 @@ namespace KRPGLib.Enchantment
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
-
             // Save the IServerPlayer
             playerUID = byPlayer.PlayerUID;
-
             // Register Gear cache
             if (gearInventory != null)
             {
@@ -130,13 +128,13 @@ namespace KRPGLib.Enchantment
                     GenerateHotbarEnchantCache(slotId);
                 }
                 hotbarInventory.SlotModified += OnHotbarModified;
+                
             }
             else
             {
                 Api?.Logger?.Error("[KRPGEnchantment] Player {0} tried to register HotbarInventory, but returned null. Hotbar enchants will not trigger.", player.PlayerUID);
                 return;
             }
-
             entity.GetBehavior<EntityBehaviorHealth>().onDamaged += OnHit;
         }
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
@@ -392,13 +390,22 @@ namespace KRPGLib.Enchantment
         }
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!IsPlayer) return;
+            handled = EnumHandling.Handled;
+            ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
             base.DidAttack(source, targetEntity, ref handled);
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
+            if (itemslot.Empty == true) return;
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
             // OnAttack triggers
-            if (mode != EnumInteractMode.Attack || itemslot.Empty == true) return;
+            if (mode != EnumInteractMode.Attack) return;
             // TODO: Update for ActiveEnchantCache
             //
             // Get Enchantments
@@ -412,7 +419,7 @@ namespace KRPGLib.Enchantment
                 // Translate Handling through Int32 value in Enchantments.
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
-                EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
+                parameters = new EnchantModifiers() { { "handled", eHandled } };
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, enchants, ref parameters);
                 if (didEnchants)
                 {
