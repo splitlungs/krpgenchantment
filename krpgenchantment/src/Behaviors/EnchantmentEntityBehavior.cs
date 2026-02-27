@@ -400,27 +400,26 @@ namespace KRPGLib.Enchantment
         }
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!(byEntity.Api is ICoreServerAPI sapi)) return;
             if (itemslot.Empty == true) return;
-            EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
+            // EnchantModifiers parameters = new EnchantModifiers();
+            // bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
+            handled = EnumHandling.Handled;
+            // TODO: Update for ActiveEnchantCache?
             // OnAttack triggers
             if (mode != EnumInteractMode.Attack) return;
-            // TODO: Update for ActiveEnchantCache
-            //
-            // Get Enchantments
-            handled = EnumHandling.Handled;
-            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
+            // Get Enchantments for the that attacked this entity
+            Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants != null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    byEntity.Api.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
+                    sapi.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
                 
                 // Translate Handling through Int32 value in Enchantments.
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
-                parameters = new EnchantModifiers() { { "handled", eHandled } };
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttack", byEntity, entity, enchants, ref parameters);
+                EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
                 if (didEnchants)
                 {
                     eHandled = parameters.GetInt("handled");
@@ -462,6 +461,11 @@ namespace KRPGLib.Enchantment
 
             return damage;
         }
+        /// <summary>
+        /// Trigger Enchantments on the entity AFTER it has taken damage.
+        /// </summary>
+        /// <param name="damageSource"></param>
+        /// <param name="damage"></param>
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             // Only living players should actually have OnDamaged triggers

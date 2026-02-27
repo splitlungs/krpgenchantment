@@ -613,8 +613,8 @@ namespace KRPGLib.Enchantment
         /// <returns></returns>
         public Dictionary<string, int> GetActiveEnchantments(ItemStack itemStack)
         {
-            // if (EnchantingConfigLoader.Config.Debug == true)
-            //     Api.Logger.Event("[KRPGEnchantment] Attempting to GetActiveEnchantments on {0}", itemStack.GetName());
+            if (EnchantingConfigLoader.Config.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to GetActiveEnchantments on {0}", itemStack?.GetName());
             // Get Attributes
             ITreeAttribute tree = itemStack?.Attributes?.GetTreeAttribute("enchantments");
             if (tree == null)
@@ -627,8 +627,8 @@ namespace KRPGLib.Enchantment
             foreach (string s in activeStrings)
             {
                 string[] aa = s.Split(":");
-                // if (EnchantingConfigLoader.Config.Debug == true)
-                //     Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1} on {2}.", aa[0], aa[1], itemStack.GetName());
+                if (EnchantingConfigLoader.Config.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Found Enchantment {0} with Power of {1} on {2}.", aa[0], aa[1], itemStack.GetName());
                 enchants.Add(aa[0], Convert.ToInt32(aa[1]));
             }
             // Throw null if we failed to get anything
@@ -1086,6 +1086,9 @@ namespace KRPGLib.Enchantment
             {
                 foreach (KeyValuePair<string, int> pair in enchants)
                 {
+                    if (EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] Trying {0} with power {1}.", pair.Key, pair.Value);
+                        
                     IEnchantment enc = GetEnchantment(pair.Key);
                     if (enc?.Enabled != true)
                     {

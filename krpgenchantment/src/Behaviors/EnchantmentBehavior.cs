@@ -166,7 +166,7 @@ namespace KRPGLib.Enchantment
             if (aimSelf == 1 && sApi.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", byEntity, byEntity, ref parameters);
+                bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, byEntity, ref parameters);
             }
 
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)

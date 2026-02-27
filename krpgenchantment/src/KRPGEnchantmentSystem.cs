@@ -36,6 +36,7 @@ namespace KRPGLib.Enchantment
             Api = api;
             cApi = api as ICoreClientAPI;
             sApi = api as ICoreServerAPI;
+            DoHarmonyPatch(api);
             EnchantAccessor = new EnchantmentAccessor();
             EnchantAccessor.Api = api;
             EnchantAccessor.cApi = cApi;
@@ -96,7 +97,7 @@ namespace KRPGLib.Enchantment
             api.RegisterBlockEntityClass("EnchantingBE", typeof(EnchantingBE));
             api.RegisterItemClass("EnchantersManualItem", typeof(EnchantersManualItem));
 
-            DoHarmonyPatch(api);
+            
             Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment loaded.");
         }
         

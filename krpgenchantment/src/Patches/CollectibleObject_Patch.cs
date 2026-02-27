@@ -22,14 +22,15 @@ namespace KRPGLib.Enchantment
     public class CollectibleObject_Patch
     {
         // Patches only on derived types
-        [HarmonyPostfix]
-        public static void OnHeldInteractStop_Postfix(CollectibleObject __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
-        {
-            if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
-            if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
-            EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
-        }
+        // [HarmonyReversePatch]
+        // [HarmonyPatch(typeof(CollectibleObject), nameof(CollectibleObject.OnHeldInteractStop))]
+        // public static void Postfix(CollectibleObject __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
+        // {
+        //     if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
+        //     if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
+        //     EnchantModifiers parameters = new EnchantModifiers();
+        //     bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
+        // }
         // OBSOLETE - Now triggered through "EnchantmentEntityBehavior.OnEntityReceiveDamage" override
         /*
         [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]

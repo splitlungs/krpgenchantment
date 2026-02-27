@@ -53,7 +53,7 @@ namespace KRPGLib.Enchantment
         //     else
         //         return false;
         // }
-        public void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -74,7 +74,7 @@ namespace KRPGLib.Enchantment
                 entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, mul, true);
             }
         }
-        public void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -82,7 +82,7 @@ namespace KRPGLib.Enchantment
             // Write to entity
             RemoveAllMultipliers(entity);
         }
-        public void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)

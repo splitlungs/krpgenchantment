@@ -459,6 +459,8 @@ namespace KRPGLib.Enchantment
         /// <param name="parameters"></param>
         public virtual void OnTrigger(EnchantmentSource enchant, ref EnchantModifiers? parameters)
         {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Trying an OnTrigger call type {0}, with {1} parameters.", enchant.Trigger, parameters?.Count);
             try
             {
                 MethodInfo? meth = this.GetType().GetMethod(enchant.Trigger,
@@ -495,11 +497,38 @@ namespace KRPGLib.Enchantment
             }
         }
         /// <summary>
-        /// Triggered from an enchanted item when it successfully attacks an entity.
+        /// Triggered from an enchanted item when an entity initiates an attack.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public virtual void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered from an enchanted item is steping through an attack.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttackStep(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered from an enchanted item when it canceled an attack on an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered from an enchanted item when it successfully attacked an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
         }
