@@ -49,7 +49,7 @@ namespace KRPGLib.Enchantment
             }
 
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");

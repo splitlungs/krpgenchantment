@@ -15,6 +15,7 @@ namespace KRPGLib.Enchantment
     public class EntityProjectile_impactOnEntity_Patch
     {
         // Remove damage from Healing enchanted projectile
+        [HarmonyReversePatch]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
@@ -45,7 +46,8 @@ namespace KRPGLib.Enchantment
             }
             return true;
         }
-        // Trigger "OnAttack" enchants when an entity has been hit
+        // Trigger "OnAttackStop" enchants when an entity has been hit
+        [HarmonyReversePatch]
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static void Postfix(EntityProjectile __instance, Entity entity)
         {
@@ -55,7 +57,7 @@ namespace KRPGLib.Enchantment
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, entity, ref parameters);
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", __instance, entity, ref parameters);
                 if (!didEnchants)
                     entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
@@ -67,7 +69,7 @@ namespace KRPGLib.Enchantment
                 if (weaponStack == null || (entity.Api.World.ElapsedMilliseconds - timestamp) > 6000) return;
 
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", __instance, entity, ref parameters);
+                bool didEnchants = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, entity, ref parameters);
                 if (!didEnchants)
                     entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", weaponStack.GetName());
 
@@ -81,6 +83,7 @@ namespace KRPGLib.Enchantment
     {
         // Trigger OnAttack for non-entities. It's pretty greasey right now, triggering on itself.
         // TODO: Make proper BlockEntity or BlockPos triggers
+        [HarmonyReversePatch]
         [HarmonyPatch(typeof(EntityProjectile), "TryAttackEntity")]
         public void Postfix(EntityProjectile __instance, double impactSpeed, ref bool __result)
         {
@@ -90,7 +93,7 @@ namespace KRPGLib.Enchantment
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttack", __instance, __instance, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", __instance, __instance, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
@@ -102,7 +105,7 @@ namespace KRPGLib.Enchantment
                 if (weaponStack == null || (sapi.World.ElapsedMilliseconds - timestamp) > 6000) return;
 
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", __instance, __instance, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, __instance, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", weaponStack.GetName());
 

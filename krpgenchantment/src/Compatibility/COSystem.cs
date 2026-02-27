@@ -47,7 +47,7 @@ namespace KRPGLib.Enchantment
 
             float dmg = damage;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
@@ -72,7 +72,7 @@ namespace KRPGLib.Enchantment
 
             float dmg = damage;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
