@@ -13,26 +13,45 @@ using Vintagestory.API.Datastructures;
 using CombatOverhaul.Implementations;
 using KRPGLib.Enchantment.API;
 using System.Collections;
+using CombatOverhaul.MeleeSystems;
+using CombatOverhaul.RangedSystems;
+using Vintagestory.API.Client;
 
-namespace KRPGLib.Enchantment
+namespace KRPGLib.Enchantment.Compat
 {
     public class COSystem
     {
-        ICoreServerAPI sApi;
         ICoreAPI Api;
-
+        ICoreClientAPI cApi;
+        ICoreServerAPI sApi;
+        public void Start(ICoreAPI api)
+        {
+            Api = api;
+        }
+        public void StartClientSide(ICoreAPI api)
+        {
+            if (!(api is ICoreClientAPI capi)) return;
+            cApi = capi;
+            
+            CombatOverhaulSystem COSys = capi.ModLoader.GetModSystem<CombatOverhaulSystem>();
+            if (COSys != null)
+            {
+                COSys.ClientMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
+                COSys.ClientRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
+            }
+        }
         public void StartServerSide(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
-
-            Api = api;
             sApi = sapi;
 
-            CombatOverhaulSystem COSys = sApi.ModLoader.GetModSystem<CombatOverhaulSystem>();
+            CombatOverhaulSystem COSys = sapi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
             {
                 COSys.ServerMeleeSystem.OnDealMeleeDamage += OnMeleeDamaged;
+                COSys.ServerMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
                 COSys.ServerProjectileSystem.OnDealRangedDamage += OnRangedDamaged;
+                COSys.ServerRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
             }
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
@@ -60,6 +79,10 @@ namespace KRPGLib.Enchantment
             if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
+        public void OnMeleeStatusChange(Entity attacker, ItemSlot slot, MeleeAttackStatus status)
+        {
+            
+        }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
             Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(weaponStack);
@@ -83,6 +106,11 @@ namespace KRPGLib.Enchantment
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
             if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
+        }
+        public void OnRangedStatusChange(Entity attacker, ItemSlot weaponSlot, RangedWeaponStatus status)
+        {
+            if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
     }

@@ -10,6 +10,7 @@ using Vintagestory.API.Client;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using Vintagestory.API.MathTools;
+using KRPGLib.Enchantment.Compat;
 
 namespace KRPGLib.Enchantment
 {
@@ -36,12 +37,13 @@ namespace KRPGLib.Enchantment
             Api = api;
             cApi = api as ICoreClientAPI;
             sApi = api as ICoreServerAPI;
-            DoHarmonyPatch(api);
             EnchantAccessor = new EnchantmentAccessor();
             EnchantAccessor.Api = api;
             EnchantAccessor.cApi = cApi;
             EnchantAccessor.sApi = sApi;
             EnchantAccessor.EnchantmentRegistry = new Dictionary<string, Enchantment>();
+            RegisterCoreCompatibility();
+            DoHarmonyPatch(api);
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -49,28 +51,61 @@ namespace KRPGLib.Enchantment
             cApi = api;
             EnchantAccessor.cApi = api;
             ConfigParticles();
+            RegisterClientCompatibility();
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
             EnchantAccessor.sApi = api;
-            RegisterCompatibility();
+            RegisterServerCompatibility();
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
         /// <summary>
         /// Instantiate compatibility scripts.
         /// </summary>
-        private void RegisterCompatibility()
+        private void RegisterCoreCompatibility()
         {
             if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 combatOverhaul = new COSystem();
-                combatOverhaul.StartServerSide(Api);
+                combatOverhaul.Start(Api);
             }
             if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
                 krpgWands = new KRPGWandsSystem();
-                krpgWands.StartServerSide(Api);
+                krpgWands.Start(Api);
+            }
+        }
+        /// <summary>
+        /// Instantiate compatibility scripts.
+        /// </summary>
+        private void RegisterClientCompatibility()
+        {
+            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
+            {
+                combatOverhaul = new COSystem();
+                combatOverhaul.StartClientSide(cApi);
+            }
+            if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
+            {
+                krpgWands = new KRPGWandsSystem();
+                krpgWands.StartClientSide(cApi);
+            }
+        }
+        /// <summary>
+        /// Instantiate compatibility scripts.
+        /// </summary>
+        private void RegisterServerCompatibility()
+        {
+            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
+            {
+                combatOverhaul = new COSystem();
+                combatOverhaul.StartServerSide(sApi);
+            }
+            if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
+            {
+                krpgWands = new KRPGWandsSystem();
+                krpgWands.StartServerSide(sApi);
             }
         }
         /// <summary>
