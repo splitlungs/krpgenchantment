@@ -7,22 +7,37 @@ using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Server;
+using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
 using KRPGLib.Wands;
 using Vintagestory.Common;
 
-namespace KRPGLib.Enchantment
+namespace KRPGLib.Enchantment.Compat
 {
     public class KRPGWandsSystem
     {
         ICoreAPI Api;
+        ICoreClientAPI cApi;
         ICoreServerAPI sApi;
+        public void Start(ICoreAPI api)
+        {
+            Api = api;
+        }
+        public void StartClientSide(ICoreAPI api)
+        {
+            if (!(api is ICoreClientAPI capi)) return;
+            cApi = capi;
+
+            KRPGWandsMod WandsMod = capi.ModLoader.GetModSystem<KRPGWandsMod>();
+            if (WandsMod != null)
+            {
+                WandsMod.OnDealWandDamage += OnProjectileDamaged;
+            }
+        }
         public void StartServerSide(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
-
-            Api = api;
             sApi = sapi;
 
             KRPGWandsMod WandsMod = sapi.ModLoader.GetModSystem<KRPGWandsMod>();
@@ -49,7 +64,7 @@ namespace KRPGLib.Enchantment
             }
 
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttack", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");

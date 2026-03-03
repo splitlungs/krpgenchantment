@@ -24,7 +24,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Overhaullib">
-      <HintPath>..\..\..\Examples\overhaullib_1.12.19\Overhaullib.dll</HintPath>
+      <HintPath>..\..\..\Examples\overhaullib_1.21.0\Overhaullib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="protobuf-net">
@@ -111,67 +111,8 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\krpgenchantment\blocktypes\chargingtable.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-universal.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\aa-weapon.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-2.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-3.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\axe-tier-4.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blackguardadditions\blackguardadditions--armor.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blackguardadditions\blackguardadditions--universal.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blackguardadditions\blackguardadditions--weapon.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\blades-tier-1.json" />
-  <None Remove="assets\game\config\lore\enchantment.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-armor.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-universal.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\forlornadditions\forlornadditions-weapon.json" />
-  <None Remove="assets\krpgenchantment\config\lore\enchantment.json" />
-  <None Remove="assets\krpgenchantment\config\remaps.json" />
-  <None Remove="assets\krpgenchantment\lang\de.json" />
-  <None Remove="assets\krpgenchantment\lang\es-419.json" />
-  <None Remove="assets\krpgenchantment\lang\es-es.json" />
-  <None Remove="assets\krpgenchantment\lang\pl.json" />
-  <None Remove="assets\krpgenchantment\lang\uk.json" />
-  <None Remove="assets\krpgenchantment\patches\blackguardadditions\blackguardadditions-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\forlornadditions\forlornadditions-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\fotsa\fotsa-entity-behaviors.json" />
-  <None Remove="assets\krpgenchantment\config\configlib-patches.json" />
-  <None Remove="assets\krpgenchantment\fonts\dragon_alphabet.ttf" />
-  <None Remove="assets\krpgenchantment\lang\fr.json" />
-  <None Remove="assets\krpgenchantment\patches\fantasycreatures-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\feverstonewilds-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\krpg-wands-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\server-entity-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\swordz-item-behaviors.json" />
-  <None Remove="assets\krpgenchantment\patches\trader.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\paxel\paxel-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-bearded-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-daneaxe-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-nadziak-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-padded-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-bismuthbronze-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-blackbronze-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-copper-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-iron-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-lead-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-meteoriciron-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-steel-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-pernach-tinbronze-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-seax-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-shortsword-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-stiletto-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\swordz\swordz-warhammer-tier-1.json" />
-  <None Remove="assets\krpgenchantment\compatibility\recipes\enchanting-table\krpgwands\wand-tier-1.json" />
-  <None Remove="assets\krpgenchantment\recipes\grid\block\chargingtable.json" />
-  <None Remove="assets\krpgenchantment\shapes\block\chargingtable.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
-
-<ItemGroup>
-  <Content Update="assets\krpgenchantment\patches\combatoverhaul\combatoverhaul-behaviors.json">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
 

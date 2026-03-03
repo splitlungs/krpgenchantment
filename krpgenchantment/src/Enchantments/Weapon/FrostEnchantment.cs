@@ -48,9 +48,9 @@ namespace KRPGLib.Enchantment
             };
             Version = 1.03f;
         }
-        public override void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            // ICoreServerAPI sApi = Api as ICoreServerAPI;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
@@ -83,10 +83,11 @@ namespace KRPGLib.Enchantment
                 //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
 
                 hp.OnEntityReceiveDamage(source, ref dmg);
-
+                
                 // Particle if damaged
+                if (!(Api is ICoreServerAPI sApi)) return;
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    sApi.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+                    Api.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
                 ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
                 byte[] data = SerializerUtil.Serialize(packet);
                 sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);

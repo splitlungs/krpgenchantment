@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Vintagestory.GameContent;
 using Vintagestory.API.Server;
 using Vintagestory.API.Common;
@@ -260,52 +261,64 @@ namespace KRPGLib.Enchantment
             else Version = 0;
         }
         /// <summary>
-        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// Attempt to write this Enchantment to provided ItemStack. Returns false if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="force"></param>
         /// <param name="api"></param>
         /// <returns></returns>
-        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api)
+        public virtual bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
-            if (inStack == null) return false;
+            if (inStack == null)
+                return false;
 
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Enchantment {0} is attempting to Enchant Item {1}.", Code, inStack.GetName());
+            var config = EnchantingConfigLoader.Config;
+            bool debug = config?.Debug == true;
+
+            if (debug)
+                api.Logger.Event("[KRPGEnchantment] Enchantment {0} attempting to enchant item {1}.", Code, inStack.GetName());
 
             try
             {
-                // Setup Enchants
-                Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(inStack);
-                if (enchants != null)
+                // Get or create enchant dictionary
+                var enchants = api.EnchantAccessor().GetActiveEnchantments(inStack) ?? new Dictionary<string, int>();
+                if (enchants.Count > 0 && debug)
+                    api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments. Processing limiters.", enchants.Count);
+
+                // Only avoid limiters if told to. Accessible through commands
+                if (force)
                 {
-                    if (EnchantingConfigLoader.Config?.Debug == true)
-                        api.Logger.Event("[KRPGEnchantment] ItemStack has {0} enchantments on it. Processing exceptions.", enchants.Count);
-                    enchants = RemoveHealOrDamage(enchants, api);
-                    enchants = LimitEnchantCategory(enchants, api);
+                    // We still need to remove existing if we're bypassing limits
                     enchants = RemoveExisting(enchants, enchantPower, api);
+                    enchants.Add(Code, enchantPower);
                 }
                 else
-                    enchants = new Dictionary<string, int>();
-
-                // Write the Enchantment
-                enchants.Add(Code, enchantPower);
-                string enchantString = "";
-                foreach (KeyValuePair<string, int> pair in enchants)
                 {
-                    enchantString += pair.Key + ":" + pair.Value + ";";
+                    // Singleton limiter
+                    enchants = RemoveExisting(enchants, enchantPower, api);
+                    enchants = RemoveHealOrDamage(enchants, api);
+                    enchants.Add(Code, enchantPower);
+                    // Standard limiters
+                    enchants = LimitEnchantsCategory(enchants, api);
                 }
+
+                // Serialize enchantments
+                var sb = new StringBuilder(enchants.Count * 16);
+                foreach (var pair in enchants)
+                    sb.Append(pair.Key).Append(':').Append(pair.Value).Append(';');
+
+                // Write attributes
                 ITreeAttribute tree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
-                tree.SetString("active", enchantString);
+                tree.SetString("active", sb.ToString());
                 tree.RemoveAttribute("latentEnchantTime");
                 tree.RemoveAttribute("latentEnchants");
                 inStack.Attributes.MergeTree(tree);
-
                 return true;
             }
             catch (Exception ex)
             {
-                api?.Logger.Error("[KRPGEnchantment] Error attempting TryEnchantItem: {0}", ex);
+                api?.Logger.Error("[KRPGEnchantment] Error in TryEnchantItem: {0}",ex);
                 return false;
             }
         }
@@ -346,48 +359,83 @@ namespace KRPGLib.Enchantment
             return enchants;
         }
         /// <summary>
-        /// Removes a random Enchantment of a type as limited by MaxEnchantsByCategory in the main config file.
+        /// Removes random enchantments to enforce MaxEnchantsByCategory limits.
         /// </summary>
         /// <param name="enchants"></param>
         /// <param name="api"></param>
-        public virtual Dictionary<string, int> LimitEnchantCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
+        public virtual Dictionary<string, int> LimitEnchantsCategory(Dictionary<string, int> enchants, ICoreServerAPI api)
         {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Attempting to limit the amount of enchants per category.");
+            var config = EnchantingConfigLoader.Config;
+            if (config == null || enchants.Count == 0)
+                return enchants;
 
-            // Get the Maximum amount of allowed Enchantments in a single cateogry from config
-            Dictionary<string, int> maxEnchantsByCategory = EnchantingConfigLoader.Config?.MaxEnchantsByCategory;
-            foreach (KeyValuePair<string, int> pair1 in maxEnchantsByCategory)
+            bool debug = config.Debug;
+
+            if (debug)
+                api.Logger.Event("[KRPGEnchantment] Limiting enchantments by category.");
+
+            var maxEnchantsByCategory = config.MaxEnchantsByCategory;
+            var rand = api.World.Rand;
+
+            foreach (var categoryLimit in maxEnchantsByCategory)
             {
-                // Get each enchantment in the given category
-                List<string> categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(pair1.Key);
-                if (categoryEnchantNames == null) continue;
-                if (pair1.Value > 0)
-                {
-                    // Get each of the Enchants in this category that exist in the provided Enchants dictionary
-                    List<string> activeEnchants = new List<string>();
-                    foreach (KeyValuePair<string, int> pair2 in enchants)
-                    {
-                        if (categoryEnchantNames.Contains(pair2.Key))
-                            activeEnchants.Add(pair2.Key);
-                    }
-                    // If none are found, move on
-                    if (activeEnchants.Count < 1) continue;
+                string category = categoryLimit.Key;
+                int maxAllowed = categoryLimit.Value;
 
-                    // Reduce down to Max from Config
-                    while (activeEnchants.Count > pair1.Value)
-                    {
-                        int roll = api.World.Rand.Next(0, activeEnchants.Count);
-                        enchants.Remove(activeEnchants[roll]);
-                    }
-                }
-                // Remove the Enchant if category is disabled or missing
-                else
+                var categoryEnchantNames = api.EnchantAccessor().GetEnchantmentsInCategory(category);
+                if (categoryEnchantNames == null || categoryEnchantNames.Count == 0)
+                    continue;
+                
+                // Only enforce limits for the category of the newly added enchant
+                if (!categoryEnchantNames.Contains(Code))
+                    continue;
+
+                // Convert once for O(1) lookups
+                var categorySet = new HashSet<string>(categoryEnchantNames);
+
+                // Collect active enchants in this category
+                var activeEnchants = new List<string>();
+                foreach (var enchant in enchants.Keys)
                 {
-                    // Should be safe if it fails to find the key
-                    enchants.Remove(pair1.Key);
+                    if (categorySet.Contains(enchant))
+                        activeEnchants.Add(enchant);
+                }
+                if (activeEnchants.Count == 0)
+                    continue;
+
+                // Category disallowed
+                if (maxAllowed == 0)
+                {
+                    foreach (var enchant in activeEnchants)
+                    {
+                        enchants.Remove(enchant);
+                        if (debug)
+                            api.Logger.Event("[KRPGEnchantment] Removed {0} (category {1} disabled).",enchant, category);
+                    }
+                    continue;
+                }
+
+                // Category limiter disabled
+                else if (maxAllowed < 0)
+                    continue;
+
+                // Protect the newly-added enchant
+                activeEnchants.RemoveAll(e => e.EqualsFastIgnoreCase(Code));
+
+                // Trim down to maxAllowed
+                while (activeEnchants.Count + 1 > maxAllowed)
+                {
+                    int index = rand.Next(activeEnchants.Count);
+                    string removedEnchant = activeEnchants[index];
+
+                    enchants.Remove(removedEnchant);
+                    activeEnchants.RemoveAt(index);
+
+                    if (debug)
+                        api.Logger.Event("[KRPGEnchantment] Limiting {0} in {1} category.",removedEnchant, category);
                 }
             }
+
             return enchants;
         }
         /// <summary>
@@ -397,7 +445,7 @@ namespace KRPGLib.Enchantment
         public virtual Dictionary<string, int> RemoveExisting(Dictionary<string, int> enchants, int enchantPower, ICoreServerAPI api)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing enchants");
+                api.Logger.Event("[KRPGEnchantment] Attempting to overwrite existing matching enchantment.");
             // Write Enchant - Overwrite if it exists first
             if (enchants.ContainsKey(Code)) enchants.Remove(Code);
 
@@ -411,6 +459,8 @@ namespace KRPGLib.Enchantment
         /// <param name="parameters"></param>
         public virtual void OnTrigger(EnchantmentSource enchant, ref EnchantModifiers? parameters)
         {
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Trying an OnTrigger call type {0}, with {1} parameters.", enchant.Trigger, parameters?.Count);
             try
             {
                 MethodInfo? meth = this.GetType().GetMethod(enchant.Trigger,
@@ -447,20 +497,38 @@ namespace KRPGLib.Enchantment
             }
         }
         /// <summary>
-        /// Triggered from an enchanted item when it successfully attacks an entity.
+        /// Triggered from an enchanted item when an entity initiates an attack.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public virtual void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
         }
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// Triggered from an enchanted item is steping through an attack.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public virtual void OnAttackStep(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered from an enchanted item when it canceled an attack on an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered from an enchanted item when it successfully attacked an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
         }
@@ -474,19 +542,46 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
-        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// Called by the Enchantment Entity behavior when an entity dies.
         /// </summary>
-        /// <param name="eTick"></param>
-        public virtual void OnTick(ref EnchantTick eTick)
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnDeath(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-
+            
         }
         /// <summary>
-        /// Called by the Enchantment Entity behavior when an entity changes an equip slot.
+        /// Called by the Enchantment Entity behavior when an entity adds an enchanted item to an equip slot.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         public virtual void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity removes an enchanted item from an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Called by the Enchantment Entity behavior or Enchantment Behavior.
+        /// </summary>
+        /// <param name="eTick"></param>
+        public virtual void OnTick(ref EnchantTick eTick)
         {
 
         }
@@ -499,303 +594,5 @@ namespace KRPGLib.Enchantment
         {
 
         }
-
-        // Obsolete particles
-        /*
-        protected AdvancedParticleProperties[] ParticleProps;
-        protected static AdvancedParticleProperties[] PoisonParticleProps;
-        protected bool resetLightHsv;
-        */
-        /*
-        public virtual void ConfigParticles()
-        {
-            ParticleProps = new AdvancedParticleProperties[3];
-            ParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            ParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(30f, 20f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            ParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(0f, 0f),
-                NatFloat.createUniform(40f, 30f),
-                NatFloat.createUniform(220f, 50f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-
-            PoisonParticleProps = new AdvancedParticleProperties[3];
-            PoisonParticleProps[0] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-            {
-                NatFloat.createUniform(0.2f, 0.05f),
-                NatFloat.createUniform(0.5f, 0.1f),
-                NatFloat.createUniform(0.2f, 0.05f)
-            },
-                Size = NatFloat.createUniform(0.25f, 0f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -0.5f),
-                SelfPropelled = true
-            };
-            PoisonParticleProps[1] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-            {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-            },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f),
-                NatFloat.createUniform(0f, 0.02f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                VertexFlags = 128,
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1f),
-                LifeLength = NatFloat.createUniform(0.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad
-            };
-            PoisonParticleProps[2] = new AdvancedParticleProperties
-            {
-                HsvaColor = new NatFloat[4]
-                {
-                NatFloat.createUniform(188f, 0f),
-                NatFloat.createUniform(255f, 0f),
-                NatFloat.createUniform(200f, 50f),
-                NatFloat.createUniform(255f, 0f)
-                },
-                OpacityEvolve = EvolvingNatFloat.create(EnumTransformFunction.QUADRATIC, -16f),
-                GravityEffect = NatFloat.createUniform(0f, 0f),
-                Velocity = new NatFloat[3]
-                {
-                NatFloat.createUniform(0f, 0.05f),
-                NatFloat.createUniform(0.2f, 0.3f),
-                NatFloat.createUniform(0f, 0.05f)
-                },
-                Size = NatFloat.createUniform(0.3f, 0.05f),
-                Quantity = NatFloat.createUniform(0.25f, 0f),
-                SizeEvolve = EvolvingNatFloat.create(EnumTransformFunction.LINEAR, 1.5f),
-                LifeLength = NatFloat.createUniform(1.5f, 0f),
-                ParticleModel = EnumParticleModel.Quad,
-                SelfPropelled = true
-            };
-        }
-        */
-        /*
-        public virtual void GenerateParticles(ICoreClientAPI api, Entity entity, EnumDamageType damageType, float damage)
-        {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
-
-            int power = (int)MathF.Ceiling(damage);
-            int r = api.World.Rand.Next(ParticleProps.Length + 1);
-
-            if (damageType == EnumDamageType.Fire)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, r);
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Frost)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Electricity)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Heal)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Injury)
-            {
-                int num = Math.Min(ParticleProps.Length - 1, Api.World.Rand.Next(ParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = ParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-            if (damageType == EnumDamageType.Poison)
-            {
-                int num = Math.Min(PoisonParticleProps.Length - 1, Api.World.Rand.Next(PoisonParticleProps.Length + 1));
-                AdvancedParticleProperties advancedParticleProperties = PoisonParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
-                advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
-                advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
-                advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
-                advancedParticleProperties.Velocity[0].avg = (float)entity.Pos.Motion.X * 10f;
-                advancedParticleProperties.Velocity[1].avg = (float)entity.Pos.Motion.Y * 5f;
-                advancedParticleProperties.Velocity[2].avg = (float)entity.Pos.Motion.Z * 10f;
-                advancedParticleProperties.Quantity.avg = GameMath.Sqrt(advancedParticleProperties.PosOffset[0].var + advancedParticleProperties.PosOffset[1].var + advancedParticleProperties.PosOffset[2].var) * num switch
-                {
-                    1 => 3f,
-                    0 => 0.5f,
-                    _ => 1.25f,
-                };
-                for (int i = 0; i <= power; i++)
-                {
-                    Api.World.SpawnParticles(advancedParticleProperties);
-                }
-            }
-        }
-        */
     }
 }

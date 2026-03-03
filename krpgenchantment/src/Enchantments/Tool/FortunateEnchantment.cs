@@ -15,30 +15,30 @@ using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment
 {
-    public class EfficientEnchantment : Enchantment
+    public class FortunateEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         /// <summary>
-        /// Increases the gathering speed of the enchanted item.
+        /// Increases the drops of a block broken with the enchanted item.
         /// </summary>
         /// <param name="api"></param>
-        public EfficientEnchantment(ICoreAPI api) : base(api)
+        public FortunateEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
             Enabled = true;
-            Code = "efficient";
+            Code = "fortunate";
             Category = "Gathering";
-            LoreCode = "enchantment-efficient";
-            LoreChapterID = 20;
+            LoreCode = "enchantment-fortunate";
+            LoreChapterID = 21;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
-                "Cleaver", "Hoe", "Pickaxe", "Probe", "Scythe", "Shears", "Shovel", "Sickle",
+                "Cleaver", "Hoe", "Pickaxe", "Scythe", "Shears", "Shovel", "Sickle",
                 "Knife", "Axe",
                 "Drill"
                 };
-            Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.20f } };
+            Modifiers = new EnchantModifiers { { "PowerMultiplier", 1.0f } };
             Version = 1.00f;
         }
-        // There isn't really much to do here. EnchantmentBehavior.GetMiningSpeed() override handles it, as configured by the OnLoaded override.
+        // There isn't really much to do here. EnchantmentBlockBehavior.GetDrops() patch handles it, as configured by the OnLoaded override.
     }
 }

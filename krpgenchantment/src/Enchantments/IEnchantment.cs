@@ -43,13 +43,14 @@ namespace KRPGLib.Enchantment.API
         /// <param name="properties"></param>
         void Initialize(EnchantmentProperties properties);
         /// <summary>
-        /// Attempt to write this Enchantment to provided ItemStack. Returns null if it cannot enchant the item.
+        /// Attempt to write this Enchantment to provided ItemStack. Returns false if it cannot enchant the item.
         /// </summary>
         /// <param name="inStack"></param>
         /// <param name="enchantPower"></param>
+        /// <param name="force"></param>
         /// <param name="api"></param>
         /// <returns></returns>
-        bool TryEnchantItem(ref ItemStack inStack, int enchantPower, ICoreServerAPI api);
+        bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api);
         #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.
@@ -64,11 +65,29 @@ namespace KRPGLib.Enchantment.API
         /// <param name="enchant"></param>
         void OnTrigger(EnchantmentSource enchant);
         /// <summary>
-        /// Triggered from an enchanted item when it successfully attacks an entity.
+        /// Triggered from an enchanted item when an entity initiates an attack.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        void OnAttack(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Triggered from an enchanted item is steping through an attack.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnAttackStep(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Triggered from an enchanted item when it canceled an attack on an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Triggered from an enchanted item when it successfully attacked an entity.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
         /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
         /// </summary>
@@ -82,6 +101,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity dies.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnDeath(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.
         /// </summary>
         /// <param name="eTick"></param>
@@ -92,6 +117,12 @@ namespace KRPGLib.Enchantment.API
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Called by the Enchantment Entity behavior when an entity removes an enchanted item from an equip slot.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
         /// Called by an ItemStack when a toggle is requested.
         /// </summary>
