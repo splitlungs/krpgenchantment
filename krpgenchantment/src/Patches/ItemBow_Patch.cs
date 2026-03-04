@@ -24,15 +24,20 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(ItemBow), nameof(ItemBow.OnHeldInteractStop))]
         public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
-            // if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
-            // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().combatOverhaul != null) return;
-            byEntity.World.Api.Logger.Event("[KRPGEnchantment] Firing ItemBow.OnHeldInteractStop postfix");
+            if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
+            // Skip if running Combat Overhaul
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().COSysServer != null) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sapi.Logger.Event("[KRPGEnchantment] Firing ItemBow.OnHeldInteractStop postfix");
             // if (byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
-            // byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack.Clone());
+            // byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot?.Itemstack);
             string s = slot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments")?.GetString("active", null);
+            if (s == null) return;
+            long t = sapi.World.ElapsedMilliseconds;
             byEntity.WatchedAttributes.SetString("pendingRangedEnchants", s);
-            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.World.ElapsedMilliseconds);
-            byEntity.World.Api.Logger.Event("[KRPGEnchantment] Finished firing ItemBow.OnHeldInteractStop postfix");
+            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", t);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sapi.Logger.Event("[KRPGEnchantment] Finished firing ItemBow.OnHeldInteractStop postfix. Found enchants {0} at {1}.", s, t);
         }
     }
 }

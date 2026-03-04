@@ -22,11 +22,10 @@ namespace KRPGLib.Enchantment
         {
             entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
-            if (__instance.Api.Side != EnumAppSide.Server || entity == null) return true;
-            ICoreServerAPI sApi = __instance.Api as ICoreServerAPI;
+            if (!(byEntity.Api is ICoreServerAPI sapi) || entity == null) return true;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
-                Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
+                Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null || !enchants.ContainsKey("healing")) return true;
                 // Item overrides Entity's Enchantment
                 if (enchants["healing"] > 0)
@@ -36,11 +35,11 @@ namespace KRPGLib.Enchantment
             {
                 // Get Bow & Enchants
                 // ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
+                // weaponStack?.ResolveBlockOrItem(sapi.World);
+                // Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(weaponStack);
+                // if (!enchants.ContainsKey("healing")) return true;
                 string activeEnchants = byEntity.WatchedAttributes.GetString("pendingRangedEnchants", null);
-                long timestamp = byEntity.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
-                if (activeEnchants == null || (entity.Api.World.ElapsedMilliseconds - timestamp) > 6000) return true;
-                // Dictionary<string, int> enchants = sApi.EnchantAccessor().GetActiveEnchantments(weaponStack);
-                if (!activeEnchants.CaseInsensitiveContains("healing")) return true;
+                if (activeEnchants?.CaseInsensitiveContains("healing") != true) return true;
                 // Item overrides Entity's Enchantment
                 __instance.Damage = 0;
             }
@@ -65,23 +64,29 @@ namespace KRPGLib.Enchantment
             {
                 // Get Bow & Timer
                 // ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
+                // weaponStack.ResolveBlockOrItem(sapi.World);
+                // if (weaponStack == null || (byEntity.World.ElapsedMilliseconds - timestamp) > 6000) 
+                // {
+                //     sapi.Logger.Event("[KRPGEnchantment] Enchanted arrow failed to retrieve bow stack or was stale.");
+                //     return;
+                // }
                 string activeEnchants = byEntity.WatchedAttributes.GetString("pendingRangedEnchants", null);
                 long timestamp = byEntity.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
-                if (activeEnchants == null || (byEntity.World.ElapsedMilliseconds - timestamp) > 6000) 
-                {
-                    sapi.Logger.Event("[KRPGEnchantment] Enchanted arrow failed to retrieve bow stack or was stale.");
-                    return;
-                }
+                long timediff = sapi.World.ElapsedMilliseconds - timestamp;
+                if (activeEnchants == null || timediff > 6000) return;
                 Dictionary<string, int> enchants = new Dictionary<string, int>();
                 string[] activeString = activeEnchants.Split(";", StringSplitOptions.RemoveEmptyEntries);
                 foreach (string s in activeString)
                 {
                     string[] ep = s.Split(":", StringSplitOptions.RemoveEmptyEntries);
-                    enchants.Add(ep[0], Convert.ToInt32(ep[1]));
+                    string e = ep[0].ToString();
+                    int i = Convert.ToInt32(ep?[1]);
+                    if (e == null || i <= 0) continue;
+                    enchants.Add(e, i);
                 }
-                if (enchants.Count >= 1)
+                if (enchants.Count < 1)
                 {
-                    sapi.Logger.Event("[KRPGEnchantment] Enchanted arrow failed to retrieve bow stack or was stale.");
+                    sapi.Logger.Error("[KRPGEnchantment] Enchanted arrow failed to parse any enchantments out of an active string.");
                     return;
                 }
                 EnchantModifiers parameters = new EnchantModifiers();
