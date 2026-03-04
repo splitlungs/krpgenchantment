@@ -24,12 +24,9 @@ namespace KRPGLib.Enchantment.Compat
         ICoreAPI Api;
         ICoreClientAPI cApi;
         ICoreServerAPI sApi;
-        public void Start(ICoreAPI api)
-        {
-            Api = api;
-        }
         public void StartClientSide(ICoreAPI api)
         {
+            Api = api;
             if (!(api is ICoreClientAPI capi)) return;
             cApi = capi;
             
@@ -42,6 +39,7 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void StartServerSide(ICoreAPI api)
         {
+            Api = api;
             if (!(api is ICoreServerAPI sapi)) return;
             sApi = sapi;
 
@@ -81,7 +79,8 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void OnMeleeStatusChange(Entity attacker, ItemSlot slot, MeleeAttackStatus status)
         {
-            
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem detected a MeleeAttackStatus change to {0}.", status.ToString());
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
@@ -111,7 +110,7 @@ namespace KRPGLib.Enchantment.Compat
         public void OnRangedStatusChange(Entity attacker, ItemSlot weaponSlot, RangedWeaponStatus status)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
+                Api.Logger.Event("[KRPGEnchantment] COSystem detected a RangedWeaponStatus change to {0}.", status.ToString());
         }
     }
 }

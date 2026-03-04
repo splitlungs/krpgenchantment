@@ -20,12 +20,9 @@ namespace KRPGLib.Enchantment.Compat
         ICoreAPI Api;
         ICoreClientAPI cApi;
         ICoreServerAPI sApi;
-        public void Start(ICoreAPI api)
-        {
-            Api = api;
-        }
         public void StartClientSide(ICoreAPI api)
         {
+            Api = api;
             if (!(api is ICoreClientAPI capi)) return;
             cApi = capi;
 
@@ -37,6 +34,7 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void StartServerSide(ICoreAPI api)
         {
+            Api = api;
             if (!(api is ICoreServerAPI sapi)) return;
             sApi = sapi;
 

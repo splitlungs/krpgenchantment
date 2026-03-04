@@ -63,7 +63,7 @@ namespace KRPGLib.Enchantment
             }
             // Write to entity
             float mul = enchant.Power *PowerMultiplier;
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
                 entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
                 entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);

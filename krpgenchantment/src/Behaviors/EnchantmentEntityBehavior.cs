@@ -388,16 +388,17 @@ namespace KRPGLib.Enchantment
         {
             
         }
-        public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
-        {
-            if (!(Api is ICoreServerAPI sapi)) return;
-            if (!IsPlayer) return;
-            handled = EnumHandling.Handled;
-            ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
-            EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
-            base.DidAttack(source, targetEntity, ref handled);
-        }
+        // public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
+        // {
+        //     if (!(Api is ICoreServerAPI sapi)) return;
+        //     if (!IsPlayer) return;
+        //     handled = EnumHandling.Handled;
+        //     ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
+        //     EnchantModifiers parameters = new EnchantModifiers();
+        //     bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
+        //     base.DidAttack(source, targetEntity, ref handled);
+        // }
+        // When THIS ENTITY is interacted with by another entity. Not called by projectiles
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (!(byEntity.Api is ICoreServerAPI sapi)) return;
@@ -602,21 +603,21 @@ namespace KRPGLib.Enchantment
         #region Particles
         public void GenerateParticles(EnumDamageType damageType, float damage)
         {
-            if (!(Api is ICoreClientAPI api)) return;
+            if (!(Api is ICoreClientAPI capi)) return;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
-                api?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
+                capi?.Logger.Event("[KRPGEnchantment] Enchantment is generating particles for entity {0}.", entity.EntityId);
 
-            KRPGEnchantmentSystem eSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
+            KRPGEnchantmentSystem eSys = capi.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
 
             int power = (int)MathF.Ceiling(damage);
 
             if (damageType == EnumDamageType.Fire)
             {
-                int r = api.World.Rand.Next(eSys.FireParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.FireParticleProps.Length + 1);
                 int num = Math.Min(eSys.FireParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.FireParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -631,15 +632,15 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Frost)
             {
-                int r = api.World.Rand.Next(eSys.FrostParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.FrostParticleProps.Length + 1);
                 int num = Math.Min(eSys.FrostParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.FrostParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -654,15 +655,15 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Electricity)
             {
-                int r = api.World.Rand.Next(eSys.ElectricityParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.ElectricityParticleProps.Length + 1);
                 int num = Math.Min(eSys.ElectricityParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.ElectricityParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -677,15 +678,15 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Heal)
             {
-                int r = api.World.Rand.Next(eSys.HealParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.HealParticleProps.Length + 1);
                 int num = Math.Min(eSys.HealParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.HealParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -700,15 +701,15 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Injury)
             {
-                int r = api.World.Rand.Next(eSys.InjuryParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.InjuryParticleProps.Length + 1);
                 int num = Math.Min(eSys.InjuryParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.InjuryParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -723,15 +724,15 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
             if (damageType == EnumDamageType.Poison)
             {
-                int r = api.World.Rand.Next(eSys.PoisonParticleProps.Length + 1);
+                int r = capi.World.Rand.Next(eSys.PoisonParticleProps.Length + 1);
                 int num = Math.Min(eSys.PoisonParticleProps.Length - 1, r);
                 AdvancedParticleProperties advancedParticleProperties = eSys.PoisonParticleProps[num];
-                advancedParticleProperties.basePos.Set(entity.SidedPos.X, entity.SidedPos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
+                advancedParticleProperties.basePos.Set(entity.Pos.X, entity.Pos.Y + (double)(entity.SelectionBox.YSize / 2f), entity.Pos.Z);
                 advancedParticleProperties.PosOffset[0].var = entity.SelectionBox.XSize / 2f;
                 advancedParticleProperties.PosOffset[1].var = entity.SelectionBox.YSize / 2f;
                 advancedParticleProperties.PosOffset[2].var = entity.SelectionBox.ZSize / 2f;
@@ -746,7 +747,7 @@ namespace KRPGLib.Enchantment
                 };
                 for (int i = 0; i <= power; i++)
                 {
-                    api.World.SpawnParticles(advancedParticleProperties);
+                    capi.World.SpawnParticles(advancedParticleProperties);
                 }
             }
         }

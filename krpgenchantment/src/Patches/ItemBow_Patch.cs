@@ -14,21 +14,25 @@ using Vintagestory.API.Datastructures;
 using System.Reflection.Emit;
 using Vintagestory.Common;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace KRPGLib.Enchantment
 {
     [HarmonyPatch]
-    public class ItemBow_Patch
+    public static class ItemBow_Patch
     {
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ItemBow), "OnHeldInteractStop")]
+        [HarmonyPatch(typeof(ItemBow), nameof(ItemBow.OnHeldInteractStop))]
         public static void Postfix(ItemBow __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
         {
-            if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
+            // if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
             // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().combatOverhaul != null) return;
-            if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
-            byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack);
-            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.Api.World.ElapsedMilliseconds);
+            byEntity.World.Api.Logger.Event("[KRPGEnchantment] Firing ItemBow.OnHeldInteractStop postfix");
+            // if (byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
+            // byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot.Itemstack.Clone());
+            string s = slot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments")?.GetString("active", null);
+            byEntity.WatchedAttributes.SetString("pendingRangedEnchants", s);
+            byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", byEntity.World.ElapsedMilliseconds);
+            byEntity.World.Api.Logger.Event("[KRPGEnchantment] Finished firing ItemBow.OnHeldInteractStop postfix");
         }
     }
 }
