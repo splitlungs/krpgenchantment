@@ -38,21 +38,27 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.5f } };
             Version = 1.00f;
         }
-        // public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
-        // {
-        //     bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
-        //     if (didEnch == true)
-        //     {
-        //         ITreeAttribute tree =  inStack.Attributes.GetTreeAttribute("statModifier");
-        //         tree.SetFloat("bowsProficiency", enchantPower * PowerMultiplier);
-        //         return true;
-        //     }
-        //     else
-        //         return false;
-        // }
+        public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        {
+            bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
+            if (!didEnch) return false;
+            float curSpd = inStack.Attributes.GetFloat("reloadSpeed", 1);
+            ITreeAttribute eTree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float ogSpd = eTree.GetFloat("reloadSpeed", 1);
+            if (ogSpd != 1)
+                curSpd = (enchantPower * PowerMultiplier) + ogSpd;
+            else
+            {
+                eTree.SetFloat("reloadSpeed", curSpd);
+                inStack.Attributes.MergeTree(eTree);
+                curSpd = (enchantPower * PowerMultiplier) + curSpd;
+            }
+            inStack.Attributes.SetFloat("reloadSpeed", curSpd);
+            return true;
+        }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
@@ -62,12 +68,12 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             }
             // Write to entity
-            float mul = enchant.Power *PowerMultiplier;
+            float mul = enchant.Power * PowerMultiplier;
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
-                entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
-                entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
-                entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
+                // entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
+                // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
+                // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
             }
             else
             {

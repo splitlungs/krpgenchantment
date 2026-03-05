@@ -24,11 +24,11 @@ namespace KRPGLib.Enchantment.Compat
         ICoreAPI Api;
         ICoreClientAPI cApi;
         ICoreServerAPI sApi;
-        public void StartClientSide(ICoreAPI api)
+        public void StartClientSide(ICoreClientAPI capi)
         {
-            Api = api;
-            if (!(api is ICoreClientAPI capi)) return;
+            if (!(capi is ICoreClientAPI)) return;
             cApi = capi;
+            Api = capi as ICoreAPI;
             
             CombatOverhaulSystem COSys = capi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
@@ -37,12 +37,11 @@ namespace KRPGLib.Enchantment.Compat
                 COSys.ClientRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
             }
         }
-        public void StartServerSide(ICoreAPI api)
+        public void StartServerSide(ICoreServerAPI sapi)
         {
-            Api = api;
-            if (!(api is ICoreServerAPI sapi)) return;
+            if (!(sapi is ICoreServerAPI)) return;
             sApi = sapi;
-
+            Api = sapi as ICoreAPI;
             CombatOverhaulSystem COSys = sapi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
             {
@@ -54,7 +53,7 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
-            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack);
+            Dictionary<string, int> enchants = sApi?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack);
             if (enchants == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
@@ -84,7 +83,7 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void OnRangedDamaged(Entity target, DamageSource damageSource, ItemStack weaponStack, ref float damage)
         {
-            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(weaponStack);
+            Dictionary<string, int> enchants = sApi?.EnchantAccessor()?.GetActiveEnchantments(weaponStack);
             if (enchants == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)

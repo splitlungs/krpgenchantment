@@ -67,12 +67,12 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void RegisterClientCompatibility()
         {
-            if (Api.ModLoader.IsModEnabled("combatoverhaul") == true)
+            if (cApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysClient = new COSystem();
-                COSysClient.StartClientSide(Api);
+                COSysClient.StartClientSide(cApi);
             }
-            if (Api.ModLoader.IsModEnabled("krpgwands") == true)
+            if (cApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
                 WandsSysClient = new KRPGWandsSystem();
                 WandsSysClient.StartClientSide(Api);
@@ -83,12 +83,12 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void RegisterServerCompatibility()
         {
-            if (Api.ModLoader.IsModEnabled("combatoverhaul") == true)
+            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysServer = new COSystem();
-                COSysServer.StartServerSide(Api);
+                COSysServer.StartServerSide(sApi);
             }
-            if (Api.ModLoader.IsModEnabled("krpgwands") == true)
+            if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
                 WandsSysServer = new KRPGWandsSystem();
                 WandsSysServer.StartServerSide(Api);
