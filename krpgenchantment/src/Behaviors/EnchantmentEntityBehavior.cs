@@ -358,36 +358,7 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
         }
-        /// <summary>
-        /// Attempt to register a formated EnchantTick into this entity's TickRegistry.
-        /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="tickDuration"></param>
-        /// <param name="persistent"></param>
-        /// <param name="isHotbar"></param>
-        /// <param name="isOffhand"></param>
-        public void RegisterEnchantTick(EnchantmentSource enchant, long tickDuration, bool persistent, bool isHotbar, bool isOffhand)
-        {
-            // Get ID's
-            int stackID = enchant.SourceStack.Id;
-            int slotID = enchant.SourceSlot.Inventory.GetSlotId(enchant.SourceSlot);
-            string codeID = enchant.Code + ":" + slotID + ":" + stackID;
-            // Toggle On
-            if (!TickRegistry.ContainsKey(codeID))
-            {
-                EnchantTick eTick = enchant.ToEnchantTick();
-                eTick.SlotID = slotID;
-                eTick.Persistent = persistent;
-                eTick.IsHotbar = isHotbar;
-                eTick.IsOffhand = isOffhand;
-                eTick.TickDuration = tickDuration;
-                TickRegistry.Add(codeID, eTick);
-            }
-        }
-        public void RemoveEnchantTick()
-        {
-            
-        }
+
         // public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         // {
         //     if (!(Api is ICoreServerAPI sapi)) return;
@@ -522,6 +493,36 @@ namespace KRPGLib.Enchantment
         public override void OnReceivedClientPacket(IServerPlayer player, int packetid, byte[] data, ref EnumHandling handled)
         {
             base.OnReceivedClientPacket(player, packetid, data, ref handled);
+        }
+                /// <summary>
+        /// Attempt to register a formated EnchantTick into this entity's TickRegistry.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="tickDuration"></param>
+        /// <param name="persistent"></param>
+        /// <param name="isHotbar"></param>
+        /// <param name="isOffhand"></param>
+        public void RegisterEnchantTick(EnchantmentSource enchant, long tickDuration, bool persistent, bool isHotbar, bool isOffhand)
+        {
+            // Get ID's
+            int stackID = enchant.SourceStack.Id;
+            int slotID = enchant.SourceSlot.Inventory.GetSlotId(enchant.SourceSlot);
+            string codeID = enchant.Code + ":" + slotID + ":" + stackID;
+            // Toggle On
+            if (!TickRegistry.ContainsKey(codeID))
+            {
+                EnchantTick eTick = enchant.ToEnchantTick();
+                eTick.SlotID = slotID;
+                eTick.Persistent = persistent;
+                eTick.IsHotbar = isHotbar;
+                eTick.IsOffhand = isOffhand;
+                eTick.TickDuration = tickDuration;
+                TickRegistry.Add(codeID, eTick);
+            }
+        }
+        public void RemoveEnchantTick()
+        {
+            
         }
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;

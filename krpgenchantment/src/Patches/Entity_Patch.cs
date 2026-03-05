@@ -20,6 +20,7 @@ namespace KRPGLib.Enchantment
     [HarmonyPatch]
     public class Entity_OnEntityLoaded_Patch
     {
+        [HarmonyReversePatch]
         [HarmonyPatch(typeof(Entity), nameof(Entity.OnEntityLoaded))]
         public static bool Prefix(Entity __instance)
         {
@@ -40,6 +41,7 @@ namespace KRPGLib.Enchantment
     [HarmonyPatch]
     public class Entity_OnEntitySpawn_Patch
     {
+        [HarmonyReversePatch]
         [HarmonyPatch(typeof(Entity), nameof(Entity.OnEntitySpawn))]
         public static bool Prefix(Entity __instance)
         {

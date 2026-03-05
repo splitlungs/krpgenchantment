@@ -20,7 +20,7 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static bool Prefix(EntityProjectile __instance, Entity entity)
         {
-            entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
+            // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
             if (!(byEntity.Api is ICoreServerAPI sapi) || entity == null) return true;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
@@ -50,13 +50,15 @@ namespace KRPGLib.Enchantment
         [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
         public static void Postfix(EntityProjectile __instance, Entity entity)
         {
-            __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
+            // __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
             Entity byEntity = __instance.FiredBy;
             if (!(byEntity.Api is ICoreServerAPI sapi)) return;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
+                Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
+                if (enchants == null) return;
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, entity, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, entity, enchants, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
