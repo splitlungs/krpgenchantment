@@ -33,6 +33,7 @@ namespace KRPGLib.Enchantment
             }
             else
             {
+                // TODO: Make a better way to detect "healing" typed enchants
                 // Get Bow & Enchants
                 // ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
                 // weaponStack?.ResolveBlockOrItem(sapi.World);
@@ -104,7 +105,6 @@ namespace KRPGLib.Enchantment
     }
     // Disabled for now.
     // Try to setup triggers on BlockEntity
-    /*
     [HarmonyPatch]
     public class EntityProjectile_TryAttackEntity_Patch
     {
@@ -115,8 +115,8 @@ namespace KRPGLib.Enchantment
         public static void Postfix(EntityProjectile __instance, double impactSpeed, ref bool __result)
         {
             __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.TryAttackEntity postfix");
-
-            if (!(__instance.Api is ICoreServerAPI sapi)) return; 
+            Entity byEntity = __instance.FiredBy;
+            if (!(byEntity.Api is ICoreServerAPI sapi)) return;
             if (__result == true) return;
             // Hit someTHING
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
@@ -129,19 +129,37 @@ namespace KRPGLib.Enchantment
             else
             {
                 // Get Bow & Timer
-                ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
-                long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
-                if (weaponStack == null || (sapi.World.ElapsedMilliseconds - timestamp) > 6000) return;
-
+                // ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
+                // long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
+                // if (weaponStack == null || (sapi.World.ElapsedMilliseconds - timestamp) > 6000) return;
+                string activeEnchants = byEntity.WatchedAttributes.GetString("pendingRangedEnchants", null);
+                long timestamp = byEntity.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
+                long timediff = sapi.World.ElapsedMilliseconds - timestamp;
+                if (activeEnchants == null || timediff > 6000) return;
+                Dictionary<string, int> enchants = new Dictionary<string, int>();
+                string[] activeString = activeEnchants.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                foreach (string s in activeString)
+                {
+                    string[] ep = s.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                    string e = ep[0].ToString();
+                    int i = Convert.ToInt32(ep?[1]);
+                    if (e == null || i <= 0) continue;
+                    enchants.Add(e, i);
+                }
+                if (enchants.Count < 1)
+                {
+                    sapi.Logger.Error("[KRPGEnchantment] Enchanted arrow failed to parse any enchantments out of an active string.");
+                    return;
+                }
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, __instance, ref parameters);
+                // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", __instance, __instance, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, __instance, enchants, ref parameters);
                 if (!didEnchants)
-                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", weaponStack.GetName());
-
-                __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.GetName());
+                // __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
+                __instance.FiredBy.WatchedAttributes.SetString("pendingRangedEnchants", null);
                 __instance.FiredBy.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", 0);
             }
         }
     }
-    */
 }

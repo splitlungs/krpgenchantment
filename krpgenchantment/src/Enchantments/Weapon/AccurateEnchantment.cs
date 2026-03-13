@@ -8,6 +8,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.Server;
 using KRPGLib.Enchantment.API;
 using Vintagestory.GameContent;
 using Vintagestory.API.Util;
@@ -40,6 +41,24 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
             Version = 1.00f;
         }
+        public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        {
+            bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
+            if (!didEnch) return false;
+            float curVal = inStack.Attributes.GetFloat("aimingDifficulty", 1);
+            ITreeAttribute eTree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+            if (ogVal != 1)
+                curVal = ogVal - (enchantPower * PowerMultiplier);
+            else
+            {
+                eTree.SetFloat("aimingDifficulty", curVal);
+                inStack.Attributes.MergeTree(eTree);
+                curVal = curVal - (enchantPower * PowerMultiplier);
+            }
+            inStack.Attributes.SetFloat("aimingDifficulty", curVal);
+            return true;
+        }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
@@ -47,7 +66,21 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Write to entity
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-                entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+            {
+                //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                float curVal = enchant.SourceStack.Attributes.GetFloat("aimingDifficulty", 1);
+                ITreeAttribute eTree = enchant.SourceStack.Attributes.GetOrAddTreeAttribute("enchantments");
+                float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+                if (ogVal != 1)
+                    curVal = ogVal - (enchant.Power * PowerMultiplier);
+                else
+                {
+                    eTree.SetFloat("aimingDifficulty", curVal);
+                    enchant.SourceStack.Attributes.MergeTree(eTree);
+                    curVal = curVal - (enchant.Power * PowerMultiplier);
+                }
+                enchant.SourceStack.Attributes.SetFloat("aimingDifficulty", curVal);
+            }
             else
                 entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, enchant.Power * PowerMultiplier, true);
         }
@@ -71,7 +104,7 @@ namespace KRPGLib.Enchantment
         {
             // Remove both, just in case someone is hot swapping CO between triggers
             entity.Stats.Remove("rangedWeaponsAcc", "krpge" + Code);
-            entity.Stats.Remove("steadyAim", "krpge" + Code);
+            // entity.Stats.Remove("steadyAim", "krpge" + Code);
         }
     }
 }

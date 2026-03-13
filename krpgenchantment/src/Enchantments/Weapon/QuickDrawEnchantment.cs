@@ -45,18 +45,18 @@ namespace KRPGLib.Enchantment
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
             if (!didEnch) return false;
-            float curSpd = inStack.Attributes.GetFloat("reloadSpeed", 1);
+            float curVal = inStack.Attributes.GetFloat("reloadSpeed", 1);
             ITreeAttribute eTree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
-            float ogSpd = eTree.GetFloat("reloadSpeed", 1);
-            if (ogSpd != 1)
-                curSpd = (enchantPower * PowerMultiplier) + ogSpd;
+            float ogVal = eTree.GetFloat("reloadSpeed", 1);
+            if (ogVal != 1)
+                curVal = (enchantPower * PowerMultiplier) + ogVal;
             else
             {
-                eTree.SetFloat("reloadSpeed", curSpd);
+                eTree.SetFloat("reloadSpeed", curVal);
                 inStack.Attributes.MergeTree(eTree);
-                curSpd = (enchantPower * PowerMultiplier) + curSpd;
+                curVal = (enchantPower * PowerMultiplier) + curVal;
             }
-            inStack.Attributes.SetFloat("reloadSpeed", curSpd);
+            inStack.Attributes.SetFloat("reloadSpeed", curVal);
             return true;
         }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
@@ -99,9 +99,9 @@ namespace KRPGLib.Enchantment
         void RemoveAllMultipliers(Entity entity)
         {
             // Remove all, just in case someone is hot swapping CO between triggers
-            entity.Stats.Remove("bowsProficiency", "krpge" + Code);
-            entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
-            entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("bowsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
             entity.Stats.Remove("rangedWeaponsSpeed", "krpge" + Code);
         }
     }
