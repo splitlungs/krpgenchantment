@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -104,7 +105,8 @@ namespace KRPGLib.Enchantment
         }
     }
     // Disabled for now.
-    // Try to setup triggers on BlockEntity
+    // TODO: Setup triggers on BlockEntity impact.
+    /*
     [HarmonyPatch]
     public class EntityProjectile_TryAttackEntity_Patch
     {
@@ -119,6 +121,9 @@ namespace KRPGLib.Enchantment
             if (!(byEntity.Api is ICoreServerAPI sapi)) return;
             if (__result == true) return;
             // Hit someTHING
+            BlockEntity be = __instance.World.BlockAccessor.GetBlockEntity(__instance.Pos.AsBlockPos);
+            if (be == null) return;
+            __instance.Api.Logger.Event("[KRPGEnchantment] Collided with {0}.", be.Block?.BlockId);
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 EnchantModifiers parameters = new EnchantModifiers();
@@ -162,4 +167,76 @@ namespace KRPGLib.Enchantment
             }
         }
     }
+    */
+    /*
+    [HarmonyPatch]
+    public class EntityProjectile_IsColliding_Patch
+    {
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(EntityProjectile), "IsColliding")]
+        public static bool IsColliding(EntityProjectile __instance, EntityPos pos, double impactSpeed, ref long __msCollide, ref bool __beforeCollided)
+        {
+            __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.IsColliding prefix");
+            Entity byEntity = __instance.FiredBy;
+            if (!(byEntity.Api is ICoreServerAPI sapi)) return true;
+
+            pos.Motion.Set(0.0, 0.0, 0.0);
+            if (__beforeCollided || !(__instance.World is IServerWorldAccessor) || __instance.World.ElapsedMilliseconds <= __msCollide + 500)
+            {
+                return true;
+            }
+            
+            BlockEntity be = __instance.World.BlockAccessor.GetBlockEntity(pos.AsBlockPos);
+            __instance.Api.Logger.Event("[KRPGEnchantment] Collided with {0}.", be?.Block?.BlockId);
+
+            if (be != null && impactSpeed >= 0.07)
+            {
+
+                // Hit someTHING
+                if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
+                {
+                    EnchantModifiers parameters = new EnchantModifiers();
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", __instance, __instance, ref parameters);
+                    if (!didEnchants)
+                        sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
+                }
+                else
+                {
+                    // Get Bow & Timer
+                    // ItemStack weaponStack = __instance.FiredBy.WatchedAttributes.GetItemstack("pendingRangedEnchants", null);
+                    // long timestamp = __instance.FiredBy.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
+                    // if (weaponStack == null || (sapi.World.ElapsedMilliseconds - timestamp) > 6000) return;
+                    string activeEnchants = byEntity.WatchedAttributes.GetString("pendingRangedEnchants", null);
+                    long timestamp = byEntity.WatchedAttributes.GetLong("pendingRangedEnchantsTimer", 0);
+                    long timediff = sapi.World.ElapsedMilliseconds - timestamp;
+                    if (activeEnchants == null || timediff > 6000) return true;
+                    Dictionary<string, int> enchants = new Dictionary<string, int>();
+                    string[] activeString = activeEnchants.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in activeString)
+                    {
+                        string[] ep = s.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                        string e = ep[0].ToString();
+                        int i = Convert.ToInt32(ep?[1]);
+                        if (e == null || i <= 0) continue;
+                        enchants.Add(e, i);
+                    }
+                    if (enchants.Count < 1)
+                    {
+                        sapi.Logger.Error("[KRPGEnchantment] Enchanted arrow failed to parse any enchantments out of an active string.");
+                        return true;
+                    }
+                    EnchantModifiers parameters = new EnchantModifiers();
+                    // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", __instance, __instance, ref parameters);
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, __instance, enchants, ref parameters);
+                    if (!didEnchants)
+                        sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.GetName());
+                    // __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
+                    __instance.FiredBy.WatchedAttributes.SetString("pendingRangedEnchants", null);
+                    __instance.FiredBy.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", 0);
+                }
+            }
+            return true;
+        }
+    }
+    */
 }

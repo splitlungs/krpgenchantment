@@ -117,6 +117,7 @@ namespace KRPGLib.Enchantment
             bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
             base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
         }
+        // Not called here?
         // public override bool OnHeldAttackCancel(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, EnumItemUseCancelReason cancelReason, ref EnumHandling handling)
         // {
         //     if (!(Api is ICoreServerAPI sapi)) return base.OnHeldAttackCancel(secondsPassed, slot, byEntity, blockSelection, entitySel, cancelReason, ref handling);
@@ -125,6 +126,7 @@ namespace KRPGLib.Enchantment
         //     bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackCancel", byEntity, entitySel?.Entity, ref parameters);
         //     return base.OnHeldAttackCancel(secondsPassed, slot, byEntity, blockSelection, entitySel, cancelReason, ref handling);
         // }
+        // Not called here?
         // public override void OnHeldAttackStop(float secondsPassed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSelection, EntitySelection entitySel, ref EnumHandling handling)
         // {
         //     if (!(Api is ICoreServerAPI sapi)) return;
@@ -142,6 +144,7 @@ namespace KRPGLib.Enchantment
             bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
             base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
         }
+        // Not called here?
         // public override bool OnHeldInteractCancel(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason cancelReason, ref EnumHandling handled)
         // {
         //     if (!(Api is ICoreServerAPI sapi)) return base.OnHeldInteractCancel(secondsUsed, slot, byEntity, blockSel, entitySel, cancelReason, ref handled);

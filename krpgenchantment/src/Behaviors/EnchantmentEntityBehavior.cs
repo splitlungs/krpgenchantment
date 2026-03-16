@@ -128,7 +128,6 @@ namespace KRPGLib.Enchantment
                     GenerateHotbarEnchantCache(slotId);
                 }
                 hotbarInventory.SlotModified += OnHotbarModified;
-                
             }
             else
             {
@@ -176,7 +175,7 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
-            base.OnEntitySpawn();
+            base.OnEntityDespawn(despawn);
 
             if (!(Api is ICoreServerAPI sapi)) return;
 

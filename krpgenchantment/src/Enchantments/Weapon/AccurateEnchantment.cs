@@ -41,6 +41,8 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
             Version = 1.00f;
         }
+        // Disabled for now
+        // Combat Overhaul will overwrite these values at server start
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
@@ -83,6 +85,27 @@ namespace KRPGLib.Enchantment
             }
             else
                 entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+        }
+        void AddMultipliers(Entity entity, ItemStack itemStack, int ePower)
+        {
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
+            {
+                //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                float curVal = itemStack.Attributes.GetFloat("aimingDifficulty", 1);
+                ITreeAttribute eTree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
+                float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+                if (ogVal != 1)
+                    curVal = ogVal - (ePower * PowerMultiplier);
+                else
+                {
+                    eTree.SetFloat("aimingDifficulty", curVal);
+                    itemStack.Attributes.MergeTree(eTree);
+                    curVal = curVal - (ePower * PowerMultiplier);
+                }
+                itemStack.Attributes.SetFloat("aimingDifficulty", curVal);
+            }
+            else
+                entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, ePower * PowerMultiplier, true);
         }
         public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
