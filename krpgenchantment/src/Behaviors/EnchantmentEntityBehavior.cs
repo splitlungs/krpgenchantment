@@ -237,6 +237,10 @@ namespace KRPGLib.Enchantment
         }
         #endregion
         #region Triggers
+        /// <summary>
+        /// Called when the character's inventory is modified.
+        /// </summary>
+        /// <param name="slotId"></param>
         public void OnGearModified(int slotId)
         {
             // Sanity Checks
@@ -306,6 +310,10 @@ namespace KRPGLib.Enchantment
                 GenerateGearEnchantCache(slotId);
             }
         }
+        /// <summary>
+        /// Called when the player changes an item on the hotbar.
+        /// </summary>
+        /// <param name="slotId"></param>
         public void OnHotbarModified(int slotId)
         {
             // 0. Sanity Check
@@ -357,7 +365,7 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
         }
-
+        // After the attack has completed
         // public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         // {
         //     if (!(Api is ICoreServerAPI sapi)) return;

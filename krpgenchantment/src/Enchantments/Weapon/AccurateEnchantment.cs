@@ -68,44 +68,41 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Write to entity
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-            {
-                //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-                float curVal = enchant.SourceStack.Attributes.GetFloat("aimingDifficulty", 1);
-                ITreeAttribute eTree = enchant.SourceStack.Attributes.GetOrAddTreeAttribute("enchantments");
-                float ogVal = eTree.GetFloat("aimingDifficulty", 1);
-                if (ogVal != 1)
-                    curVal = ogVal - (enchant.Power * PowerMultiplier);
-                else
-                {
-                    eTree.SetFloat("aimingDifficulty", curVal);
-                    enchant.SourceStack.Attributes.MergeTree(eTree);
-                    curVal = curVal - (enchant.Power * PowerMultiplier);
-                }
-                enchant.SourceStack.Attributes.SetFloat("aimingDifficulty", curVal);
-            }
+                AddMultipliersCO(enchant.SourceStack, enchant.Power);
             else
-                entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+                AddMultipliers(entity, enchant.Power);
         }
-        void AddMultipliers(Entity entity, ItemStack itemStack, int ePower)
+        /// <summary>
+        /// Adds multipliers for vanilla VS.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="power"></param>
+        void AddMultipliers(Entity entity, int power)
         {
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-            {
-                //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-                float curVal = itemStack.Attributes.GetFloat("aimingDifficulty", 1);
-                ITreeAttribute eTree = itemStack.Attributes.GetOrAddTreeAttribute("enchantments");
-                float ogVal = eTree.GetFloat("aimingDifficulty", 1);
-                if (ogVal != 1)
-                    curVal = ogVal - (ePower * PowerMultiplier);
-                else
-                {
-                    eTree.SetFloat("aimingDifficulty", curVal);
-                    itemStack.Attributes.MergeTree(eTree);
-                    curVal = curVal - (ePower * PowerMultiplier);
-                }
-                itemStack.Attributes.SetFloat("aimingDifficulty", curVal);
-            }
+            float mul = power * PowerMultiplier;
+            entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, mul, true);
+        }
+        /// <summary>
+        /// Adds multipliers for Combat Overhaul
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="power"></param>
+        void AddMultipliersCO(ItemStack stack, int power)
+        {
+            //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
+            float mul = power * PowerMultiplier;
+            float curVal = stack.Attributes.GetFloat("aimingDifficulty", 1);
+            ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+            if (ogVal != 1)
+                curVal = ogVal - mul;
             else
-                entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, ePower * PowerMultiplier, true);
+            {
+                eTree.SetFloat("aimingDifficulty", curVal);
+                stack.Attributes.MergeTree(eTree);
+                curVal = curVal - mul;
+            }
+            stack.Attributes.SetFloat("aimingDifficulty", curVal);
         }
         public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
