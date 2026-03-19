@@ -56,6 +56,11 @@ namespace KRPGLib.Enchantment
             IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
             if (ench != null)
                 MiningSpeedMul = ench.Modifiers.GetFloat("PowerMultiplier");
+            
+        }
+        public override void OnUnloaded(ICoreAPI api)
+        {
+            base.OnUnloaded(api);
         }
         public override void OnDamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount, ref EnumHandling bhHandling)
         {

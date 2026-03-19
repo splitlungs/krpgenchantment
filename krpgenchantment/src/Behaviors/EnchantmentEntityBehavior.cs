@@ -187,6 +187,8 @@ namespace KRPGLib.Enchantment
                 sapi.World.UnregisterGameTickListener(onTickID);
             }
         }
+        #endregion
+        #region Cache
         /// <summary>
         /// Creates or updates an ActiveEnchantCache for each slot in the player's Character inventory.
         /// </summary>
@@ -243,7 +245,7 @@ namespace KRPGLib.Enchantment
         /// <param name="slotId"></param>
         public void OnGearModified(int slotId)
         {
-            // Sanity Checks
+            // 0. Sanity Checks
             if (!(Api is ICoreServerAPI sapi)) return;
             if (entity?.Alive != true) return;
             if (gearInventory?[slotId] == null) return;
@@ -274,17 +276,9 @@ namespace KRPGLib.Enchantment
                     sapi.EnchantAccessor().TryEnchantment(enchant, ref parameters2);
                 }
                 
-                // 1.2 Cleanup tick registry manually
-                foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
-                {
-                    string eCode = pair.Key;
-                    if (pair.Key.Contains(":")) eCode = eCode.Split(":")?[1];
-                    if (eCode == slotId.ToString())
-                    {
-                        TickRegistry[pair.Key].Dispose();
-                    }
-                }
-                // Update the cache and exit
+                // 1.2 Cleanup the EnchantTicks
+                RemoveEnchantTicks(slotId);
+                // 1.3 Update the cache and exit
                 GenerateGearEnchantCache(slotId);
                 return;
             }
@@ -306,9 +300,10 @@ namespace KRPGLib.Enchantment
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] {0} is generating an ActiveEnchantCache for {1}.", entity.GetName(), gearInventory[slotId].Itemstack?.GetName());
-                // 4. Update the cache
-                GenerateGearEnchantCache(slotId);
             }
+            
+            // 4. Update the cache
+            GenerateGearEnchantCache(slotId);
         }
         /// <summary>
         /// Called when the player changes an item on the hotbar.
@@ -324,16 +319,9 @@ namespace KRPGLib.Enchantment
             // 1. If Slot is empty, Remove any ticks registered to the slot
             if (hotbarInventory[slotId].Empty == true && GearEnchantCache[slotId]?.Enchantments != null)
             {
-                foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
-                {
-                    string eCode = pair.Key;
-                    if (pair.Key.Contains(":")) eCode = eCode.Split(":")?[1];
-                    if (eCode == slotId.ToString())
-                    {
-                        TickRegistry[pair.Key].Dispose();
-                    }
-                }
-                // Update the cache and exit
+                // 1.1 Cleanup the EnchantTicks
+                RemoveEnchantTicks(slotId);
+                // 1.2 Update the cache and exit
                 GenerateHotbarEnchantCache(slotId);
                 return;
             }
@@ -365,17 +353,19 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
         }
-        // After the attack has completed
-        // public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
-        // {
-        //     if (!(Api is ICoreServerAPI sapi)) return;
-        //     if (!IsPlayer) return;
-        //     handled = EnumHandling.Handled;
-        //     ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
-        //     EnchantModifiers parameters = new EnchantModifiers();
-        //     bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
-        //     base.DidAttack(source, targetEntity, ref handled);
-        // }
+        // After the attack has completed - Not used yet
+        public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
+        {
+            /*
+            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!IsPlayer) return;
+            handled = EnumHandling.Handled;
+            ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
+            */
+            base.DidAttack(source, targetEntity, ref handled);
+        }
         // When THIS ENTITY is interacted with by another entity. Not called by projectiles
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
@@ -470,6 +460,8 @@ namespace KRPGLib.Enchantment
                     dmg = parameters.GetFloat("damage");
             }
         }
+        #endregion
+        #region Network
         public override void OnReceivedServerPacket(int packetid, byte[] data, ref EnumHandling handled)
         {
             switch(packetid)
@@ -501,7 +493,9 @@ namespace KRPGLib.Enchantment
         {
             base.OnReceivedClientPacket(player, packetid, data, ref handled);
         }
-                /// <summary>
+        #endregion
+        #region TickRegistry
+        /// <summary>
         /// Attempt to register a formated EnchantTick into this entity's TickRegistry.
         /// </summary>
         /// <param name="enchant"></param>
@@ -527,9 +521,21 @@ namespace KRPGLib.Enchantment
                 TickRegistry.Add(codeID, eTick);
             }
         }
-        public void RemoveEnchantTick()
+        /// <summary>
+        /// Removes all EnchantTicks for the given ItemSLot's contents. Be sure to update cache after.
+        /// </summary>
+        /// <param name="slotId"></param>
+        public void RemoveEnchantTicks(int slotId)
         {
-            
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            {
+                string eCode = pair.Key;
+                if (pair.Key.Contains(":")) eCode = eCode.Split(":")?[1];
+                if (eCode == slotId.ToString())
+                {
+                    TickRegistry[pair.Key].Dispose();
+                }
+            }
         }
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;
@@ -759,6 +765,6 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
-#endregion
+        #endregion
     }
 }

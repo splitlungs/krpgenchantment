@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
     public class AccurateEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        float COMultiplier { get { return Modifiers.GetFloat("CombatOverhaulMultiplier"); } }
         /// <summary>
         /// Provides ranged weapon accuracy modifiers the entity who triggers OnEquip.
         /// </summary>
@@ -38,25 +39,27 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f }, {"CombatOverhaulMultiplier", 0.1f } };
             Version = 1.00f;
         }
-        // Disabled for now
-        // Combat Overhaul will overwrite these values at server start
+        // TODO: Fix Combat Overhaul overwriting these values periodically
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
             if (!didEnch) return false;
+            // SO FAR, we only need to save to ItemStack for CO
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer == null) return didEnch;
+            float mul = enchantPower * COMultiplier;
             float curVal = inStack.Attributes.GetFloat("aimingDifficulty", 1);
             ITreeAttribute eTree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
             float ogVal = eTree.GetFloat("aimingDifficulty", 1);
             if (ogVal != 1)
-                curVal = ogVal - (enchantPower * PowerMultiplier);
+                curVal = ogVal - mul;
             else
             {
                 eTree.SetFloat("aimingDifficulty", curVal);
                 inStack.Attributes.MergeTree(eTree);
-                curVal = curVal - (enchantPower * PowerMultiplier);
+                curVal = curVal - mul;
             }
             inStack.Attributes.SetFloat("aimingDifficulty", curVal);
             return true;
@@ -67,9 +70,9 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Write to entity
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-                AddMultipliersCO(enchant.SourceStack, enchant.Power);
-            else
+            // if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
+            //     AddMultipliersCO(enchant.SourceSlot.Itemstack, enchant.Power);
+            // else
                 AddMultipliers(entity, enchant.Power);
         }
         /// <summary>
@@ -90,7 +93,7 @@ namespace KRPGLib.Enchantment
         void AddMultipliersCO(ItemStack stack, int power)
         {
             //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
-            float mul = power * PowerMultiplier;
+            float mul = power * COMultiplier;
             float curVal = stack.Attributes.GetFloat("aimingDifficulty", 1);
             ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
             float ogVal = eTree.GetFloat("aimingDifficulty", 1);

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vintagestory.API.Common;
 
 namespace KRPGLib.Enchantment
 {
@@ -71,6 +72,18 @@ namespace KRPGLib.Enchantment
         {
             if (!this.ContainsKey(key)) return false;
             return this[key].ToString().ToLower().Equals("true");
+        }
+        /// <summary>
+        /// Returns an ItemStack or null if a value cannot be found.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public ItemStack GetItemStack(string key)
+        {
+            if (!this.ContainsKey(key)) return null;
+            if (!this[key].GetType().IsEquivalentTo(typeof(ItemStack))) return null;
+            ItemStack stack = this[key] as ItemStack;
+            return stack;
         }
     }
 }

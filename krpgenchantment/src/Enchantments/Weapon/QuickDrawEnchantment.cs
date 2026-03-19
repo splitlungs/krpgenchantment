@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
     public class QuickDrawEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        float COMultiplier { get { return Modifiers.GetFloat("CombatOverhaulMultiplier"); } }
         /// <summary>
         /// Provides ranged weapon draw speed modifiers the entity who triggers OnEquip.
         /// </summary>
@@ -38,31 +39,31 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.5f } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.1f }, {"CombatOverhaulMultiplier", 0.5f } };
             Version = 1.00f;
         }
-        // Disabled for now
-        // Combat Overhaul will overwrite these values periodically
-        /*
+        // TODO: Fix Combat Overhaul overwriting these values periodically
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
             if (!didEnch) return false;
+            // SO FAR, we only need to save to ItemStack for CO
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer == null) return didEnch;
+            float mul = enchantPower * COMultiplier;
             float curVal = inStack.Attributes.GetFloat("reloadSpeed", 1);
             ITreeAttribute eTree = inStack.Attributes.GetOrAddTreeAttribute("enchantments");
             float ogVal = eTree.GetFloat("reloadSpeed", 1);
             if (ogVal != 1)
-                curVal = (enchantPower * PowerMultiplier) + ogVal;
+                curVal = mul + ogVal;
             else
             {
                 eTree.SetFloat("reloadSpeed", curVal);
                 inStack.Attributes.MergeTree(eTree);
-                curVal = (enchantPower * PowerMultiplier) + curVal;
+                curVal = mul + curVal;
             }
             inStack.Attributes.SetFloat("reloadSpeed", curVal);
             return true;
         }
-        */
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
@@ -71,9 +72,9 @@ namespace KRPGLib.Enchantment
                 // float f = enchant.SourceStack.Collectible.Attributes?["statModifier"]["rangedWeaponsSpeed"].AsFloat() ?? 0f;
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             }
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-                AddMultipliersCO(enchant.SourceStack, enchant.Power);
-            else
+            // if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
+            //     AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
+            // else
                 AddMultipliers(entity, enchant.Power);
         }
         public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
@@ -89,16 +90,10 @@ namespace KRPGLib.Enchantment
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
-            // 
+            // CO saves to Itemstack
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
-            {
                 return;
-            }
-            else
-            {
-                
-            }
-            // Write to entity
+            // Update entity for Vanilla VS
             RemoveAllMultipliers(entity);
         }
         /// <summary>
@@ -116,24 +111,24 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="stack"></param>
         /// <param name="power"></param>
-        void AddMultipliersCO(ItemStack stack, int power)
+        void AddMultipliersCO(ref ItemSlot slot, int power)
         {
             // entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
             // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
             // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
-            float mul = power * PowerMultiplier;
-            float curVal = stack.Attributes.GetFloat("reloadSpeed", 1);
-            ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float mul = power * COMultiplier;
+            float curVal = slot.Itemstack.Attributes.GetFloat("reloadSpeed", 1);
+            ITreeAttribute eTree = slot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
             float ogVal = eTree.GetFloat("reloadSpeed", 1);
             if (ogVal != 1)
                 curVal = mul + ogVal;
             else
             {
                 eTree.SetFloat("reloadSpeed", curVal);
-                stack.Attributes.MergeTree(eTree);
+                slot.Itemstack.Attributes.MergeTree(eTree);
                 curVal = mul + curVal;
             }
-            stack.Attributes.SetFloat("reloadSpeed", curVal);
+            slot.Itemstack.Attributes.SetFloat("reloadSpeed", curVal);
         }
         void RemoveAllMultipliers(Entity entity)
         {

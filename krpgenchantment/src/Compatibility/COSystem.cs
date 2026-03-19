@@ -110,6 +110,43 @@ namespace KRPGLib.Enchantment.Compat
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem detected a RangedWeaponStatus change to {0}.", status.ToString());
+            // Servers only plz
+            if (!(Api is ICoreServerAPI sapi)) return;
+            EnchantModifiers parameters = new EnchantModifiers() { {"WeaponStack", weaponSlot.Itemstack} };
+            switch (status)
+            {
+                case RangedWeaponStatus.StartLoading:
+                {
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStart", attacker, attacker, ref parameters);
+                    break;
+                }
+                case RangedWeaponStatus.EndLoading:
+                {
+                    break;
+                }
+                case RangedWeaponStatus.StartAiming:
+                {
+                    break;
+                }
+                case RangedWeaponStatus.EndAiming:
+                {
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStop", attacker, attacker, ref parameters);
+                    break;
+                }
+                case RangedWeaponStatus.TriggeredShot:
+                {
+                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStop", attacker, attacker, ref parameters);
+                    break;
+                }
+                case RangedWeaponStatus.SpawnedProjectile:
+                {
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            
         }
     }
 }
