@@ -39,7 +39,7 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.1f }, {"CombatOverhaulMultiplier", 0.5f } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.3f }, {"CombatOverhaulMultiplier", 0.5f } };
             Version = 1.00f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
@@ -111,9 +111,9 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
             // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
             float mul = power * COMultiplier;
-            float curVal = slot.Itemstack.Attributes.GetFloat("reloadSpeed", 1);
+            float curVal = slot.Itemstack.Attributes.GetFloat("reloadSpeed", 1.0f);
             ITreeAttribute eTree = slot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
-            float ogVal = eTree.GetFloat("reloadSpeed", 1);
+            float ogVal = eTree.GetFloat("reloadSpeed", 1.0f);
             if (ogVal != 1)
                 curVal = mul + ogVal;
             else
@@ -135,9 +135,9 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
             // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
             float mul = power * COMultiplier;
-            float curVal = stack.Attributes.GetFloat("reloadSpeed", 1);
+            float curVal = stack.Attributes.GetFloat("reloadSpeed", 1.0f);
             ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
-            float ogVal = eTree.GetFloat("reloadSpeed", 1);
+            float ogVal = eTree.GetFloat("reloadSpeed", 1.0f);
             if (ogVal != 1)
                 curVal = mul + ogVal;
             else
@@ -154,7 +154,8 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Remove("bowsProficiency", "krpge" + Code);
             // entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
             // entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
-            entity.Stats.Remove("rangedWeaponsSpeed", "krpge:" + Code);
+            // entity.Stats.Remove("rangedWeaponsSpeed", "krpge:" + Code);
+            entity.Stats.Set("rangedWeaponsSpeed", "krpge:" + Code, 1.0f, true);
         }
     }
 }

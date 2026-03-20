@@ -39,7 +39,7 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f }, {"CombatOverhaulMultiplier", 0.1f } };
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.2f }, {"CombatOverhaulMultiplier", 0.1f } };
             Version = 1.00f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
@@ -109,9 +109,9 @@ namespace KRPGLib.Enchantment
         {
             //entity.Stats.Set("steadyAim", "krpge" + Code, enchant.Power * PowerMultiplier, true);
             float mul = power * COMultiplier;
-            float curVal = slot.Itemstack.Attributes.GetFloat("aimingDifficulty", 1);
+            float curVal = slot.Itemstack.Attributes.GetFloat("aimingDifficulty", 1.0f);
             ITreeAttribute eTree = slot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
-            float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+            float ogVal = eTree.GetFloat("aimingDifficulty", 1.0f);
             if (ogVal != 1)
                 curVal = ogVal - mul;
             else
@@ -133,9 +133,9 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
             // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
             float mul = power * COMultiplier;
-            float curVal = stack.Attributes.GetFloat("aimingDifficulty", 1);
+            float curVal = stack.Attributes.GetFloat("aimingDifficulty", 1.0f);
             ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
-            float ogVal = eTree.GetFloat("aimingDifficulty", 1);
+            float ogVal = eTree.GetFloat("aimingDifficulty", 1.0f);
             if (ogVal != 1)
                 curVal = mul + ogVal;
             else
@@ -149,8 +149,10 @@ namespace KRPGLib.Enchantment
         void RemoveAllMultipliers(Entity entity)
         {
             // Remove both, just in case someone is hot swapping CO between triggers
-            entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
-            entity.Stats.Remove("steadyAim", "krpge:" + Code);
+            // entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
+            // entity.Stats.Remove("steadyAim", "krpge:" + Code);
+            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, true);
+            entity.Stats.Set("steadyAim", "krpge:" + Code, 1.0f, true);
         }
     }
 }
