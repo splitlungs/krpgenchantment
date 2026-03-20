@@ -33,6 +33,10 @@ namespace KRPGLib.Enchantment
             // byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot?.Itemstack);
             string s = slot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments")?.GetString("active", null);
             if (s == null) return;
+            EnchantModifiers parameters = new EnchantModifiers();
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, byEntity, ref parameters);
+            if (!didEnchants)
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             long t = sapi.World.ElapsedMilliseconds;
             byEntity.WatchedAttributes.SetString("pendingRangedEnchants", s);
             byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", t);

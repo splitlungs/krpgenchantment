@@ -43,7 +43,6 @@ namespace KRPGLib.Enchantment
             Version = 1.00f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
-        /*
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
@@ -53,7 +52,6 @@ namespace KRPGLib.Enchantment
             AddMultipliersCO(ref inStack, enchantPower);
             return true;
         }
-        */
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
@@ -64,8 +62,8 @@ namespace KRPGLib.Enchantment
             }
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
-                AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
-                enchant.SourceSlot.MarkDirty();
+                // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
+                // enchant.SourceSlot.MarkDirty();
             }
             else
                 AddMultipliers(entity, enchant.Power);

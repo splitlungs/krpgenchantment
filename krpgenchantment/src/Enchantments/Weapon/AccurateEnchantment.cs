@@ -43,7 +43,6 @@ namespace KRPGLib.Enchantment
             Version = 1.00f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
-        /*
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {
             bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
@@ -53,7 +52,6 @@ namespace KRPGLib.Enchantment
             AddMultipliersCO(ref inStack, enchantPower);
             return true;
         }
-        */
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             Entity entity = enchant?.CauseEntity;
@@ -62,8 +60,8 @@ namespace KRPGLib.Enchantment
             // Write to entity
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
-                float mul = enchant.Power * COMultiplier;
-                entity.Stats.Set("steadyAim", "krpge:" + Code, mul, true);
+                // float mul = enchant.Power * COMultiplier;
+                // entity.Stats.Set("steadyAim", "krpge:" + Code, mul, true);
                 // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
                 // enchant.SourceSlot.MarkDirty();
             }
@@ -98,7 +96,7 @@ namespace KRPGLib.Enchantment
         void AddMultipliers(Entity entity, int power)
         {
             float mul = power * PowerMultiplier;
-            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, mul, true);
+            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, mul, false);
         }
         /// <summary>
         /// Adds multipliers for Combat Overhaul
@@ -151,8 +149,8 @@ namespace KRPGLib.Enchantment
             // Remove both, just in case someone is hot swapping CO between triggers
             // entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
             // entity.Stats.Remove("steadyAim", "krpge:" + Code);
-            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, true);
-            entity.Stats.Set("steadyAim", "krpge:" + Code, 1.0f, true);
+            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, false);
+            // entity.Stats.Set("steadyAim", "krpge:" + Code, 1.0f, false);
         }
     }
 }

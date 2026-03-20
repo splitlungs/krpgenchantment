@@ -24,6 +24,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantmentEntityBehavior : EntityBehavior
     {
+        #region Vars
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public ICoreAPI Api { get { return entity.Api;} }
         public int TickTime
@@ -75,13 +76,14 @@ namespace KRPGLib.Enchantment
         public Dictionary<int, ActiveEnchantCache> GearEnchantCache = null;
         public Dictionary<int, ActiveEnchantCache> HotbarEnchantCache = null;
         public Dictionary<string, EnchantTick> TickRegistry = new Dictionary<string, EnchantTick>();
+        #endregion
+        #region Setup
         public EnchantmentEntityBehavior(Entity entity) : base(entity)
         {
             // Api = entity.Api;
             // Well look what I fuckin found in EntityPlayer. I don't remember any patch notes about this shit
             // entity.Stats.Register("healingeffectivness").Register("maxhealthExtraPoints").Register("walkspeed");
         }
-        #region Setup
         public void RegisterPlayer(IServerPlayer byPlayer)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
@@ -135,6 +137,12 @@ namespace KRPGLib.Enchantment
                 return;
             }
             entity.GetBehavior<EntityBehaviorHealth>().onDamaged += OnHit;
+        }
+        public override void OnEntitySpawn()
+        {
+            base.OnEntitySpawn();
+            // Only tick when spawned
+            enchantTickLocked = false;
         }
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
@@ -303,7 +311,7 @@ namespace KRPGLib.Enchantment
                 }
                 
                 // 1.2 Cleanup the EnchantTicks
-                RemoveEnchantTicks(slotId);
+                DisposeEnchantTicks(slotId);
                 // 1.3 Update the cache and exit
                 GenerateGearEnchantCache(slotId);
                 return;
@@ -346,7 +354,7 @@ namespace KRPGLib.Enchantment
             if (hotbarInventory[slotId].Empty == true && GearEnchantCache[slotId]?.Enchantments != null)
             {
                 // 1.1 Cleanup the EnchantTicks
-                RemoveEnchantTicks(slotId);
+                DisposeEnchantTicks(slotId);
                 // 1.2 Update the cache and exit
                 GenerateHotbarEnchantCache(slotId);
                 return;
@@ -557,7 +565,7 @@ namespace KRPGLib.Enchantment
         /// Removes all EnchantTicks for the given ItemSLot's contents. Be sure to update cache after.
         /// </summary>
         /// <param name="slotId"></param>
-        public void RemoveEnchantTicks(int slotId)
+        public void DisposeEnchantTicks(int slotId)
         {
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
@@ -569,61 +577,78 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
+        /// <summary>
+        /// Safely removes all EnchantTicks marked as IsTrash.
+        /// </summary>
+        internal void RemoveTrashEnchantTicks()
+        {
+            enchantTickLocked = true;
+            foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
+            {
+                if (pair.Value.IsTrash == true)
+                    TickRegistry.Remove(pair.Key);
+            }
+            enchantTickLocked = false;
+        }
         // public delegate void EnchantTickDelegate(Entity byEntity, EnchantTick eTick);
         // public event EnchantTickDelegate? OnEnchantTick;
         private long lastTickMs = 0;
-        public override void OnGameTick(float dt)
+        private bool enchantTickLocked = true;
+        /// <summary>
+        /// Returns true if the given ItemStack's Id matches a main hand or off hand hotbar slot containing an item with the same Id.
+        /// </summary>
+        /// <param name="itemID"></param>
+        /// <returns></returns>
+        public bool IsHeld(int itemID)
         {
-            // 0. Safety check
-            if (!(Api is ICoreServerAPI sapi)) return;
-            // 0a. Verify the TickRegistry
+            if (player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id == itemID 
+                || player?.InventoryManager?.OffhandHotbarSlot?.Itemstack?.Id == itemID)
+                return true;
+            else
+                return false;
+        }
+        /// <summary>
+        /// Be sure to lock the registry before 
+        /// </summary>
+        /// <param name="api"></param>
+        private void ProcessServerTickRegistry(ICoreServerAPI api)
+        {
+            // 0. Safety Checks
+            // Verify the TickRegistry
             if (TickRegistry?.Count <= 0) return;
-            // 0b. Verify the tick rate limiter
-            long curTime = sapi.World.ElapsedMilliseconds;
-            if (!((curTime - lastTickMs) >= TickTime)) return;
-            // 1. Prepare Garbage & time
-            List<string> tickBin = new List<string>();
-            long tickStart = sapi.World.ElapsedMilliseconds;
-            // 2. Loop TickRegistry
+            // 1. Prepare time
+            long tickStart = api.World.ElapsedMilliseconds;
+            // 2. Loop Registry
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
-                // 2a. Trash Checks
-                // If marked to be removed, add it to the bin
+                // 2a. Skip Trash ticks
                 if (pair.Value.IsTrash == true)
-                {
-                    tickBin.Add(pair.Key);
                     continue;
-                }
                 // 2b. Hotbar Checks
                 // Don't run if it's on hotbar, but unselected & not in the offhand
-                if (pair.Value.IsHotbar == true || pair.Value.IsOffhand == true)
-                {
-                    if (pair.Value.ItemID != player.InventoryManager.ActiveHotbarSlot.Itemstack?.Id
-                    && pair.Value.ItemID != player.InventoryManager.OffhandHotbarSlot.Itemstack?.Id)
+                if ((pair.Value.IsHotbar == true || pair.Value.IsOffhand == true) && !IsHeld(pair.Value.ItemID))
                     continue;
-                }
                 // 2c. Duration Checks
                 long curDur = tickStart - pair.Value.LastTickTime;
                 if (!(curDur >= pair.Value.TickDuration)) continue;
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    sapi.Logger.Event("[KRPGEnchantment] {0} is being ticked.", pair.Key);
+                    api.Logger.Event("[KRPGEnchantment] {0} is being ticked.", pair.Key);
                 // 2d. Process the tick if it meets run conditions
                 // Handle OnTick() or remove from the registry if expired.
                 // Be sure to handle your EnchantTick updates (LastTickTime, TicksRemaining, etc. in OnTick())
                 if (pair.Value.TicksRemaining > 0 || pair.Value.Persistent == true)
                 {
                     // 2d1. Mark the tick as trash if we cannot resolve the Enchantment
-                    IEnchantment enchant = sapi.EnchantAccessor().GetEnchantment(pair.Value.Code);
+                    IEnchantment enchant = api.EnchantAccessor().GetEnchantment(pair.Value.Code);
                     if (enchant == null)
                     {
-                        sapi.Logger.Error("[KRPGEnchantment] Failed to get the required IEnchantment. Removing this tick.");
+                        api.Logger.Error("[KRPGEnchantment] Failed to get the required IEnchantment. Removing this tick.");
                         pair.Value.Dispose();
-                        tickBin.Add(pair.Key);
                         continue;
                     }
                     // 2d2. Trigger OnTick
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        sapi.Logger.Event("[KRPGEnchantment] {0} is being triggered.", pair.Value.Code);
+                        api.Logger.Event("[KRPGEnchantment] {0} is being triggered.", pair.Value.Code);
                     EnchantTick eTick = pair.Value;
                     enchant.OnTick(ref eTick);
                     TickRegistry[pair.Key] = eTick;
@@ -632,18 +657,27 @@ namespace KRPGLib.Enchantment
                 else
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
-                        sapi.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Value.Code);
+                        api.Logger.Event("[KRPGEnchantment] Enchantment finished Ticking for {0}.", pair.Value.Code);
                     pair.Value.Dispose();
-                    tickBin.Add(pair.Key);
                     continue;
                 }
             }
-            // 3. Take out the trash. 
-            // Do this at the end of ticking, so as to not re-order the TickRegistry during processing
-            foreach (string s in tickBin)
-            {
-                TickRegistry.Remove(s);
-            }
+        }
+        public override void OnGameTick(float dt)
+        {
+            // 0. Verify the tick rate limiter
+            long curTime = Api.World.ElapsedMilliseconds;
+            if (!((curTime - lastTickMs) >= TickTime)) return;
+            // 1. Only on the server
+            if (!(Api is ICoreServerAPI sapi)) return;
+            // 2. Lock toggle
+            if (enchantTickLocked == true) return;
+            else enchantTickLocked = true;
+            // 3. Process ticks - Server only right now
+            ProcessServerTickRegistry(sapi);
+            // 4. Trash Removal
+            // This will unlock the EnchantTicks
+            RemoveTrashEnchantTicks();
         }
         #endregion
         #region Particles

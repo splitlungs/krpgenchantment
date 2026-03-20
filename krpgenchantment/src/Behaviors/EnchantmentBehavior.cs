@@ -119,7 +119,9 @@ namespace KRPGLib.Enchantment
             handHandling = EnumHandHandling.Handled;
             handling = EnumHandling.Handled;
             EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            if (!didEnchants)
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
         }
         // Not called here?
@@ -146,7 +148,9 @@ namespace KRPGLib.Enchantment
             handHandling = EnumHandHandling.Handled;
             handling = EnumHandling.Handled;
             EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            if (!didEnchants)
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
         }
         // Not called here?

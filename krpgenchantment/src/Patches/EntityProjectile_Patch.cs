@@ -60,7 +60,7 @@ namespace KRPGLib.Enchantment
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null) return;
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, entity, enchants, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, entity, enchants, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
@@ -95,7 +95,7 @@ namespace KRPGLib.Enchantment
                 }
                 EnchantModifiers parameters = new EnchantModifiers();
                 // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, entity, ref parameters);
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttackStop", byEntity, entity, enchants, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, entity, enchants, ref parameters);
                 if (!didEnchants)
                     entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.GetName());
                 // __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
