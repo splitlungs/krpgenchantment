@@ -174,6 +174,8 @@ namespace KRPGLib.Enchantment
             {
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, byEntity, ref parameters);
+                if (didEnchantments == true && EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Finished processing Enchantments on EnchantmentBehavior.OnInteractStop().");
             }
 
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)

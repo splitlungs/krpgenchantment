@@ -48,7 +48,7 @@ namespace KRPGLib.Enchantment
             };
             Version = 1.03f;
         }
-        public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;
 

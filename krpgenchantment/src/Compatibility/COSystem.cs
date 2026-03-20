@@ -63,7 +63,7 @@ namespace KRPGLib.Enchantment.Compat
 
             float dmg = damage;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttacked", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
@@ -93,7 +93,7 @@ namespace KRPGLib.Enchantment.Compat
 
             float dmg = damage;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttacked", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
@@ -108,45 +108,62 @@ namespace KRPGLib.Enchantment.Compat
         }
         public void OnRangedStatusChange(Entity attacker, ItemSlot weaponSlot, RangedWeaponStatus status)
         {
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] COSystem detected a RangedWeaponStatus change to {0}.", status.ToString());
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] COSystem detected a RangedWeaponStatus change to {0}.", status.ToString());
             // Servers only plz
             if (!(Api is ICoreServerAPI sapi)) return;
-            EnchantModifiers parameters = new EnchantModifiers() { {"WeaponStack", weaponSlot.Itemstack} };
+            // TODO: Testing for passing ItemStacks as EnchantModifiers
+            // EnchantModifiers parameters = new EnchantModifiers() { {"WeaponStack", weaponSlot.Itemstack} };
+            EnchantModifiers parameters = new EnchantModifiers() { {"RangedWeaponStatus", (int)status} };
+            bool didEnchants = false;
             switch (status)
             {
                 case RangedWeaponStatus.StartLoading:
                 {
-                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStart", attacker, attacker, ref parameters);
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStart", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
                 case RangedWeaponStatus.EndLoading:
                 {
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStep", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
                 case RangedWeaponStatus.StartAiming:
                 {
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStep", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
+                
                 case RangedWeaponStatus.EndAiming:
                 {
-                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStop", attacker, attacker, ref parameters);
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStop", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
                 case RangedWeaponStatus.TriggeredShot:
                 {
-                    bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStop", attacker, attacker, ref parameters);
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStep", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
                 case RangedWeaponStatus.SpawnedProjectile:
                 {
+                    didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponSlot, "OnAttackStep", attacker, attacker, ref parameters);
+                    if (didEnchants == true && EnchantingConfigLoader.Config?.Debug == true)
+                        Api.Logger.Event("[KRPGEnchantment] COSystem successfully processed RangedWeaponStatus: {0} Enchantment trigger.", status.ToString());
                     break;
                 }
                 default:
                     break;
             }
-            
-            
         }
     }
 }

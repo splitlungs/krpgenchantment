@@ -237,6 +237,31 @@ namespace KRPGLib.Enchantment
             else
                 HotbarEnchantCache.Add(slotId, cache);
         }
+        /// <summary>
+        /// Recalculate and reapply Combat Overhaul stats on the given item.
+        /// </summary>
+        /// <param name="slotId"></param>
+        public void RecalculateCOStats(int slotId)
+        {
+            if (!(Api is ICoreServerAPI sapi)) return;
+            Dictionary<string, int> enchants = HotbarEnchantCache[slotId]?.Enchantments;
+            if (enchants == null) return;
+            ItemSlot slot = hotbarInventory?[slotId];
+            ItemStack stack = slot?.Itemstack;
+            if (stack == null) return;
+            // if (enchants.ContainsKey("accurate"))
+            // {
+            //     AccurateEnchantment ench = sapi.EnchantAccessor().GetEnchantment("accurate") as AccurateEnchantment;
+            //     ench.AddMultipliersCO(ref stack, enchants["accurate"]);
+            // }
+            if (enchants.ContainsKey("quickdraw"))
+            {
+                QuickDrawEnchantment ench = sapi.EnchantAccessor().GetEnchantment("quickdraw") as QuickDrawEnchantment;
+                ench.AddMultipliersCO(ref stack, enchants["quickdraw"]);
+            }
+            ITreeAttribute tree = stack.Attributes;
+            hotbarInventory[slotId].Itemstack.Attributes.MergeTree(tree);
+        }
         #endregion
         #region Triggers
         /// <summary>
@@ -352,18 +377,22 @@ namespace KRPGLib.Enchantment
 
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
+
+            // 6. Update CO Stats - Note this uses Cache
+            // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().COSysServer != null)
+            //     RecalculateCOStats(slotId);
         }
         // After the attack has completed - Not used yet
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
-            /*
             if (!(Api is ICoreServerAPI sapi)) return;
             if (!IsPlayer) return;
             handled = EnumHandling.Handled;
             ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
             EnchantModifiers parameters = new EnchantModifiers();
             bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", entity, targetEntity, ref parameters);
-            */
+            if (didEnchantments == true && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Finished processing Enchantments for EnchantmentEntitybehavior.DidAttack().");
             base.DidAttack(source, targetEntity, ref handled);
         }
         // When THIS ENTITY is interacted with by another entity. Not called by projectiles
@@ -388,12 +417,14 @@ namespace KRPGLib.Enchantment
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
                 EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttacked", byEntity, entity, ref parameters);
                 if (didEnchants)
                 {
                     eHandled = parameters.GetInt("handled");
                     handled = (EnumHandling)eHandled;
                 }
+                if(EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Finished processing Enchantments on EnchantmentEntityBehavior.OnInteract().");
             }
         }
         /// <summary>

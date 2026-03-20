@@ -53,7 +53,7 @@ namespace KRPGLib.Enchantment
             };
             Version = 1.03f;
         }
-        public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Poison enchantment.", enchant.TargetEntity.GetName());

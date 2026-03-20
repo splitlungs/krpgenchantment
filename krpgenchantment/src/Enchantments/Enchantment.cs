@@ -533,6 +533,15 @@ namespace KRPGLib.Enchantment
         
         }
         /// <summary>
+        /// Triggered when an entity has been attacked by an enchanted item, before damage.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
+        }
+        /// <summary>
         /// Triggered when an entity wearing an enchanted item has already received damage.
         /// </summary>
         /// <param name="enchant"></param>
