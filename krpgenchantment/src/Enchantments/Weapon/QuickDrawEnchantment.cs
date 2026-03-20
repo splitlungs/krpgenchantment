@@ -98,7 +98,7 @@ namespace KRPGLib.Enchantment
         void AddMultipliers(Entity entity, int power)
         {
             float mul = power * PowerMultiplier;
-            entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, mul, true);
+            entity.Stats.Set("rangedWeaponsSpeed", "krpge:" + Code, mul, true);
         }
         /// <summary>
         /// Adds multipliers for Combat Overhaul
@@ -154,7 +154,7 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Remove("bowsProficiency", "krpge" + Code);
             // entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
             // entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
-            entity.Stats.Remove("rangedWeaponsSpeed", "krpge" + Code);
+            entity.Stats.Remove("rangedWeaponsSpeed", "krpge:" + Code);
         }
     }
 }

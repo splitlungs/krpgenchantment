@@ -237,6 +237,7 @@ namespace KRPGLib.Enchantment
             else
                 HotbarEnchantCache.Add(slotId, cache);
         }
+        [Obsolete]
         /// <summary>
         /// Recalculate and reapply Combat Overhaul stats on the given item.
         /// </summary>
@@ -382,7 +383,7 @@ namespace KRPGLib.Enchantment
             // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().COSysServer != null)
             //     RecalculateCOStats(slotId);
         }
-        // After the attack has completed - Not used yet
+        // After the attack has completed
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
             if (!(Api is ICoreServerAPI sapi)) return;

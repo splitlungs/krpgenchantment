@@ -63,7 +63,7 @@ namespace KRPGLib.Enchantment
             if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
                 float mul = enchant.Power * COMultiplier;
-                entity.Stats.Set("steadyAim", "krpge" + Code, mul, true);
+                entity.Stats.Set("steadyAim", "krpge:" + Code, mul, true);
                 // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
                 // enchant.SourceSlot.MarkDirty();
             }
@@ -98,7 +98,7 @@ namespace KRPGLib.Enchantment
         void AddMultipliers(Entity entity, int power)
         {
             float mul = power * PowerMultiplier;
-            entity.Stats.Set("rangedWeaponsAcc", "krpge" + Code, mul, true);
+            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, mul, true);
         }
         /// <summary>
         /// Adds multipliers for Combat Overhaul
@@ -149,8 +149,8 @@ namespace KRPGLib.Enchantment
         void RemoveAllMultipliers(Entity entity)
         {
             // Remove both, just in case someone is hot swapping CO between triggers
-            entity.Stats.Remove("rangedWeaponsAcc", "krpge" + Code);
-            entity.Stats.Remove("steadyAim", "krpge" + Code);
+            entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
+            entity.Stats.Remove("steadyAim", "krpge:" + Code);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace KRPGLib.Enchantment
             // Calculate total
             float mul = GetTotalMultiplier(powers);
             // Write to Entity
-            ebh.SetMaxHealthModifiers("krpge" + Code, mul);
+            ebh.SetMaxHealthModifiers("krpge:" + Code, mul);
             ebh.UpdateMaxHealth();
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
@@ -81,7 +81,7 @@ namespace KRPGLib.Enchantment
             // Calculate total
             float mul = GetTotalMultiplier(powers);
             // Write to Entity
-            ebh.SetMaxHealthModifiers("krpge" + Code, mul);
+            ebh.SetMaxHealthModifiers("krpge:" + Code, mul);
             ebh.UpdateMaxHealth();
         }
         List<int> GetTotalPowers(Entity entity)
@@ -118,7 +118,7 @@ namespace KRPGLib.Enchantment
         {
             EntityBehaviorHealth ebh = entity?.GetBehavior<EntityBehaviorHealth>();
             if (ebh == null) return;
-            ebh.SetMaxHealthModifiers("krpge" + Code, 0);
+            ebh.SetMaxHealthModifiers("krpge:" + Code, 0);
             ebh.UpdateMaxHealth();
         }
     }

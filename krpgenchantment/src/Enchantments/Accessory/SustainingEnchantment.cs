@@ -57,7 +57,7 @@ namespace KRPGLib.Enchantment
             // Calculate total
             float mul = GetTotalMultiplier(powers);
             // Write to Entity
-            entity.Stats.Set("hungerrate", "krpge" + Code, -mul, true);
+            entity.Stats.Set("hungerrate", "krpge:" + Code, -mul, true);
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -78,7 +78,7 @@ namespace KRPGLib.Enchantment
             // Calculate total
             float mul = GetTotalMultiplier(powers);
             // Write to Entity
-            entity.Stats.Set("hungerrate", "krpge" + Code, -mul, true);
+            entity.Stats.Set("hungerrate", "krpge:" + Code, -mul, true);
         }
         List<int> GetTotalPowers(Entity entity)
         {
@@ -112,7 +112,7 @@ namespace KRPGLib.Enchantment
         }
         void RemoveAllMultipliers(Entity entity)
         {
-            entity.Stats.Remove("hungerrate", "krpge" + Code);
+            entity.Stats.Remove("hungerrate", "krpge:" + Code);
         }
     }
 }
