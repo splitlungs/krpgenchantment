@@ -603,9 +603,9 @@ namespace KRPGLib.Enchantment
         {
             ItemSlot slot = hotbarInventory[slotID];
             // TODO: Make a better way to identify a unique item
-            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id == slot?.Itemstack?.Id)
+            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.ActiveHotbarSlot?.Itemstack == slot?.Itemstack)
                 return true;
-            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.OffhandHotbarSlot?.Itemstack?.Id == slot?.Itemstack?.Id)
+            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.OffhandHotbarSlot?.Itemstack == slot?.Itemstack)
                 return true;
             return false;
         }
