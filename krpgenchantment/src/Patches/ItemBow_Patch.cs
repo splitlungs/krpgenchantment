@@ -38,6 +38,7 @@ namespace KRPGLib.Enchantment
             if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             long t = sapi.World.ElapsedMilliseconds;
+            // TODO: Move this to the ProjectileStack?
             byEntity.WatchedAttributes.SetString("pendingRangedEnchants", s);
             byEntity.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", t);
             if (EnchantingConfigLoader.Config?.Debug == true)

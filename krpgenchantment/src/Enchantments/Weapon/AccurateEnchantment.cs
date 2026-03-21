@@ -64,6 +64,7 @@ namespace KRPGLib.Enchantment
                 // entity.Stats.Set("steadyAim", "krpge:" + Code, mul, true);
                 // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
                 // enchant.SourceSlot.MarkDirty();
+                return;
             }
             else
                 AddMultipliers(entity, enchant.Power);
@@ -80,11 +81,12 @@ namespace KRPGLib.Enchantment
         }
         public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            // if (!(Api is ICoreServerAPI sapi)) return;
+            // CO saves to Itemstack
+            // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
-            // CO saves to Itemstack
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             // Write to entity
             RemoveAllMultipliers(entity);
         }
@@ -151,6 +153,7 @@ namespace KRPGLib.Enchantment
             // entity.Stats.Remove("steadyAim", "krpge:" + Code);
             entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, false);
             // entity.Stats.Set("steadyAim", "krpge:" + Code, 1.0f, false);
+            
         }
     }
 }

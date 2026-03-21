@@ -101,10 +101,10 @@ namespace KRPGLib.Enchantment.Compat
                     Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", damage);
             }
 
-            if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
-            if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
+            // if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
+            // if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
         public void OnRangedStatusChange(Entity attacker, ItemSlot weaponSlot, RangedWeaponStatus status)
         {

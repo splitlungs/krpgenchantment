@@ -597,15 +597,17 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns true if the given ItemStack's Id matches a main hand or off hand hotbar slot containing an item with the same Id.
         /// </summary>
-        /// <param name="itemID"></param>
+        /// <param name="slotID"></param>
         /// <returns></returns>
-        public bool IsHeld(int itemID)
+        public bool IsHeld(int slotID)
         {
-            if (player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id == itemID 
-                || player?.InventoryManager?.OffhandHotbarSlot?.Itemstack?.Id == itemID)
+            ItemSlot slot = hotbarInventory[slotID];
+            // TODO: Make a better way to identify a unique item
+            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Id == slot?.Itemstack?.Id)
                 return true;
-            else
-                return false;
+            if (player?.InventoryManager?.ActiveHotbarSlotNumber == slotID && player?.InventoryManager?.OffhandHotbarSlot?.Itemstack?.Id == slot?.Itemstack?.Id)
+                return true;
+            return false;
         }
         /// <summary>
         /// Be sure to lock the registry before 
@@ -626,7 +628,7 @@ namespace KRPGLib.Enchantment
                     continue;
                 // 2b. Hotbar Checks
                 // Don't run if it's on hotbar, but unselected & not in the offhand
-                if ((pair.Value.IsHotbar == true || pair.Value.IsOffhand == true) && !IsHeld(pair.Value.ItemID))
+                if ((pair.Value.IsHotbar == true || pair.Value.IsOffhand == true) && !IsHeld(pair.Value.SlotID))
                     continue;
                 // 2c. Duration Checks
                 long curDur = tickStart - pair.Value.LastTickTime;
