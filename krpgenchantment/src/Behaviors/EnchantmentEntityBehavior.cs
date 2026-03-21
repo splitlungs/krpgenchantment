@@ -27,6 +27,7 @@ namespace KRPGLib.Enchantment
         #region Vars
         public override string PropertyName() { return "EnchantmentEntityBehavior"; }
         public ICoreAPI Api { get { return entity.Api;} }
+        public EntityStats stats { get { return entity.Stats; } }
         public int TickTime
         {
             get
@@ -141,6 +142,8 @@ namespace KRPGLib.Enchantment
         public override void OnEntitySpawn()
         {
             base.OnEntitySpawn();
+            // Toggle passives - Disabled for now
+            // if (IsPlayer) ToggleHeldItems();
             // Only tick when spawned
             enchantTickLocked = false;
         }
@@ -209,12 +212,12 @@ namespace KRPGLib.Enchantment
             ItemSlot slot = gearInventory[slotId];
             // Generate Cache if it worked
             ActiveEnchantCache cache = new ActiveEnchantCache();
-            cache.Enchantments = Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack);
+            cache.Enchantments = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
             cache.LastCheckTime = Api.World.ElapsedMilliseconds;
             if (gearInventory[slotId].Empty == true)
                 cache.ItemId = -1;
             else
-                cache.ItemId = gearInventory[slotId].Itemstack.Id;
+                cache.ItemId = gearInventory[slotId].Itemstack.Item.ItemId;
             // Set the cache
             if (GearEnchantCache.ContainsKey(slotId) == true)
                 GearEnchantCache[slotId] = cache;
@@ -233,17 +236,163 @@ namespace KRPGLib.Enchantment
             ItemSlot slot = hotbarInventory[slotId];
             // Generate Cache if it worked
             ActiveEnchantCache cache = new ActiveEnchantCache();
-            cache.Enchantments = Api.EnchantAccessor().GetActiveEnchantments(slot.Itemstack);
+            cache.Enchantments = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
             cache.LastCheckTime = Api.World.ElapsedMilliseconds;
             if (hotbarInventory[slotId].Empty == true)
                 cache.ItemId = -1;
             else
-                cache.ItemId = hotbarInventory[slotId].Itemstack.Id;
+                cache.ItemId = hotbarInventory[slotId].Itemstack.Item.ItemId;
             // Set the cache
             if (HotbarEnchantCache.ContainsKey(slotId) == true)
                 HotbarEnchantCache[slotId] = cache;
             else
                 HotbarEnchantCache.Add(slotId, cache);
+        }
+        // WIP - Create OnToggle system.
+        /*
+        // Main Slot, Main Itemstack.Item.ItemId, Offhand Slot, Offhand Itemstack.Item.ItemId
+        ItemStack[] HeldItemCache = { null, null };
+        /// <summary>
+        /// Trigger a an "OnToggle" for the given item.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="state"></param>
+        public void ToggleItem(ItemStack stack, bool state)
+        {
+            if (!(Api is ICoreServerAPI sapi)) return;
+            EnchantModifiers parameters = new EnchantModifiers() { {"ToggleState", state } };
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(stack, "OnToggle", entity, entity, ref parameters);
+            if (didEnchants && EnchantingConfigLoader.Config?.Debug == true)
+                sapi.Logger.Event("[KRPGEnchantment] Successfully completed an OnToggle trigger state {0} for {1}.", state, entity.GetName());
+        }
+        /// <summary>
+        /// Toggling: The art of scrolling one's mouse wheel along a hotbar.
+        /// Checks for currently held item and offhand item, then assigns them to HeldItemUID. 
+        /// Finally, it calls "OnToggle" enchantments if necessary.
+        /// </summary>
+        public void ToggleHeldItems()
+        {
+            // if (!(Api is ICoreServerAPI sapi)) return;
+            // 1. Setup new cache and compare
+            IPlayerInventoryManager inv = player?.InventoryManager;
+            // New - Cache
+            ItemStack[] newItemCache = { 
+                inv?.ActiveHotbarSlot?.Itemstack?.Clone(), 
+                inv?.OffhandHotbarSlot?.Itemstack?.Clone() };
+            // New - Two Handed?
+            // bool? new2H = newItemCache[0]?.Equals(newItemCache[1]);
+            // Old - Two Handed?
+            // bool? old2H = HeldItemCache[0]?.Equals(HeldItemCache[1]);
+            bool? mainMatch = newItemCache[0]?.Equals(HeldItemCache[0]);
+            bool? offMatch = newItemCache[1]?.Equals(HeldItemCache[1]);
+            // 2. Toggle On/Off based on cache
+            // 2a. Old - New Match - Do nothing
+            if (newItemCache.Equals(HeldItemCache) == true) 
+                return;
+            // 2b. Main Change - Off Match
+            else if (mainMatch != true && offMatch == true)
+            {
+                // Toggle off Old Main
+                if (HeldItemCache[0] != null) 
+                    ToggleItem(HeldItemCache[0], false);
+                // Toggle  on New Main
+                if (newItemCache[0] != null)
+                    ToggleItem(newItemCache[0], true);
+            }
+            // 2c. Main Match - Off Change
+            else if (mainMatch == true && offMatch != true)
+            {
+                // Toggle off Old Offhand
+                if (HeldItemCache[1] != null)
+                    ToggleItem(HeldItemCache[1], false);
+                // Toggle on New Offhand
+                if (newItemCache[1] != null)
+                    ToggleItem(newItemCache[1], true);
+            }
+            // 2d. Main Change - Off Change
+            else if (mainMatch != true && offMatch != true)
+            {
+                // Toggle off Old Main
+                if (HeldItemCache[0] != null)
+                    ToggleItem(HeldItemCache[0], false);
+                // Toggle on New Main
+                if (newItemCache[0] != null)
+                    ToggleItem(newItemCache[0], false);
+                // Toggle off Old Offhand
+                if (HeldItemCache[1] != null)
+                    ToggleItem(HeldItemCache[1], false);
+                // Toggle on New Offhand
+                if (newItemCache[1] != null)
+                    ToggleItem(newItemCache[1], false);
+            }
+            // 3. Write cache
+            HeldItemCache = newItemCache;
+        }
+        /// <summary>
+        /// WIP. Maybe don't use?
+        /// </summary>
+        void RecalculateEntityStats()
+        {
+            if (!(Api is ICoreServerAPI sapi)) return;
+            // Only players should
+            if (!IsPlayer) return;
+            bool mainExists = HotbarEnchantCache.TryGetValue(player.InventoryManager.ActiveHotbarSlotNumber, out ActiveEnchantCache mainCache);
+            bool offExists = HotbarEnchantCache.TryGetValue(player.InventoryManager.ActiveHotbarSlotNumber, out ActiveEnchantCache offCache);
+            // Both Empty
+            if (!mainExists && !offExists) return;
+            // Off Empty
+            else if (mainExists && !offExists)
+            {
+                if (mainCache.Enchantments?.TryGetValue("accurate", out int p) == true)
+                {
+                    IEnchantment ench = sapi.EnchantAccessor().GetEnchantment("accurate");
+                    float pmul = ench.Modifiers.GetFloat("PowerMultiplier");
+                    float mul = p * pmul;
+                    entity.Stats.Set("rangedWeaponsAcc", "krpge:" + "accurate", mul, false);
+                }
+                else
+                {
+                    entity.Stats.Set("rangedWeaponsAcc", "krpge:" + "accurate", 1.0f, true);
+                }
+            }
+            // Main Empty
+            else if (!mainExists && offExists)
+            {
+                
+            }
+            // None Empty
+            else if (mainExists && offExists)
+            {
+                if (mainCache.Enchantments?.TryGetValue("accurate", out int p) == true)
+                {
+                    IEnchantment ench = sapi.EnchantAccessor().GetEnchantment("accurate");
+                    float pmul = ench.Modifiers.GetFloat("PowerMultiplier");
+                    float mul = p * pmul;
+                    entity.Stats.Set("rangedWeaponsAcc", "krpge:" + "accurate", mul, false);
+                }
+                else
+                {
+                    entity.Stats.Set("rangedWeaponsAcc", "krpge:" + "accurate", 1.0f, true);
+                }
+            }
+
+
+            // ItemStack mainStack = player?.InventoryManager?.ActiveHotbarSlot?.Itemstack ?? null;
+            // ItemStack offStack = player?.InventoryManager?.OffhandHotbarSlot?.Itemstack ?? null;
+            // // Skip if no items
+            // if (mainStack == null && offStack == null) return;
+            // // Only run once if two-handed
+            // else if (mainStack?.Item?.ItemId == offStack?.Item?.ItemId)
+            // {
+            //     Dictionary<string, int> mainEnch = Api.EnchantAccessor().GetActiveEnchantments(mainStack);
+            //     if (mainEnch.TryGetValue("accurate", out int power))
+            //     {
+            //         
+            //     }
+            // }
+            // Dictionary<string, int> mainEnch = Api.EnchantAccessor().GetActiveEnchantments(mainStack);
+            // Dictionary<string, int> offEnch = Api.EnchantAccessor().GetActiveEnchantments(offStack);
+            
         }
         [Obsolete]
         /// <summary>
@@ -271,6 +420,7 @@ namespace KRPGLib.Enchantment
             ITreeAttribute tree = stack.Attributes;
             hotbarInventory[slotId].Itemstack.Attributes.MergeTree(tree);
         }
+        */
         #endregion
         #region Triggers
         /// <summary>
@@ -534,6 +684,9 @@ namespace KRPGLib.Enchantment
             base.OnReceivedClientPacket(player, packetid, data, ref handled);
         }
         #endregion
+        #region Stats
+
+        #endregion
         #region TickRegistry
         /// <summary>
         /// Attempt to register a formated EnchantTick into this entity's TickRegistry.
@@ -546,7 +699,7 @@ namespace KRPGLib.Enchantment
         public void RegisterEnchantTick(EnchantmentSource enchant, long tickDuration, bool persistent, bool isHotbar, bool isOffhand)
         {
             // Get ID's
-            int stackID = enchant.SourceStack.Id;
+            int stackID = enchant.SourceStack.Item.ItemId;
             int slotID = enchant.SourceSlot.Inventory.GetSlotId(enchant.SourceSlot);
             string codeID = enchant.Code + ":" + slotID + ":" + stackID;
             // Toggle On
@@ -675,10 +828,14 @@ namespace KRPGLib.Enchantment
             // 2. Lock toggle
             if (enchantTickLocked == true) return;
             else enchantTickLocked = true;
-            // 3. Process ticks - Server only right now
+            // Disable the toggler, for it is too aggressive
+            // 3. Held Item Toggles (Players Only)
+            // if (IsPlayer) ToggleHeldItems();
+            // 3. Recalculate the stats of a player
+            // if (IsPlayer) RecalculateEntityStats();
+            // 4. Process ticks - Server only right now
             ProcessServerTickRegistry(sapi);
-            // 4. Trash Removal
-            // This will unlock the EnchantTicks
+            // 5. Trash Removal - This will unlock the EnchantTicks
             RemoveTrashEnchantTicks();
         }
         #endregion

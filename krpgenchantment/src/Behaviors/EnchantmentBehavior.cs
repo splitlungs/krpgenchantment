@@ -116,10 +116,18 @@ namespace KRPGLib.Enchantment
         public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldAttackStart().");
             handHandling = EnumHandHandling.Handled;
             handling = EnumHandling.Handled;
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
+            if (enchants == null) 
+            {
+                base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
+                return;
+            }
             EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, byEntity, ref parameters);
             if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
@@ -145,10 +153,18 @@ namespace KRPGLib.Enchantment
         public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
             if (!(Api is ICoreServerAPI sapi)) return;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldInteractStart().");
             handHandling = EnumHandHandling.Handled;
             handling = EnumHandling.Handled;
+            Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
+            if (enchants == null) 
+            {
+                base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
+                return;
+            }
             EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, entitySel?.Entity, ref parameters);
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, byEntity, ref parameters);
             if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);

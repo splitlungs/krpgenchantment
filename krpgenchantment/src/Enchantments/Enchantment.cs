@@ -129,6 +129,8 @@ namespace KRPGLib.Enchantment
         public long LastTickTime;
         // How long it should take minimum before a tick can be triggered again
         public long TickDuration;
+        // If true, it will not trigger ticks, but will not be removed if TicksRemaining is 0
+        public bool Passive = false;
         // If true, it will not be removed if TicksRemaining is 0
         public bool Persistent = false;
         // If true, it will not be ticked when not in main hand

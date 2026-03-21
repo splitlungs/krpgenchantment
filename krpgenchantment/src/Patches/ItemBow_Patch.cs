@@ -31,12 +31,24 @@ namespace KRPGLib.Enchantment
                 sapi.Logger.Event("[KRPGEnchantment] Firing ItemBow.OnHeldInteractStop postfix");
             // if (byEntity.Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
             // byEntity.WatchedAttributes.SetItemstack("pendingRangedEnchants", slot?.Itemstack);
-            string s = slot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments")?.GetString("active", null);
-            if (s == null) return;
+            Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
+            if (enchants == null) return;
             EnchantModifiers parameters = new EnchantModifiers();
-            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, byEntity, ref parameters);
+            bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, byEntity, enchants, ref parameters);
             if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
+            // Filtering enchant list
+            // if (enchants.ContainsKey("accurate")) enchants.Remove("accurate"); // Trying to remove false positives for warnings
+            // if (enchants.ContainsKey("quickdraw")) enchants.Remove("quickdraw"); // Trying to remove false positives for warnings
+            // if (enchants.ContainsKey("reversion")) enchants.Remove("reversion"); // Trying to remove false positives for warnings
+            // if (enchants.ContainsKey("durable")) enchants.Remove("durable"); // Trying to remove false positives for warnings
+            // string s = null;
+            // foreach (KeyValuePair<string, int> pair in enchants)
+            // {
+            //     s += pair.Key + ":" + pair.Value + ";";
+            // }
+            // if (s == null) return;
+            string s = slot.Itemstack.Attributes.GetTreeAttribute("enchantments").GetString("active");
             long t = sapi.World.ElapsedMilliseconds;
             // TODO: Move this to the ProjectileStack?
             byEntity.WatchedAttributes.SetString("pendingRangedEnchants", s);

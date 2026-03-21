@@ -54,37 +54,40 @@ namespace KRPGLib.Enchantment
         }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
             {
                 // float f = enchant.SourceStack.Collectible.Attributes?["statModifier"]["rangedWeaponsSpeed"].AsFloat() ?? 0f;
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             }
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
-                // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
-                // enchant.SourceSlot.MarkDirty();
+                AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
+                enchant.SourceSlot.MarkDirty();
             }
             else
                 AddMultipliers(entity, enchant.Power);
         }
         public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
             // CO saves to Itemstack
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             // Write to entity
             RemoveAllMultipliers(entity);
         }
         public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
             // CO saves to Itemstack
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             // Update entity for Vanilla VS
             RemoveAllMultipliers(entity);
         }

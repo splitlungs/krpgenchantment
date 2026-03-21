@@ -59,6 +59,7 @@ namespace KRPGLib.Enchantment
             {
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null) return;
+
                 EnchantModifiers parameters = new EnchantModifiers();
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, entity, enchants, ref parameters);
                 if (!didEnchants)

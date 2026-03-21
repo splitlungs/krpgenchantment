@@ -54,16 +54,17 @@ namespace KRPGLib.Enchantment
         }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             // Write to entity
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
                 // float mul = enchant.Power * COMultiplier;
                 // entity.Stats.Set("steadyAim", "krpge:" + Code, mul, true);
-                // AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
-                // enchant.SourceSlot.MarkDirty();
+                AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
+                enchant.SourceSlot.MarkDirty();
                 return;
             }
             else
@@ -81,15 +82,28 @@ namespace KRPGLib.Enchantment
         }
         public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
-            // if (!(Api is ICoreServerAPI sapi)) return;
+            if (!(Api is ICoreServerAPI sapi)) return;
             // CO saves to Itemstack
-            // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
             // Write to entity
             RemoveAllMultipliers(entity);
         }
+        /*
+        public override void OnToggle(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            Entity entity = enchant?.CauseEntity;
+            bool activate = parameters.GetBool("ToggleState");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Toggling {0} {1} to {2} for {3}.", Code, enchant.Power, activate.ToString(), entity.GetName());
+            if (activate == true)
+                AddMultipliers(enchant.CauseEntity, enchant.Power);
+            else
+                RemoveAllMultipliers(enchant.CauseEntity);
+        }
+        */
         /// <summary>
         /// Adds multipliers for vanilla VS.
         /// </summary>
@@ -149,9 +163,9 @@ namespace KRPGLib.Enchantment
         void RemoveAllMultipliers(Entity entity)
         {
             // Remove both, just in case someone is hot swapping CO between triggers
-            // entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
+            entity.Stats.Remove("rangedWeaponsAcc", "krpge:" + Code);
             // entity.Stats.Remove("steadyAim", "krpge:" + Code);
-            entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, false);
+            // entity.Stats.Set("rangedWeaponsAcc", "krpge:" + Code, 1.0f, false);
             // entity.Stats.Set("steadyAim", "krpge:" + Code, 1.0f, false);
             
         }
