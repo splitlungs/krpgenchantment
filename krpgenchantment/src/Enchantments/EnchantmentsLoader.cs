@@ -47,7 +47,6 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("pit", "Weapon/pit.json", typeof(PitEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("poison", "Weapon/poison.json", typeof(PoisonEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("protection", "Armor/protection.json", typeof(ProtectionEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("quickdraw", "Weapon/quickdraw.json", typeof(QuickDrawEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistelectricity", "Armor/resistelectricity.json", typeof(ResistElectricityEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfire", "Armor/resistfire.json", typeof(ResistFireEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfrost", "Armor/resistfrost.json", typeof(ResistFrostEnchantment)) == true) count++;
@@ -57,6 +56,12 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("reversion", "Universal/reversion.json", typeof(ReversionEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("shocking", "Weapon/shocking.json", typeof(ShockingEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("sustaining", "Accessory/sustaining.json", typeof(SustainingEnchantment)) == true) count++;
+            // CO Only
+            bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaul");
+            if (coEnabled == true)
+            {
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("quickdraw", "Weapon/quickdraw.json", typeof(QuickDrawEnchantment)) == true) count++;
+            }
             // You should modify the notification to your mod
             sapi.Logger.Notification("[KRPGEnchantment] Registered {0} Enchantment classes to the EnchantmentRegistry.", count);
         }

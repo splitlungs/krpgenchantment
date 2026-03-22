@@ -43,8 +43,7 @@ namespace KRPGLib.Enchantment
             // Safety Checks & Setup
             bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
-            EntityBehaviorHealth ebh = entity?.GetBehavior<EntityBehaviorHealth>();
-            if (IsHotbar == true || entity == null || ebh == null) return;
+            if (IsHotbar == true || entity == null) return;
             if (MaxActivePerEntity < 1)
             { 
                 RemoveAllMultipliers(entity);
@@ -52,22 +51,14 @@ namespace KRPGLib.Enchantment
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
-            // Limit per config
-            List<int> powers = GetTotalPowers(entity);
-            if (powers == null) return;
-            // Calculate total
-            float mul = GetTotalMultiplier(powers);
-            // Write to Entity
-            ebh.SetMaxHealthModifiers("krpge:" + Code, mul);
-            ebh.UpdateMaxHealth();
+            SetAllMultipliers(entity);
         }
         public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             // Safety Checks & Setup
             bool IsHotbar = parameters.GetBool("IsHotbar");
             Entity entity = enchant?.CauseEntity;
-            EntityBehaviorHealth ebh = entity?.GetBehavior<EntityBehaviorHealth>();
-            if (IsHotbar == true || entity == null || ebh == null) return;
+            if (IsHotbar == true || entity == null) return;
             if (MaxActivePerEntity < 1)
             { 
                 RemoveAllMultipliers(entity);
@@ -75,6 +66,11 @@ namespace KRPGLib.Enchantment
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
+            SetAllMultipliers(entity);
+        }
+        void SetAllMultipliers(Entity entity)
+        {
+            EntityBehaviorHealth ebh = entity?.GetBehavior<EntityBehaviorHealth>();
             // Limit per config
             List<int> powers = GetTotalPowers(entity);
             if (powers == null) return;
@@ -83,6 +79,13 @@ namespace KRPGLib.Enchantment
             // Write to Entity
             ebh.SetMaxHealthModifiers("krpge:" + Code, mul);
             ebh.UpdateMaxHealth();
+            // OBSOLETE - Doesn't seem to update properly?
+            // // Limit per config
+            // List<int> powers = GetTotalPowers(entity);
+            // if (powers == null) return;
+            // // Calculate total
+            // float mul = GetTotalMultiplier(powers);
+            // entity.Stats.Set("maxhealthExtraPoints", "krpge:" + Code, 1.0f, true);
         }
         List<int> GetTotalPowers(Entity entity)
         {
@@ -120,6 +123,8 @@ namespace KRPGLib.Enchantment
             if (ebh == null) return;
             ebh.SetMaxHealthModifiers("krpge:" + Code, 0);
             ebh.UpdateMaxHealth();
+            // OBSOLETE
+            // entity.Stats.Set("maxhealthExtraPoints", "krpge:" + Code, 0f, true);
         }
     }
 }

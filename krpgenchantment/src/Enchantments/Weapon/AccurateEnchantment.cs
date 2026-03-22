@@ -40,7 +40,7 @@ namespace KRPGLib.Enchantment
                 "Wand"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.2f }, {"CombatOverhaulMultiplier", 0.1f } };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
