@@ -149,7 +149,11 @@ namespace KRPGLib.Enchantment
         }
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
-            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!(Api is ICoreServerAPI sapi)) 
+            {
+                base.OnEntityDeath(damageSourceForDeath);
+                return;
+            }
             // All entities
             foreach (KeyValuePair<string, EnchantTick> pair in TickRegistry)
             {
@@ -544,8 +548,16 @@ namespace KRPGLib.Enchantment
         // After the attack has completed
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
-            if (!(Api is ICoreServerAPI sapi)) return;
-            if (!IsPlayer) return;
+            if (!(Api is ICoreServerAPI sapi)) 
+            {
+                base.DidAttack(source, targetEntity, ref handled);
+                return;
+            }
+            if (!IsPlayer) 
+            {
+                base.DidAttack(source, targetEntity, ref handled);
+                return;
+            }
             handled = EnumHandling.Handled;
             ItemSlot slot = player.InventoryManager.ActiveHotbarSlot;
             EnchantModifiers parameters = new EnchantModifiers();
@@ -557,14 +569,26 @@ namespace KRPGLib.Enchantment
         // When THIS ENTITY is interacted with by another entity. Not called by projectiles
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
-            if (!(byEntity.Api is ICoreServerAPI sapi)) return;
-            if (itemslot.Empty == true) return;
+            if (!(byEntity.Api is ICoreServerAPI sapi)) 
+            {
+                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+                return;
+            }
+            if (itemslot.Empty == true) 
+            {
+                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+                return;
+            }
             // EnchantModifiers parameters = new EnchantModifiers();
             // bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
             handled = EnumHandling.Handled;
             // TODO: Update for ActiveEnchantCache?
             // OnAttack triggers
-            if (mode != EnumInteractMode.Attack) return;
+            if (mode != EnumInteractMode.Attack) 
+            {
+                base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
+                return;
+            }
             // Get Enchantments for the that attacked this entity
             Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants != null)
@@ -585,6 +609,7 @@ namespace KRPGLib.Enchantment
                 if(EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Finished processing Enchantments on EnchantmentEntityBehavior.OnInteract().");
             }
+            base.OnInteract(byEntity, itemslot, hitPosition, mode, ref handled);
         }
         /// <summary>
         /// Primary trigger call for OnHit enchantments, which is applied BEFORE damage is dealt to HP.
@@ -628,8 +653,16 @@ namespace KRPGLib.Enchantment
         public override void OnEntityReceiveDamage(DamageSource damageSource, ref float damage)
         {
             // Only living players should actually have OnDamaged triggers
-            if (!(Api is ICoreServerAPI sapi)) return;
-            if (!IsPlayer || !entity.Alive) return;
+            if (!(Api is ICoreServerAPI sapi)) 
+            {
+                base.OnEntityReceiveDamage(damageSource, ref damage);
+                return;
+            }
+            if (!IsPlayer || !entity.Alive) 
+            {
+                base.OnEntityReceiveDamage(damageSource, ref damage);
+                return;
+            }
 
             float dmg = damage;
             string dmgType = Enum.GetName(damageSource.Type).ToLower();
@@ -649,6 +682,7 @@ namespace KRPGLib.Enchantment
                 if (didEnchants)
                     dmg = parameters.GetFloat("damage");
             }
+            base.OnEntityReceiveDamage(damageSource, ref damage);
         }
         #endregion
         #region Network

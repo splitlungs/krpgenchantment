@@ -64,11 +64,19 @@ namespace KRPGLib.Enchantment
         }
         public override void OnDamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount, ref EnumHandling bhHandling)
         {
-            if (!(world.Api is ICoreServerAPI api)) return;
+            if (!(world.Api is ICoreServerAPI api)) 
+            {
+                base.OnDamageItem(world, byEntity, itemslot, ref amount, ref bhHandling);
+                return;
+            }
             
             bhHandling = EnumHandling.Handled;
             Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
-            if (enchants == null) return;
+            if (enchants == null) 
+            {
+                base.OnDamageItem(world, byEntity, itemslot, ref amount, ref bhHandling);
+                return;
+            }
 
             int durable = enchants.GetValueOrDefault("durable", 0);
             if (durable > 0)
@@ -89,6 +97,7 @@ namespace KRPGLib.Enchantment
                     amount = parameters.GetInt("damage");
                 }
             }
+            base.OnDamageItem(world, byEntity, itemslot, ref amount, ref bhHandling);
         }
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
         {
@@ -115,7 +124,11 @@ namespace KRPGLib.Enchantment
         }
         public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
-            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!(Api is ICoreServerAPI sapi)) 
+            {
+                base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
+                return;
+            }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldAttackStart().");
             handHandling = EnumHandHandling.Handled;
@@ -152,7 +165,11 @@ namespace KRPGLib.Enchantment
         // }
         public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
-            if (!(Api is ICoreServerAPI sapi)) return;
+            if (!(Api is ICoreServerAPI sapi)) 
+            {
+                base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
+                return;
+            }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldInteractStart().");
             handHandling = EnumHandHandling.Handled;
@@ -181,13 +198,21 @@ namespace KRPGLib.Enchantment
         public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
             // base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
-            if (!(byEntity.Api is ICoreServerAPI sapi)) return;
+            if (!(byEntity.Api is ICoreServerAPI sapi)) 
+            {
+                base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+                return;
+            }
             handling = EnumHandling.Handled;
             // EnchantModifiers parameters = new EnchantModifiers();
             // bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity, ref parameters);
 
             // Specific use on self for KRPG Wands
-            if (secondsUsed < 1 || slot?.Itemstack?.Collectible?.Class != "WandItem") return;
+            if (secondsUsed < 1 || slot?.Itemstack?.Collectible?.Class != "WandItem") 
+            {
+                base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
+                return;
+            }
 
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
             if (aimSelf == 1 && sApi.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
@@ -200,8 +225,10 @@ namespace KRPGLib.Enchantment
 
             if (byEntity.Attributes.GetInt("aimingCancel") == 1)
             {
+                base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
                 return;
             }
+            base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
         }
         public override float OnGetMiningSpeed(IItemStack itemstack, BlockSelection blockSel, Block block, IPlayer forPlayer, ref EnumHandling bhHandling)
         {
