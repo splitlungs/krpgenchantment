@@ -62,8 +62,8 @@ namespace KRPGLib.Enchantment
             get 
             { 
                 if (!IsPlayer) return null;
-                
-                return player.InventoryManager.GetOwnInventory("character");
+                // return player.InventoryManager.GetOwnInventory("character");
+                return entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
             }
         }
         public  IInventory hotbarInventory
@@ -245,7 +245,7 @@ namespace KRPGLib.Enchantment
             if (hotbarInventory[slotId].Empty == true)
                 cache.ItemId = -1;
             else
-                cache.ItemId = hotbarInventory[slotId].Itemstack.Item.ItemId;
+                cache.ItemId = hotbarInventory[slotId]?.Itemstack?.Item?.ItemId ?? -1;
             // Set the cache
             if (HotbarEnchantCache.ContainsKey(slotId) == true)
                 HotbarEnchantCache[slotId] = cache;

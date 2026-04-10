@@ -80,12 +80,7 @@ namespace KRPGLib.Enchantment
             ebh.SetMaxHealthModifiers("krpge:" + Code, mul);
             ebh.UpdateMaxHealth();
             // OBSOLETE - Doesn't seem to update properly?
-            // // Limit per config
-            // List<int> powers = GetTotalPowers(entity);
-            // if (powers == null) return;
-            // // Calculate total
-            // float mul = GetTotalMultiplier(powers);
-            // entity.Stats.Set("maxhealthExtraPoints", "krpge:" + Code, 1.0f, true);
+            // entity.Stats.Set("maxhealthExtraPoints", "krpge:" + Code, mul, true);
         }
         List<int> GetTotalPowers(Entity entity)
         {

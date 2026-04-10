@@ -12,6 +12,8 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using Vintagestory.API.MathTools;
 using KRPGLib.Enchantment.Compat;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.Common.Entities;
 
 namespace KRPGLib.Enchantment
 {
