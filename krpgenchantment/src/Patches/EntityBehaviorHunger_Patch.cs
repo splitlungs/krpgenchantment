@@ -18,6 +18,8 @@
 // using System.Reflection;
 // using System.Data;
 // 
+// OBSOLETE
+//
 // namespace KRPGLib.Enchantment
 // {
 //     [HarmonyPatch]

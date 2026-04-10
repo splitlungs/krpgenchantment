@@ -30,11 +30,11 @@ namespace KRPGLib.Enchantment
                 foundEB = true;
             if (!foundEB)
             {
-                __instance.Api.Logger.Event("[KRPGEnchantment] Adding an EnchantmentEntityBehavior to {0} on loaded.", __instance.GetName());
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    __instance.Api.Logger.Event("[KRPGEnchantment] Adding an EnchantmentEntityBehavior to {0} on loaded.", __instance.GetName());
                 EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance);
                 __instance.AddBehavior(eb);
             }
-
             return true;
         }
     }
@@ -51,11 +51,11 @@ namespace KRPGLib.Enchantment
                 foundEB = true;
             if (!foundEB)
             {
-                __instance.Api.Logger.Event("[KRPGEnchantment] Adding an EnchantmentEntityBehavior to {0} on spawn.", __instance.GetName());
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    __instance.Api.Logger.Event("[KRPGEnchantment] Adding an EnchantmentEntityBehavior to {0} on spawn.", __instance.GetName());
                 EnchantmentEntityBehavior eb = new EnchantmentEntityBehavior(__instance);
                 __instance.AddBehavior(eb);
             }
-
             return true;
         }
     }

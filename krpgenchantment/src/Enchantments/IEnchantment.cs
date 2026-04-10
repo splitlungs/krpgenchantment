@@ -89,17 +89,23 @@ namespace KRPGLib.Enchantment.API
         /// <param name="parameters"></param>
         void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// Triggered when an entity has been attacked by an enchanted item, before damage.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
-        void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
         /// Triggered when an entity wearing an enchanted item has already received damage.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
         void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters);
+        /// <summary>
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters);
         /// <summary>
         /// Called by the Enchantment Entity behavior when an entity dies.
         /// </summary>

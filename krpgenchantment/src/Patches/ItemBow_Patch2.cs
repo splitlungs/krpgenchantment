@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// IGNORE ME
+/*
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -9,9 +11,9 @@ using System;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 
+
 namespace KRPGLib.Enchantment
 {
-    /*
     [HarmonyPatch]
     public static class ItemBow_Patch2
     {
@@ -85,5 +87,5 @@ namespace KRPGLib.Enchantment
             }
         }
     }
-    */
 }
+*/

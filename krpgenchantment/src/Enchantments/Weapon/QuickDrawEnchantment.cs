@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
     public class QuickDrawEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        float COMultiplier { get { return Modifiers.GetFloat("CombatOverhaulMultiplier"); } }
         /// <summary>
         /// Provides ranged weapon draw speed modifiers the entity who triggers OnEquip.
         /// </summary>
@@ -38,65 +39,124 @@ namespace KRPGLib.Enchantment
                 "Crossbow", "Firearm",
                 "Wand"
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f } };
-            Version = 1.00f;
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.3f }, {"CombatOverhaulMultiplier", 0.5f } };
+            Version = 1.01f;
         }
-        // public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
-        // {
-        //     bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
-        //     if (didEnch == true)
-        //     {
-        //         ITreeAttribute tree =  inStack.Attributes.GetTreeAttribute("statModifier");
-        //         tree.SetFloat("bowsProficiency", enchantPower * PowerMultiplier);
-        //         return true;
-        //     }
-        //     else
-        //         return false;
-        // }
+        // TODO: Fix Combat Overhaul overwriting these values periodically
+        public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
+        {
+            bool didEnch = base.TryEnchantItem(ref inStack, enchantPower, force, api);
+            if (!didEnch) return false;
+            // SO FAR, we only need to save to ItemStack for CO
+            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer == null) return didEnch;
+            AddMultipliersCO(ref inStack, enchantPower);
+            return true;
+        }
         public override void OnAttackStart(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
             {
                 // float f = enchant.SourceStack.Collectible.Attributes?["statModifier"]["rangedWeaponsSpeed"].AsFloat() ?? 0f;
                 Api.Logger.Event("[KRPGEnchantment] Applying {0} {1} to {2}", Code, enchant.Power, entity.GetName());
             }
-            // Write to entity
-            float mul = enchant.Power *PowerMultiplier;
-            if (Api.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.combatOverhaul != null)
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null)
             {
-                entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
-                entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
-                entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
+                AddMultipliersCO(ref enchant.SourceSlot, enchant.Power);
+                enchant.SourceSlot.MarkDirty();
             }
             else
-            {
-                entity.Stats.Set("rangedWeaponsSpeed", "krpge" + Code, mul, true);
-            }
+                AddMultipliers(entity, enchant.Power);
         }
         public override void OnAttackCancel(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
+                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
+            // CO saves to Itemstack
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
             // Write to entity
             RemoveAllMultipliers(entity);
         }
         public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
+            if (!(Api is ICoreServerAPI sapi)) return;
             Entity entity = enchant?.CauseEntity;
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.EntityId);
-            // Write to entity
+                Api.Logger.Event("[KRPGEnchantment] Removing {0} {1} from {2}.", Code, enchant.Power, entity.GetName());
+            // CO saves to Itemstack
+            if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.COSysServer != null) return;
+            // Update entity for Vanilla VS
             RemoveAllMultipliers(entity);
+        }
+        /// <summary>
+        /// Adds multipliers for vanilla VS.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="power"></param>
+        void AddMultipliers(Entity entity, int power)
+        {
+            float mul = power * PowerMultiplier;
+            entity.Stats.Set("rangedWeaponsSpeed", "krpge:" + Code, mul, true);
+        }
+        /// <summary>
+        /// Adds multipliers for Combat Overhaul
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="power"></param>
+        public void AddMultipliersCO(ref ItemSlot slot, int power)
+        {
+            // entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
+            // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
+            // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
+            float mul = power * COMultiplier;
+            float curVal = slot.Itemstack.Attributes.GetFloat("reloadSpeed", 1.0f);
+            ITreeAttribute eTree = slot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float ogVal = eTree.GetFloat("reloadSpeed", 1.0f);
+            if (ogVal != 1)
+                curVal = mul + ogVal;
+            else
+            {
+                eTree.SetFloat("reloadSpeed", curVal);
+                slot.Itemstack.Attributes.MergeTree(eTree);
+                curVal = mul + curVal;
+            }
+            slot.Itemstack.Attributes.SetFloat("reloadSpeed", curVal);
+        }
+        /// <summary>
+        /// Adds multipliers for Combat Overhaul
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="power"></param>
+        public void AddMultipliersCO(ref ItemStack stack, int power)
+        {
+            // entity.Stats.Set("bowsProficiency", "krpge" + Code, mul, true);
+            // entity.Stats.Set("crossbowsProficiency", "krpge" + Code, mul, true);
+            // entity.Stats.Set("firearmsProficiency", "krpge" + Code, mul, true);
+            float mul = power * COMultiplier;
+            float curVal = stack.Attributes.GetFloat("reloadSpeed", 1.0f);
+            ITreeAttribute eTree = stack.Attributes.GetOrAddTreeAttribute("enchantments");
+            float ogVal = eTree.GetFloat("reloadSpeed", 1.0f);
+            if (ogVal != 1)
+                curVal = mul + ogVal;
+            else
+            {
+                eTree.SetFloat("reloadSpeed", curVal);
+                stack.Attributes.MergeTree(eTree);
+                curVal = mul + curVal;
+            }
+            stack.Attributes.SetFloat("reloadSpeed", curVal);
         }
         void RemoveAllMultipliers(Entity entity)
         {
             // Remove all, just in case someone is hot swapping CO between triggers
-            entity.Stats.Remove("bowsProficiency", "krpge" + Code);
-            entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
-            entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
-            entity.Stats.Remove("rangedWeaponsSpeed", "krpge" + Code);
+            // entity.Stats.Remove("bowsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("crossbowsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("firearmsProficiency", "krpge" + Code);
+            // entity.Stats.Remove("rangedWeaponsSpeed", "krpge:" + Code);
+            entity.Stats.Set("rangedWeaponsSpeed", "krpge:" + Code, 1.0f, true);
         }
     }
 }

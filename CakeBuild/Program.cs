@@ -26,6 +26,7 @@ public static class Program
 
 public class BuildContext : FrostingContext
 {
+    
     public const string ProjectName = "krpgenchantment";
     public string BuildConfiguration { get; }
     public string Version { get; }

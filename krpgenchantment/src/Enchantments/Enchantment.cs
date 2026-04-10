@@ -129,6 +129,8 @@ namespace KRPGLib.Enchantment
         public long LastTickTime;
         // How long it should take minimum before a tick can be triggered again
         public long TickDuration;
+        // If true, it will not trigger ticks, but will not be removed if TicksRemaining is 0
+        public bool Passive = false;
         // If true, it will not be removed if TicksRemaining is 0
         public bool Persistent = false;
         // If true, it will not be ticked when not in main hand
@@ -531,6 +533,15 @@ namespace KRPGLib.Enchantment
         public virtual void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
         
+        }
+        /// <summary>
+        /// Triggered when an entity has been attacked by an enchanted item, before damage.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+
         }
         /// <summary>
         /// Triggered when an entity wearing an enchanted item has already received damage.

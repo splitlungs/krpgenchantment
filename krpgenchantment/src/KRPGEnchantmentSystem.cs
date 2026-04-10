@@ -4,6 +4,7 @@ using System.Reflection;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 using System.Collections.Generic;
 using Vintagestory.API.Util;
 using Vintagestory.API.Client;
@@ -20,8 +21,10 @@ namespace KRPGLib.Enchantment
         public ICoreClientAPI cApi;
         public ICoreServerAPI sApi;
         public EnchantmentAccessor EnchantAccessor { get; private set; } = null;
-        public COSystem combatOverhaul { get; private set; } = null;
-        public KRPGWandsSystem krpgWands { get; private set; } = null;
+        public COSystem COSysClient { get; private set; } = null;
+        public COSystem COSysServer { get; private set; } = null;
+        public KRPGWandsSystem WandsSysClient { get; private set; } = null;
+        public KRPGWandsSystem WandsSysServer { get; private set; } = null;
         private static Harmony harmony;
         public override void AssetsFinalize(ICoreAPI api)
         {
@@ -42,8 +45,7 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.cApi = cApi;
             EnchantAccessor.sApi = sApi;
             EnchantAccessor.EnchantmentRegistry = new Dictionary<string, Enchantment>();
-            RegisterCoreCompatibility();
-            DoHarmonyPatch(api);
+            
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -63,33 +65,17 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Instantiate compatibility scripts.
         /// </summary>
-        private void RegisterCoreCompatibility()
-        {
-            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
-            {
-                combatOverhaul = new COSystem();
-                combatOverhaul.Start(Api);
-            }
-            if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
-            {
-                krpgWands = new KRPGWandsSystem();
-                krpgWands.Start(Api);
-            }
-        }
-        /// <summary>
-        /// Instantiate compatibility scripts.
-        /// </summary>
         private void RegisterClientCompatibility()
         {
-            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
+            if (cApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
-                combatOverhaul = new COSystem();
-                combatOverhaul.StartClientSide(cApi);
+                COSysClient = new COSystem();
+                COSysClient.StartClientSide(cApi);
             }
-            if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
+            if (cApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
-                krpgWands = new KRPGWandsSystem();
-                krpgWands.StartClientSide(cApi);
+                WandsSysClient = new KRPGWandsSystem();
+                WandsSysClient.StartClientSide(Api);
             }
         }
         /// <summary>
@@ -99,13 +85,13 @@ namespace KRPGLib.Enchantment
         {
             if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
-                combatOverhaul = new COSystem();
-                combatOverhaul.StartServerSide(sApi);
+                COSysServer = new COSystem();
+                COSysServer.StartServerSide(sApi);
             }
             if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
-                krpgWands = new KRPGWandsSystem();
-                krpgWands.StartServerSide(sApi);
+                WandsSysServer = new KRPGWandsSystem();
+                WandsSysServer.StartServerSide(Api);
             }
         }
         /// <summary>
@@ -131,8 +117,7 @@ namespace KRPGLib.Enchantment
             api.RegisterBlockEntityClass("ChargingBE", typeof(ChargingBE));
             api.RegisterBlockEntityClass("EnchantingBE", typeof(EnchantingBE));
             api.RegisterItemClass("EnchantersManualItem", typeof(EnchantersManualItem));
-
-            
+            DoHarmonyPatch(api);
             Api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment loaded.");
         }
         
@@ -180,13 +165,14 @@ namespace KRPGLib.Enchantment
                     // Special bypass for OnHeldAttack/InteractCancel/Stop or if I find another large chunk of base skippers
                     // PatchOnlyOverrides();
                     harmony.PatchAll(Assembly.GetExecutingAssembly());
-                    
-                    Console.WriteLine("[KRPGEnchantment] KRPG Enchantment Harmony patches applied successfully.");
+                    // harmony.PatchAll();
+                    api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment Harmony patches applied successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception during patching: {ex}");
+                    api.Logger.Notification($"Exception during patching: {ex}");
                 }
+
             }
         }
         /// <summary>

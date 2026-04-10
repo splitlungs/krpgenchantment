@@ -1,0 +1,303 @@
+[
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+    {
+		"code": "bowaim-quick", 
+		"animation": "bowaim",
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 90,
+			"LowerArmR": 90,
+			"UpperArmL": 90,
+			"LowerArmL": 90,
+			"ItemAnchor": 90
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage",
+			"ItemAnchor": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "bowaimcrude-quick", 
+		"animation": "bowaimcrude", 
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 90,
+			"LowerArmR": 90,
+			"UpperArmL": 90,
+			"LowerArmL": 90
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "bowaimlong-quick", 
+		"animation": "bowaimlong", 
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"Neck": 90,
+			"Head": 90,
+			"UpperTorso": 90,
+			"UpperArmR": 90,
+			"LowerArmR": 90,
+			"UpperArmL": 90,
+			"LowerArmL": 90,
+			"ItemAnchor": 90
+		},
+		"elementBlendMode": {
+			"UpperTorso": "AddAverage",
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "bowaimrecurve-quick", 
+		"animation": "bowaimrecurve", 
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 90,
+			"LowerArmR": 90,
+			"UpperArmL": 90,
+			"LowerArmL": 90,
+			"ItemAnchor": 90
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage",
+			"ItemAnchor": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "bowhit-quick",
+		"animation": "bowhit", 
+        "animationSpeed": 2.0,
+		"easeInSpeed": 999,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "aim-quick", 
+		"animation": "throwaim",
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "throw-quick",
+		"animation": "throw",
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"easeInSpeed": 999,
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "slingaimgreek-quick", 
+		"animation": "slingaimgreek",
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "slingthrowgreek-quick",
+		"animation": "slingthrowgreek", 
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"easeInSpeed": 999,
+		"easeOutSpeed": 2.5,
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "slingaimbalearic-quick", 
+		"animation": "slingaimbalearic",
+		"blendMode": "Add",
+		"animationSpeed": 2.5,
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "slingaimbalearic-fp-quick", 
+		"animation": "slingaimbalearic-fp", 
+		"blendMode": "Add",
+		"animationSpeed": 2.5,
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  },
+  {
+    "file": "game:entities/humanoid/player.json",
+    "op": "addmerge",
+    "path": "/client/animations/-",
+    "value":
+	{
+		"code": "slingthrowbalearic-quick",
+		"animation": "slingthrowbalearic", 
+        "animationSpeed": 2.0,
+		"blendMode": "Add",
+		"elementWeight": {
+			"UpperArmR": 20,
+			"LowerArmR": 20,
+			"UpperArmL": 20,
+			"LowerArmL": 20
+		},
+		"elementBlendMode": {
+			"UpperArmR": "AddAverage",
+			"LowerArmR": "AddAverage",
+			"UpperArmL": "AddAverage",
+			"LowerArmL": "AddAverage"
+		}
+	}
+  }
+]
