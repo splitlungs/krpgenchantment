@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "chilling";
-            Category = "Weapon";
+            Category = "StatusTarget";
             LoreCode = "enchantment-chilling";
             LoreChapterID = 0;
             MaxTier = 5;

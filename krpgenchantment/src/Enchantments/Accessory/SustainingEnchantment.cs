@@ -28,7 +28,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "sustaining";
-            Category = "Universal";
+            Category = "StatusPersonal";
             LoreCode = "enchantment-sustaining";
             LoreChapterID = 24;
             MaxTier = 5;
@@ -36,7 +36,7 @@ namespace KRPGLib.Enchantment
                 "Arm", "Emblem", "Neck", "Waist"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.05f }, { "MaxActivePerEntity", 4 } };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
