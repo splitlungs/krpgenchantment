@@ -63,8 +63,8 @@
   "item-lore-book-normal-gray": "Enchanter's Manual (Gray)",
 
   "loretype-enchantment": "Enchanting recipe manual. Teaches you how to identify the properties of an enchantment.",
-
-  "game:ingamediscovery-lore-enchantment": "Discovered lore 'Enchanter's Manual'\r\nPart {0} / {1}\r\n<font size=\"20\">Hit J to open your Journal</font>",
+  "ingamediscovery-lore-enchantment": "Discovered lore 'Enchanter's Manual'\r\nPart {0} / {1}\r\n<font size=\"20\">Hit J to open your Journal</font>",
+  
   "lore-enchantment-title": "Enchanter's Manual",
   "lore-enchantment-chilling": "1. Chilling",
   "lore-enchantment-durable": "2. Durable",

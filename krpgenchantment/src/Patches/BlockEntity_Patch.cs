@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Disabled for now, but could be usefule later
+/*
+using System;
 using HarmonyLib;
 using Vintagestory.API.Common;
 
@@ -26,3 +28,4 @@ namespace KRPGLib.Enchantment
         }
     }
 }
+*/
