@@ -36,8 +36,8 @@ namespace KRPGLib.Enchantment
                 "Knife", "Axe",
                 "Drill"
                 };
-            Modifiers = new EnchantModifiers { { "PowerMultiplier", 1.0f } };
-            Version = 1.00f;
+            Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10f } };
+            Version = 1.01f;
         }
         // There isn't really much to do here. EnchantmentBlockBehavior.GetDrops() patch handles it, as configured by the OnLoaded override.
     }

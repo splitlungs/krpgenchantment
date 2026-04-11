@@ -91,14 +91,11 @@ namespace KRPGLib.Enchantment
             handling = EnumHandling.Handled;
             if (byPlayer?.InventoryManager?.ActiveHotbarSlot == null) 
                 return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
-            bool playerPlaced = false;
-            BlockEntity be = world.BlockAccessor.GetBlockEntity(pos);
-            if (be != null)
-                playerPlaced = be.GetBehavior<EnchantmentBEBehavior>().IsPlayerPlaced;
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to getDrops for a block, and IsPlayerPlaced is {0}.", playerPlaced);
-            if (playerPlaced == true) 
-                return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
+            // bool playerPlaced = block.Attributes["PlacedByPlayer"].AsBool();
+            // if (EnchantingConfigLoader.Config?.Debug == true)
+            //     Api.Logger.Event("[KRPGEnchantment] Attempting to getDrops for a block, and IsPlayerPlaced is {0}.", playerPlaced);
+            // if (playerPlaced == true) 
+            //     return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
             ItemStack itemstack = byPlayer?.InventoryManager?.ActiveHotbarSlot?.Itemstack;
             Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(itemstack);
             if (enchants?.TryGetValue("fortunate", out int power) == true)
