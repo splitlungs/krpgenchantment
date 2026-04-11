@@ -19,8 +19,10 @@ namespace KRPGLib.Enchantment
     public class HealingEnchantment : Enchantment
     {
         EnumDamageType DamageType { get { return EnumDamageType.Heal; } }
-        int MaxDamage { get { return Modifiers.GetInt("MaxDamage"); } }
-        float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        float MinDamage { get { return Modifiers.GetFloat("MinDamage"); } }
+        float MaxDamage { get { return Modifiers.GetFloat("MaxDamage"); } }
+        int MaxDamageRolls { get { return Modifiers.GetInt("MaxDamageRolls"); } }
+        float PowerMulltiplier { get { return Modifiers.GetFloat("PowerMulltiplier"); } }
         public HealingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -44,11 +46,11 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                { "MaxDamage", 3 }, {"PowerMultiplier", 0.10f }
+                {"MinDamage", 1.0f }, { "MaxDamage", 3.0f }, { "MaxDamageRolls", 5 }, { "PowerMulltiplier", 0.02f }
             };
-            Version = 1.03f;
+            Version = 1.04f;
         }
-        public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnDamaged(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;
 
@@ -64,14 +66,9 @@ namespace KRPGLib.Enchantment
 
             // Configure Damage
             DamageSource source = enchant.ToDamageSource();
+            source.DamageTier = enchant.Power;
             source.Type = DamageType;
-            float dmg = 0;
-            for (int i = 1; i <= enchant.Power; i++)
-            {
-                dmg += Api.World.Rand.Next(MaxDamage + 1);
-                dmg += Api.World.Rand.NextSingle();
-                dmg += enchant.Power * PowerMultiplier;
-            }
+            float dmg = GetDamage(enchant.Power);
 
             // Apply Damage
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -95,6 +92,25 @@ namespace KRPGLib.Enchantment
             byte[] data = SerializerUtil.Serialize(packet);
             sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
         }
-
+        /// <summary>
+        /// Returns the total damage that should be dealt, before armor/resist is applied.
+        /// </summary>
+        /// <param name="power"></param>
+        /// <returns></returns>
+        public float GetDamage(int power)
+        {
+            float dmg = 0;
+            int rolls = Math.Min(power, MaxDamageRolls);
+            for (int i = 1; i <= rolls; i++)
+            {
+                float diff = MaxDamage - MinDamage;
+                double mul = Api.World.Rand.NextDouble();
+                diff = diff * (float)mul;
+                dmg += MaxDamage - diff;
+            }
+            float pmul = power * PowerMulltiplier;
+            dmg *= pmul + 1;
+            return dmg;
+        }
     }
 }

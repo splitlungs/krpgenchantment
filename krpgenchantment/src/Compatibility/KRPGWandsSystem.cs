@@ -60,9 +60,9 @@ namespace KRPGLib.Enchantment.Compat
                     Api.Logger.Event("[KRPGEnchantment] KRPGWands received OnProjectileDamaged event, but could not find Enchantments to try.");
                 return;
             }
-
+            if (damage <= 0) damage = 0.0001f;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnDamaged", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
