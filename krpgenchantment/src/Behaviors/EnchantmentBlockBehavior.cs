@@ -101,7 +101,7 @@ namespace KRPGLib.Enchantment
             if (enchants?.TryGetValue("fortunate", out int power) == true)
             {
                 float dMul = power * DropsMul;
-                dropChanceMultiplier += dMul;
+                dropChanceMultiplier += MathF.Min(dMul, 1.99f); // Never go 2.0 or above to avoide true dupe
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Applied an Fortunate enchantment. Post dropChanceMultiplier is {0}.", dropChanceMultiplier);
                 return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
