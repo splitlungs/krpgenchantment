@@ -1,7 +1,7 @@
 {
-	"code": "krpgenchantment:enchantment",
+	"code": "enchantment",
 	"title": "krpgenchantment:lore-enchantment-title",
-	"category": "krpgenchantment:enchantment",
+	"category": "enchantment",
 	"pieces": [
 		"krpgenchantment:lore-enchantment-chilling",
 		"krpgenchantment:lore-enchantment-durable",
