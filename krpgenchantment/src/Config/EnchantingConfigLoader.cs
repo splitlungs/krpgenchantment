@@ -17,7 +17,7 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        public static KRPGEnchantConfig Config { get; private set; } = null!;
+        public static KRPGEnchantConfig Config { get; private set; }
         public const double ConfigVersion = 1.05d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
         // We cannot initialize dictionaries in the Config class, and must do so here
@@ -96,11 +96,13 @@ namespace KRPGLib.Enchantment
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     // Enchant Config
+                    // 1. Set flat values
                     if (Config.EntityTickMs != 250) tempConfig.EntityTickMs = Config.EntityTickMs;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
+                    // 2. Set 
                     // Enchantment Category Limiters - Default
                     if (Config.MaxEnchantsByCategory is null)
                     {
@@ -154,7 +156,7 @@ namespace KRPGLib.Enchantment
                         tempConfig.ChargeScales = defaultChargeScales;
                     }
                     // Charge Scales - Update ONLY IF they don't qualify for their current MaxCharge
-                    else if (tempConfig.ChargeScales.Length < tempConfig.MaxReagentCharge)
+                    else if (Config.ChargeScales.Length < tempConfig.MaxReagentCharge)
                     {
                         tempConfig.ChargeScales = Config.ChargeScales;
                         if (tempConfig.ChargeScales.Length < tempConfig.MaxReagentCharge)
@@ -168,7 +170,7 @@ namespace KRPGLib.Enchantment
                         }
                     }
                     // Charge Scales - Leave it alone if it's valid
-                    else if (tempConfig.ChargeScales.Length == tempConfig.MaxReagentCharge)
+                    else if (Config.ChargeScales.Length == tempConfig.MaxReagentCharge)
                     {
                         tempConfig.ChargeScales = Config.ChargeScales;
                     }
