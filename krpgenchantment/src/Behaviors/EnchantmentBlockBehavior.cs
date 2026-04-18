@@ -111,33 +111,33 @@ namespace KRPGLib.Enchantment
             switch (tool)
             {
                 case EnumTool.Axe:
-                    if (!block.Attributes["treeFellingCanChop"].AsBool(defaultValue: false))
-                        return 1.0f;
-                    break;
+                    if (block.Attributes["treeFellingCanChop"].AsBool(defaultValue: true))
+                        break;
+                    return 1.0f;
                 case EnumTool.Drill:
-                    if (block.BlockMaterial != EnumBlockMaterial.Ore || block.BlockMaterial != EnumBlockMaterial.Stone)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.BlockMaterial == EnumBlockMaterial.Stone)
+                        break;
+                    return 1.0f;
                 case EnumTool.Knife:
-                    if (block.BlockMaterial != EnumBlockMaterial.Plant)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Plant)
+                        break;
+                    return 1.0f;
                 case EnumTool.Pickaxe:
-                    if (block.BlockMaterial != EnumBlockMaterial.Ore || block.BlockMaterial != EnumBlockMaterial.Stone)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.BlockMaterial == EnumBlockMaterial.Stone)
+                        break;
+                    return 1.0f;
                 case EnumTool.Scythe:
-                    if (block.BlockMaterial != EnumBlockMaterial.Plant)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Plant)
+                        break;
+                    return 1.0f;
                 case EnumTool.Shears:
-                    if (block.BlockMaterial != EnumBlockMaterial.Plant)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Plant)
+                        break;
+                    return 1.0f;
                 case EnumTool.Shovel:
-                    if (block.BlockMaterial != EnumBlockMaterial.Soil || block.BlockMaterial != EnumBlockMaterial.Sand || block.BlockMaterial != EnumBlockMaterial.Gravel)
-                        return 1.0f;
-                    break;
+                    if (block.BlockMaterial == EnumBlockMaterial.Soil || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Gravel)
+                        break;
+                    return 1.0f;
                 default:
                     return 1.0f;
             }
