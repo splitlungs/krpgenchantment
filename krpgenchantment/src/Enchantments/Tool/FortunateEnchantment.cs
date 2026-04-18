@@ -40,5 +40,6 @@ namespace KRPGLib.Enchantment
             Version = 1.01f;
         }
         // There isn't really much to do here. EnchantmentBlockBehavior.GetDrops() patch handles it, as configured by the OnLoaded override.
+
     }
 }

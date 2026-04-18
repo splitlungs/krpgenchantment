@@ -291,7 +291,7 @@ namespace KRPGLib.Enchantment
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Enchanting Table is attempting to enchant an item.");
-            ICoreServerAPI sApi = Api as ICoreServerAPI;
+            if (!(Api is ICoreServerAPI sApi)) return;
             ItemStack outStack = sApi.EnchantAccessor()
                 .EnchantItem(sApi, InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
             // ItemStack outStack = CurrentRecipe.OutStack(sApi, InputSlot, ReagentSlot).Clone();
@@ -391,15 +391,24 @@ namespace KRPGLib.Enchantment
         /// <param name="dt"></param>
         private void TickEnchanting(float dt)
         {
-            if (NowEnchanting)
-            {   
-                double hours = Api.World.Calendar.TotalHours - InputEnchantTime;
-                if (hours >= MaxEnchantTime)
-                {
-                    enchantInput();
-                    UpdateEnchantingState();
+            // Server Ticks
+            if (Api is ICoreServerAPI sApi)
+            {
+                if (NowEnchanting)
+                {   
+                    double hours = Api.World.Calendar.TotalHours - InputEnchantTime;
+                    if (hours >= MaxEnchantTime)
+                    {
+                        enchantInput();
+                        UpdateEnchantingState();
+                    }
+                    MarkDirty();
                 }
-                MarkDirty();
+            }
+            // Client Ticks
+            if (Api is ICoreClientAPI cApi)
+            {
+                
             }
         }
         private void TickSounds(float dt)

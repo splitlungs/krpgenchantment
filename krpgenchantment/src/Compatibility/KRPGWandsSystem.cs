@@ -62,7 +62,7 @@ namespace KRPGLib.Enchantment.Compat
             }
             if (damage <= 0) damage = 0.0001f;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnDamaged", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttacked", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");

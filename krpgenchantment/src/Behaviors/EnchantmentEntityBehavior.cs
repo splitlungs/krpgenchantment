@@ -663,8 +663,7 @@ namespace KRPGLib.Enchantment
                 base.OnEntityReceiveDamage(damageSource, ref damage);
                 return;
             }
-
-            float dmg = damage;
+            
             string dmgType = Enum.GetName(damageSource.Type).ToLower();
 
             if (EnchantingConfigLoader.Config?.Debug == true)
@@ -675,12 +674,11 @@ namespace KRPGLib.Enchantment
             foreach (KeyValuePair<int, ActiveEnchantCache> pair in GearEnchantCache)
             {
                 if (pair.Value.Enchantments == null) continue;
-
                 EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dmgType } };
                 bool didEnchants =
                     sapi.EnchantAccessor().TryEnchantments(gearInventory[pair.Key], "OnDamaged", damageSource.CauseEntity, entity, pair.Value.Enchantments);
                 if (didEnchants)
-                    dmg = parameters.GetFloat("damage");
+                    damage = parameters.GetFloat("damage");
             }
             base.OnEntityReceiveDamage(damageSource, ref damage);
         }
