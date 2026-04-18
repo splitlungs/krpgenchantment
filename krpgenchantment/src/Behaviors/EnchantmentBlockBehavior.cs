@@ -107,41 +107,44 @@ namespace KRPGLib.Enchantment
         }
         public float GetFortunateMul(ItemStack itemstack, int power)
         {
+            bool valid = false;
             EnumTool? tool = itemstack.Item.Tool;
             switch (tool)
             {
                 case EnumTool.Axe:
-                    if (block.Attributes["treeFellingCanChop"].AsBool(defaultValue: true))
-                        break;
-                    return 1.0f;
+                    if (block.Attributes["treeFellingCanChop"].AsBool(defaultValue: false) == true)
+                        valid = true;
+                    break;
                 case EnumTool.Drill:
-                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.BlockMaterial == EnumBlockMaterial.Stone)
-                        break;
-                    return 1.0f;
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart() == "rock")
+                        valid = true;
+                    break;
                 case EnumTool.Knife:
                     if (block.BlockMaterial == EnumBlockMaterial.Plant)
-                        break;
-                    return 1.0f;
+                        valid = true;
+                    break;
                 case EnumTool.Pickaxe:
                     if (block.BlockMaterial == EnumBlockMaterial.Ore || block.BlockMaterial == EnumBlockMaterial.Stone)
-                        break;
-                    return 1.0f;
+                        valid = true;
+                    break;
                 case EnumTool.Scythe:
                     if (block.BlockMaterial == EnumBlockMaterial.Plant)
-                        break;
-                    return 1.0f;
+                        valid = true;
+                    break;
                 case EnumTool.Shears:
                     if (block.BlockMaterial == EnumBlockMaterial.Plant)
-                        break;
-                    return 1.0f;
+                        valid = true;
+                    break;
                 case EnumTool.Shovel:
                     if (block.BlockMaterial == EnumBlockMaterial.Soil || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Gravel)
-                        break;
-                    return 1.0f;
+                        valid = true;
+                    break;
                 default:
-                    return 1.0f;
+                    break;
             }
-            float dMul = power * DropsMul + 1;
+            float dMul = 1.0f;
+            if (valid)
+                dMul += power * DropsMul;
             return dMul;
         }
     }
