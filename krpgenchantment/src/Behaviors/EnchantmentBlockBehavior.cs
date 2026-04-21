@@ -20,6 +20,7 @@ using Cairo;
 using static System.Net.Mime.MediaTypeNames;
 using System.Reflection.Metadata;
 using System.IO;
+using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
 {
@@ -79,11 +80,6 @@ namespace KRPGLib.Enchantment
                 }
             }
         }
-        public override void OnBlockPlaced(IWorldAccessor world, BlockPos blockPos, ref EnumHandling handling)
-        {
-            base.OnBlockPlaced(world, blockPos, ref handling);
-
-        }
         public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, ref float dropChanceMultiplier, ref EnumHandling handling)
         {
             handling = EnumHandling.Handled;
@@ -112,7 +108,7 @@ namespace KRPGLib.Enchantment
             switch (tool)
             {
                 case EnumTool.Axe:
-                    if (block.Attributes["treeFellingCanChop"].AsBool(defaultValue: false) == true)
+                    if (IsTree() == true)
                         valid = true;
                     break;
                 case EnumTool.Drill:
@@ -132,7 +128,7 @@ namespace KRPGLib.Enchantment
                         valid = true;
                     break;
                 case EnumTool.Shears:
-                    if (block.BlockMaterial == EnumBlockMaterial.Plant)
+                    if (block.Code.FirstCodePart().ContainsFast("leaves"))
                         valid = true;
                     break;
                 case EnumTool.Shovel:
@@ -146,6 +142,15 @@ namespace KRPGLib.Enchantment
             if (valid)
                 dMul += power * DropsMul;
             return dMul;
+        }
+        public bool IsTree()
+        {
+            bool valid = false;
+            if (!block.Code.Path.ContainsFast("log"))
+                return valid;
+            if (!block.Code.Path.Contains("placed"))
+                valid = true;
+            return valid;
         }
     }
 }
