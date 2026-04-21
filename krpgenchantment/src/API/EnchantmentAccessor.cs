@@ -28,12 +28,11 @@ namespace KRPGLib.Enchantment
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
         public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
+        #region Registration
         /// <summary>
         /// Used in CreateEnchantment(), as configured by RegisterEnchantmentClass().
         /// </summary>
         private Dictionary<string, Type> EnchantCodeToTypeMapping = new Dictionary<string, Type>();
-
-        #region Registration
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
         /// </summary>

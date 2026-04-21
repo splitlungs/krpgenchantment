@@ -28,7 +28,7 @@ namespace KRPGLib.Enchantment
             // Setup the default config
             Enabled = true;
             Code = "falselife";
-            Category = "Universal";
+            Category = "StatusPersonal";
             LoreCode = "enchantment-falselife";
             LoreChapterID = 23;
             MaxTier = 5;
@@ -36,7 +36,7 @@ namespace KRPGLib.Enchantment
                 "Arm", "Emblem", "Neck", "Waist"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.0f }, { "MaxActivePerEntity", 4 } };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

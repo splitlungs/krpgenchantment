@@ -544,7 +544,16 @@ namespace KRPGLib.Enchantment
 
         }
         /// <summary>
-        /// Triggered when an entity wearing an enchanted item has already received damage.
+        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="parameters"></param>
+        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+        
+        }
+        /// <summary>
+        /// Triggered when an entity has received damage.
         /// </summary>
         /// <param name="enchant"></param>
         /// <param name="parameters"></param>
@@ -578,15 +587,6 @@ namespace KRPGLib.Enchantment
         public virtual void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
 
-        }
-        /// <summary>
-        /// Triggered when an entity wearing an enchanted item is receiving damage, but before the damage is applied.
-        /// </summary>
-        /// <param name="enchant"></param>
-        /// <param name="parameters"></param>
-        public virtual void OnHit(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        {
-        
         }
         /// <summary>
         /// Called by the Enchantment Entity behavior or Enchantment Behavior.

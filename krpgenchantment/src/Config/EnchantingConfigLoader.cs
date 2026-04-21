@@ -17,10 +17,9 @@ namespace KRPGLib.Enchantment
 {
     public class EnchantingConfigLoader : ModSystem
     {
-        public static KRPGEnchantConfig Config { get; set; } = null!;
-        public const double ConfigVersion = 1.04d;
+        public static KRPGEnchantConfig Config { get; private set; }
+        public const double ConfigVersion = 1.05d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
-
         // We cannot initialize dictionaries in the Config class, and must do so here
         private Dictionary<string, int> defaultMaxEnchantsByCategory = new Dictionary<string, int>()
         {
@@ -33,6 +32,9 @@ namespace KRPGLib.Enchantment
             { "HealTarget", -1 },
             { "HealTick", -1 },
             { "ResistDamage", -1 },
+            { "StatusArea", -1 },
+            { "StatusPersonal", -1 },
+            { "StatusTarget", -1 },
             { "Universal", -1 }
         };
         private Dictionary<string, float> defaultReagentChargeComponents = new Dictionary<string, float>()
@@ -54,25 +56,20 @@ namespace KRPGLib.Enchantment
             {2,4},
             {3,5}
         };
-
         private ICoreServerAPI sApi;
-
         // Load before anything else, especially before ConfigLib does anything.
         public override double ExecuteOrder()
         {
             return 0;
         }
-
         public override bool ShouldLoad(EnumAppSide side)
         {
             return side == EnumAppSide.Server;
         }
-
         public override void AssetsLoaded(ICoreAPI api)
         {
             if (!(api is ICoreServerAPI sapi)) return;
             this.sApi = sapi;
-
             LoadEnchantingConfig();
         }
         /// <summary>
@@ -93,19 +90,19 @@ namespace KRPGLib.Enchantment
                     // Config.ChargeScales = new Dictionary<int, int>(defaultChargeScales);
                     Config.ChargeScales = defaultChargeScales;
                     sApi.StoreModConfig(Config, ConfigFile);
-
                     sApi.Logger.Warning("[KRPGEnchantment] KRPGEnchantConfig file not found. A new one has been created.");
                 }
                 else if (Config.Version < ConfigVersion)
                 {
                     KRPGEnchantConfig tempConfig = new KRPGEnchantConfig();
                     // Enchant Config
+                    // 1. Set flat values
                     if (Config.EntityTickMs != 250) tempConfig.EntityTickMs = Config.EntityTickMs;
                     if (Config.MaxEnchantsPerItem >= 0) tempConfig.MaxEnchantsPerItem = Config.MaxEnchantsPerItem;
                     if (Config.EnchantTimeHours != 1) tempConfig.EnchantTimeHours = Config.EnchantTimeHours;
                     if (Config.LatentEnchantResetDays >= 0) tempConfig.LatentEnchantResetDays = Config.LatentEnchantResetDays;
                     if (Config.MaxLatentEnchants != 3) tempConfig.MaxLatentEnchants = Config.MaxLatentEnchants;
-
+                    // 2. Set 
                     // Enchantment Category Limiters - Default
                     if (Config.MaxEnchantsByCategory is null)
                     {
@@ -120,13 +117,11 @@ namespace KRPGLib.Enchantment
                                 tempConfig.MaxEnchantsByCategory.Add(pair.Key, pair.Value);
                         }
                     }
-
                     // Reagent Charge Config
                     if (Config.LegacyReagentPotential == true) tempConfig.LegacyReagentPotential = true;
                     if (Config.ChargeReagentHours != 1) tempConfig.ChargeReagentHours = Config.ChargeReagentHours;
                     if (Config.MaxReagentCharge != 5) tempConfig.MaxReagentCharge = Config.MaxReagentCharge;
                     if (Config.GlobalChargeMultiplier != 1.00) tempConfig.GlobalChargeMultiplier = Config.GlobalChargeMultiplier;
-
                     // Reagent Charge Components - Default
                     if (Config.ReagentChargeComponents is null)
                     {
@@ -141,7 +136,6 @@ namespace KRPGLib.Enchantment
                                 tempConfig.ReagentChargeComponents.Add(pair.Key, pair.Value);
                         }
                     }
-
                     // Valid Reagents - Default
                     if (Config.ValidReagents is null)
                     {
@@ -156,14 +150,13 @@ namespace KRPGLib.Enchantment
                                 tempConfig.ValidReagents.Add(pair.Key, pair.Value);
                         }
                     }
-
                     // Charge to Enchant Tier Scales - Default
                     if (Config.ChargeScales is null)
                     {
                         tempConfig.ChargeScales = defaultChargeScales;
                     }
                     // Charge Scales - Update ONLY IF they don't qualify for their current MaxCharge
-                    else if (tempConfig.ChargeScales.Length < tempConfig.MaxReagentCharge)
+                    else if (Config.ChargeScales.Length < tempConfig.MaxReagentCharge)
                     {
                         tempConfig.ChargeScales = Config.ChargeScales;
                         if (tempConfig.ChargeScales.Length < tempConfig.MaxReagentCharge)
@@ -177,18 +170,16 @@ namespace KRPGLib.Enchantment
                         }
                     }
                     // Charge Scales - Leave it alone if it's valid
-                    else if (tempConfig.ChargeScales.Length == tempConfig.MaxReagentCharge)
+                    else if (Config.ChargeScales.Length == tempConfig.MaxReagentCharge)
                     {
                         tempConfig.ChargeScales = Config.ChargeScales;
                     }
                     // Charge Scales - How did we get here? idk, this is just a fall-back if something goes horribly wrong
                     else
                         tempConfig.ChargeScales = defaultChargeScales;
-
                     // Force reset if they haven't done Enchantments 1.2.5 upgrade yet
                     if (Config.Version < 1.01) tempConfig.ResetEnchantConfigs = true;
                     else if (tempConfig.ResetEnchantConfigs == true) tempConfig.ResetEnchantConfigs = true;
-                    
                     // System Options
                     if (Config.Debug == true) tempConfig.Debug = true;
                     tempConfig.Version = ConfigVersion;
