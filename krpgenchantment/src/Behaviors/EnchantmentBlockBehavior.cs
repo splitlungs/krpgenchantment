@@ -147,7 +147,7 @@ namespace KRPGLib.Enchantment
         {
             if (!block.Code.Path.ContainsFast("log"))
                 return false;
-            if (!block.Code.Path.Contains("placed"))
+            if (!block.Code.Path.ContainsFast("placed"))
                 return true;
             return false;
         }
