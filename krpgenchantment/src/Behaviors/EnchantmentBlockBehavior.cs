@@ -145,12 +145,11 @@ namespace KRPGLib.Enchantment
         }
         public bool IsTree()
         {
-            bool valid = false;
             if (!block.Code.Path.ContainsFast("log"))
-                return valid;
+                return false;
             if (!block.Code.Path.Contains("placed"))
-                valid = true;
-            return valid;
+                return true;
+            return false;
         }
     }
 }
