@@ -10,7 +10,6 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
-// using CombatOverhaul;
 // using CombatOverhaul.Implementations;
 // using CombatOverhaul.MeleeSystems;
 // using CombatOverhaul.RangedSystems;
