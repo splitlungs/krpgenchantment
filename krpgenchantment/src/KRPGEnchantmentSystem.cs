@@ -53,14 +53,14 @@ namespace KRPGLib.Enchantment
         {
             base.StartClientSide(api);
             cApi = api;
-            EnchantAccessor.cApi = api;
+            EnchantAccessor?.cApi = api;
             ConfigParticles();
             RegisterClientCompatibility();
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
-            EnchantAccessor.sApi = api;
+            EnchantAccessor?.sApi = api;
             RegisterServerCompatibility();
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
@@ -72,7 +72,7 @@ namespace KRPGLib.Enchantment
             if (cApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysClient = new COSystem();
-                COSysClient.StartClientSide(cApi);
+                // COSysClient.StartClientSide(cApi);
             }
             if (cApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
@@ -88,7 +88,7 @@ namespace KRPGLib.Enchantment
             if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysServer = new COSystem();
-                COSysServer.StartServerSide(sApi);
+                // COSysServer.StartServerSide(sApi);
             }
             if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
@@ -111,7 +111,7 @@ namespace KRPGLib.Enchantment
         public override void Start(ICoreAPI api)
         {
             Api = api;
-            EnchantAccessor.Api = api;
+            EnchantAccessor?.Api = api;
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("ChargingBlock", typeof(ChargingBlock));
@@ -182,49 +182,51 @@ namespace KRPGLib.Enchantment
         /// Specifically patches override methods so as to avoid accidental base calls
         /// Edit: Turns out it wasn't working somehow and preventing other patches from working. Fucking hell
         /// </summary>
-        // private static void PatchOnlyOverrides()
-        // {
-        //     var baseType = typeof(CollectibleObject);
-        //     var parameterTypes = new Type[]
-        //     {
-        //         typeof(float),
-        //         typeof(ItemSlot),
-        //         typeof(EntityAgent),
-        //         typeof(BlockSelection),
-        //         typeof(EntitySelection)
-        //     };
-        //     var postfixMethod = AccessTools.Method(
-        //         typeof(CollectibleObject_Patch),
-        //         nameof(CollectibleObject_Patch.OnHeldInteractStop_Postfix)
-        //     );
-        //     var postfix = new HarmonyMethod(postfixMethod);
-        //     foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
-        //                  .SelectMany(a => SafeGetTypes(a))
-        //                  .Where(t =>
-        //                      t != null &&
-        //                      !t.IsAbstract &&
-        //                      t != baseType &&
-        //                      baseType.IsAssignableFrom(t)))
-        //     {
-        //         var method = AccessTools.DeclaredMethod(
-        //             type,
-        //             "OnHeldInteractStop",
-        //             parameterTypes
-        //         );
-        //         if (method == null)
-        //             continue;
-        //         // Only patch true overrides (not inherited base)
-        //         if (method.GetBaseDefinition().DeclaringType == baseType)
-        //         {
-        //             harmony.Patch(method, postfix: postfix);
-        //         }
-        //     }
-        // }
-        // private static Type[] SafeGetTypes(Assembly assembly)
-        // {
-        //     try { return assembly.GetTypes(); }
-        //     catch { return Array.Empty<Type>(); }
-        // }
+        /*
+        private static void PatchOnlyOverrides()
+        {
+            var baseType = typeof(CollectibleObject);
+            var parameterTypes = new Type[]
+            {
+                typeof(float),
+                typeof(ItemSlot),
+                typeof(EntityAgent),
+                typeof(BlockSelection),
+                typeof(EntitySelection)
+            };
+            var postfixMethod = AccessTools.Method(
+                typeof(CollectibleObject_Patch),
+                nameof(CollectibleObject_Patch.OnHeldInteractStop_Postfix)
+            );
+            var postfix = new HarmonyMethod(postfixMethod);
+            foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
+                         .SelectMany(a => SafeGetTypes(a))
+                         .Where(t =>
+                             t != null &&
+                             !t.IsAbstract &&
+                             t != baseType &&
+                             baseType.IsAssignableFrom(t)))
+            {
+                var method = AccessTools.DeclaredMethod(
+                    type,
+                    "OnHeldInteractStop",
+                    parameterTypes
+                );
+                if (method == null)
+                    continue;
+                // Only patch true overrides (not inherited base)
+                if (method.GetBaseDefinition().DeclaringType == baseType)
+                {
+                    harmony.Patch(method, postfix: postfix);
+                }
+            }
+        }
+        private static Type[] SafeGetTypes(Assembly assembly)
+        {
+            try { return assembly.GetTypes(); }
+            catch { return Array.Empty<Type>(); }
+        }
+        */
         public override void Dispose()
         {
             harmony?.UnpatchAll("KRPGEnchantmentPatch");

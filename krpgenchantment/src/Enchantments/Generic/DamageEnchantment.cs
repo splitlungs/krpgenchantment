@@ -13,7 +13,6 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
 using Cairo.Freetype;
-using CombatOverhaul.Implementations;
 using System.Diagnostics.Metrics;
 using Vintagestory.API.Util;
 

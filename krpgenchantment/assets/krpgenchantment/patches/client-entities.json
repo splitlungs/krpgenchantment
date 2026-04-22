@@ -5,7 +5,23 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
+    "file": "game:entities/item.json"
+  },
+  {
+    "op": "add",
+    "path": "/client/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
     "file": "game:entities/animal/animalbot.json"
+  },
+  {
+    "op": "add",
+    "path": "/client/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/animal/animalbot-hooved.json"
   },
     {
     "op": "add",
@@ -29,7 +45,7 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
-    "file": "game:entities/animal/fish/bass.json"
+    "file": "game:entities/animal/fish/freshwater-adult.json"
   },
   {
     "op": "add",
@@ -38,14 +54,6 @@
       "code": "EnchantmentEntityBehavior"
     },
     "file": "game:entities/animal/fish/reef-adult.json"
-  },
-  {
-    "op": "add",
-    "path": "/client/behaviors/-",
-    "value": {
-      "code": "EnchantmentEntityBehavior"
-    },
-    "file": "game:entities/animal/fish/salmon.json"
   },
   {
     "op": "add",
@@ -357,6 +365,14 @@
     "value": {
       "code": "EnchantmentEntityBehavior"
     },
-    "file": "game:entities/nonliving/strawdummy-aged.json"
+    "file": "game:entities/nonliving/projectile/arrow.json"
+  },
+  {
+    "op": "add",
+    "path": "/client/behaviors/-",
+    "value": {
+      "code": "EnchantmentEntityBehavior"
+    },
+    "file": "game:entities/nonliving/projectile/spear.json"
   }
 ]
