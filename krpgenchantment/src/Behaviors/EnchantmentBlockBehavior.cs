@@ -86,7 +86,7 @@ namespace KRPGLib.Enchantment
             if (byPlayer?.InventoryManager?.ActiveHotbarSlot == null || block.Attributes == null) 
                 return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
             
-            if (EnchantingConfigLoader.Config.Debug == true)
+            if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Checking for Fortunate enchantment. Pre dropChanceMultiplier is {0}", dropChanceMultiplier);
             handling = EnumHandling.Handled;
             ItemStack itemstack = byPlayer?.InventoryManager?.ActiveHotbarSlot?.Itemstack;
