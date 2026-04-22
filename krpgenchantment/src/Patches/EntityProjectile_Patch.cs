@@ -1,5 +1,4 @@
-﻿using CombatOverhaul.Implementations;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -14,16 +13,16 @@ using Vintagestory.GameContent;
 namespace KRPGLib.Enchantment
 {
     [HarmonyPatch]
-    public static class EntityProjectile_impactOnEntity_Patch
+    public static class EntityProjectileBase_impactOnEntity_Patch
     {
         // Remove damage from Healing enchanted projectile
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
-        public static bool Prefix(EntityProjectile __instance, Entity entity)
+        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
+        public static bool Prefix(EntityProjectileBase __instance, Entity target)
         {
             // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
-            if (!(byEntity.Api is ICoreServerAPI sapi) || entity == null) return true;
+            if (!(byEntity.Api is ICoreServerAPI sapi) || target == null) return true;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
@@ -49,8 +48,8 @@ namespace KRPGLib.Enchantment
         }
         // Trigger "OnAttackStop" enchants when an entity has been hit
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectile), "impactOnEntity")]
-        public static void Postfix(EntityProjectile __instance, Entity entity)
+        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
+        public static void Postfix(EntityProjectileBase __instance, Entity target)
         {
             // __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
             Entity byEntity = __instance.FiredBy;
@@ -61,7 +60,7 @@ namespace KRPGLib.Enchantment
                 if (enchants == null) return;
 
                 EnchantModifiers parameters = new EnchantModifiers();
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, entity, enchants, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
             }
@@ -96,9 +95,9 @@ namespace KRPGLib.Enchantment
                 }
                 EnchantModifiers parameters = new EnchantModifiers();
                 // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, entity, ref parameters);
-                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, entity, enchants, ref parameters);
+                bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)
-                    entity.Api.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.GetName());
+                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.GetName());
                 // __instance.FiredBy.WatchedAttributes.SetItemstack("pendingRangedEnchants", null);
                 __instance.FiredBy.WatchedAttributes.SetString("pendingRangedEnchants", null);
                 __instance.FiredBy.WatchedAttributes.SetLong("pendingRangedEnchantsTimer", 0);

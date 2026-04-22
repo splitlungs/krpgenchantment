@@ -8,7 +8,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
-using CombatOverhaul.Armor;
+// using CombatOverhaul.Armor;
 using System.Reflection.Metadata;
 using Vintagestory.API.Util;
 using Cairo.Freetype;
@@ -16,7 +16,7 @@ using System.Numerics;
 using Vintagestory.API.Datastructures;
 using static System.Net.Mime.MediaTypeNames;
 using System.Data;
-using CombatOverhaul.MeleeSystems;
+// using CombatOverhaul.MeleeSystems;
 using System.Collections;
 using Cairo;
 

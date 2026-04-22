@@ -6,21 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Client;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
-using CombatOverhaul;
-using Vintagestory.API.Datastructures;
-using CombatOverhaul.Implementations;
 using KRPGLib.Enchantment.API;
-using System.Collections;
-using CombatOverhaul.MeleeSystems;
-using CombatOverhaul.RangedSystems;
-using Vintagestory.API.Client;
+// using CombatOverhaul.Implementations;
+// using CombatOverhaul.MeleeSystems;
+// using CombatOverhaul.RangedSystems;
 
 namespace KRPGLib.Enchantment.Compat
 {
     public class COSystem
     {
+        /*
         ICoreAPI Api;
         ICoreClientAPI cApi;
         ICoreServerAPI sApi;
@@ -29,7 +27,6 @@ namespace KRPGLib.Enchantment.Compat
             if (!(capi is ICoreClientAPI)) return;
             cApi = capi;
             Api = capi as ICoreAPI;
-            
             CombatOverhaulSystem COSys = capi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
             {
@@ -167,5 +164,6 @@ namespace KRPGLib.Enchantment.Compat
                     break;
             }
         }
+        */
     }
 }

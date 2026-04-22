@@ -374,8 +374,23 @@ namespace KRPGLib.Enchantment
                     capi.Network.SendBlockEntityPacket(Pos, (int)EnumBlockEntityPacketId.Close, null);
                     capi.Network.SendPacketClient(Inventory.Close(byPlayer));
                 };
-                clientDialog.OpenSound = AssetLocation.Create("sounds/block/barrelopen");
-                clientDialog.CloseSound = AssetLocation.Create("sounds/block/barrelclose");
+                SoundAttributes open = new SoundAttributes() { 
+                    Location = new AssetLocation("game:sounds/block/barrelopen"), 
+                    Pitch = NatFloat.One,
+                    Volume = NatFloat.One,
+                    Type = EnumSoundType.Sound,
+                    Range = 12f};
+                SoundAttributes close = new SoundAttributes() { 
+                    Location = new AssetLocation("game:sounds/block/barrelclose"), 
+                    Pitch = NatFloat.One,
+                    Volume = NatFloat.One,
+                    Type = EnumSoundType.Sound,
+                    Range = 12f};
+                clientDialog.OpenSound = open;
+                clientDialog.CloseSound = close;
+                // OBSOLETE
+                // clientDialog.OpenSound = AssetLocation.Create("game:sounds/block/barrelopen");
+                // clientDialog.CloseSound = AssetLocation.Create("game:sounds/block/barrelclose");
 
                 clientDialog.TryOpen();
                 capi.Network.SendPacketClient(Inventory.Open(byPlayer));

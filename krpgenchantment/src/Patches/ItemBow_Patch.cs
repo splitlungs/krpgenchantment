@@ -62,7 +62,7 @@ namespace KRPGLib.Enchantment
         //         {
         //             dualCallByPlayer = byEntity.World.PlayerByUid(((EntityPlayer)byEntity).PlayerUID);
         //         }
-// 
+        // 
         //         byEntity.World.PlaySoundAt(new AssetLocation("sounds/bow-draw"), byEntity, dualCallByPlayer, randomizePitch: false, 8f);
         //         handling = EnumHandHandling.PreventDefault;
         //     }
@@ -111,5 +111,4 @@ namespace KRPGLib.Enchantment
         //     __result += "-quick";
         // }
     }
-
 }

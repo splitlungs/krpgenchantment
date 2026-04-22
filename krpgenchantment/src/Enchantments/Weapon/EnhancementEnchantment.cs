@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment
         public EnhancementEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
-            Enabled = true;
+            Enabled = false;
             Code = "quickdraw";
             Category = "Enhancement";
             LoreCode = "enchantment-quickdraw";
