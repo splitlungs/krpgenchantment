@@ -58,8 +58,9 @@ namespace KRPGLib.Enchantment
             {
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null) return;
-
-                EnchantModifiers parameters = new EnchantModifiers();
+                float damage = __instance.Damage;
+                EnumDamageType dType = __instance.DamageType;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dType } };
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
@@ -93,7 +94,9 @@ namespace KRPGLib.Enchantment
                     sapi.Logger.Error("[KRPGEnchantment] Enchanted arrow failed to parse any enchantments out of an active string.");
                     return;
                 }
-                EnchantModifiers parameters = new EnchantModifiers();
+                float damage = __instance.Damage;
+                EnumDamageType dType = __instance.DamageType;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dType } };
                 // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, entity, ref parameters);
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)

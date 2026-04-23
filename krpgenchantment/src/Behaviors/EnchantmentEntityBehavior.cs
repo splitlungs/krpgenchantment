@@ -599,7 +599,8 @@ namespace KRPGLib.Enchantment
                 // Translate Handling through Int32 value in Enchantments.
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
-                EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
+                float damage = itemslot.Itemstack.Item.AttackPower;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "handled", eHandled } };
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttacked", byEntity, entity, ref parameters);
                 if (didEnchants)
                 {
