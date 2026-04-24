@@ -130,8 +130,6 @@ namespace KRPGLib.Enchantment
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldAttackStart().");
-            handHandling = EnumHandHandling.Handled;
-            handling = EnumHandling.Handled;
             Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
             if (enchants == null) 
             {
@@ -142,6 +140,8 @@ namespace KRPGLib.Enchantment
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, byEntity, ref parameters);
             if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
+            handHandling = EnumHandHandling.Handled;
+            handling = EnumHandling.Handled;
             base.OnHeldAttackStart(slot, byEntity, blockSel, entitySel, ref handHandling, ref handling);
         }
         // Not called here?
@@ -177,12 +177,12 @@ namespace KRPGLib.Enchantment
                 base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
                 return;
             }
-            handHandling = EnumHandHandling.Handled;
-            handling = EnumHandling.Handled;
             EnchantModifiers parameters = new EnchantModifiers();
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, byEntity, ref parameters);
             if (!didEnchants)
                 sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
+            handHandling = EnumHandHandling.Handled;
+            handling = EnumHandling.Handled;
             base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
         }
         // Not called here?
@@ -202,7 +202,7 @@ namespace KRPGLib.Enchantment
                 base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
                 return;
             }
-            handling = EnumHandling.Handled;
+            
             // EnchantModifiers parameters = new EnchantModifiers();
             // bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity, ref parameters);
 
@@ -212,7 +212,6 @@ namespace KRPGLib.Enchantment
                 base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
                 return;
             }
-
             int aimSelf = byEntity.WatchedAttributes.GetInt("aimSelf", 0);
             if (aimSelf == 1 && sApi.EnchantAccessor().GetActiveEnchantments(slot.Itemstack) != null)
             {
@@ -227,6 +226,7 @@ namespace KRPGLib.Enchantment
                 base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
                 return;
             }
+            handling = EnumHandling.Handled;
             base.OnHeldInteractStop(secondsUsed, slot, byEntity, blockSel, entitySel, ref handling);
         }
         public override float GetMiningSpeedModifier(ItemStack itemstack, ref EnumHandling bhHandling)
