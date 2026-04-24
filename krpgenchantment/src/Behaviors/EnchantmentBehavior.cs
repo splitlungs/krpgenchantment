@@ -171,18 +171,18 @@ namespace KRPGLib.Enchantment
             }
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Start processing Enchantments on EnchantmentBehavior.OnHeldInteractStart().");
-            handHandling = EnumHandHandling.Handled;
-            handling = EnumHandling.Handled;
             Dictionary<string, int> enchants = Api.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack);
             if (enchants == null) 
             {
                 base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
                 return;
             }
+            handHandling = EnumHandHandling.Handled;
+            handling = EnumHandling.Handled;
             EnchantModifiers parameters = new EnchantModifiers();
             bool didEnchants = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStart", byEntity, byEntity, ref parameters);
             if (!didEnchants)
-                    sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
+                sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", byEntity.GetName());
             base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling, ref handling);
         }
         // Not called here?
