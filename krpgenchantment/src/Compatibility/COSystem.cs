@@ -10,15 +10,15 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
-// using CombatOverhaul.Implementations;
-// using CombatOverhaul.MeleeSystems;
-// using CombatOverhaul.RangedSystems;
+using CombatOverhaul.Implementations;
+using CombatOverhaul.MeleeSystems;
+using CombatOverhaul.RangedSystems;
+using CombatOverhaul;
 
 namespace KRPGLib.Enchantment.Compat
 {
     public class COSystem
     {
-        /*
         ICoreAPI Api;
         ICoreClientAPI cApi;
         ICoreServerAPI sApi;
@@ -164,6 +164,5 @@ namespace KRPGLib.Enchantment.Compat
                     break;
             }
         }
-        */
     }
 }

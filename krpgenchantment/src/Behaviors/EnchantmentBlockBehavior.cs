@@ -55,11 +55,8 @@ namespace KRPGLib.Enchantment
         public override void OnDamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount, ref EnumHandling bhHandling)
         {
             if (!(world.Api is ICoreServerAPI api)) return;
-            
-            bhHandling = EnumHandling.Handled;
             Dictionary<string, int> enchants = api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
             if (enchants == null) return;
-
             int durable = enchants.GetValueOrDefault("durable", 0);
             if (durable > 0)
             {
@@ -77,18 +74,16 @@ namespace KRPGLib.Enchantment
                 if (didEnchantment == true)
                 {
                     amount = parameters.GetInt("damage");
+                    bhHandling = EnumHandling.Handled;
                 }
             }
         }
         public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, ref float dropChanceMultiplier, ref EnumHandling handling)
         {
-            handling = EnumHandling.Handled;
             if (byPlayer?.InventoryManager?.ActiveHotbarSlot == null || block.Attributes == null) 
                 return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);
-            
-            if (EnchantingConfigLoader.Config.Debug == true)
+            if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Checking for Fortunate enchantment. Pre dropChanceMultiplier is {0}", dropChanceMultiplier);
-            handling = EnumHandling.Handled;
             ItemStack itemstack = byPlayer?.InventoryManager?.ActiveHotbarSlot?.Itemstack;
             Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(itemstack);
             if (enchants?.TryGetValue("fortunate", out int power) == true)
@@ -97,6 +92,7 @@ namespace KRPGLib.Enchantment
                 dropChanceMultiplier *= MathF.Min(eMul, 1.99f); // Never go 1.0 or above to avoide true dupe
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Applied an Fortunate enchantment. Post dropChanceMultiplier is {0}.", dropChanceMultiplier);         
+                handling = EnumHandling.Handled;
             }
        
             return base.GetDrops(world, pos, byPlayer, ref dropChanceMultiplier, ref handling);

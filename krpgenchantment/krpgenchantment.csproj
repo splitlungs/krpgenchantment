@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin/$(Configuration)/Mods/mod</OutputPath>
     <VINTAGE_STORY>/run/media/nixy/Games01/Vintagestory</VINTAGE_STORY>
@@ -25,7 +25,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Overhaullib">
-      <HintPath>../../../Examples/overhaullib_2.0.3/overhaullib.dll</HintPath>
+      <HintPath>../../../Examples/overhaullib_1.21.0/Overhaullib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="protobuf-net">

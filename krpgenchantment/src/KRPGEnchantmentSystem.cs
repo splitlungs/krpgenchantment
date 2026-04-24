@@ -53,14 +53,14 @@ namespace KRPGLib.Enchantment
         {
             base.StartClientSide(api);
             cApi = api;
-            EnchantAccessor?.cApi = api;
+            EnchantAccessor.cApi = api;
             ConfigParticles();
             RegisterClientCompatibility();
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
             sApi = api;
-            EnchantAccessor?.sApi = api;
+            EnchantAccessor.sApi = api;
             RegisterServerCompatibility();
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
@@ -72,7 +72,7 @@ namespace KRPGLib.Enchantment
             if (cApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysClient = new COSystem();
-                // COSysClient.StartClientSide(cApi);
+                COSysClient.StartClientSide(cApi);
             }
             if (cApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
@@ -88,7 +88,7 @@ namespace KRPGLib.Enchantment
             if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
             {
                 COSysServer = new COSystem();
-                // COSysServer.StartServerSide(sApi);
+                COSysServer.StartServerSide(sApi);
             }
             if (sApi.ModLoader.IsModEnabled("krpgwands") == true)
             {
@@ -111,7 +111,7 @@ namespace KRPGLib.Enchantment
         public override void Start(ICoreAPI api)
         {
             Api = api;
-            EnchantAccessor?.Api = api;
+            EnchantAccessor.Api = api;
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
             api.RegisterBlockClass("ChargingBlock", typeof(ChargingBlock));

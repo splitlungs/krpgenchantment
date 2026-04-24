@@ -8,17 +8,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using KRPGLib.Enchantment.API;
-// using CombatOverhaul.Armor;
-using System.Reflection.Metadata;
 using Vintagestory.API.Util;
-using Cairo.Freetype;
-using System.Numerics;
-using Vintagestory.API.Datastructures;
-using static System.Net.Mime.MediaTypeNames;
-using System.Data;
-// using CombatOverhaul.MeleeSystems;
-using System.Collections;
-using Cairo;
 
 namespace KRPGLib.Enchantment
 {
@@ -581,7 +571,6 @@ namespace KRPGLib.Enchantment
             }
             // EnchantModifiers parameters = new EnchantModifiers();
             // bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttackStop", byEntity, entity, ref parameters);
-            handled = EnumHandling.Handled;
             // TODO: Update for ActiveEnchantCache?
             // OnAttack triggers
             if (mode != EnumInteractMode.Attack) 
@@ -595,11 +584,12 @@ namespace KRPGLib.Enchantment
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     sapi.Logger.Event("[KRPGEnchantment] {0} was attacked by an enchanted weapon.", entity.GetName());
-                
+                handled = EnumHandling.Handled;
                 // Translate Handling through Int32 value in Enchantments.
                 // PassThrough = 0, Handled = 1, PreventDefault = 2, PreventSubsequent = 3
                 int eHandled = (int)handled;
-                EnchantModifiers parameters = new EnchantModifiers() { { "handled", eHandled } };
+                float damage = itemslot.Itemstack.Item.AttackPower;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "handled", eHandled } };
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(itemslot, "OnAttacked", byEntity, entity, ref parameters);
                 if (didEnchants)
                 {

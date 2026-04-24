@@ -17,8 +17,8 @@ namespace KRPGLib.Enchantment
     {
         // Remove damage from Healing enchanted projectile
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
-        public static bool Prefix(EntityProjectileBase __instance, Entity target)
+        [HarmonyPatch(typeof(EntityProjectile), "ImpactOnEntity")]
+        public static bool Prefix(EntityProjectile __instance, Entity target)
         {
             // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
@@ -48,8 +48,8 @@ namespace KRPGLib.Enchantment
         }
         // Trigger "OnAttackStop" enchants when an entity has been hit
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
-        public static void Postfix(EntityProjectileBase __instance, Entity target)
+        [HarmonyPatch(typeof(EntityProjectile), "ImpactOnEntity")]
+        public static void Postfix(EntityProjectile __instance, Entity target)
         {
             // __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
             Entity byEntity = __instance.FiredBy;
@@ -58,8 +58,9 @@ namespace KRPGLib.Enchantment
             {
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
                 if (enchants == null) return;
-
-                EnchantModifiers parameters = new EnchantModifiers();
+                float damage = __instance.Damage;
+                EnumDamageType dType = __instance.DamageType;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dType } };
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)
                     sapi.Logger.Warning("[KRPGEnchantments] Failed to TryEnchantments on {0}!", __instance.ProjectileStack.GetName());
@@ -93,7 +94,9 @@ namespace KRPGLib.Enchantment
                     sapi.Logger.Error("[KRPGEnchantment] Enchanted arrow failed to parse any enchantments out of an active string.");
                     return;
                 }
-                EnchantModifiers parameters = new EnchantModifiers();
+                float damage = __instance.Damage;
+                EnumDamageType dType = __instance.DamageType;
+                EnchantModifiers parameters = new EnchantModifiers() { { "damage", damage }, { "type", dType } };
                 // bool didEnchants = sapi.EnchantAccessor().TryEnchantments(weaponStack, "OnAttackStop", __instance, entity, ref parameters);
                 bool didEnchants = sapi.EnchantAccessor().TryEnchantments(__instance.ProjectileStack, "OnAttacked", byEntity, target, enchants, ref parameters);
                 if (!didEnchants)
