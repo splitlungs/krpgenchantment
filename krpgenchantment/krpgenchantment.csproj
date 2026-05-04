@@ -17,17 +17,23 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="krpgwands">
-      <HintPath>../../../Examples/krpgwands_0.6.1/krpgwands.dll</HintPath>
+      <HintPath>../../../Examples/krpgwands_0.7.0/krpgwands.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Overhaullib">
-      <HintPath>../../../Examples/overhaullib_2.0.3/overhaullib.dll</HintPath>
+    <Reference Include="OverhaullibLegacy">
+      <HintPath>../../../Examples/overhaulliblegacycompat_1.0.19/OverhaullibLegacyCompat.dll</HintPath>
       <Private>False</Private>
     </Reference>
+<!--
+    <Reference Include="Overhaullib">
+      <HintPath>../../../Examples/overhaullib_2.0.8/overhaullib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+-->
     <Reference Include="protobuf-net">
       <HintPath>$(VINTAGE_STORY)/Lib/protobuf-net.dll</HintPath>
       <Private>False</Private>
