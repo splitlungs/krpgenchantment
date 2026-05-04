@@ -30,7 +30,7 @@ namespace KRPGLib.Enchantment.Compat
             CombatOverhaulSystem COSys = capi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
             {
-                COSys.ClientMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
+                // COSys.ClientMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
                 COSys.ClientRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
             }
         }
@@ -43,7 +43,7 @@ namespace KRPGLib.Enchantment.Compat
             if (COSys != null)
             {
                 COSys.ServerMeleeSystem.OnDealMeleeDamage += OnMeleeDamaged;
-                COSys.ServerMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
+                // COSys.ServerMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
                 COSys.ServerProjectileSystem.OnDealRangedDamage += OnRangedDamaged;
                 COSys.ServerRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
             }
