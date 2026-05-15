@@ -1,0 +1,178 @@
+Date : 2026-05-15 13:32:45
+Directory : /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment
+Total : 113 files,  21281 codes, 3271 comments, 732 blanks, all 25284 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| JSON     |         32 |     11,564 |          6 |        130 |     11,700 |
+| C#       |         80 |      9,650 |      3,205 |        597 |     13,452 |
+| XML      |          1 |         67 |         60 |          5 |        132 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                     | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                        |        113 |     21,281 |      3,271 |        732 |     25,284 |
+| . (Files)                                                                                                                                |          2 |         78 |         60 |          5 |        143 |
+| Properties                                                                                                                               |          1 |         20 |          6 |          0 |         26 |
+| assets                                                                                                                                   |         30 |     11,533 |          0 |        130 |     11,663 |
+| assets/krpgenchantment                                                                                                                   |         30 |     11,533 |          0 |        130 |     11,663 |
+| assets/krpgenchantment/blocktypes                                                                                                        |          2 |        159 |          0 |          0 |        159 |
+| assets/krpgenchantment/config                                                                                                            |          3 |        120 |          0 |          0 |        120 |
+| assets/krpgenchantment/config (Files)                                                                                                    |          1 |         81 |          0 |          0 |         81 |
+| assets/krpgenchantment/config/handbook                                                                                                   |          1 |          5 |          0 |          0 |          5 |
+| assets/krpgenchantment/config/lore                                                                                                       |          1 |         34 |          0 |          0 |         34 |
+| assets/krpgenchantment/itemtypes                                                                                                         |          1 |        251 |          0 |          0 |        251 |
+| assets/krpgenchantment/lang                                                                                                              |         10 |      1,792 |          0 |        110 |      1,902 |
+| assets/krpgenchantment/patches                                                                                                           |          6 |      1,160 |          0 |          0 |      1,160 |
+| assets/krpgenchantment/recipes                                                                                                           |          2 |         63 |          0 |          0 |         63 |
+| assets/krpgenchantment/recipes/grid                                                                                                      |          2 |         63 |          0 |          0 |         63 |
+| assets/krpgenchantment/recipes/grid/block                                                                                                |          2 |         63 |          0 |          0 |         63 |
+| assets/krpgenchantment/shapes                                                                                                            |          6 |      7,988 |          0 |         20 |      8,008 |
+| assets/krpgenchantment/shapes/block                                                                                                      |          6 |      7,988 |          0 |         20 |      8,008 |
+| src                                                                                                                                      |         80 |      9,650 |      3,205 |        597 |     13,452 |
+| src (Files)                                                                                                                              |          1 |        673 |         66 |         11 |        750 |
+| src/API                                                                                                                                  |          5 |      1,097 |        584 |         76 |      1,757 |
+| src/Behaviors                                                                                                                            |          5 |      1,063 |        398 |         49 |      1,510 |
+| src/BlockEntities                                                                                                                        |          2 |        953 |        240 |         47 |      1,240 |
+| src/Blocks                                                                                                                               |          2 |         39 |         10 |          8 |         57 |
+| src/Command                                                                                                                              |          2 |        404 |         60 |         28 |        492 |
+| src/Compatibility                                                                                                                        |          2 |        215 |         18 |         10 |        243 |
+| src/Config                                                                                                                               |          3 |        278 |         74 |          8 |        360 |
+| src/Enchantments                                                                                                                         |         36 |      3,263 |        760 |        216 |      4,239 |
+| src/Enchantments (Files)                                                                                                                 |          4 |        575 |        297 |         52 |        924 |
+| src/Enchantments/Accessory                                                                                                               |          3 |        318 |         40 |          6 |        364 |
+| src/Enchantments/Armor                                                                                                                   |          7 |        406 |         25 |         36 |        467 |
+| src/Enchantments/Generic                                                                                                                 |          4 |        234 |         70 |         26 |        330 |
+| src/Enchantments/Tool                                                                                                                    |          2 |         74 |         12 |          5 |         91 |
+| src/Enchantments/Universal                                                                                                               |          2 |        198 |         31 |          9 |        238 |
+| src/Enchantments/Weapon                                                                                                                  |         14 |      1,458 |        285 |         82 |      1,825 |
+| src/GUI                                                                                                                                  |          7 |        753 |        362 |         84 |      1,199 |
+| src/Inventory                                                                                                                            |          2 |        442 |        112 |         31 |        585 |
+| src/Items                                                                                                                                |          1 |         79 |          1 |         11 |         91 |
+| src/Network                                                                                                                              |          2 |         79 |          3 |          6 |         88 |
+| src/Patches                                                                                                                              |         10 |        312 |        517 |         12 |        841 |
++------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                                 | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/Properties/launchSettings.json                                  | JSON     |         20 |          6 |          0 |         26 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/blocktypes/chargingtable.json            | JSON     |         96 |          0 |          0 |         96 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/blocktypes/enchanting-table.json         | JSON     |         63 |          0 |          0 |         63 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/config/configlib-patches.json            | JSON     |         81 |          0 |          0 |         81 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/config/handbook/enchanting.json          | JSON     |          5 |          0 |          0 |          5 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/config/lore/enchantment.json             | JSON     |         34 |          0 |          0 |         34 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/itemtypes/lore.json                      | JSON     |        251 |          0 |          0 |        251 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/de.json                             | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/en.json                             | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/es-419.json                         | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/es-es.json                          | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/fr.json                             | JSON     |        176 |          0 |         11 |        187 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/it.json                             | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/ja.json                             | JSON     |        181 |          0 |         11 |        192 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/pl.json                             | JSON     |        178 |          0 |         11 |        189 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/ru.json                             | JSON     |        176 |          0 |         11 |        187 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/lang/uk.json                             | JSON     |        176 |          0 |         11 |        187 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/animations-quickdraw.json        | JSON     |        303 |          0 |          0 |        303 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/client-entities.json             | JSON     |        378 |          0 |          0 |        378 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/player.json                      | JSON     |         18 |          0 |          0 |         18 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/remaps.json                      | JSON     |         10 |          0 |          0 |         10 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/server-entities.json             | JSON     |        378 |          0 |          0 |        378 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/patches/trader.json                      | JSON     |         73 |          0 |          0 |         73 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/recipes/grid/block/chargingtable.json    | JSON     |         39 |          0 |          0 |         39 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/recipes/grid/block/enchanting-table.json | JSON     |         24 |          0 |          0 |         24 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/assessment-table0.json      | JSON     |        490 |          0 |          0 |        490 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/assessment-table1.json      | JSON     |      1,391 |          0 |         10 |      1,401 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/chargingtable.json          | JSON     |      2,855 |          0 |         10 |      2,865 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/enchanting-table-test.json  | JSON     |        987 |          0 |          0 |        987 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/enchanting-table.json       | JSON     |      2,180 |          0 |          0 |      2,180 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/assets/krpgenchantment/shapes/block/reagent-table.json          | JSON     |         85 |          0 |          0 |         85 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/krpgenchantment.csproj                                          | XML      |         67 |         60 |          5 |        132 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/modinfo.json                                                    | JSON     |         11 |          0 |          0 |         11 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/API/ApiAdditions.cs                                         | C#       |         38 |         15 |          1 |         54 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/API/EnchantmentAccessor.cs                                  | C#       |        948 |        326 |         72 |      1,346 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/API/IEnchantmentAccessor.cs                                 | C#       |         29 |         34 |          1 |         64 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/API/IEnchantmentClientAccessor.cs                           | C#       |         22 |          8 |          1 |         31 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/API/IEnchantmentServerAccessor.cs                           | C#       |         60 |        201 |          1 |        262 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Behaviors/ActiveEnchantCache.cs                             | C#       |         14 |          0 |          2 |         16 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Behaviors/EnchantmentBEBehavior.cs                          | C#       |         60 |          7 |          3 |         70 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Behaviors/EnchantmentBehavior.cs                            | C#       |        198 |         54 |          8 |        260 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Behaviors/EnchantmentBlockBehavior.cs                       | C#       |        131 |         12 |          4 |        147 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Behaviors/EnchantmentEntityBehavior.cs                      | C#       |        660 |        325 |         32 |      1,017 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/BlockEntities/ChargingBE.cs                                 | C#       |        349 |         82 |         19 |        450 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/BlockEntities/EnchantingBE.cs                               | C#       |        604 |        158 |         28 |        790 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Blocks/ChargingBlock.cs                                     | C#       |         20 |          0 |          2 |         22 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Blocks/EnchantingBlock.cs                                   | C#       |         19 |         10 |          6 |         35 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Command/KRPGCommandSystem.cs                                | C#       |        225 |         13 |         16 |        254 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Command/KRPGCommands.cs                                     | C#       |        179 |         47 |         12 |        238 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Compatibility/COSystem.cs                                   | C#       |        151 |         11 |          6 |        168 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Compatibility/KRPGWandsSystem.cs                            | C#       |         64 |          7 |          4 |         75 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Config/EnchantModifiers.cs                                  | C#       |         50 |         38 |          2 |         90 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Config/EnchantingConfigLoader.cs                            | C#       |        188 |         27 |          4 |        219 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Config/KRPGEnchantConfig.cs                                 | C#       |         40 |          9 |          2 |         51 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Accessory/FalseLifeEnchantment.cs              | C#       |        110 |         14 |          2 |        126 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Accessory/FastEnchantment.cs                   | C#       |        104 |         13 |          2 |        119 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Accessory/SustainingEnchantment.cs             | C#       |        104 |         13 |          2 |        119 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ProtectionEnchantment.cs                 | C#       |         64 |          3 |          6 |         73 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistElectricityEnchantment.cs          | C#       |         57 |          3 |          5 |         65 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistFireEnchantment.cs                 | C#       |         57 |          3 |          5 |         65 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistFrostEnchantment.cs                | C#       |         57 |          3 |          5 |         65 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistHealEnchantment.cs                 | C#       |         57 |          3 |          5 |         65 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistInjuryEnchantment.cs               | C#       |         57 |          3 |          5 |         65 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Armor/ResistPoisonEnchantment.cs               | C#       |         57 |          7 |          5 |         69 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Enchantment.cs                                 | C#       |        397 |        169 |         44 |        610 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/EnchantmentSource.cs                           | C#       |         75 |         26 |          3 |        104 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/EnchantmentsLoader.cs                          | C#       |         56 |         11 |          3 |         70 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Generic/DamageEnchantment.cs                   | C#       |        124 |         11 |         14 |        149 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Generic/DamageResistEnchantment.cs             | C#       |         55 |          2 |          5 |         62 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Generic/EnchantJunk.cs                         | C#       |         11 |         54 |          3 |         68 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Generic/EnumEnchantments.cs                    | C#       |         44 |          3 |          4 |         51 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/IEnchantment.cs                                | C#       |         47 |         91 |          2 |        140 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Tool/EfficientEnchantment.cs                   | C#       |         37 |          6 |          2 |         45 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Tool/FortunateEnchantment.cs                   | C#       |         37 |          6 |          3 |         46 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Universal/DurableEnchantment.cs                | C#       |         56 |          8 |          2 |         66 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Universal/ReversionEnchantment.cs              | C#       |        142 |         23 |          7 |        172 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/AccurateEnchantment.cs                  | C#       |        121 |         50 |          3 |        174 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/ChillingEnchantment.cs                  | C#       |         52 |          5 |          3 |         60 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/EnhancementEnchantment.cs               | C#       |        129 |         38 |          2 |        169 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/FlamingEnchantment.cs                   | C#       |        105 |         16 |          6 |        127 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/FrostEnchantment.cs                     | C#       |        102 |         16 |          8 |        126 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/HarmingEnchantment.cs                   | C#       |        102 |         16 |          8 |        126 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/HealingEnchantment.cs                   | C#       |         89 |         17 |         11 |        117 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/IgnitingEnchantment.cs                  | C#       |        100 |         39 |          4 |        143 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/KnockbackEnchantment.cs                 | C#       |         58 |          4 |          4 |         66 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/LightningEnchantment.cs                 | C#       |        113 |          2 |          5 |        120 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/PitEnchantment.cs                       | C#       |        103 |          3 |          6 |        112 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/PoisonEnchantment.cs                    | C#       |        159 |         22 |         15 |        196 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/QuickDrawEnchantment.cs                 | C#       |        123 |         38 |          2 |        163 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Enchantments/Weapon/ShockingEnchantment.cs                  | C#       |        102 |         19 |          5 |        126 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/ChargingTableGui.cs                                     | C#       |        163 |         60 |         26 |        249 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/EnchantSelectGui.cs                                     | C#       |          0 |        133 |          0 |        133 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/EnchantingGuiConfig.cs                                  | C#       |         82 |          1 |          4 |         87 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/EnchantingGuiPacket.cs                                  | C#       |         15 |          0 |          2 |         17 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/EnchantingTableGui.cs                                   | C#       |        274 |         47 |         31 |        352 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/SkiaTextGuiElement.cs                                   | C#       |         68 |         55 |          9 |        132 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/GUI/SkiaToggleButtonGuiElement.cs                           | C#       |        151 |         66 |         12 |        229 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Inventory/ChargingInventory.cs                              | C#       |        207 |         11 |         14 |        232 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Inventory/EnchantingInventory.cs                            | C#       |        235 |        101 |         17 |        353 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Items/BookManualItem.cs                                     | C#       |         79 |          1 |         11 |         91 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/KRPGEnchantmentSystem.cs                                    | C#       |        673 |         66 |         11 |        750 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Network/EnchantPacket.cs                                    | C#       |         47 |          3 |          3 |         53 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Network/ParticlePacket.cs                                   | C#       |         32 |          0 |          3 |         35 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/BlockEntity_Patch.cs                                | C#       |          0 |         31 |          0 |         31 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/CollectibleObject_Patch.cs                          | C#       |         24 |         41 |          2 |         67 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/EntityProjectile_Patch.cs                           | C#       |         87 |        157 |          1 |        245 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/Entity_Patch.cs                                     | C#       |         46 |          2 |          1 |         49 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ItemBow_Patch.cs                                    | C#       |         45 |         68 |          1 |        114 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ItemBow_Patch2.cs                                   | C#       |          0 |         91 |          0 |         91 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ItemBow_Patch3.cs                                   | C#       |          0 |         51 |          0 |         51 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ItemSpear_Patch.cs                                  | C#       |         31 |          0 |          2 |         33 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ModJournal_Patch.cs                                 | C#       |         64 |          0 |          4 |         68 |
+| /run/media/nixy/Games01/VSProjects/Net10/KRPGEnchantment/krpgenchantment/src/Patches/ModSystemWearableStats_Patch.cs                     | C#       |         15 |         76 |          1 |         92 |
+| Total                                                                                                                                    |          |     21,281 |      3,271 |        732 |     25,284 |
++------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

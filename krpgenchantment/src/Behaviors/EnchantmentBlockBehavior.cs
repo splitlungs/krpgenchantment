@@ -1,25 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
-using System.Reflection;
-using HarmonyLib;
 using KRPGLib.Enchantment.API;
-// using System.Text.Json.Nodes;
-using System.Xml.Linq;
 using Vintagestory.API.Server;
-using Vintagestory.API.Net;
-using Cairo;
-using static System.Net.Mime.MediaTypeNames;
-using System.Reflection.Metadata;
-using System.IO;
 using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment
@@ -90,7 +76,8 @@ namespace KRPGLib.Enchantment
             if (enchants?.TryGetValue("fortunate", out int power) == true)
             {
                 float eMul = GetFortunateMul(itemstack, power);
-                dropChanceMultiplier *= MathF.Min(eMul, 1.99f); // Never go 1.0 or above to avoide true dupe
+                // dropChanceMultiplier *= MathF.Min(eMul, 1.99f); // Never go 1.0 or above to avoide true dupe
+                dropChanceMultiplier *= eMul;
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Applied an Fortunate enchantment. Post dropChanceMultiplier is {0}.", dropChanceMultiplier);         
                 handling = EnumHandling.Handled;
@@ -109,7 +96,7 @@ namespace KRPGLib.Enchantment
                         valid = true;
                     break;
                 case EnumTool.Drill:
-                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart() == "rock")
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart().EqualsFastIgnoreCase("rock"))
                         valid = true;
                     break;
                 case EnumTool.Knife:
@@ -117,7 +104,7 @@ namespace KRPGLib.Enchantment
                         valid = true;
                     break;
                 case EnumTool.Pickaxe:
-                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart() == "rock")
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart().EqualsFastIgnoreCase("rock"))
                         valid = true;
                     break;
                 case EnumTool.Scythe:
@@ -129,7 +116,9 @@ namespace KRPGLib.Enchantment
                         valid = true;
                     break;
                 case EnumTool.Shovel:
-                    if (block.BlockMaterial == EnumBlockMaterial.Soil || block.BlockMaterial == EnumBlockMaterial.Sand || block.BlockMaterial == EnumBlockMaterial.Gravel)
+                    if (block.Code.FirstCodePart().EqualsFastIgnoreCase("soil") || block.Code.FirstCodePart().EqualsFastIgnoreCase("sand") 
+                        || block.Code.FirstCodePart().EqualsFastIgnoreCase("gravel") || block.Code.FirstCodePart().EqualsFastIgnoreCase("charcoalpile") 
+                        || block.Code.FirstCodePart().EqualsFastIgnoreCase("peat") || block.Code.FirstCodePart().EqualsFastIgnoreCase("rawclay"))
                         valid = true;
                     break;
                 default:
@@ -148,5 +137,11 @@ namespace KRPGLib.Enchantment
                 return true;
             return false;
         }
+        // public bool IsPlayerPlaced()
+        // {
+        //     if (block.Entity.WatchedAttributes.GetBool("playerPlaced", false) == true)
+        //         return true;
+        //     return false;
+        // }
     }
 }
