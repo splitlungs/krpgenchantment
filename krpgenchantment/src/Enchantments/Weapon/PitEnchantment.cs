@@ -52,7 +52,7 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Pit enchantment.", enchant.TargetEntity.GetName());
 
-            BlockPos bpos = enchant.TargetEntity.SidedPos.AsBlockPos;
+            BlockPos bpos = enchant.TargetEntity.Pos.AsBlockPos;
             List<Vec3d> pitArea = new List<Vec3d>();
 
             float mulxz = MulXZ * enchant.Power;

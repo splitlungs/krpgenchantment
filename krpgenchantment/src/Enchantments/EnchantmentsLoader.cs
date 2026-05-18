@@ -56,6 +56,7 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("reversion", "Universal/reversion.json", typeof(ReversionEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("shocking", "Weapon/shocking.json", typeof(ShockingEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("sustaining", "Accessory/sustaining.json", typeof(SustainingEnchantment)) == true) count++;
+            if (sapi.EnchantAccessor().RegisterEnchantmentClass("web", "Weapon/web.json", typeof(WebEnchantment)) == true) count++;
             // CO Only
             bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaul");
             if (coEnabled == true)

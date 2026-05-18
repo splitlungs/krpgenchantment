@@ -17,8 +17,8 @@ namespace KRPGLib.Enchantment
     {
         // Remove damage from Healing enchanted projectile
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectile), "ImpactOnEntity")]
-        public static bool Prefix(EntityProjectile __instance, Entity target)
+        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
+        public static bool Prefix(EntityProjectileBase __instance, Entity target)
         {
             // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
@@ -48,8 +48,8 @@ namespace KRPGLib.Enchantment
         }
         // Trigger "OnAttackStop" enchants when an entity has been hit
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(EntityProjectile), "ImpactOnEntity")]
-        public static void Postfix(EntityProjectile __instance, Entity target)
+        [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
+        public static void Postfix(EntityProjectileBase __instance, Entity target)
         {
             // __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
             Entity byEntity = __instance.FiredBy;

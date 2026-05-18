@@ -43,6 +43,7 @@ namespace KRPGLib.Enchantment.Compat
             if (COSys != null)
             {
                 COSys.ServerMeleeSystem.OnDealMeleeDamage += OnMeleeDamaged;
+                // CO Fork doesn't use this. It uses a custom Start/Step/Stop system.
                 // COSys.ServerMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
                 COSys.ServerProjectileSystem.OnDealRangedDamage += OnRangedDamaged;
                 COSys.ServerRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;

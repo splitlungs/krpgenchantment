@@ -52,6 +52,7 @@ namespace KRPGLib.Enchantment
             get 
             { 
                 if (!IsPlayer) return null;
+                // Use new Behavior based inv get
                 // return player.InventoryManager.GetOwnInventory("character");
                 return entity.GetBehavior<EntityBehaviorPlayerInventory>()?.Inventory;
             }
@@ -531,11 +532,12 @@ namespace KRPGLib.Enchantment
             // 5. Update the cache
             GenerateHotbarEnchantCache(slotId);
 
+            // OBSOLETE
             // 6. Update CO Stats - Note this uses Cache
             // if (sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>().COSysServer != null)
             //     RecalculateCOStats(slotId);
         }
-        // After the attack has completed
+        // After THIS ENTITY has completed an attack action
         public override void DidAttack(DamageSource source, EntityAgent targetEntity, ref EnumHandling handled)
         {
             if (!(Api is ICoreServerAPI sapi)) 
@@ -556,7 +558,7 @@ namespace KRPGLib.Enchantment
                 Api.Logger.Event("[KRPGEnchantment] Finished processing Enchantments for EnchantmentEntitybehavior.DidAttack().");
             base.DidAttack(source, targetEntity, ref handled);
         }
-        // When THIS ENTITY is interacted with by another entity. Not called by projectiles
+        // When THIS ENTITY is interacted with by ANOTHER ENTITY. Not called by projectiles
         public override void OnInteract(EntityAgent byEntity, ItemSlot itemslot, Vec3d hitPosition, EnumInteractMode mode, ref EnumHandling handled)
         {
             if (!(byEntity.Api is ICoreServerAPI sapi)) 
