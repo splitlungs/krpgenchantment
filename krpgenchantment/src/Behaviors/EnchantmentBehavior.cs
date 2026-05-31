@@ -29,9 +29,12 @@ namespace KRPGLib.Enchantment
     {
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
+        // Ununsed right now. Definitely should consider it.
         public Dictionary<string, int> Enchantments = null;
+        // Generic
         public bool Enchantable = false;
         public bool IsReagent = false;
+        // Fortune
         public float MiningSpeedMul = 1f;
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
@@ -52,10 +55,12 @@ namespace KRPGLib.Enchantment
             if (EnchantingConfigLoader.Config?.ValidReagents.ContainsKey(collObj.Code) == true) 
                 IsReagent = true;
             // Configure the Efficiency multiplier
-            IEnchantment ench = sApi.EnchantAccessor().GetEnchantment("efficient");
+            IEnchantmentServerAccessor esa = sApi.EnchantAccessor();
+            IEnchantment ench = esa.GetEnchantment("efficient");
             if (ench != null)
+            {
                 MiningSpeedMul = ench.Modifiers.GetFloat("PowerMultiplier");
-            
+            }
         }
         public override void OnUnloaded(ICoreAPI api)
         {

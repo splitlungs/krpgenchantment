@@ -135,6 +135,8 @@ namespace KRPGLib.Enchantment
             base.OnEntitySpawn();
             // Toggle passives - Disabled for now
             // if (IsPlayer) ToggleHeldItems();
+            // Get Light values for projectiles - Put into Harmony patch
+            GetProjectileLightHsv();
             // Only tick when spawned
             enchantTickLocked = false;
         }
@@ -192,6 +194,77 @@ namespace KRPGLib.Enchantment
                 hotbarInventory.SlotModified -= OnHotbarModified;
                 sapi.World.UnregisterGameTickListener(onTickID);
             }
+        }
+        public override void OnEntityLoaded()
+        {
+            base.OnEntityLoaded();
+            // Get the configured Enchantment values
+            if (!(Api is ICoreServerAPI sapi)) return;
+        }
+        public void GetProjectileLightHsv()
+        {
+            // Prepare Light data
+            if (!(entity is EntityProjectileBase proj)) return;
+            // Api.Logger.Event("[KRPGEnchantment] {0} spawned. Starting Light check.", proj.GetName());
+            byte[] b = null;
+            EnumTool? tool = proj.WeaponStack?.Item?.Tool;
+            string wCode = proj.WeaponStack?.Collectible?.FirstCodePart();
+            string pCode = proj.ProjectileStack?.Collectible?.FirstCodePart();
+            // Api.Logger.Event("[KRPGEnchantment] {0} spawned a {1}. Weapon: {2}; Projectile: {3}", proj.FiredBy.GetName(), proj.GetName(), wCode, pCode);
+            // if (proj.ProjectileStack?.Collectible?.Code?.FirstCodePart()?.EqualsFastIgnoreCase("spear") == true) return;
+            // Spear
+            if (tool == EnumTool.Spear)
+            {
+                b = proj.ProjectileStack.Attributes?.GetBytes("lightHsv", null);
+                if (b == null) 
+                {
+                    // Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                    return;
+                }
+                entity.WatchedAttributes?.SetBytes("lightHsv", b);
+                entity.LightHsv = b;
+                // Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", entity.GetName());
+                return;
+            }
+            // Sling
+            if (tool == EnumTool.Sling)
+            {
+                b = proj.WeaponStack.Attributes?.GetBytes("lightHsv", null);
+                if (b == null) 
+                {
+                    // Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                    return;
+                }
+                entity.WatchedAttributes?.SetBytes("lightHsv", b);
+                entity.LightHsv = b;
+                // Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", entity.GetName());
+                return;
+            }
+            if (tool == EnumTool.Bow)
+            {
+                // Api.Logger.Event("[KRPGEnchantment] {0} is actually a bow! WeaponStack works finally!", entity.GetName());
+            }
+            // Bow & Arrow
+            if (!(proj.FiredBy is EntityPlayer player))
+            {
+                // Api.Logger.Warning("[KRPGEnchantment] Could not find firing player.");
+                return;
+            }
+            ItemStack stack = player.ActiveHandItemSlot?.Itemstack;
+            if (stack is null)
+            {
+                // Api.Logger.Warning("[KRPGEnchantment] Could not find firing item stack.");
+                return;
+            }
+            b = stack?.Attributes?.GetBytes("lightHsv", null);
+            if (b == null) 
+            {
+                // Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                return;
+            }
+            entity.WatchedAttributes?.SetBytes("lightHsv", b);
+            entity.LightHsv = b;
+            // Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", entity.GetName());
         }
         #endregion
         #region Cache

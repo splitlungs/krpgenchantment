@@ -36,6 +36,9 @@
   "enchantment-sustaining": "Sostenido",
   "enchantment-accurate": "Preciso",
   "enchantment-quickdraw": "Desenfundado rápido",
+  "enchantment-web": "28. Telaraña",
+  "enchantment-light": "29. Luz",
+  "enchantment-warmth": "30. Calor",
 
   "1": "I",
   "2": "II",
@@ -94,6 +97,9 @@
   "lore-enchantment-sustaining": "25. Sostenido",
   "lore-enchantment-accurate": "26. Preciso",
   "lore-enchantment-quickdraw": "27. Desenfundado rápido",
+  "lore-enchantment-web": "28. Telaraña",
+  "lore-enchantment-light": "29. Luz",
+  "lore-enchantment-warmth": "30. Calor",
 
   "krpgenchantment:lore-enchantment-title": "Manual del encantador",
   "krpgenchantment:lore-enchantment-chilling": "1. Escalofriante",
@@ -124,6 +130,9 @@
   "krpgenchantment:lore-enchantment-sustaining": "25. Sostenido",
   "krpgenchantment:lore-enchantment-accurate": "26. Preciso",
   "krpgenchantment:lore-enchantment-quickdraw": "27. Desenfundado rápido",
+  "krpgenchantment:lore-enchantment-web": "28. Telaraña",
+  "krpgenchantment:lore-enchantment-light": "29. Luz",
+  "krpgenchantment:lore-enchantment-warmth": "30. Calor",
 
   "craftinginfo-enchanting-title": "Encantamiento",
   "craftinginfo-enchanting-text": "<strong>Encantamiento</strong><br> <br>Para comenzar a encantar, necesitarás una <a href=\"handbook://block-krpgenchantment:enchanting-table\">Mesa de encantamientos</a> y una <a href=\"handbook://block-krpgenchantment:charging-table\">Mesa de carga</a>. <br>Una vez que tengas tu Mesa de encantamientos, deberás colocar varios reactivos y un objeto objetivo para el encantamiento. De forma predeterminada, un reactivo válido es una gema cargada, como esmeralda, peridoto o diamante. Para cargar una gema, deberás colocarla en la mesa de carga, rodeada por varios <a href=\"handbook://item-game:gear-temporal\">Engranajes temporales</a>. <br><br>De forma predeterminada, la fuerza del encantamiento es aleatoria y se basa en el valor de carga del reactivo. La mayoría de los encantamientos requieren 1 hora de juego para cargarse y encantarse. <br><br>Puedes encontrar detalles sobre los encantamientos en el <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",

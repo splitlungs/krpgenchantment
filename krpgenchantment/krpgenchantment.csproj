@@ -25,7 +25,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="OverhaullibLegacy">
-      <HintPath>../../../Examples/overhaulliblegacycompat_1.0.19/OverhaullibLegacyCompat.dll</HintPath>
+      <HintPath>../../../Examples/overhaulliblegacycompat_1.1.8/OverhaullibLegacyCompat.dll</HintPath>
       <Private>False</Private>
     </Reference>
 <!--

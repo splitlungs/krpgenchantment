@@ -422,25 +422,9 @@ namespace KRPGLib.Enchantment
         public bool RemoveEnchantFromItem(string eName, ItemSlot inSlot, Entity entity)
         {
             if (inSlot?.Empty != false || entity == null) return false;
-            // Get Active enchants
-            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
-            if (tree == null) return false;
-            string a = tree.GetString("active", null);
-            if (a == null) return false;
-            string[] aStrings = a.Split(';');
-            string aa = null;
-            foreach (string s in aStrings)
-            {
-                string[] eStrings = s.Split(':');
-                if (!eStrings[0].EqualsFastIgnoreCase(eName))
-                    aa += s + ';';
-            }
-            // Fail if nothing was removed.
-            if (aa == null || aa.Equals(a)) return false;
-            tree.SetString("active", aa);
-            inSlot.Itemstack.Attributes.MergeTree(tree);
-            inSlot.MarkDirty();
-            return true;
+            IEnchantment ench = GetEnchantment(eName);
+            if (ench == null) return false;
+            return ench.TryRemoveEnchant(inSlot, entity);
         }
         /// <summary>
         /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
@@ -452,15 +436,11 @@ namespace KRPGLib.Enchantment
         {
             if (inSlot?.Empty != false || entity == null) return false;
             // Get Active enchants
-            ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
-            if (tree == null) return false;
-            string active = tree.GetString("active", null);
-            if (active == null) return false;
-            // Delete the Active string
-            tree.SetString("active", null);
-            inSlot.Itemstack.Attributes.MergeTree(tree);
-            // MarkDirty so EnchantmentEntitybehavior can cleanup
-            inSlot.MarkDirty();
+            Dictionary<string, int> enchants = GetActiveEnchantments(inSlot?.Itemstack);
+            foreach (KeyValuePair<string, int> pair in enchants)
+            {
+                RemoveEnchantFromItem(pair.Key, inSlot, entity);
+            }
             return true;
         }
         /// <summary>

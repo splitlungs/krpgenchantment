@@ -24,6 +24,23 @@ namespace KRPGLib.Enchantment
             return Convert.ToInt32(this[key].ToString());
         }
         /// <summary>
+        /// Returns an int32 array or an empty in32 array if a value cannot be found.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int[] GetIntArray(string key)
+        {
+            if (!this.ContainsKey(key)) return [];
+            string[] values = this[key].ToString().Split(",", StringSplitOptions.RemoveEmptyEntries);
+            List<int> ints = new List<int>();
+            foreach (string s in values)
+            {
+                ints.Add(Convert.ToInt32(s));
+            }
+            int[] result = ints.ToArray<int>();
+            return result;
+        }
+        /// <summary>
         /// Returns a float value or 0 if a value cannot be found.
         /// </summary>
         /// <param name="key"></param>

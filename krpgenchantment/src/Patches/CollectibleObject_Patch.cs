@@ -15,52 +15,24 @@ using Vintagestory.GameContent;
 using Vintagestory.API.Datastructures;
 using static System.Net.Mime.MediaTypeNames;
 using System.Reflection;
+using Vintagestory.GameContent.Mechanics;
 
 namespace KRPGLib.Enchantment
 {
     [HarmonyPatch]
     public class CollectibleObject_Patch
     {
-        // Patches only on derived types
-        // [HarmonyReversePatch]
-        // [HarmonyPatch(typeof(CollectibleObject), nameof(CollectibleObject.OnHeldInteractStop))]
-        // public static void Postfix(CollectibleObject __instance, float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel)
-        // {
-        //     if (!(byEntity?.Api is ICoreServerAPI sapi)) return;
-        //     if (sapi.EnchantAccessor().GetActiveEnchantments(slot?.Itemstack) == null) return;
-        //     EnchantModifiers parameters = new EnchantModifiers();
-        //     bool didEnchantments = sapi.EnchantAccessor().TryEnchantments(slot, "OnAttackStop", byEntity, entitySel?.Entity ?? null, ref parameters);
-        // }
-        // OBSOLETE - Now triggered through "EnchantmentEntityBehavior.OnEntityReceiveDamage" override
-        /*
-        [HarmonyPatch(typeof(CollectibleObject), "DamageItem")]
-        public static bool Prefix(CollectibleObject __instance, IWorldAccessor world, Entity byEntity, ItemSlot itemslot, ref int amount)
+        [HarmonyReversePatch]
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CollectibleObject), nameof(CollectibleObject.GetLightHsv))]
+        public static void GetLightHsv_Postfix(CollectibleObject __instance, IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack, ref byte[] __result)
         {
-            if (world.Side != EnumAppSide.Server) return true;
-            ICoreServerAPI sApi = world.Api as ICoreServerAPI;
-            Dictionary<string, int> enchants = byEntity.Api.EnchantAccessor().GetActiveEnchantments(itemslot.Itemstack);
-            if (enchants == null)
-                return true;
-            int durable = enchants.GetValueOrDefault("durable", 0);
-            if (durable > 0)
+            if (pos != null) return;
+            if (stack != null)
             {
-                EnchantmentSource enchant = new EnchantmentSource() {
-                    SourceStack = itemslot.Itemstack,
-                    TargetEntity = byEntity,
-                    Trigger = "OnDurability",
-                    Code = "durable",
-                    Power = durable };
-                int dmg = amount;
-                EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-                bool didEnchantment = sApi.EnchantAccessor().TryEnchantment(enchant, ref parameters);
-                if (didEnchantment == true)
-                {
-                    amount = parameters.GetInt("damage");
-                    return false; // Only skip if we 
-                }
+                byte[] b = stack?.Attributes?.GetBytes("lightHsv", null);
+                if (b != null) __result = b;
             }
-            return true;
         }
-        */
     }
 }

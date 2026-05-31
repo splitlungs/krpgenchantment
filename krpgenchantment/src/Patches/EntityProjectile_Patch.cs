@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -12,13 +13,90 @@ using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
 {
+    /*
     [HarmonyPatch]
-    public static class EntityProjectileBase_impactOnEntity_Patch
+    public class EntityProjectileBase_Spawn_Patch
+    {
+        // Note this is called during SpawnProjectile
+        [HarmonyReversePatch]
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(EntityProjectileBase), nameof(EntityProjectileBase.AfterInitialized))]
+        public static void AfterInitialized_Postfix(EntityProjectileBase __instance, bool onFirstSpawn, ref ICoreAPI ___Api)
+        {
+            ___Api.Logger.Event("[KRPGEnchantment] Starting Light check during PreInitialize.");
+            // Prepare Light data
+            // if (!(__instance is EntityProjectileBase proj)) return;
+            byte[] b = null;
+            EnumTool? tool = __instance.WeaponStack?.Item?.Tool;
+            string wCode = __instance.WeaponStack?.Item?.Code?.FirstCodePart();
+            string pCode = __instance.ProjectileStack?.Item?.Code?.FirstCodePart();
+            ___Api.Logger.Event("[KRPGEnchantment] {0} spawned a {1}. Weapon: {2}; Projectile: {3}", __instance.FiredBy.GetName(), __instance.GetName(), wCode, pCode);
+            // if (proj.ProjectileStack?.Collectible?.Code?.FirstCodePart()?.EqualsFastIgnoreCase("spear") == true) return;
+            // Spear
+            if (tool == EnumTool.Spear)
+            {
+                b = __instance.ProjectileStack.Attributes?.GetBytes("lightHsv", null);
+                if (b == null) 
+                {
+                    ___Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                    return;
+                }
+                __instance.WatchedAttributes?.SetBytes("lightHsv", b);
+                __instance.LightHsv = b;
+                ___Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", __instance.GetName());
+                return;
+            }
+            // Sling
+            if (tool == EnumTool.Sling)
+            {
+                
+                b = __instance.WeaponStack.Attributes?.GetBytes("lightHsv", null);
+                if (b == null) 
+                {
+                    ___Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                    return;
+                }
+                __instance.WatchedAttributes?.SetBytes("lightHsv", b);
+                __instance.LightHsv = b;
+                ___Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", __instance.GetName());
+                return;
+            }
+            if (tool == EnumTool.Bow)
+            {
+                ___Api.Logger.Event("[KRPGEnchantment] {0} is actually a bow! WeaponStack works finally!", __instance.GetName());
+            }
+            // Bow & Arrow
+            if (!(__instance.FiredBy is EntityPlayer player))
+            {
+                ___Api.Logger.Warning("[KRPGEnchantment] Could not find firing player.");
+                return;
+            }
+            ItemStack stack = player.ActiveHandItemSlot?.Itemstack;
+            if (stack is null)
+            {
+                ___Api.Logger.Warning("[KRPGEnchantment] Could not find firing item stack.");
+                return;
+            }
+            b = stack?.Attributes?.GetBytes("lightHsv", null);
+            if (b == null) 
+            {
+                ___Api.Logger.Warning("[KRPGEnchantment] Could not find light on the firing item stack.");
+                return;
+            }
+            __instance.WatchedAttributes?.SetBytes("lightHsv", b);
+            __instance.LightHsv = b;
+            ___Api.Logger.Event("[KRPGEnchantment] {0} has properly validated its enchanted lighting.", __instance.GetName());
+        }
+    }
+    */
+    [HarmonyPatch]
+    public class EntityProjectileBase_Patch
     {
         // Remove damage from Healing enchanted projectile
         [HarmonyReversePatch]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
-        public static bool Prefix(EntityProjectileBase __instance, Entity target)
+        public static bool ImpactOnEntity_Prefix(EntityProjectileBase __instance, Entity target)
         {
             // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
             Entity byEntity = __instance.FiredBy;
@@ -48,8 +126,9 @@ namespace KRPGLib.Enchantment
         }
         // Trigger "OnAttackStop" enchants when an entity has been hit
         [HarmonyReversePatch]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(EntityProjectileBase), "ImpactOnEntity")]
-        public static void Postfix(EntityProjectileBase __instance, Entity target)
+        public static void ImpactOnEntity_Postfix(EntityProjectileBase __instance, Entity target)
         {
             // __instance.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity postfix");
             Entity byEntity = __instance.FiredBy;

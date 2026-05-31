@@ -325,6 +325,42 @@ namespace KRPGLib.Enchantment
             }
         }
         /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public virtual bool TryRemoveEnchant(ItemSlot inSlot, Entity entity)
+        {
+            try
+            {
+                // Get Active enchants
+                ITreeAttribute tree = inSlot?.Itemstack?.Attributes?.GetTreeAttribute("enchantments");
+                if (tree == null) return false;
+                string a = tree.GetString("active", null);
+                if (a == null) return false;
+                string[] aStrings = a.Split(';');
+                string aa = null;
+                foreach (string s in aStrings)
+                {
+                    string[] eStrings = s.Split(':');
+                    if (!eStrings[0].EqualsFastIgnoreCase(Code))
+                        aa += s + ';';
+                }
+                // Fail if nothing was removed.
+                if (aa == null || aa.Equals(a)) return false;
+                tree.SetString("active", aa);
+                inSlot.Itemstack.Attributes.MergeTree(tree);
+                inSlot.MarkDirty();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Api?.Logger.Error("[KRPGEnchantment] Error in TryEnchantItem: {0}",ex);
+                return false;
+            }
+        }
+        /// <summary>
         /// Overwrites "Healing" or a "Damage" category enchant
         /// </summary>
         /// <param name="enchants"></param>

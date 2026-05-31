@@ -36,6 +36,9 @@
   "enchantment-sustaining": "Erhaltend",
   "enchantment-accurate": "Präzise",
   "enchantment-quickdraw": "Schnellziehen",
+  "enchantment-web": "Spinnennetz",
+  "enchantment-light": "Licht",
+  "enchantment-warmth": "Wärme",
 
   "1": "I",
   "2": "II",
@@ -94,6 +97,9 @@
   "lore-enchantment-sustaining": "25. Erhaltend",
   "lore-enchantment-accurate": "26. Präzise",
   "lore-enchantment-quickdraw": "27. Schnellziehen",
+  "lore-enchantment-web": "28. Spinnennetz",
+  "lore-enchantment-light": "29. Licht",
+  "lore-enchantment-warmth": "30. Wärme",
 
   "krpgenchantment:lore-enchantment-title": "Handbuch des Verzauberers",
   "krpgenchantment:lore-enchantment-chilling": "1. Kälte",
@@ -124,6 +130,9 @@
   "krpgenchantment:lore-enchantment-sustaining": "25. Erhaltend",
   "krpgenchantment:lore-enchantment-accurate": "26. Präzise",
   "krpgenchantment:lore-enchantment-quickdraw": "27. Schnellziehen",
+  "krpgenchantment:lore-enchantment-web": "28. Spinnennetz",
+  "krpgenchantment:lore-enchantment-light": "29. Licht",
+  "krpgenchantment:lore-enchantment-warmth": "30. Wärme",
 
   "craftinginfo-enchanting-title": "Verzauberung",
   "craftinginfo-enchanting-text": "<strong>Verzauberung</strong><br> <br>Um mit dem Verzaubern zu beginnen, benötigst du einen <a href=\"handbook://block-krpgenchantment:enchanting-table\">Verzauberungstisch</a> und einen <a href=\"handbook://block-krpgenchantment:charging-table\">Ladetisch</a>. <br>Sobald du deinen Verzauberungstisch hast, musst du mehrere Reagenzien und einen Zielgegenstand für die Verzauberung platzieren. Standardmäßig ist ein gültiges Reagenz ein geladener Edelstein wie Smaragd, Peridot oder Diamant. Um einen Edelstein zu laden, musst du ihn in den Ladetisch legen, umgeben von mehreren <a href=\"handbook://item-game:gear-temporal\">Temporalen Zahnrädern</a>. <br><br>Standardmäßig ist die Stärke der Verzauberung zufällig und basiert auf dem Ladungswert des Reagenzes. Die meisten Verzauberungen benötigen 1 Spielstunde zum Laden und Verzaubern. <br><br>Details zu Verzauberungen findest du im <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",

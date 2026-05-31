@@ -51,6 +51,13 @@ namespace KRPGLib.Enchantment.API
         /// <param name="api"></param>
         /// <returns></returns>
         bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api);
+        /// <summary>
+        /// Removes the provided enchantment from an item. Returns false if it fails for any reason.
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool TryRemoveEnchant(ItemSlot inSlot, Entity entity);
         #nullable enable
         /// <summary>
         /// Generic method to execute a method matching the Trigger parameter. Called by the TriggerEnchant event in KRPGEnchantmentSystem.

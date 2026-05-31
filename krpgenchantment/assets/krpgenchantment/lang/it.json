@@ -36,6 +36,9 @@
   "enchantment-sustaining": "Sostenente",
   "enchantment-accurate": "Preciso",
   "enchantment-quickdraw": "Estrazione rapida",
+  "enchantment-web": "Ragnatela",
+  "enchantment-light": "Luce",
+  "enchantment-warmth": "Calore",
 
   "1": "I",
   "2": "II",
@@ -94,6 +97,9 @@
   "lore-enchantment-sustaining": "25. Sostenente",
   "lore-enchantment-accurate": "26. Preciso",
   "lore-enchantment-quickdraw": "27. Estrazione rapida",
+  "lore-enchantment-web": "28. Ragnatela",
+  "lore-enchantment-light": "29. Luce",
+  "lore-enchantment-warmth": "30. Calore",
 
   "krpgenchantment:lore-enchantment-title": "Manuale dell'Incantatore",
   "krpgenchantment:lore-enchantment-chilling": "1. Gelante",
@@ -124,6 +130,9 @@
   "krpgenchantment:lore-enchantment-sustaining": "25. Sostenente",
   "krpgenchantment:lore-enchantment-accurate": "26. Preciso",
   "krpgenchantment:lore-enchantment-quickdraw": "27. Estrazione rapida",
+  "krpgenchantment:lore-enchantment-web": "28. Ragnatela",
+  "krpgenchantment:lore-enchantment-light": "29. Luce",
+  "krpgenchantment:lore-enchantment-warmth": "30. Calore",
 
   "craftinginfo-enchanting-title": "Incantamento",
   "craftinginfo-enchanting-text": "<strong>Incantamento</strong><br> <br>Per iniziare a incantare, avrai bisogno di un <a href=\"handbook://block-krpgenchantment:enchanting-table\">Tavolo dell'Incantamento</a> e di un <a href=\"handbook://block-krpgenchantment:charging-table\">Tavolo di Caricamento</a>. <br>Una volta ottenuto il Tavolo dell'Incantamento, dovrai posizionare diversi reagenti e l'oggetto bersaglio per l'incantesimo. Per impostazione predefinita, un reagente valido è una gemma caricata, come smeraldo, peridoto o diamante. Per caricare una gemma, devi posizionarla nel tavolo di caricamento, circondata da un certo numero di <a href=\"handbook://item-game:gear-temporal\">Ingranaggi Temporali</a> <br><br>Per impostazione predefinita, la forza dell'incantesimo è casuale, basata sul valore di Carica del reagente. La maggior parte degli incantesimi richiede 1 ora di gioco per caricarsi e applicarsi. <br><br>Puoi trovare dettagli sugli incantesimi sulla <a href=\"https://github.com/splitlungs/krpgenchantment/wiki\">Wiki</a>.",

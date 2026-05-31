@@ -114,6 +114,7 @@ namespace KRPGLib.Enchantment
             EnchantAccessor.Api = api;
             api.RegisterCollectibleBehaviorClass("EnchantmentBehavior", typeof(EnchantmentBehavior));
             api.RegisterEntityBehaviorClass("EnchantmentEntityBehavior", typeof(EnchantmentEntityBehavior));
+            // api.RegisterEntityBehaviorClass("EnchantmentProjectileBehavior", typeof(EnchantmentProjectileBehavior));
             api.RegisterBlockClass("ChargingBlock", typeof(ChargingBlock));
             api.RegisterBlockClass("EnchantingBlock", typeof(EnchantingBlock));
             api.RegisterBlockEntityClass("ChargingBE", typeof(ChargingBE));
