@@ -85,7 +85,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         private void RegisterServerCompatibility()
         {
-            if (sApi.ModLoader.IsModEnabled("combatoverhaul") == true)
+            if (sApi.ModLoader.IsModEnabled("combatoverhaulfork") == true)
             {
                 COSysServer = new COSystem();
                 COSysServer.StartServerSide(sApi);
