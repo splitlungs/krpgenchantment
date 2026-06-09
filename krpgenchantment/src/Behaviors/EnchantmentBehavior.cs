@@ -236,16 +236,29 @@ namespace KRPGLib.Enchantment
         }
         public override float GetMiningSpeedModifier(ItemStack itemstack, ref EnumHandling bhHandling)
         {
-            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments((ItemStack)itemstack);
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(itemstack);
             if (enchants?.TryGetValue("efficient", out int power) == true)
             {
                 float mSpeed = power * MiningSpeedMul;
                 bhHandling = EnumHandling.Handled;
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
-                return mSpeed + base.GetMiningSpeedModifier(itemstack, ref bhHandling);
+                return mSpeed;
             }
             return base.GetMiningSpeedModifier(itemstack, ref bhHandling);
+        }
+        public override float GetMiningSpeed(ItemStack itemstack, BlockSelection blockSel, Block block, IPlayer forPlayer, ref EnumHandling bhHandling)
+        {
+            Dictionary<string, int> enchants = Api?.EnchantAccessor()?.GetActiveEnchantments(itemstack);
+            if (enchants?.TryGetValue("efficient", out int power) == true)
+            {
+                float mSpeed = power * MiningSpeedMul;
+                bhHandling = EnumHandling.Handled;
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Applied an Efficient enchantment. Post MiningSpeedMul is {0}.", mSpeed);
+                return mSpeed;
+            }
+            return base.GetMiningSpeed(itemstack, blockSel, block, forPlayer, ref bhHandling);
         }
         // [Obsolete]
         // public override float OnGetMiningSpeed(IItemStack itemstack, BlockSelection blockSel, Block block, IPlayer forPlayer, ref EnumHandling bhHandling)
