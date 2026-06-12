@@ -60,7 +60,7 @@ namespace KRPGLib.Enchantment
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("light", "Universal/light.json", typeof(LightEnchantment)) == true) count++;
             if (sapi.EnchantAccessor().RegisterEnchantmentClass("warmth", "Universal/warmth.json", typeof(WarmthEnchantment)) == true) count++;
             // CO Only
-            bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaul");
+            bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaulfork");
             if (coEnabled == true)
             {
                 if (sapi.EnchantAccessor().RegisterEnchantmentClass("quickdraw", "Weapon/quickdraw.json", typeof(QuickDrawEnchantment)) == true) count++;
