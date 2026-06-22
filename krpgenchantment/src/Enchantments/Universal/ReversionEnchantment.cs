@@ -20,6 +20,7 @@ namespace KRPGLib.Enchantment
     {
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         int PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
+        bool AllowRifts { get { return Modifiers.GetBool("AllowRifts"); } }
         /// <summary>
         /// Restores item durability in temporally unstable areas.
         /// </summary>
@@ -51,9 +52,17 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers 
             {
-                {"TickDuration", 10000 }, { "PowerMultiplier", 1 } 
+                { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }
             };
-            Version = 1.02f;
+            Version = 1.03f;
+        }
+        private ModSystemRifts riftSys;
+        private SystemTemporalStability tempStabilitySys;
+        public override void Initialize(EnchantmentProperties properties)
+        {
+            base.Initialize(properties);
+            tempStabilitySys = Api.ModLoader.GetModSystem<SystemTemporalStability>();
+            riftSys = Api.ModLoader.GetModSystem<ModSystemRifts>();
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -88,18 +97,18 @@ namespace KRPGLib.Enchantment
         }
         // TODO: Setup for UnEquip to control the tick dispose
         //
-        // public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
-        // {
-        //     // TEMP FOR TESTING
-        //     EnchantmentEntityBehavior eeb = enchant?.CauseEntity?.GetBehavior<EnchantmentEntityBehavior>();
-        //     if (eeb == null) return;
-        //     // Get ID
-        //     string codeID = parameters.GetString("tickID");
-        //     if (EnchantingConfigLoader.Config?.Debug == true)
-        //         Api.Logger.Event("[KRPGEnchantment] CodeID for Reversion Tick is {0}.", codeID);
-        //     if (enchant.SourceSlot.Empty)
-        //         eeb.TickRegistry[codeID].Dispose();
-        // }
+            public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            // TEMP FOR TESTING
+            EnchantmentEntityBehavior eeb = enchant?.CauseEntity?.GetBehavior<EnchantmentEntityBehavior>();
+            if (eeb == null) return;
+            // Get ID
+            string codeID = parameters.GetString("tickID");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] CodeID for Reversion Tick is {0}.", codeID);
+            if (enchant.SourceSlot.Empty)
+                eeb.TickRegistry[codeID].Dispose();
+        }
         public override void OnTick(ref EnchantTick eTick)
         {
             if (!(Api is ICoreServerAPI api))
@@ -108,6 +117,7 @@ namespace KRPGLib.Enchantment
                 eTick.Dispose();
                 return;
             }
+            bool? debug = EnchantingConfigLoader.Config?.Debug;
             Entity entity = api.World.GetEntityById(eTick.CauseEntityID);
             if (entity == null)
             {
@@ -141,14 +151,27 @@ namespace KRPGLib.Enchantment
                 return;
             }
 
-            if (EnchantingConfigLoader.Config?.Debug == true)
+            if (debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Reversion enchantment.", slot.Itemstack.GetName());
 
-            EntityPos causePos = entity.SidedPos;
-            SystemTemporalStability tempStabilitySystem = api.ModLoader.GetModSystem<SystemTemporalStability>();
-            float stabf = tempStabilitySystem.GetTemporalStability(causePos.AsBlockPos);
-
-            if (stabf < 1)
+            EntityPos causePos = entity.Pos;
+            float stabf = tempStabilitySys.GetTemporalStability(causePos.AsBlockPos);
+            bool riftNear = false;
+            if (AllowRifts == true)
+            {
+                foreach (Rift r in riftSys.ServerRifts)
+                {
+                    double dt = causePos.DistanceTo(r.Position);
+                    if (dt < 5)
+                    {
+                        if (debug == true)
+                            Api.Logger.Event("[KRPGEnchantment] Rift found. Distance to player is {0}.", dt);
+                        riftNear = true;
+                        break;
+                    }
+                }
+            }
+            if (stabf < 1 || riftNear == true)
             {
                 int amount = eTick.Power * PowerMultiplier;
                 int remDur = slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack);
@@ -160,7 +183,7 @@ namespace KRPGLib.Enchantment
                     remDur = Math.Min(remDur, maxDur);
                     slot.Itemstack.Attributes.SetInt("durability", remDur);
 
-                    if (EnchantingConfigLoader.Config?.Debug == true)
+                    if (debug == true)
                         Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
                 }
             }

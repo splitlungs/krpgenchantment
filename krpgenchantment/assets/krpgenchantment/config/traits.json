@@ -1,0 +1,30 @@
+[
+	{
+		"code": "runeexpert",
+		"type": "positive",
+		"attributes": {
+			"enchantTranslationChance": 0.1
+		}
+	},
+    {
+		"code": "tenaciousenchanter",
+		"type": "positive",
+		"attributes": {
+			"enchantCostReduction": 0.1
+		}
+	},
+    {
+		"code": "enchantingexpert",
+		"type": "positive",
+		"attributes": {
+			"enchantTierBonus": 0.1
+		}
+	},
+    {
+		"code": "resourcefulenchanter",
+		"type": "positive",
+		"attributes": {
+			"enchantExtraBonus": 0.1
+		}
+	}
+]
