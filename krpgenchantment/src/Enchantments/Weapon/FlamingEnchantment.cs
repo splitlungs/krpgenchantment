@@ -63,7 +63,6 @@ namespace KRPGLib.Enchantment
             EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
             if (hp == null) return;
             // Check if the player blocked
-            EntityPlayer
             // Then check if the damage was valid
             float wdmg = parameters.GetFloat("damage");
             if (wdmg <= 0)
