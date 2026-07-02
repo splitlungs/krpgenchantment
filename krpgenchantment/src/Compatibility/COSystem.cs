@@ -42,32 +42,59 @@ namespace KRPGLib.Enchantment.Compat
             CombatOverhaulSystem COSys = sapi.ModLoader.GetModSystem<CombatOverhaulSystem>();
             if (COSys != null)
             {
-                COSys.ServerMeleeSystem.OnDealMeleeDamage += OnMeleeDamaged;
+                COSys.ServerMeleeSystem.OnDealMeleeDamage += OnMeleeDamagedPre;
+                COSys.ServerMeleeSystem.OnMeleeDamageResolved += OnMeleeDamagedResolved;
                 // CO Fork doesn't use this. It uses a custom Start/Step/Stop system.
                 // COSys.ServerMeleeSystem.OnMeleeAttackStatusChange += OnMeleeStatusChange;
                 COSys.ServerProjectileSystem.OnDealRangedDamage += OnRangedDamaged;
                 COSys.ServerRangedWeaponSystem.RangedWeaponStatusChanged += OnRangedStatusChange;
             }
         }
-        public void OnMeleeDamaged(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
+        public void OnMeleeDamagedPre(Entity target, DamageSource damageSource, ItemSlot slot, ref float damage)
         {
             Dictionary<string, int> enchants = sApi?.EnchantAccessor()?.GetActiveEnchantments(slot?.Itemstack);
             if (enchants == null)
             {
                 if (EnchantingConfigLoader.Config?.Debug == true)
-                    Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged event, but could not find Enchantments to try.");
+                    Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged (Pre) event, but could not find Enchantments to try.");
                 return;
             }
 
             float dmg = damage;
             EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
-            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttacked", damageSource.CauseEntity, target, enchants, ref parameters);
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(slot, "OnAttackedPre", damageSource.CauseEntity, target, enchants, ref parameters);
             if (didEnchantments)
             {
                 damage = parameters.GetFloat("damage");
                 if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", damage);
             }
+            
+            if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
+            if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
+        }
+        public void OnMeleeDamagedResolved(MeleeDamageResolvedEventArgs args)
+        {
+            Dictionary<string, int> enchants = sApi?.EnchantAccessor()?.GetActiveEnchantments(args.Slot?.Itemstack);
+            if (enchants == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] COSystem received OnMeleeDamaged (Resolved) event, but could not find Enchantments to try.");
+                return;
+            }
+
+            float dmg = args.Damage;
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+            bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(args.Slot, "OnAttacked", args.DamageSource.CauseEntity, args.Target, enchants, ref parameters);
+            // if (didEnchantments)
+            // {
+            //     // We can't modify damage in this step
+            //     // args.Damage = parameters.GetFloat("damage");
+            //     if (EnchantingConfigLoader.Config?.Debug == true)
+            //         Api.Logger.Event("[KRPGEnchantment] Did Enchantments and setting ref damage to {0}.", args.Damage);
+            // }
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");

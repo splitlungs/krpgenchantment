@@ -32,6 +32,17 @@ namespace KRPGLib.Enchantment
             // slot 1 - 5: Temporal Item
             slots = GenEmptySlots(6);
         }
+        public override WeightedSlot GetBestSuitedSlot(ItemSlot sourceSlot, ItemStackMoveOperation op = null, List<ItemSlot> skipSlots = null)
+        {
+            // skipSlots = slots.Clone() as List<ItemSlot>;
+            List<ItemSlot> skips = new List<ItemSlot>();
+            foreach (ItemSlot slot in slots)
+            {
+                skips.Add(slot);
+            }
+            skipSlots = skips;
+            return base.GetBestSuitedSlot(sourceSlot, op, skipSlots);
+        }
         public override int Count
         {
             get { return 6; }

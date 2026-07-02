@@ -50,6 +50,36 @@ namespace KRPGLib.Enchantment
             };
             Version = 1.04f;
         }
+        public void OnAttackedPre(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a {1} enchantment.", enchant.TargetEntity.GetName(), Code);
+
+            // Check if it has HP first, since we have to address this directly.
+            EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
+            if (hp == null) return;
+
+            // Nullify base damage
+            parameters["damage"] = 0;
+
+            // Configure Damage
+            DamageSource source = enchant.ToDamageSource();
+            source.DamageTier = enchant.Power;
+            source.Type = DamageType;
+            float dmg = GetDamage(enchant.Power);
+
+            // Set Handling to PreventDefault (2)
+            parameters["handled"] = 2;
+
+            // Particle if damaged
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Setting the weapon damage to 0 before calculating.");
+            ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+            byte[] data = SerializerUtil.Serialize(packet);
+            sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
+        }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             ICoreServerAPI sApi = Api as ICoreServerAPI;
