@@ -26,6 +26,7 @@ namespace KRPGLib.Enchantment
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         float DamageMultiplier { get { return Modifiers.GetFloat("DamageMultiplier"); } }
         float HungerMultiplier { get { return Modifiers.GetFloat("HungerMultiplier"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         public PoisonEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -49,14 +50,19 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                { "DamageResist", "resistpoison" }, {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}, {"HungerMultiplier", 100}
+                { "DamageResist", "resistpoison" }, {"TickMultiplier", 6 }, {"TickDuration", 1000 }, {"DamageMultiplier", 0.1}, {"HungerMultiplier", 100}, 
+                {"TriggerOnBlocked", false}
             };
-            Version = 1.03f;
+            Version = 1.04f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Poison enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             int tickMax = enchant.Power * TickMultiplier;
             EnchantmentEntityBehavior eeb = enchant.TargetEntity?.GetBehavior<EnchantmentEntityBehavior>();

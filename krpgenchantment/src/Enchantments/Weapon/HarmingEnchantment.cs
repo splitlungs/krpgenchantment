@@ -23,6 +23,7 @@ namespace KRPGLib.Enchantment
         float MaxDamage { get { return Modifiers.GetFloat("MaxDamage"); } }
         int MaxDamageRolls { get { return Modifiers.GetInt("MaxDamageRolls"); } }
         float PowerMulltiplier { get { return Modifiers.GetFloat("PowerMulltiplier"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         public HarmingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -46,9 +47,9 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                {"MinDamage", 1.0f }, { "MaxDamage", 3.0f }, { "MaxDamageRolls", 5 }, { "PowerMulltiplier", 0.02f }
+                {"MinDamage", 1.0f }, { "MaxDamage", 3.0f }, { "MaxDamageRolls", 5 }, { "PowerMulltiplier", 0.02f }, {"TriggerOnBlocked", false}
             };
-            Version = 1.04f;
+            Version = 1.05f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -56,6 +57,10 @@ namespace KRPGLib.Enchantment
 
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a damage enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             // Check if it has HP first, since we have to address this directly.
             EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();

@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
     {
         float HorizontalMultiplier { get { return Modifiers.GetFloat("HorizontalMultiplier"); } }
         float VerticalMultiplier { get { return Modifiers.GetFloat("VerticalMultiplier"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         public KnockbackEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -40,13 +41,17 @@ namespace KRPGLib.Enchantment
                 "Wand",
                 "vanillaarmory:Club"
             };
-            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 1 },  { "VerticalMultiplier", 0.1 } };
-            Version = 1.04f;
+            Modifiers = new EnchantModifiers() { {"HorizontalMultiplier", 1 },  { "VerticalMultiplier", 0.1 }, {"TriggerOnBlocked", false} };
+            Version = 1.05f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Knockback enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             // OBSOLETE
             float hPower = enchant.Power * HorizontalMultiplier * GameMath.Clamp((1f - enchant.TargetEntity.Properties.KnockbackResistance) / 10f, 0f, 1f);
@@ -57,9 +62,9 @@ namespace KRPGLib.Enchantment
             pushDir.Y = 0;
             pushDir.Normalize();
             // Aplly motion with a little bit of lift
-            enchant.TargetEntity.SidedPos.Motion.X += pushDir.X * hPower;
-            enchant.TargetEntity.SidedPos.Motion.Y += vPower;
-            enchant.TargetEntity.SidedPos.Motion.Z += pushDir.Z * hPower;
+            enchant.TargetEntity.Pos.Motion.X += pushDir.X * hPower;
+            enchant.TargetEntity.Pos.Motion.Y += vPower;
+            enchant.TargetEntity.Pos.Motion.Z += pushDir.Z * hPower;
         }
     }
 }

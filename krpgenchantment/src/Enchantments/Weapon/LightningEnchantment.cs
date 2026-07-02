@@ -14,6 +14,7 @@ namespace KRPGLib.Enchantment
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
         int MaxBonusStrikes { get { return Modifiers.GetInt("MaxBonusStrikes"); } }
         int EffectRadius { get { return Modifiers.GetInt("EffectRadius"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         ICoreServerAPI sApi;
         WeatherSystemServer weatherSystem;
         public LightningEnchantment(ICoreAPI api) : base(api)
@@ -39,9 +40,9 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             { 
-                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }
+                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.02f;
+            Version = 1.03f;
 
             sApi = Api as ICoreServerAPI;
             weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
@@ -50,6 +51,11 @@ namespace KRPGLib.Enchantment
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Lightning enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
+            
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
             if (eeb != null)
             {

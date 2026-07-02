@@ -86,7 +86,8 @@ namespace KRPGLib.Enchantment.Compat
             }
 
             float dmg = args.Damage;
-            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg } };
+            bool blocked = args.WasBlocked;
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg }, { "blocked", blocked } };
             bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(args.Slot, "OnAttacked", args.DamageSource.CauseEntity, args.Target, enchants, ref parameters);
             // if (didEnchantments)
             // {
@@ -98,7 +99,7 @@ namespace KRPGLib.Enchantment.Compat
             
             if (didEnchantments != false && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem finished processing Enchantments.");
-            if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
+            else if (!didEnchantments && EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] COSystem failed processing Enchantments.");
         }
         public void OnMeleeStatusChange(Entity attacker, ItemSlot slot, MeleeAttackStatus status)

@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
         float PowerMulXZ { get { return Modifiers.GetFloat("MulXZ"); } }
         float PowerMulY { get { return Modifiers.GetFloat("MulY"); } }
         int PowerMulMs { get { return Modifiers.GetInt("MulMs"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         protected ICoreServerAPI sApi;
         protected int webBlockId;
         /// <summary>
@@ -43,9 +44,9 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                { "MulXZ", 0.50 }, {"MulY", 0.50 }, { "MulMs", 1000 }
+                { "MulXZ", 0.50 }, {"MulY", 0.50 }, { "MulMs", 1000 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.00f;
+            Version = 1.01f;
             if (!(Api is ICoreServerAPI sapi)) return;
             sApi = sapi;
         }
@@ -69,6 +70,10 @@ namespace KRPGLib.Enchantment
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a {1} enchantment.", enchant.TargetEntity.GetName(), Code);
+            
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             Block[] blocks = Api.World.SearchBlocks(new AssetLocation("game:spiderweb"));
             if (blocks?[0] != null) webBlockId = blocks[0].BlockId;

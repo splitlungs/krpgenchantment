@@ -18,6 +18,7 @@ namespace KRPGLib.Enchantment
     {
         float MulXZ { get { return Modifiers.GetFloat("MulXZ"); } }
         float MulY { get { return Modifiers.GetFloat("MulY"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         protected IServerAPI sApi;
         public PitEnchantment(ICoreAPI api) : base(api)
         {
@@ -42,15 +43,19 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                { "MulXZ", 0.50 }, {"MulY", 1.00 }
+                { "MulXZ", 0.50 }, {"MulY", 1.00 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.02f;
+            Version = 1.03f;
             sApi = Api as IServerAPI;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Pit enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             BlockPos bpos = enchant.TargetEntity.Pos.AsBlockPos;
             List<Vec3d> pitArea = new List<Vec3d>();

@@ -18,6 +18,7 @@ namespace KRPGLib.Enchantment
     public class ChillingEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         /// <summary>
         /// Reduces the target's internal temperature OnAttack.
         /// </summary>
@@ -43,13 +44,17 @@ namespace KRPGLib.Enchantment
                 "Wand",
                 "vanillaarmory:Club"
             };
-            Modifiers = new EnchantModifiers() { { "PowerMultiplier", -10.00 } };
-            Version = 1.02f;
+            Modifiers = new EnchantModifiers() { { "PowerMultiplier", -10.00 }, {"TriggerOnBlocked", false} };
+            Version = 1.03f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a chilling enchantment.", enchant.TargetEntity.GetName());
+            
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             EntityBehaviorBodyTemperature ebbt = enchant.TargetEntity.GetBehavior<EntityBehaviorBodyTemperature>();
             if (ebbt != null)

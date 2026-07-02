@@ -19,6 +19,7 @@ namespace KRPGLib.Enchantment
     {
         int TickMultiplier { get { return Modifiers.GetInt("TickMultiplier"); } }
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
+        bool TriggerOnBlocked { get { return Modifiers.GetBool("TriggerOnBlocked"); } } 
         public IgnitingEnchantment(ICoreAPI api) : base(api)
         {
             // Setup the default config
@@ -42,14 +43,18 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             {
-                {"TickMultiplier", 1 }, {"TickDuration", 12500 }
+                {"TickMultiplier", 1 }, {"TickDuration", 12500 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.02f;
+            Version = 1.03f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by an Igniting enchantment.", enchant.TargetEntity.GetName());
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
 
             EnchantmentEntityBehavior eeb = enchant.TargetEntity.GetBehavior<EnchantmentEntityBehavior>();
             if (eeb != null)
