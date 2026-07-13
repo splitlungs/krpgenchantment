@@ -85,9 +85,12 @@ namespace KRPGLib.Enchantment.Compat
                 return;
             }
 
+            if (!args.IsLegalHit) return;
+
+            bool wasParried = args.WasParried;
+            bool wasBlocked = args.WasBlocked;
             float dmg = args.Damage;
-            bool blocked = args.WasBlocked;
-            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg }, { "blocked", blocked } };
+            EnchantModifiers parameters = new EnchantModifiers() { { "damage", dmg }, { "blocked", wasBlocked }, { "parried", wasParried } };
             bool didEnchantments = sApi.EnchantAccessor().TryEnchantments(args.Slot, "OnAttacked", args.DamageSource.CauseEntity, args.Target, enchants, ref parameters);
             // if (didEnchantments)
             // {

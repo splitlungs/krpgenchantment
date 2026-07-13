@@ -127,6 +127,52 @@ namespace KRPGLib.Enchantment
             byte[] data = SerializerUtil.Serialize(packet);
             sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
         }
+        public override void OnAttackStop(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        {
+            ICoreServerAPI sApi = Api as ICoreServerAPI;
+
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a {1} enchantment.", enchant.TargetEntity.GetName(), Code);
+
+            bool blocked = parameters.GetBool("blocked");
+            if (blocked && !TriggerOnBlocked)
+                return;
+
+            // Check if it has HP first, since we have to address this directly.
+            EntityBehaviorHealth hp = enchant.TargetEntity.GetBehavior<EntityBehaviorHealth>();
+            if (hp == null) return;
+
+            // Nullify base damage
+            parameters["damage"] = 0;
+
+            // Configure Damage
+            DamageSource source = enchant.ToDamageSource();
+            source.DamageTier = enchant.Power;
+            source.Type = DamageType;
+            float dmg = GetDamage(enchant.Power);
+
+            // Apply Damage
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Dealing {0} {1} damage.", dmg, source.Type.ToString());
+
+            // Disabled because there is something stopping this from happening in rapid succession.
+            // Some kind of timer is locking damage, and must be calculated manually here, instead.
+            // bool didDamage = entity.ReceiveDamage(source, dmg);
+            // if (didDamage != true)
+            //     Api.Logger.Error("[KRPGEnchantment] Tried to deal {0} damage to {1}, but failed!", dmg, entity.GetName());
+
+            hp.OnEntityReceiveDamage(source, ref dmg);
+
+            // Set Handling to PreventDefault (2)
+            parameters["handled"] = 2;
+
+            // Particle if damaged
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.Logger.Event("[KRPGEnchantment] Particle-ing the target after Enchantment Damage.");
+            ParticlePacket packet = new ParticlePacket() { Amount = dmg, DamageType = DamageType };
+            byte[] data = SerializerUtil.Serialize(packet);
+            sApi.Network.BroadcastEntityPacket(enchant.TargetEntity.EntityId, 1616, data);
+        }
         /// <summary>
         /// Returns the total damage that should be dealt, before armor/resist is applied.
         /// </summary>

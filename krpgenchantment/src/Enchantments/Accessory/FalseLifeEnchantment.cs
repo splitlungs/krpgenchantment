@@ -33,10 +33,10 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 23;
             MaxTier = 5;
             ValidToolTypes = new List<string> {
-                "Arm", "Emblem", "Neck", "Waist"
+                "Arm", "Emblem", "Face", "Hand", "Neck", "Waist"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.0f }, { "MaxActivePerEntity", 4 } };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

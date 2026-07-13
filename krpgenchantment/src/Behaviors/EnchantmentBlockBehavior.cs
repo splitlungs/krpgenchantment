@@ -104,7 +104,8 @@ namespace KRPGLib.Enchantment
                         valid = true;
                     break;
                 case EnumTool.Pickaxe:
-                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart().EqualsFastIgnoreCase("rock"))
+                    if (block.BlockMaterial == EnumBlockMaterial.Ore || block.Code.FirstCodePart().EqualsFastIgnoreCase("rock")
+                        || block.Code.FirstCodePart().EqualsFastIgnoreCase("meteorite"))
                         valid = true;
                     break;
                 case EnumTool.Scythe:

@@ -37,7 +37,7 @@ namespace KRPGLib.Enchantment
             LoreChapterID = 28;
             MaxTier = 5;
             ValidToolTypes = new List<string>() {
-                "Arm", "Emblem", "Neck", "Waist",
+                "Arm", "Emblem", "Face", "Hand", "Neck", "Waist",
                 "Armor-Head", "Armor-Body", "Armor-Legs",
                 "ArmorHead", "ArmorBody", "ArmorLegs",
                 "Shield",
@@ -57,7 +57,7 @@ namespace KRPGLib.Enchantment
             { 
                 { "PowerMultiplier", 4.00d }, { "DefaultHue", 32 }, { "DefaultSaturation", 5 }, { "RandomizeHue", true }, { "RandomizeSaturation", true } 
             };
-            Version = 1.00f;
+            Version = 1.01f;
         }
         public byte[] GetHSV(int power)
         {
