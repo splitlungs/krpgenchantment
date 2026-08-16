@@ -343,12 +343,31 @@ namespace KRPGLib.Enchantment
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel.SelectionBoxIndex == 1) return false;
-            if (Api.Side == EnumAppSide.Server)
+            if (Api is ICoreServerAPI sApi)
             {
+                // Check for claims
+                LandClaim[] claims = Api.World.Claims.Get(this.Pos);
+                bool denied = false;
+                if (claims != null)
+                {
+                    foreach (LandClaim lc in claims)
+                    {
+                        var response = lc.TestPlayerAccess(byPlayer, EnumBlockAccessFlags.Use);
+                        if (response < EnumPlayerAccessResult.OkOwner)
+                            denied = true;
+                    }
+                    if (denied == true) return true;
+                }
+                // Only open the GUI if the player has access to use the block
+                sApi.Network.SendBlockEntityPacket(byPlayer as IServerPlayer, Pos, (int)EnumBlockEntityPacketId.Open);
             }
+            // OBSOLETE
             // Setup the GUI for the client
-            if (Api.Side == EnumAppSide.Client)
-                toggleInventoryDialogClient(byPlayer);
+            // if (Api.Side == EnumAppSide.Client)
+            // {
+            //     // Only open the GUI if the player has access to use the block
+            //     toggleInventoryDialogClient(byPlayer);
+            // }
 
             return true;
         }
@@ -409,6 +428,22 @@ namespace KRPGLib.Enchantment
             // Sync back to the client
             MarkDirty();
         }
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            // base.OnReceivedServerPacket(packetid, data);
+            if (packetid == (int)EnumBlockEntityPacketId.Open)
+            {
+                // Only once verified on server do we toggle
+                toggleInventoryDialogClient((Api.World as IClientWorldAccessor).Player);
+            }
+            else if (packetid == (int)EnumBlockEntityPacketId.Close)
+            {
+                (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
+                clientDialog?.TryClose();
+                clientDialog?.Dispose();
+                clientDialog = null;
+            }
+        }
         private void OnSlotModified(int slotid)
         {
             if (Api.Side == EnumAppSide.Server)
@@ -417,18 +452,6 @@ namespace KRPGLib.Enchantment
                 IsCharging = false;
                 InputTime = 0.0d;
                 MarkDirty();
-            }
-        }
-        public override void OnReceivedServerPacket(int packetid, byte[] data)
-        {
-            base.OnReceivedServerPacket(packetid, data);
-
-            if (packetid == (int)EnumBlockEntityPacketId.Close)
-            {
-                (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
-                clientDialog?.TryClose();
-                clientDialog?.Dispose();
-                clientDialog = null;
             }
         }
         public override void OnBlockBroken(IPlayer byPlayer = null)

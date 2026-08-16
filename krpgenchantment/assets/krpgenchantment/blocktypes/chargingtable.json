@@ -8,6 +8,8 @@
   "blockmaterial": "Wood",
   "behaviors": [
     { "name": "BreakIfFloating" },
+    { "name": "Lockable" },
+    { "name": "Reinforcable" },
     { "name": "Container" },
     { "name": "HorizontalOrientable" }
   ],

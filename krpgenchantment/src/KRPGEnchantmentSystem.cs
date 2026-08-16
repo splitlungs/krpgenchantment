@@ -6,14 +6,10 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using System.Collections.Generic;
-using Vintagestory.API.Util;
 using Vintagestory.API.Client;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using Vintagestory.API.MathTools;
 using KRPGLib.Enchantment.Compat;
-using Vintagestory.API.Datastructures;
-using Vintagestory.API.Common.Entities;
+using KRPGLib.Enchantment.Net;
 
 namespace KRPGLib.Enchantment
 {
@@ -32,7 +28,6 @@ namespace KRPGLib.Enchantment
         {
             api.World.Logger.StoryEvent(Lang.Get("Enchanting..."));
             
-            // if (api.Side != EnumAppSide.Server) return;
             RegisterEnchantmentCollectibleBehaviors(api);
             RegisterEnchantmentBlockBehaviors(api);
         }
@@ -42,18 +37,22 @@ namespace KRPGLib.Enchantment
             Api = api;
             cApi = api as ICoreClientAPI;
             sApi = api as ICoreServerAPI;
-            EnchantAccessor = new EnchantmentAccessor();
-            EnchantAccessor.Api = api;
-            EnchantAccessor.cApi = cApi;
-            EnchantAccessor.sApi = sApi;
-            EnchantAccessor.EnchantmentRegistry = new Dictionary<string, Enchantment>();
-            
+            EnchantAccessor = new EnchantmentAccessor
+            {
+                Api = api,
+                cApi = cApi,
+                sApi = sApi,
+                EnchantmentRegistry = new Dictionary<string, Enchantment>(),
+                Modifiers = new Dictionary<string, EnchantModifiers>()
+            };
+
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
             base.StartClientSide(api);
             cApi = api;
             EnchantAccessor.cApi = api;
+            EnchantAccessor.NetSystem = api.ModLoader.GetModSystem<KRPGENetSystem>();
             ConfigParticles();
             RegisterClientCompatibility();
         }
@@ -61,7 +60,9 @@ namespace KRPGLib.Enchantment
         {
             sApi = api;
             EnchantAccessor.sApi = api;
+            EnchantAccessor.NetSystem = api.ModLoader.GetModSystem<KRPGENetSystem>();
             RegisterServerCompatibility();
+            sApi.Event.PlayerJoin += SyncEnchantRegistry;
             sApi.Event.PlayerNowPlaying += RegisterPlayerEEB;
         }
         /// <summary>
@@ -95,6 +96,14 @@ namespace KRPGLib.Enchantment
                 WandsSysServer = new KRPGWandsSystem();
                 WandsSysServer.StartServerSide(Api);
             }
+        }
+        /// <summary>
+        /// Push the EnchantmentRegistry to the player when they join the server.
+        /// </summary>
+        /// <param name="byPlayer"></param>
+        public void SyncEnchantRegistry(IServerPlayer byPlayer)
+        {
+            sApi.EnchantAccessor().SyncEnchantRegistry(byPlayer);
         }
         /// <summary>
         /// Event fired when a player joins a server. Registers their Enchantment Entity Behavior listeners.
@@ -137,6 +146,10 @@ namespace KRPGLib.Enchantment
                     {
                         obj.CollectibleBehaviors = obj.CollectibleBehaviors.AddToArray(eb);
                     }, "InjectGlobalBehaviors");
+                }
+                else
+                {
+                    EnchantmentBehavior eb = obj.GetBehavior<EnchantmentBehavior>();
                 }
             }
             api.Logger.Notification("[KRPGEnchantment] KRPG Enchantment collectible behaviors loaded.");

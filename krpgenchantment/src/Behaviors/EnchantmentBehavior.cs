@@ -36,6 +36,8 @@ namespace KRPGLib.Enchantment
         public bool IsReagent = false;
         // Fortune
         public float MiningSpeedMul = 1f;
+        // Warmth
+        public bool WarmthIgnoreCondition = false;
         public EnchantmentBehavior(CollectibleObject collObj) : base(collObj)
         {
         }
@@ -60,8 +62,16 @@ namespace KRPGLib.Enchantment
             if (ench != null)
             {
                 MiningSpeedMul = ench.Modifiers.GetFloat("PowerMultiplier");
+                ench = null;
+            }
+            ench = esa.GetEnchantment("warmth");
+            if (ench != null)
+            {
+                WarmthIgnoreCondition = ench.Modifiers.GetBool("IgnoreCondition");
+                ench = null;
             }
         }
+        
         public override void OnUnloaded(ICoreAPI api)
         {
             base.OnUnloaded(api);

@@ -11,6 +11,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.API.Net;
 using Vintagestory.GameContent;
 
 namespace KRPGLib.Enchantment
@@ -20,6 +21,7 @@ namespace KRPGLib.Enchantment
         public static KRPGEnchantConfig Config { get; private set; }
         public const double ConfigVersion = 1.05d;
         public const string ConfigFile = "KRPGEnchantment/KRPGEnchantment_Config.json";
+        #region Defaults
         // We cannot initialize dictionaries in the Config class, and must do so here
         private Dictionary<string, int> defaultMaxEnchantsByCategory = new Dictionary<string, int>()
         {
@@ -56,6 +58,7 @@ namespace KRPGLib.Enchantment
             {2,4},
             {3,5}
         };
+        #endregion
         private ICoreServerAPI sApi;
         // Load before anything else, especially before ConfigLib does anything.
         public override double ExecuteOrder()

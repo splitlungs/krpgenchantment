@@ -1,7 +1,8 @@
-﻿using KRPGLib.Enchantment.API;
+﻿using HarmonyLib;
+using KRPGLib.Enchantment.API;
+using KRPGLib.Enchantment.Net;
 using SkiaSharp;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -24,10 +25,15 @@ namespace KRPGLib.Enchantment
         public ICoreAPI Api;
         public ICoreServerAPI sApi;
         public ICoreClientAPI cApi;
+        public KRPGENetSystem NetSystem;
         /// <summary>
         /// All Enchantments are processed and stored here. Must use RegisterEnchantmentClass to handle adding Enchantments.
         /// </summary>
         public Dictionary<string, Enchantment> EnchantmentRegistry = new Dictionary<string, Enchantment>();
+        /// <summary>
+        /// Server authoritative, synchronized list of modifiers for all Enchantments.
+        /// </summary>
+        public Dictionary<string, EnchantModifiers> Modifiers = new Dictionary<string, EnchantModifiers>();
         #region Registration
         /// <summary>
         /// Used in CreateEnchantment(), as configured by RegisterEnchantmentClass().
@@ -139,6 +145,66 @@ namespace KRPGLib.Enchantment
                 return false;
             }
         }
+        /// <summary>
+        /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
+        /// </summary>
+        /// <param name="enchantClass"></param>
+        /// <param name="props"></param>
+        /// <param name="t"></param>
+        public bool RegisterEnchantmentClass(string enchantClass, EnchantmentProperties props, Type t)
+        {
+            if (EnchantingConfigLoader.Config.Debug == true)
+                Api.Logger.Event("[KRPGEnchantment] Attempting to RegisterEnchantmentClass.");
+            if (enchantClass == null || props == null || t == null)
+            {
+                Api.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing registration information.");
+                return false;
+            }
+            try
+            {
+                // Register the Enchantment Class
+                this.EnchantCodeToTypeMapping[enchantClass] = t;
+                // Create a new instance & assign registered class name
+                var enchant = CreateEnchantment(enchantClass);
+                // Initialize the properties
+                enchant.Initialize(props);
+                // Add to the Registry
+                EnchantmentRegistry.Add(enchant.Code, enchant);
+
+                if (EnchantingConfigLoader.Config.Debug == true)
+                    Api.World.Logger.Event("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", enchantClass);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Api.Logger.Error("[KRPGEnchantment] Error loading Enchantment Class: {0}", e);
+                return false;
+            }
+        }
+        /// <summary>
+        /// Scans the existing Enchantment Registry and sends to the client.
+        /// </summary>
+        /// <param name="player"></param>
+        public void SyncEnchantRegistry(IServerPlayer player)
+        {
+            if (player == null)
+            {
+                sApi.Logger.Error("[KRPGEnchantment] Attempted to SyncEnchantRegistry with a null player.");
+                return;
+            }
+            if (EnchantmentRegistry == null || EnchantmentRegistry.Count < 1)
+            {
+                sApi.Logger.Error("[KRPGEnchantment] Attempted to SyncEnchantRegistry with a null EnchantmentRegistry.");
+                return;
+            }
+            foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
+            {
+                Type eType = EnchantCodeToTypeMapping[pair.Key];
+                EnchantmentProperties props = pair.Value.Properties.Clone();
+                NetSystem.SendEnchantRegistryPacket(player, pair.Key, props, eType);
+            }
+        }
         [Obsolete]
         private Type GetEnchantmentClass(string enchantClass)
         {
@@ -151,7 +217,7 @@ namespace KRPGLib.Enchantment
         /// </summary>
         /// <param name="enchantClass"></param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="exception"></exception>
         private Enchantment CreateEnchantment(string enchantClass)
         {
             Type enchantType;
@@ -180,6 +246,56 @@ namespace KRPGLib.Enchantment
         #endregion
         #region Enchanting
         /// <summary>
+        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found or null if no code is found.
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <returns></returns>
+        public string GetToolType(ItemStack stack)
+        {
+            if (stack == null) return null;
+
+            // Block
+            if (stack.Class == EnumItemClass.Block) return "block";
+            // Tool or Weapon
+            string s = null;
+            s = stack.Collectible.Tool?.ToString()?.ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "tool;");
+                return s;
+            }
+            // Wearables
+            s = stack.ItemAttributes["clothescategory"]?.AsString()?.ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "wearable;");
+                return s;
+            }
+            // Tool-Tags - Doesn't appear to work yet
+            // TagSet tags = stack.Collectible.Tags;
+            // if (tags.IsEmpty != true)
+            // {
+            //     Api.CollectibleTagRegistry
+            //         .CreateTagSet("tool-cleaver")
+            //         .IsFullyContainedIn(stack.Collectible.GetTags(stack));
+            //     string[] strings = s.Split("-", StringSplitOptions.RemoveEmptyEntries);
+            //     if (strings[0] == "tool")
+            //     {
+            //         s = "tag;" + strings[1];
+            //         return s;
+            //     }
+            // }
+            // Item Code fallback - Some items just don't have tool entries. idk, it's kinda inconsistent
+            // s = stack.Collectible.Code.Domain + ":" + stack.Collectible.FirstCodePart();
+            s = stack.Collectible.Code.ToString().ToLower();
+            if (s != null)
+            {
+                s = s.Insert(0, "code;");
+                return s;
+            }
+            return null;
+        }
+        /// <summary>
         /// Returns a List of Enchantment codes that can be written to the ItemStack or null if something went wrong.
         /// </summary>
         /// <param name="inSlot"></param>
@@ -205,10 +321,12 @@ namespace KRPGLib.Enchantment
                 {
                     // ToolType
                     if (toolStrings[0] == "tool" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
+                    // ToolTagType - Tags disabled for now
+                    // else if (toolStrings[0] == "tag" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
                     // Wearable
                     else if (toolStrings[0] == "wearable" && toolStrings[1].CaseInsensitiveContains(s) != false) validTool = true;
                     // Code
-                    else if (toolStrings[0] == "code" && toolStrings[1].EqualsFastIgnoreCase(s) != false) validTool = true;
+                    else if (toolStrings[0] == "code" && toolStrings[1].CaseInsensitiveContains(s) != false) validTool = true;
                 }
                 if (!validTool) continue;
                 // Write to the List if it passed
@@ -480,49 +598,6 @@ namespace KRPGLib.Enchantment
             }
             if (rQty < 0) return -1;
             return rQty;
-        }
-        /// <summary>
-        /// Attempts to get base EnumTool type from an item, or interperited ID for a non-tool, then converts to string. This should match your ValidToolTypes in the Enchantment. Returns the item's code value if no ToolType is found or null if no code is found.
-        /// </summary>
-        /// <param name="stack"></param>
-        /// <returns></returns>
-        public string GetToolType(ItemStack stack)
-        {
-            if (stack == null) return null;
-
-            // Block
-            if (stack.Class == EnumItemClass.Block) return "block";
-            // Tool or Weapon
-            string s = null;
-            s = stack.Collectible.Tool?.ToString()?.ToLower();
-            if (s != null)
-            {
-                s = s.Insert(0, "tool;");
-                return s;
-            }
-            // Wearables
-            s = stack.ItemAttributes["clothescategory"]?.AsString()?.ToLower();
-            if (s != null || s == "")
-            {
-                s = s.Insert(0, "wearable;");
-                return s;
-            }
-            // Wearables by Type - Not working?? Gotta use the ItemAttributes for some weird ass reason
-            // ITreeAttribute catByType = stack.Attributes?.GetTreeAttribute("clothesCategoryByType");
-            // if (catByType != null)
-            // {
-            //     s = catByType.GetString(itemCode)?.ToLower();
-            //     s = s.Insert(0, "wearable;");
-            //     return s;
-            // }
-            // Item Code fallback - Some items just don't have tool entries. idk, it's kinda inconsistent
-            s = stack.Collectible.Code.Domain + ":" + stack.Collectible.FirstCodePart();
-            if (s != null)
-            {
-                s = s.Insert(0, "code;");
-                return s;
-            }
-            return null;
         }
         #endregion
         #region Assessments

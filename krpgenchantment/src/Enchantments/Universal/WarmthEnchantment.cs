@@ -20,6 +20,7 @@ namespace KRPGLib.Enchantment
     public class WarmthEnchantment : Enchantment
     {
         float PowerMultiplier { get { return Modifiers.GetFloat("PowerMultiplier"); } }
+        bool IgnoreCondition { get { return Modifiers.GetBool("IgnoreCondition"); } }
         /// <summary>
         /// Provides hunger rate modifiers the entity who triggers OnEquip.
         /// </summary>
@@ -38,8 +39,8 @@ namespace KRPGLib.Enchantment
                 "Armor-Head", "Armor-Body", "Armor-Legs",
                 "ArmorHead", "ArmorBody", "ArmorLegs",
             };
-            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.0f } };
-            Version = 1.01f;
+            Modifiers = new EnchantModifiers() { {"PowerMultiplier", 1.0f }, { "IgnoreCondition", true} };
+            Version = 1.02f;
         }
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)
         {

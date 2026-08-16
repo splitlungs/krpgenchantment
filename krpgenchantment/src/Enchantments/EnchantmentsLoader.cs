@@ -1,4 +1,5 @@
 ﻿using System;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -24,49 +25,50 @@ namespace KRPGLib.Enchantment
         public override void AssetsLoaded(ICoreAPI api)
         {
             // We should only load on the Server
-            if (!(api is ICoreServerAPI sapi)) return;
-
-            // Make sure each value is unique when registering your enchantment class, so as to prevent conflicts when adding your own Enchantments.
-            // Prefix it with something like "mymod-myenchant" as the className.
-            // Enable Debug in the KRPGEnchantment_Config.json to get more info in the Debug log.
-            int count = 0;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("accurate", "Weapon/accurate.json", typeof(AccurateEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("chilling", "Weapon/chilling.json", typeof(ChillingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("durable", "Universal/durable.json", typeof(DurableEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("efficient", "Tool/efficient.json", typeof(EfficientEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("falselife", "Accessory/falselife.json", typeof(FalseLifeEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("fast", "Accessory/fast.json", typeof(FastEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("flaming", "Weapon/flaming.json", typeof(FlamingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("fortunate", "Tool/fortunate.json", typeof(FortunateEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("frost", "Weapon/frost.json", typeof(FrostEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("harming", "Weapon/harming.json", typeof(HarmingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("healing", "Weapon/healing.json", typeof(HealingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("igniting", "Weapon/igniting.json", typeof(IgnitingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("knockback", "Weapon/knockback.json", typeof(KnockbackEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("lightning", "Weapon/lightning.json", typeof(LightningEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("pit", "Weapon/pit.json", typeof(PitEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("poison", "Weapon/poison.json", typeof(PoisonEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("protection", "Armor/protection.json", typeof(ProtectionEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistelectricity", "Armor/resistelectricity.json", typeof(ResistElectricityEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfire", "Armor/resistfire.json", typeof(ResistFireEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfrost", "Armor/resistfrost.json", typeof(ResistFrostEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistheal", "Armor/resistheal.json", typeof(ResistHealEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistinjury", "Armor/resistinjury.json", typeof(ResistInjuryEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistpoison", "Armor/resistpoison.json", typeof(ResistPoisonEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("reversion", "Universal/reversion.json", typeof(ReversionEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("shocking", "Weapon/shocking.json", typeof(ShockingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("sustaining", "Accessory/sustaining.json", typeof(SustainingEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("web", "Weapon/web.json", typeof(WebEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("light", "Universal/light.json", typeof(LightEnchantment)) == true) count++;
-            if (sapi.EnchantAccessor().RegisterEnchantmentClass("warmth", "Universal/warmth.json", typeof(WarmthEnchantment)) == true) count++;
-            // CO Only
-            bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaulfork");
-            if (coEnabled == true)
+            if (api is ICoreServerAPI sapi)
             {
-                if (sapi.EnchantAccessor().RegisterEnchantmentClass("quickdraw", "Weapon/quickdraw.json", typeof(QuickDrawEnchantment)) == true) count++;
-            }
-            // You should modify the notification to your mod
-            sapi.Logger.Notification("[KRPGEnchantment] Registered {0} Enchantment classes to the EnchantmentRegistry.", count);
+                // Make sure each value is unique when registering your enchantment class, so as to prevent conflicts when adding your own Enchantments.
+                // Prefix it with something like "mymod-myenchant" as the className.
+                // Enable Debug in the KRPGEnchantment_Config.json to get more info in the Debug log.
+                int count = 0;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("accurate", "Weapon/accurate.json", typeof(AccurateEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("chilling", "Weapon/chilling.json", typeof(ChillingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("durable", "Universal/durable.json", typeof(DurableEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("efficient", "Tool/efficient.json", typeof(EfficientEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("falselife", "Accessory/falselife.json", typeof(FalseLifeEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("fast", "Accessory/fast.json", typeof(FastEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("flaming", "Weapon/flaming.json", typeof(FlamingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("fortunate", "Tool/fortunate.json", typeof(FortunateEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("frost", "Weapon/frost.json", typeof(FrostEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("harming", "Weapon/harming.json", typeof(HarmingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("healing", "Weapon/healing.json", typeof(HealingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("igniting", "Weapon/igniting.json", typeof(IgnitingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("knockback", "Weapon/knockback.json", typeof(KnockbackEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("lightning", "Weapon/lightning.json", typeof(LightningEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("pit", "Weapon/pit.json", typeof(PitEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("poison", "Weapon/poison.json", typeof(PoisonEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("protection", "Armor/protection.json", typeof(ProtectionEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistelectricity", "Armor/resistelectricity.json", typeof(ResistElectricityEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfire", "Armor/resistfire.json", typeof(ResistFireEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistfrost", "Armor/resistfrost.json", typeof(ResistFrostEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistheal", "Armor/resistheal.json", typeof(ResistHealEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistinjury", "Armor/resistinjury.json", typeof(ResistInjuryEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("resistpoison", "Armor/resistpoison.json", typeof(ResistPoisonEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("reversion", "Universal/reversion.json", typeof(ReversionEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("shocking", "Weapon/shocking.json", typeof(ShockingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("sustaining", "Accessory/sustaining.json", typeof(SustainingEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("web", "Weapon/web.json", typeof(WebEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("light", "Universal/light.json", typeof(LightEnchantment)) == true) count++;
+                if (sapi.EnchantAccessor().RegisterEnchantmentClass("warmth", "Universal/warmth.json", typeof(WarmthEnchantment)) == true) count++;
+                // CO Only
+                bool coEnabled = sapi.ModLoader.IsModEnabled("combatoverhaulfork");
+                if (coEnabled == true)
+                {
+                    if (sapi.EnchantAccessor().RegisterEnchantmentClass("quickdraw", "Weapon/quickdraw.json", typeof(QuickDrawEnchantment)) == true) count++;
+                }
+                // You should modify the notification to your mod
+                sapi.Logger.Notification("[KRPGEnchantment] Registered {0} Enchantment classes to the EnchantmentRegistry.", count);
+            }            
         }
     }
 }

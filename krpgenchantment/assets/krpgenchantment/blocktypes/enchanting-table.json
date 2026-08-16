@@ -6,6 +6,8 @@
   "maxSlotStackSize": 2,
   "behaviors": [
     { "name": "BreakIfFloating" },
+    { "name": "Lockable" },
+    { "name": "Reinforcable" },
     { "name": "Container" }
   ],
   "storageFlags": 5,
@@ -16,7 +18,8 @@
     "all": false
   },
   "attributes": {
-    "propickable": true,
+    "reinforcable": true,
+    "propickable": false,
     "drop": {
       "normal-generic": true
     }

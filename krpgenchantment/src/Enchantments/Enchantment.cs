@@ -229,7 +229,7 @@ namespace KRPGLib.Enchantment
         // Properties loaded from JSON
         // public EnchantmentProperties Properties = new EnchantmentProperties();
         // Raw JSON of the Properties
-        public JsonObject PropObject { get; set; }
+        public EnchantmentProperties Properties { get; set; }
 
         public Enchantment(ICoreAPI api)
         {
@@ -242,6 +242,8 @@ namespace KRPGLib.Enchantment
         /// <param name="properties"></param>
         public virtual void Initialize(EnchantmentProperties properties)
         {
+            // Store loaded properties for later.
+            Properties = properties.Clone();
             // Load from properties, or reset if corrupt
             if (properties.Enabled == true) Enabled = properties.Enabled;
             else Enabled = false;

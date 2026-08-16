@@ -40,12 +40,12 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers()
             { 
-                {"Delay", 500 }, {"PowerMultiplier", 0.5 }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }, {"TriggerOnBlocked", false}
+                {"Delay", 500 }, {"PowerMultiplier", 0.5f }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }, {"TriggerOnBlocked", false}
             };
             Version = 1.03f;
 
-            sApi = Api as ICoreServerAPI;
-            weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
+            if (Api is ICoreServerAPI sApi)
+                weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -100,7 +100,7 @@ namespace KRPGLib.Enchantment
                     eTick.Dispose();
                     return;
                 }
-                SpawnLightning(entity.SidedPos.XYZ);
+                SpawnLightning(entity.Pos.XYZ);
                 eTick.TicksRemaining = tr - 1;
                 eTick.LastTickTime = Api.World.ElapsedMilliseconds;
             }

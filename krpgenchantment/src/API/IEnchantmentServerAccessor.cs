@@ -27,6 +27,11 @@ namespace KRPGLib.Enchantment.API
         /// <param name="configLocation"></param>
         /// <param name="t"></param>
         bool RegisterEnchantmentClass(string enchantClass, string configLocation, Type t);
+        /// <summary>
+        /// Scans the existing Enchantment Registry and sends to the client.
+        /// </summary>
+        /// <param name="player"></param>
+        void SyncEnchantRegistry(IServerPlayer player);
         #endregion
         #region Enchanting
         /// <summary>

@@ -69,7 +69,7 @@
         }
       },
       {
-        "code": "game:altar",
+        "code": "game:altar-north",
         "type": "block",
         "stacksize": 1,
         "stock": {
@@ -79,9 +79,6 @@
         "price": {
           "avg": 32,
           "var": 8
-        },
-        "attributes": {
-          "category": "enchantment"
         }
       }
     ]
