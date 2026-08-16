@@ -153,7 +153,7 @@ namespace KRPGLib.Enchantment
         /// <param name="t"></param>
         public bool RegisterEnchantmentClass(string enchantClass, EnchantmentProperties props, Type t)
         {
-            if (EnchantingConfigLoader.Config.Debug == true)
+            if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.Logger.Event("[KRPGEnchantment] Attempting to RegisterEnchantmentClass.");
             if (enchantClass == null || props == null || t == null)
             {
@@ -171,7 +171,7 @@ namespace KRPGLib.Enchantment
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
-                if (EnchantingConfigLoader.Config.Debug == true)
+                if (EnchantingConfigLoader.Config?.Debug == true)
                     Api.World.Logger.Event("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", enchantClass);
 
                 return true;
