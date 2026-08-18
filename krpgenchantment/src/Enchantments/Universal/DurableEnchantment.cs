@@ -44,10 +44,11 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club"
+                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers { { "PowerMultiplier", 0.10d } };
-            Version = 1.02f;
+            Version = 1.03f;
         }
         public void OnDurability(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

@@ -61,6 +61,29 @@ namespace KRPGLib.Enchantment
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
                 // Reset the Configs if configured
+                RegisterEnchantmentProperties(enchant, configLocation);
+                // Add to the Registry
+                EnchantmentRegistry.Add(enchant.Code, enchant);
+
+                if (EnchantingConfigLoader.Config.Debug == true)
+                    Api.World.Logger.Event("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", enchantClass);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Api.Logger.Error("[KRPGEnchantment] Error loading Enchantment Class: {0}", e);
+                return false;
+            }
+        }
+        /// <summary>
+        /// Loads server-configured Enchantment Properties or creates new ones, then assigns them to the Enchantment. Should not be called directly.
+        /// </summary>
+        /// <param name="enchant"></param>
+        /// <param name="configLocation"></param>
+        private void RegisterEnchantmentProperties(IEnchantment enchant, string configLocation)
+        {
+                // Reset the Configs if configured
                 if (EnchantingConfigLoader.Config?.ResetEnchantConfigs == true)
                 {
                     // Get Properties from default
@@ -130,20 +153,6 @@ namespace KRPGLib.Enchantment
                     // Initialize the properties
                     enchant.Initialize(props);
                 }
-
-                // Add to the Registry
-                EnchantmentRegistry.Add(enchant.Code, enchant);
-
-                if (EnchantingConfigLoader.Config.Debug == true)
-                    Api.World.Logger.Event("[KRPGEnchantment] Enchantment {0} registered to the Enchantment Registry.", enchantClass);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Api.Logger.Error("[KRPGEnchantment] Error loading Enchantment Class: {0}", e);
-                return false;
-            }
         }
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.

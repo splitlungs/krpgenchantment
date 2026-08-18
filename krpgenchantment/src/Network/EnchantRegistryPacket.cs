@@ -11,6 +11,9 @@ using Vintagestory.API.Util;
 
 namespace KRPGLib.Enchantment.Net
 {
+    /// <summary>
+    /// Server to client packet to be converted to Enchantment Properties when registered to a client's Enchantment Registry.
+    /// </summary>
     [ProtoContract]
     public class EnchantRegistryPacket
     {
@@ -38,55 +41,5 @@ namespace KRPGLib.Enchantment.Net
         public List<string> ModVals;
         [ProtoMember(12)]
         public float Version;
-
-        // public void ToBytes(BinaryWriter writer)
-        // {
-        //     writer.Write(KeyCode);
-        //     writer.Write(EnchantmentType.ToString());
-        //     writer.Write(Enabled);
-        //     writer.Write(Code);
-        //     writer.Write(Category);
-        //     writer.Write(LoreCode);
-        //     writer.Write(LoreChapterID);
-        //     writer.Write(MaxTier);
-        //     writer.Write(ValidToolTypes.Count);
-        //     foreach (string tool in ValidToolTypes)
-        //     {
-        //         writer.Write(tool);
-        //     }
-        //     // writer.Write(Modifiers.Count);
-        //     // foreach (KeyValuePair<string, object> pair in Modifiers)
-        //     // {
-        //     //     writer.Write(pair.Key);
-        //     //     writer.Write(pair.Value.ToString());
-        //     // }
-        //     writer.Write(Version);
-        // }
-        // public void FromBytes(BinaryReader reader, IWorldAccessor resolver)
-        // {
-        //     KeyCode = reader.ReadString();
-        //     EnchantmentType = reader.ReadString();
-        //     Enabled = reader.ReadBoolean();
-        //     Code = reader.ReadString();
-        //     Category = reader.ReadString();
-        //     LoreCode = reader.ReadString();
-        //     LoreChapterID = reader.ReadInt32();
-        //     MaxTier = reader.ReadInt32();
-        //     int toolCount = reader.ReadInt32();
-        //     ValidToolTypes = new List<string>();
-        //     for (int i = 0; i < toolCount; i++)
-        //     {
-        //         ValidToolTypes.Add(reader.ReadString());
-        //     }
-        //     // int modCount = reader.ReadInt32();
-        //     // Modifiers = new EnchantModifiers();
-        //     // for (int i = 0; i < modCount; i++)
-        //     // {
-        //     //     string key = reader.ReadString();
-        //     //     object value = reader.ReadString();
-        //     //     Modifiers.Add(key, value);
-        //     // }
-        //     Version = reader.ReadSingle();
-        // }
     }
 }

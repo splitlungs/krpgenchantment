@@ -12,9 +12,13 @@ using System.Linq;
 
 namespace KRPGLib.Enchantment.Net
 {
+    /// <summary>
+    /// Networking system for KRPG Enchantment.
+    /// </summary>
     public class KRPGENetSystem : ModSystem
     {
-        ICoreServerAPI sApi;
+        #region Core
+        ICoreAPI Api;
         // Load before anything else, especially before ConfigLib does anything.
         public override double ExecuteOrder()
         {
@@ -22,6 +26,7 @@ namespace KRPGLib.Enchantment.Net
         }
         public override void StartPre(ICoreAPI api)
         {
+            Api = api;
             api.Network
                 .RegisterChannel("krpgenchantment")
                 .RegisterMessageType(typeof(EnchantRegistryPacket))
@@ -30,7 +35,9 @@ namespace KRPGLib.Enchantment.Net
                 .RegisterMessageType(typeof(ModifierResponsePacket))
             ;
         }
+        #endregion
         #region Server
+        ICoreServerAPI sApi;
         IServerNetworkChannel serverChannel;
         public override void StartServerSide(ICoreServerAPI api)
         {
@@ -41,6 +48,11 @@ namespace KRPGLib.Enchantment.Net
                 .SetMessageHandler<ModifierRequestPacket>(OnModifierRequest)
             ;
         }
+        /// <summary>
+        /// Called when the server receives a request for a specific Modifier from a specific Enchantment.
+        /// </summary>
+        /// <param name="fromPlayer"></param>
+        /// <param name="packet"></param>
         private void OnModifierRequest(IServerPlayer fromPlayer, ModifierRequestPacket packet)
         {
             IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(packet.EnchantCode);
@@ -53,11 +65,23 @@ namespace KRPGLib.Enchantment.Net
             };
             serverChannel.SendPacket(response, new IServerPlayer[] { fromPlayer });
         }
+        /// <summary>
+        /// Dummy method for logging/testing.
+        /// </summary>
+        /// <param name="fromPlayer"></param>
+        /// <param name="packet"></param>
         private void OnClientResponse(IPlayer fromPlayer, ResponsePacket packet)
         {
             sApi.Logger.Event(
                 "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", packet.ResponseType.ToString(), packet.Message, fromPlayer.PlayerName);
         }
+        /// <summary>
+        /// Called by the Server during RegisterEnchantmentClass to synchronize a configured enchantment down to the client.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="keyCode"></param>
+        /// <param name="props"></param>
+        /// <param name="enchantmentType"></param>
         public void SendEnchantRegistryPacket(IServerPlayer player, string keyCode, EnchantmentProperties props, Type enchantmentType)
         {
             List<string> modKeys = new List<string>();
@@ -100,19 +124,29 @@ namespace KRPGLib.Enchantment.Net
                 .SetMessageHandler<ModifierResponsePacket>(OnServerModifierResponse)
             ;
         }
+        /// <summary>
+        /// Dummy method for logging/testing.
+        /// </summary>
+        /// <param name="packet"></param>
         private void OnServerResponse(ResponsePacket packet)
         {
             cApi.Logger.Event(
                 "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", packet.ResponseType.ToString(), packet.Message, cApi.World.Player.PlayerName);
         }
+        /// <summary>
+        /// Handler for server response when an Enchantment Modifier is requested. Unused at the moment.
+        /// </summary>
+        /// <param name="packet"></param>
         private void OnServerModifierResponse(ModifierResponsePacket packet)
         {
             cApi.Logger.Event(
                 "[KRPGEnchantment] Received net modifier response {0}: {1}. from {2}.", 
                 packet.EnchantCode, packet.ModifierValue, cApi.World.Player.PlayerName);
-
-            
         }
+        /// <summary>
+        /// Handler for when the Server pushes a configured Enchantment to the client. Generally should never be called by itself.
+        /// </summary>
+        /// <param name="packet"></param>
         private void OnServerERSync(EnchantRegistryPacket packet)
         {
             cApi.Logger.Event("Received an EnchantRegistryPacket from the server.");

@@ -40,13 +40,14 @@ namespace KRPGLib.Enchantment
                 "Bow", "Sling",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand"
+                "Wand",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers()
             {
                 { "MulXZ", 0.50 }, {"MulY", 0.50 }, { "MulMs", 1000 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.01f;
+            Version = 1.02f;
             if (!(Api is ICoreServerAPI sapi)) return;
             sApi = sapi;
         }

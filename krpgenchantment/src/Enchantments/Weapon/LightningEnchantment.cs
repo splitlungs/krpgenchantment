@@ -36,13 +36,14 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Club"
+                "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers()
             { 
                 {"Delay", 500 }, {"PowerMultiplier", 0.5f }, {"MaxBonusStrikes", 1 }, {"EffectRadius", 4 }, {"TriggerOnBlocked", false}
             };
-            Version = 1.03f;
+            Version = 1.04f;
 
             if (Api is ICoreServerAPI sApi)
                 weatherSystem = sApi.ModLoader.GetModSystem<WeatherSystemServer>();

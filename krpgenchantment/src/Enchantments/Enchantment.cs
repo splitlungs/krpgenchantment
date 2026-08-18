@@ -221,14 +221,7 @@ namespace KRPGLib.Enchantment
         // Used to manage default configurations, as well as to force resets of individual enchantments.
         // Setting to a value less than 1.00 will force a reset of the properties to default.
         public float Version { get; set; }
-        
-        // Properties moved to Modifiers and EnchantTick Registry moved to EnchantmentEntityBehavior
-        //
-        // Used to manage generic ticks. You still have to register your tick method with the API.
-        // public Dictionary<long, EnchantTick> TickRegistry { get; set; }
-        // Properties loaded from JSON
-        // public EnchantmentProperties Properties = new EnchantmentProperties();
-        // Raw JSON of the Properties
+        // Properties loaded from JSON. Server authoritative
         public EnchantmentProperties Properties { get; set; }
 
         public Enchantment(ICoreAPI api)

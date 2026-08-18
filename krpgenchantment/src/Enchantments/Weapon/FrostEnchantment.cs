@@ -43,13 +43,14 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Club"
+                "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers()
             {
                 {"MinDamage", 1.0f }, { "MaxDamage", 3.0f }, { "MaxDamageRolls", 5 }, { "PowerMulltiplier", 0.02f }, {"TriggerOnBlocked", false}
             };
-            Version = 1.05f;
+            Version = 1.06f;
         }
         public override void OnAttacked(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {

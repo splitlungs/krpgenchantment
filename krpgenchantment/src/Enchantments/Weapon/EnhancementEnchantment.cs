@@ -28,10 +28,10 @@ namespace KRPGLib.Enchantment
         {
             // Setup the default config
             Enabled = false;
-            Code = "quickdraw";
+            Code = "enhancement";
             Category = "Enhancement";
-            LoreCode = "enchantment-quickdraw";
-            LoreChapterID = 26;
+            LoreCode = "enchantment-enhancement";
+            LoreChapterID = 31;
             MaxTier = 5;
             ValidToolTypes = new List<string> {
                 "Knife", "Axe",
@@ -43,10 +43,11 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Club"
+                "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.3f }, {"CombatOverhaulMultiplier", 0.5f } };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)

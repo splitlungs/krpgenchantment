@@ -14,6 +14,7 @@ using Vintagestory.API.Util;
 using System.Data;
 using Vintagestory.API.Common.Entities;
 using System.Globalization;
+using KRPGLib.Enchantment.API;
 
 namespace KRPGLib.Enchantment
 {
@@ -291,7 +292,8 @@ namespace KRPGLib.Enchantment
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
                 Api.World.Logger.Event("[KRPGEnchantment] Enchanting Table is attempting to enchant an item.");
-            if (!(Api is ICoreServerAPI sApi)) return;
+            if (!(Api is ICoreServerAPI sApi) || CurrentEnchantment == null) return;
+
             ItemStack outStack = sApi.EnchantAccessor()
                 .EnchantItem(sApi, InputSlot, ReagentSlot, new Dictionary<string, int>() { { CurrentEnchantment, 0 } });
             // ItemStack outStack = CurrentRecipe.OutStack(sApi, InputSlot, ReagentSlot).Clone();
@@ -624,6 +626,50 @@ namespace KRPGLib.Enchantment
                 clientDialog.TryClose();
             }
         }
+        internal bool VerifyLatentEnchants(ICoreServerAPI sApi)
+        {
+            // Ensure the Enchantment selected has not been disabled
+            foreach (string le in LatentEnchants)
+            {
+                IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(le);
+                if (!ench.Enabled)
+                {
+                    // Reset Latent if so
+                    sApi.EnchantAccessor().ResetLatentEnchantsOnItem(InputSlot);
+                    SelectedEnchant = -1;
+                    CurrentEnchantment = null;
+                    MarkDirty();
+                    return false;
+                }
+            }
+            return true;
+        }
+        internal bool VerifyValidEnchants(ICoreServerAPI sApi)
+        {
+            // Find and assign a Current Enchantment
+            List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(InputSlot);
+            if (enchants == null)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.World.Logger.Warning("[KRPGEnchantment] Could not Get Valid Enchantments for {0}.", InputSlot.Itemstack.GetName());
+                return false;
+            }
+            foreach (string s in enchants)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.World.Logger.Event("[KRPGEnchantment] Checking if {0} can be assigned as CurrentEnchantment.", s);
+                bool canEnchant = sApi.EnchantAccessor().CanEnchant(InputSlot.Itemstack, ReagentSlot.Itemstack, s);
+                bool matches = LatentEnchants[SelectedEnchant].Equals(s, StringComparison.OrdinalIgnoreCase);
+                if (matches == true && canEnchant == true) 
+                {
+                    CurrentEnchantment = s;
+                    // Exit if we found a match
+                    return true;
+                }
+            }
+            // We failed to find a valid enchant for some reason
+            return false;
+        }
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
             base.OnReceivedClientPacket(player, packetid, data);
@@ -631,6 +677,7 @@ namespace KRPGLib.Enchantment
             // Player modified a Slot or clicked an Enchant button
             if (packetid == 1337 && Api.Side == EnumAppSide.Server)
             {
+                ICoreServerAPI sApi = Api as ICoreServerAPI;
                 EnchantingGuiPacket packet = SerializerUtil.Deserialize<EnchantingGuiPacket>(data);
                 SelectedEnchant = packet.SelectedEnchant;
                 CurrentEnchantment = null;
@@ -638,70 +685,28 @@ namespace KRPGLib.Enchantment
                 // Set the selected latent enchant if it's valid, or un-set them if not
                 if (SelectedEnchant >= 0 && LatentEnchants != null)
                 {
+                    // Ensure the Enchantment selected has not been disabled
+                    if (!VerifyLatentEnchants(sApi)) return;
                     // Find and assign a Current Enchantment
-                    ICoreServerAPI sApi = Api as ICoreServerAPI;
-                    List<string> enchants = sApi.EnchantAccessor().GetValidEnchantments(InputSlot);
-                    if (enchants == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Warning("[KRPGEnchantment] Could not Get Valid Enchantments for {0}.", InputSlot.Itemstack.GetName());
-                    }
-                    foreach (string s in enchants)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Event("[KRPGEnchantment] Checking if {0} can be assigned as CurrentEnchantment.", s);
-                        bool canEnchant = sApi.EnchantAccessor().CanEnchant(InputSlot.Itemstack, ReagentSlot.Itemstack, s);
-                        bool matches = LatentEnchants[SelectedEnchant].Equals(s, StringComparison.OrdinalIgnoreCase);
-                        if (matches == true && canEnchant == true) 
-                            CurrentEnchantment = s; 
-                    }
+                    if (!VerifyValidEnchants(sApi)) return;
                     // Remove button selection if Current Recipe is not found
                     if (CurrentEnchantment == null)
                     {
                         if (EnchantingConfigLoader.Config?.Debug == true)
                             Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentEnchantment.", SelectedEnchant);
                         SelectedEnchant = -1;
+                        MarkDirty();
+                        return;
                     }
-
-                    // Enchanting Recipes - Obsolete
-                    /*
-                    List<EnchantingRecipe> recipes = sApi.EnchantAccessor().GetValidEnchantingRecipes(InputSlot, ReagentSlot);
-                    foreach (EnchantingRecipe er in recipes)
-                    {
-                        if (er.Name.ToShortString() == LatentEnchants[SelectedEnchant] && er.Matches(Api, InputSlot, ReagentSlot) != false)
-                            CurrentRecipe = er.Clone();
-                    }
-
-                    Remove button selection if Current Recipe is not found
-                    if (CurrentRecipe == null)
-                    {
-                        if (EnchantingConfigLoader.Config?.Debug == true)
-                            Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentRecipe.", SelectedEnchant);
-                        SelectedEnchant = -1;
-                    }
-
-                    List<EnchantingRecipe> recipes = Api.GetEnchantingRecipes();
-                    if (recipes != null)
-                    {
-                        foreach (EnchantingRecipe e in recipes)
-                        {
-                            if (e.Name.ToShortString() == LatentEnchants[SelectedEnchant])
-                            {
-                                CurrentRecipe = e.Clone();
-                                if (EnchantingConfigLoader.Config?.Debug == true)
-                                    Api.World.Logger.Event("[KRPGEnchantment] Found selected enchant in the registry. Setting {0} as CurrentRecipe.", e.Name);
-                            }
-                        }
-                    }
-                    else
-                        Api.World.Logger.Error("[KRPGEnchantment] Could not get Recipes from the Regisitry! Mod may be corrupted. Please re-download the KRPG Enchantment and make an issue report if this continues.");
-                    */
                 }
                 else
                 {
                     if (EnchantingConfigLoader.Config?.Debug == true)
                         Api.World.Logger.Warning("[KRPGEnchantment] Selected enchant button {0} is invalid. Not setting as CurrentRecipe.", SelectedEnchant);
                     SelectedEnchant = -1;
+                    CurrentEnchantment = null;
+                    MarkDirty();
+                    return;
                 }
                 UpdateReaders();
                 UpdateEnchantingState();

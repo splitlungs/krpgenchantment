@@ -10,6 +10,9 @@ using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment.Net
 {
+    /// <summary>
+    /// Used by ResponsePacket during generic request/responses.
+    /// </summary>
     public enum EnumNetResponse
     {
         OK = 0,
@@ -17,6 +20,9 @@ namespace KRPGLib.Enchantment.Net
         Warning = 2,
         Info = 3
     }
+    /// <summary>
+    /// Generic packet for client/server communication. Sent in response to a RequestPacket.
+    /// </summary>
     [ProtoContract]
     public class ResponsePacket : IByteSerializable
     {

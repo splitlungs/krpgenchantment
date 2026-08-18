@@ -37,10 +37,11 @@ namespace KRPGLib.Enchantment
                 "Bow", "Sling", "Spear",
                 "Javelin",
                 "Crossbow", "Firearm",
-                "Wand"
+                "Wand",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers() { {"PowerMultiplier", 0.2f }, {"CombatOverhaulMultiplier", 0.1f } };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         // TODO: Fix Combat Overhaul overwriting these values periodically
         public override bool TryEnchantItem(ref ItemStack inStack, int enchantPower, bool force, ICoreServerAPI api)

@@ -48,13 +48,14 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club"
+                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers 
             {
                 { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }
             };
-            Version = 1.03f;
+            Version = 1.04f;
         }
         private ModSystemRifts riftSys;
         private SystemTemporalStability tempStabilitySys;

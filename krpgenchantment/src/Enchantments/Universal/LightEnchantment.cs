@@ -51,13 +51,14 @@ namespace KRPGLib.Enchantment
                 "Javelin",
                 "Crossbow", "Firearm",
                 "Wand",
-                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club"
+                "vanillaarmory:Buckler", "vanillaarmory:Forlorn", "vanillaarmory:Club",
+                "forgottenfirearms:gearlock-doublebarrel", "forgottenfirearms:gearlock-pistol", "forgottenfirearms:gearlock-repeater", "forgottenfirearms:gearlock-rifle"
             };
             Modifiers = new EnchantModifiers 
             { 
                 { "PowerMultiplier", 4.00d }, { "DefaultHue", 32 }, { "DefaultSaturation", 5 }, { "RandomizeHue", true }, { "RandomizeSaturation", true } 
             };
-            Version = 1.01f;
+            Version = 1.02f;
         }
         public byte[] GetHSV(int power)
         {
