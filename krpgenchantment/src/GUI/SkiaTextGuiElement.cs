@@ -10,6 +10,7 @@ namespace KRPGLib.Enchantment
     {
         public LoadedTexture textTexture;
         public SKPaint textPaint;
+        public SKFont font;
         public string textToRender;
 
         private int xOffset = 8;
@@ -21,12 +22,13 @@ namespace KRPGLib.Enchantment
             textToRender = text;
 
             // Initialize Skia Paint
+            font = new SKFont(typeface, 28);
             textPaint = new SKPaint
             {
                 Color = SKColors.RoyalBlue,
-                TextSize = 28,
-                IsAntialias = true,
-                Typeface = typeface
+                // TextSize = 28,
+                IsAntialias = true
+                // Typeface = typeface
             };
         }
         public override void ComposeElements(Context ctx, ImageSurface surface)
@@ -52,7 +54,8 @@ namespace KRPGLib.Enchantment
                 canvas.Clear(SKColors.Transparent);
 
                 // Draw text on the Skia canvas with offset positioning
-                canvas.DrawText(text, xOffset, yOffset, textPaint);
+                // canvas.DrawText(text, xOffset, yOffset, textPaint);
+                canvas.DrawText(text, xOffset, yOffset, font, textPaint);
                 canvas.Flush();
 
                 // Now we need to transfer Skia's drawing back into Cairo for display

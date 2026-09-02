@@ -55,7 +55,8 @@ namespace KRPGLib.Enchantment
                 LoreChapterID = LoreChapterID,
                 MaxTier = MaxTier,
                 ValidToolTypes = ValidToolTypes,
-                Modifiers = Modifiers
+                Modifiers = Modifiers, 
+                Version = Version
             };
 
             return val;

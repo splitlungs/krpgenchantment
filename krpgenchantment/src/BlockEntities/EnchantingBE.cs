@@ -221,12 +221,16 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Returns default 3 if not set in the config file
         /// </summary>
-        public int EnchantRowCount
+        private int EnchantRowCount = 3;
+        /// <summary>
+        /// Returns default 3 if not set in the config file
+        /// </summary>
+        public int GetEnchantRowCount
         {
             get
             {
-                if (EnchantingConfigLoader.Config?.MaxLatentEnchants != null) return EnchantingConfigLoader.Config.MaxLatentEnchants;
-                else return 3;
+                int i = EnchantingConfigLoader.Config?.MaxLatentEnchants ?? 3;
+                return i;
             }
         }
         /// <summary>
@@ -471,6 +475,7 @@ namespace KRPGLib.Enchantment
             NowEnchanting = tree.GetBool("nowEnchanting");
             InputEnchantTime = tree.GetDouble("inputEnchantTime");
             SelectedEnchant = tree.GetInt("selectedEnchant");
+            EnchantRowCount = tree.GetInt("enchantRowCount");
             Readers = new Dictionary<string, bool>();
             string readerString = tree.GetString("readers");
             if (readerString != null)
@@ -521,6 +526,7 @@ namespace KRPGLib.Enchantment
             tree.SetBool("nowEnchanting", NowEnchanting);
             tree.SetDouble("inputEnchantTime", InputEnchantTime);
             tree.SetInt("selectedEnchant", SelectedEnchant);
+            tree.SetInt("enchantRowCount", GetEnchantRowCount);
             string readers = null;
             if (Readers != null)
             {
@@ -632,7 +638,7 @@ namespace KRPGLib.Enchantment
             foreach (string le in LatentEnchants)
             {
                 IEnchantment ench = sApi.EnchantAccessor().GetEnchantment(le);
-                if (!ench.Enabled)
+                if (!ench?.Enabled == true)
                 {
                     // Reset Latent if so
                     sApi.EnchantAccessor().ResetLatentEnchantsOnItem(InputSlot);

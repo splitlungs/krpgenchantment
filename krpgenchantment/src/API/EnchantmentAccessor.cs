@@ -61,7 +61,10 @@ namespace KRPGLib.Enchantment
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
                 // Reset the Configs if configured
-                RegisterEnchantmentProperties(enchant, configLocation);
+                EnchantmentProperties props = LoadOrCreateEnchantmentProperties(enchant, configLocation);
+                // RegisterEnchantmentProperties(enchant, configLocation);
+                // Initialize the properties
+                enchant.Initialize(props);
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
@@ -76,6 +79,7 @@ namespace KRPGLib.Enchantment
                 return false;
             }
         }
+        /*
         /// <summary>
         /// Loads server-configured Enchantment Properties or creates new ones, then assigns them to the Enchantment. Should not be called directly.
         /// </summary>
@@ -154,8 +158,140 @@ namespace KRPGLib.Enchantment
                     enchant.Initialize(props);
                 }
         }
+        */
+        #region EnchantmentProperties Management
+        /// <summary>
+        /// Loads, creates, or merges EnchantmentProperties for the given enchantment.
+        /// If the on-disk config is stale (older Version), user customizations are preserved
+        /// while missing or new fields are filled in from current defaults.
+        /// </summary>
+        private EnchantmentProperties LoadOrCreateEnchantmentProperties(IEnchantment enchant, string configLocation)
+        {
+            string configPath = "KRPGEnchantment/Enchantments/" + configLocation;
+            EnchantmentProperties props = new EnchantmentProperties();
+            // Forced reset via config flag
+            if (EnchantingConfigLoader.Config?.ResetEnchantConfigs == true)
+            {
+                props = CreateDefaultProperties(enchant);
+                Api.StoreModConfig(props, configPath);
+
+                // Clear the reset flag so it only fires once
+                KRPGEnchantConfig config = EnchantingConfigLoader.Config;
+                config.ResetEnchantConfigs = false;
+                Api.StoreModConfig(config, EnchantingConfigLoader.ConfigFile);
+
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Reset enchantment config for {0} (ResetEnchantConfigs).", enchant.Code);
+
+                return props;
+            }
+
+            // Load existing config from disk
+            props = Api.LoadModConfig<EnchantmentProperties>(configPath);
+
+            // First run – no config yet, create from defaults
+            if (props == null)
+            {
+                props = CreateDefaultProperties(enchant);
+                Api.StoreModConfig(props, configPath);
+                return props;
+            }
+
+            // Version mismatch – merge defaults into loaded config, preserving user values
+            if (props.Version < enchant.Version)
+            {
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Merging defaults (v{0}) into loaded config (v{1}) for {2}.",
+                        enchant.Version, props.Version, enchant.Code);
+
+                props = MergeWithDefaults(props, CreateDefaultProperties(enchant));
+                Api.StoreModConfig(props, configPath);
+            }
+
+            return props;
+        }
+
+        /// <summary>
+        /// Builds a fresh EnchantmentProperties snapshot from the enchantment's runtime defaults.
+        /// </summary>
+        private EnchantmentProperties CreateDefaultProperties(IEnchantment enchant)
+        {
+            return new EnchantmentProperties
+            {
+                Enabled = enchant.Enabled,
+                Code = enchant.Code,
+                Category = enchant.Category,
+                LoreCode = enchant.LoreCode,
+                LoreChapterID = enchant.LoreChapterID,
+                MaxTier = enchant.MaxTier,
+                ValidToolTypes= enchant.ValidToolTypes != null
+                    ? new List<string>(enchant.ValidToolTypes)
+                    : new List<string>(),
+                Modifiers = enchant.Modifiers,
+                Version = enchant.Version
+            };
+        }
+        /// <summary>
+        /// Merges current defaults into a loaded (possibly stale) config.
+        /// Fields the user customised are kept; null / empty / zero fields are
+        /// back-filled from defaults.  Version is always bumped to the new value.
+        /// </summary>
+        /// <param name="loaded"></param>
+        /// <param name="defaults"></param>
+        /// <returns></returns>
+        private EnchantmentProperties MergeWithDefaults(EnchantmentProperties loaded, EnchantmentProperties defaults)
+        {
+            // Enabled: only overwrite if the loaded value is false (likely the old default
+            // when the field didn't exist).  If the user explicitly set it, keep it.
+            // Because we can't distinguish "user set false" from "old default false",
+            // we keep the loaded value as-is – the safest option.
+
+            // String fields: back-fill only when null or empty
+            if (string.IsNullOrEmpty(loaded.Code))
+                loaded.Code = defaults.Code;
+
+            if (string.IsNullOrEmpty(loaded.Category))
+                loaded.Category = defaults.Category;
+
+            if (string.IsNullOrEmpty(loaded.LoreCode))
+                loaded.LoreCode = defaults.LoreCode;
+
+            if (loaded.LoreChapterID < 0)
+                loaded.LoreChapterID = defaults.LoreChapterID;
+
+            if (loaded.MaxTier < 1)
+                loaded.MaxTier = defaults.MaxTier;
+
+            if (loaded.ValidToolTypes == null || loaded.ValidToolTypes.Count == 0)
+                loaded.ValidToolTypes = new List<string>(defaults.ValidToolTypes);
+
+            if (loaded.Modifiers == null || loaded.Modifiers.Count == 0)
+                loaded.Modifiers = defaults.Modifiers;
+            else
+            {
+                List<string> keysToAdd = new List<string>();
+                foreach (KeyValuePair<string, object> pair in defaults.Modifiers)
+                {
+                    if (!loaded.Modifiers.ContainsKey(pair.Key))
+                    {
+                        keysToAdd.Add(pair.Key);
+                    }
+                }
+                foreach (string s in keysToAdd)
+                {
+                    loaded.Modifiers.Add(s, defaults.Modifiers[s]);
+                }
+            }
+
+            // Always advance the version stamp
+            loaded.Version = defaults.Version;
+
+            return loaded;
+        }
+        #endregion
         /// <summary>
         /// Register an Enchantment to the EnchantmentRegistry. All Enchantments must be registered here. Returns false if it fails to register.
+        /// Sets the provided EnchantmentProperties direrctly to the Enchantment as is.
         /// </summary>
         /// <param name="enchantClass"></param>
         /// <param name="props"></param>
@@ -163,10 +299,10 @@ namespace KRPGLib.Enchantment
         public bool RegisterEnchantmentClass(string enchantClass, EnchantmentProperties props, Type t)
         {
             if (EnchantingConfigLoader.Config?.Debug == true)
-                Api.Logger.Event("[KRPGEnchantment] Attempting to RegisterEnchantmentClass.");
+                Api.Logger.Event("[KRPGEnchantment] Attempting to RegisterEnchantmentClass for {0}.", enchantClass);
             if (enchantClass == null || props == null || t == null)
             {
-                Api.Logger.Error("[KRPGEnchantment] Attempted to register an Enchantment with an invalid or missing registration information.");
+                Api.Logger.Error("[KRPGEnchantment] Failed to register due to invalid or missing registration information.");
                 return false;
             }
             try
@@ -187,7 +323,7 @@ namespace KRPGLib.Enchantment
             }
             catch (Exception e)
             {
-                Api.Logger.Error("[KRPGEnchantment] Error loading Enchantment Class: {0}", e);
+                Api.Logger.Error("[KRPGEnchantment] Error creating Enchantment Class: {0}", e);
                 return false;
             }
         }
@@ -209,17 +345,17 @@ namespace KRPGLib.Enchantment
             }
             foreach (KeyValuePair<string, Enchantment> pair in EnchantmentRegistry)
             {
-                Type eType = EnchantCodeToTypeMapping[pair.Key];
-                EnchantmentProperties props = pair.Value.Properties.Clone();
-                NetSystem.SendEnchantRegistryPacket(player, pair.Key, props, eType);
+                EnchantmentProperties props = CreateDefaultProperties(pair.Value);
+                if (props == null)
+                {
+                    Api.Logger.Error("[KRPGEnchantment] Failed to sync {0} Enchantment due to missing Properties.", pair.Key);
+                    continue;
+                }
+                if (this.EnchantCodeToTypeMapping.TryGetValue(pair.Key, out Type eType) == true)
+                    NetSystem.SendEnchantRegistryPacket(player, pair.Key, props, eType);
+                else
+                    Api.Logger.Error("[KRPGEnchantment] Failed to sync {0} Enchantment due to missing Type.", pair.Key);
             }
-        }
-        [Obsolete]
-        private Type GetEnchantmentClass(string enchantClass)
-        {
-            Type val = null;
-            this.EnchantCodeToTypeMapping.TryGetValue(enchantClass, out val);
-            return val;
         }
         /// <summary>
         /// Instantiates the given Enchantment class, as defined by the EnchantCodeToTypeMapping.
@@ -779,37 +915,37 @@ namespace KRPGLib.Enchantment
         public bool AssessItem(ItemSlot inSlot, ItemSlot rSlot)
         {
             // Sanity check
-            if (sApi.Side != EnumAppSide.Server || inSlot.Empty || rSlot.Empty) return false;
+            if (inSlot.Empty || rSlot.Empty) return false;
 
             if (EnchantingConfigLoader.Config?.Debug == true)
                 sApi.World.Logger.Event("[KRPGEnchantment] Attempting to Assess {0}", inSlot.GetStackName());
 
             ITreeAttribute tree = inSlot.Itemstack.Attributes.GetOrAddTreeAttribute("enchantments");
+            // Get existing Latent data
             double latentStamp = tree.GetDouble("latentEnchantTime", 0);
-            double timeStamp = sApi.World.Calendar.ElapsedDays;
-
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.Event("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
-
-            // Check the timestamp
-            // 0 or less means re-assess every time
-            // Config default is 7 days
-            double ero = 7d;
-            if (EnchantingConfigLoader.Config?.LatentEnchantResetDays != null)
-                ero = EnchantingConfigLoader.Config.LatentEnchantResetDays;
-            if (latentStamp != 0 && timeStamp < latentStamp + ero)
-                return false;
-
-            if (EnchantingConfigLoader.Config?.Debug == true)
-                sApi.World.Logger.Event("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
-
-            // Check for override
+            string[] latentStrings = tree.GetString("latentEnchants")?.Split(";", StringSplitOptions.TrimEntries);
+            // Check for Max Latent Enchants override
             int mle = 3;
             if (EnchantingConfigLoader.Config?.MaxLatentEnchants != mle)
                 mle = EnchantingConfigLoader.Config.MaxLatentEnchants;
-
             if (EnchantingConfigLoader.Config?.Debug == true)
                 sApi.World.Logger.Event("[KRPGEnchantment] Max Latent Enchants set to {0}", mle);
+            // Reset if mismatch between MLE and Latent Strings
+            if (latentStrings != null && latentStrings.Length != mle)
+                latentStamp = 0;
+            // Check for Latent Enchant Reset Days override
+            double ero = 7d;
+            if (EnchantingConfigLoader.Config?.LatentEnchantResetDays != null || !false)
+                ero = EnchantingConfigLoader.Config.LatentEnchantResetDays;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.World.Logger.Event("[KRPGEnchantment] EnchantResetOverride set to {0}", ero);
+            // Check the timestamp
+            double timeStamp = sApi.World.Calendar.ElapsedDays;
+            if (EnchantingConfigLoader.Config?.Debug == true)
+                sApi.World.Logger.Event("[KRPGEnchantment] LatentStamp: {0}, TimeStamp: {1}", latentStamp, timeStamp);
+            // 0 or less means re-assess every time
+            if (latentStamp != 0 && timeStamp < latentStamp + ero)
+                return false;
 
             // Get the Valid Recipes
             List<string> enchants = GetValidEnchantments(inSlot);

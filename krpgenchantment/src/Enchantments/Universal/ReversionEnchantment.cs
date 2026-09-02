@@ -21,6 +21,8 @@ namespace KRPGLib.Enchantment
         long TickDuration { get { return Modifiers.GetLong("TickDuration"); } }
         int PowerMultiplier { get { return Modifiers.GetInt("PowerMultiplier"); } }
         bool AllowRifts { get { return Modifiers.GetBool("AllowRifts"); } }
+        bool UseHunger { get { return Modifiers.GetBool("UseHunger"); } }
+        float HungerRate { get { return Modifiers.GetFloat("HungerRate"); } }
         /// <summary>
         /// Restores item durability in temporally unstable areas.
         /// </summary>
@@ -53,9 +55,9 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers 
             {
-                { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }
+                { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }, { "UseHunger", false }, { "HungerRate", 3f }
             };
-            Version = 1.04f;
+            Version = 1.06f;
         }
         private ModSystemRifts riftSys;
         private SystemTemporalStability tempStabilitySys;
@@ -154,11 +156,30 @@ namespace KRPGLib.Enchantment
 
             if (debug == true)
                 Api.Logger.Event("[KRPGEnchantment] {0} is being affected by a Reversion enchantment.", slot.Itemstack.GetName());
-
+            // Check for Hunger
+            if (UseHunger == true)
+            {
+                EntityBehaviorHunger ebh = entity?.GetBehavior<EntityBehaviorHunger>();
+                if (ebh.Saturation <= 0) 
+                {
+                    eTick.LastTickTime = api.World.ElapsedMilliseconds;
+                    return;
+                }
+                float hungerRate;
+                if (PowerMultiplier == 0)
+                    hungerRate = HungerRate;
+                else
+                    hungerRate = PowerMultiplier * eTick.Power * HungerRate;
+                ebh.ConsumeSaturation(hungerRate);
+                ProcessReversion(slot, eTick.Power);
+                eTick.LastTickTime = api.World.ElapsedMilliseconds;
+                slot.MarkDirty();
+                return;
+            }
+            // Check for Rifts nearby
             EntityPos causePos = entity.Pos;
-            float stabf = tempStabilitySys.GetTemporalStability(causePos.AsBlockPos);
             bool riftNear = false;
-            if (AllowRifts == true)
+            if (AllowRifts && !UseHunger)
             {
                 foreach (Rift r in riftSys.ServerRifts)
                 {
@@ -171,25 +192,38 @@ namespace KRPGLib.Enchantment
                         break;
                     }
                 }
-            }
-            if (stabf < 1 || riftNear == true)
-            {
-                int amount = eTick.Power * PowerMultiplier;
-                int remDur = slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack);
-                int maxDur = slot.Itemstack.Collectible.GetMaxDurability(slot.Itemstack);
-                if (remDur < maxDur)
+                // Process Reversion if a Rift is nearby
+                if (riftNear == true)
                 {
-
-                    remDur += amount;
-                    remDur = Math.Min(remDur, maxDur);
-                    slot.Itemstack.Attributes.SetInt("durability", remDur);
-
-                    if (debug == true)
-                        Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
+                    ProcessReversion(slot, eTick.Power);
+                    eTick.LastTickTime = api.World.ElapsedMilliseconds;
+                    slot.MarkDirty();
+                    return;
                 }
+            }
+            // Process Reversion if the Temporal Stability is below 1
+            float stabf = tempStabilitySys.GetTemporalStability(causePos.AsBlockPos);
+            if (stabf < 1 && !UseHunger)
+            {
+                ProcessReversion(slot, eTick.Power);
             }
             eTick.LastTickTime = api.World.ElapsedMilliseconds;
             slot.MarkDirty();
+        }
+        private void ProcessReversion(ItemSlot slot, int power)
+        {
+            if (slot.Empty == true) return;
+            int amount = power * PowerMultiplier;
+            int remDur = slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack);
+            int maxDur = slot.Itemstack.Collectible.GetMaxDurability(slot.Itemstack);
+            if (remDur < maxDur)
+            {
+                remDur += amount;
+                remDur = Math.Min(remDur, maxDur);
+                slot.Itemstack.Attributes.SetInt("durability", remDur);
+                if (EnchantingConfigLoader.Config?.Debug == true)
+                    Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount);
+            }
         }
     }
 }

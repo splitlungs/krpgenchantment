@@ -32,7 +32,7 @@ namespace KRPGLib.Enchantment
         {
             if (!(___api is ICoreClientAPI capi)) return;
             IEnchantment ench = capi.EnchantAccessor().GetEnchantment("warmth");
-            bool ignoreCond = ench.Modifiers.GetBool("IgnoreCondition");
+            bool? ignoreCond = ench?.Modifiers.GetBool("IgnoreCondition");
             // Add warmth only if not applied for some reason
             if (inslot.Itemstack?.Attributes?.GetTreeAttribute("enchantments")?.HasAttribute("warmth") != true) return;
             float val = inslot.Itemstack.Attributes.GetTreeAttribute("enchantments").GetFloat("warmth", 0f);

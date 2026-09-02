@@ -72,8 +72,12 @@ namespace KRPGLib.Enchantment.Net
         /// <param name="packet"></param>
         private void OnClientResponse(IPlayer fromPlayer, ResponsePacket packet)
         {
-            sApi.Logger.Event(
-                "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", packet.ResponseType.ToString(), packet.Message, fromPlayer.PlayerName);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+            {
+                sApi.Logger.Event(
+                    "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", 
+                    packet.ResponseType.ToString(), packet.Message, fromPlayer.PlayerName);
+            }
         }
         /// <summary>
         /// Called by the Server during RegisterEnchantmentClass to synchronize a configured enchantment down to the client.
@@ -130,8 +134,12 @@ namespace KRPGLib.Enchantment.Net
         /// <param name="packet"></param>
         private void OnServerResponse(ResponsePacket packet)
         {
-            cApi.Logger.Event(
-                "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", packet.ResponseType.ToString(), packet.Message, cApi.World.Player.PlayerName);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+            {
+                cApi.Logger.Event(
+                    "[KRPGEnchantment] Received net response {0}: {1}. from {2}.", 
+                    packet.ResponseType.ToString(), packet.Message, cApi.World.Player.PlayerName);
+            }
         }
         /// <summary>
         /// Handler for server response when an Enchantment Modifier is requested. Unused at the moment.
@@ -139,9 +147,12 @@ namespace KRPGLib.Enchantment.Net
         /// <param name="packet"></param>
         private void OnServerModifierResponse(ModifierResponsePacket packet)
         {
-            cApi.Logger.Event(
-                "[KRPGEnchantment] Received net modifier response {0}: {1}. from {2}.", 
-                packet.EnchantCode, packet.ModifierValue, cApi.World.Player.PlayerName);
+            if (EnchantingConfigLoader.Config?.Debug == true)
+            {
+                cApi.Logger.Event(
+                    "[KRPGEnchantment] Received net modifier response {0}: {1}. from {2}.", 
+                    packet.EnchantCode, packet.ModifierValue, cApi.World.Player.PlayerName);
+            }
         }
         /// <summary>
         /// Handler for when the Server pushes a configured Enchantment to the client. Generally should never be called by itself.
@@ -149,7 +160,10 @@ namespace KRPGLib.Enchantment.Net
         /// <param name="packet"></param>
         private void OnServerERSync(EnchantRegistryPacket packet)
         {
-            cApi.Logger.Event("Received an EnchantRegistryPacket from the server.");
+            if (EnchantingConfigLoader.Config?.Debug == true)
+            {
+                cApi.Logger.Event("Received an EnchantRegistryPacket from the server.");
+            }
             EnchantModifiers mods = new EnchantModifiers();
             for(int i = 0; i < packet.ModKeys.Count; i++)
             {
