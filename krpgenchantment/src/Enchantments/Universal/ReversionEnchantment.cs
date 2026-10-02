@@ -100,7 +100,7 @@ namespace KRPGLib.Enchantment
         }
         // TODO: Setup for UnEquip to control the tick dispose
         //
-            public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
+        public override void OnUnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
             // TEMP FOR TESTING
             EnchantmentEntityBehavior eeb = enchant?.CauseEntity?.GetBehavior<EnchantmentEntityBehavior>();

@@ -10,6 +10,9 @@ using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment.Net
 {
+    /// <summary>
+    /// Not in use yet. Server to client packet for retrieving an Enchantment's modifier value.
+    /// </summary>
     [ProtoContract]
     public class ModifierResponsePacket : IByteSerializable
     {
