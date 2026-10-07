@@ -99,8 +99,8 @@ namespace KRPGLib.Enchantment
         public static bool ImpactOnEntity_Prefix(EntityProjectileBase __instance, Entity target)
         {
             // entity.Api.Logger.Event("[KRPGEnchantment] Firing EntityProjectile.impactOnEntity prefix.");
-            Entity byEntity = __instance.FiredBy;
-            if (!(byEntity.Api is ICoreServerAPI sapi) || target == null) return true;
+            Entity byEntity = __instance?.FiredBy;
+            if (!(byEntity?.Api is ICoreServerAPI sapi) || target == null) return true;
             if (__instance.ProjectileStack?.Item?.Tool == EnumTool.Spear)
             {
                 Dictionary<string, int> enchants = sapi.EnchantAccessor().GetActiveEnchantments(__instance.ProjectileStack);
