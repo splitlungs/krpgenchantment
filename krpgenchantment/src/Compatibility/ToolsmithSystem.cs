@@ -27,7 +27,7 @@ namespace KRPGLib.Enchantment.Compat
             if (!(sapi is ICoreServerAPI)) return;
         }
 
-        public void ToolsmithReversion(ICoreAPI Api, ItemSlot slot, int amount)
+        public static void ToolsmithReversion(ICoreAPI Api, ItemSlot slot, int amount)
         {
             if ((slot.Itemstack.GetToolhandleForData() != null) && (slot.Itemstack.GetToolhandleCurrentDurability() < slot.Itemstack.GetToolhandleMaxDurability()))
             {

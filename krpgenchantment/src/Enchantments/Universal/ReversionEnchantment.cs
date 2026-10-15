@@ -224,8 +224,7 @@ namespace KRPGLib.Enchantment
                 slot.Itemstack.Attributes.SetInt("durability", remDur);
                 if (EnchantingConfigLoader.Config?.Debug == true) { Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount); }
             }
-            ToolsmithSystem myToolsmith = new ToolsmithSystem();
-            myToolsmith.ToolsmithReversion(Api, slot, amount);
+            ToolsmithSystem.ToolsmithReversion(Api, slot, amount);
         }
     }
 }
