@@ -11,7 +11,7 @@ using Vintagestory.API.Server;
 
 namespace KRPGLib.Enchantment.Compat
 {
-    public class ToolsmithSystem : ModSystem
+    public class ToolsmithSystem
     {
         ICoreAPI Api;
         ICoreClientAPI cApi;
