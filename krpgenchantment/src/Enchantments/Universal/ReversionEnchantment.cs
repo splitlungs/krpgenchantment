@@ -62,14 +62,14 @@ namespace KRPGLib.Enchantment
         }
         private ModSystemRifts riftSys;
         private SystemTemporalStability tempStabilitySys;
-        private KRPGEnchantmentSystem EnchantSysCore;
-        private ToolsmithSystem ToolsmithSystemServer => EnchantSysCore?.ToolsmithSysServer;
+        private KRPGEnchantmentSystem enchantSys;
+        private ToolsmithSystem tsSysServer;
         public override void Initialize(EnchantmentProperties properties)
         {
             base.Initialize(properties);
             tempStabilitySys = Api.ModLoader.GetModSystem<SystemTemporalStability>();
             riftSys = Api.ModLoader.GetModSystem<ModSystemRifts>();
-            if (Api is ICoreServerAPI sapi) { EnchantSysCore = sapi?.ModLoader?.GetModSystem<KRPGEnchantmentSystem>(); }
+            if (Api is ICoreServerAPI sapi) { tsSysServer = sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.ToolsmithSysServer; }
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -227,7 +227,9 @@ namespace KRPGLib.Enchantment
                 slot.Itemstack.Attributes.SetInt("durability", remDur);
                 if (EnchantingConfigLoader.Config?.Debug == true) { Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount); }
             }
-            ToolsmithSystemServer?.ToolsmithReversion(slot, amount);
+            // Process Toolsmith reversion code only if it's present
+            if (tsSysServer != null)
+                tsSysServer.ProcessReversion(slot, amount);
         }
     }
 }
