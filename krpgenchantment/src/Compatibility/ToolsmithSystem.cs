@@ -25,7 +25,7 @@ namespace KRPGLib.Enchantment.Compat
         /// <param name="mulB"></param>
         public void ProcessReversion(ItemSlot slot, int amount, float mulH, float mulB)
         {
-            if ((slot.Itemstack.HasToolhandleCurrentDurability() != null) && (slot.Itemstack.GetToolhandleCurrentDurability() < slot.Itemstack.GetToolhandleMaxDurability()))
+            if ((slot.Itemstack.HasToolhandleCurrentDurability() != false) && (slot.Itemstack.GetToolhandleCurrentDurability() < slot.Itemstack.GetToolhandleMaxDurability()))
             {
                 int remDurH = slot.Itemstack.GetToolhandleCurrentDurability();
                 int maxDurH = slot.Itemstack.GetToolhandleMaxDurability();
@@ -36,7 +36,7 @@ namespace KRPGLib.Enchantment.Compat
                     slot.Itemstack.SetToolhandleCurrentDurability(remDurH);
                 }
             }
-            if ((slot.Itemstack.HasToolbindingCurrentDurability() != null) && (slot.Itemstack.GetToolbindingCurrentDurability() < slot.Itemstack.GetToolbindingMaxDurability()))
+            if ((slot.Itemstack.HasToolbindingCurrentDurability() != false) && (slot.Itemstack.GetToolbindingCurrentDurability() < slot.Itemstack.GetToolbindingMaxDurability()))
             {
                 int remDurB = slot.Itemstack.GetToolbindingCurrentDurability();
                 int maxDurB = slot.Itemstack.GetToolbindingMaxDurability();
