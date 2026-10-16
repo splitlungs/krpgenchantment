@@ -24,6 +24,8 @@ namespace KRPGLib.Enchantment
         bool AllowRifts { get { return Modifiers.GetBool("AllowRifts"); } }
         bool UseHunger { get { return Modifiers.GetBool("UseHunger"); } }
         float HungerRate { get { return Modifiers.GetFloat("HungerRate"); } }
+        float ToolsmithHandleMul { get { return Modifiers.GetFloat("ToolsmithHandleMul"); } }
+        float ToolsmithBindingMul { get { return Modifiers.GetFloat("ToolsmithBindingMul"); } }
         /// <summary>
         /// Restores item durability in temporally unstable areas.
         /// </summary>
@@ -56,20 +58,20 @@ namespace KRPGLib.Enchantment
             };
             Modifiers = new EnchantModifiers 
             {
-                { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }, { "UseHunger", false }, { "HungerRate", 3f }
+                { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }, { "UseHunger", false }, { "HungerRate", 3f },
+                { "ToolsmithHandleMul", 1.0f }, { "ToolsmithBindingMul", 0.5f }
             };
-            Version = 1.06f;
+            Version = 1.07f;
         }
         private ModSystemRifts riftSys;
         private SystemTemporalStability tempStabilitySys;
         private KRPGEnchantmentSystem enchantSys;
-        private ToolsmithSystem tsSysServer;
-        public override void Initialize(EnchantmentProperties properties)
+        public override void Initialize(ICoreAPI api,EnchantmentProperties properties)
         {
-            base.Initialize(properties);
+            base.Initialize(api, properties);
             tempStabilitySys = Api.ModLoader.GetModSystem<SystemTemporalStability>();
             riftSys = Api.ModLoader.GetModSystem<ModSystemRifts>();
-            if (Api is ICoreServerAPI sapi) { tsSysServer = sapi.ModLoader.GetModSystem<KRPGEnchantmentSystem>()?.ToolsmithSysServer; }
+            enchantSys = api.ModLoader.GetModSystem<KRPGEnchantmentSystem>();
         }
         public override void OnEquip(EnchantmentSource enchant, ref EnchantModifiers parameters)
         {
@@ -228,8 +230,8 @@ namespace KRPGLib.Enchantment
                 if (EnchantingConfigLoader.Config?.Debug == true) { Api.Logger.Event("[KRPGEnchantment] Restoring {0} durability.", amount); }
             }
             // Process Toolsmith reversion code only if it's present
-            if (tsSysServer != null)
-                tsSysServer.ProcessReversion(slot, amount);
+            if (enchantSys.ToolsmithSysServer != null)
+                enchantSys.ToolsmithSysServer.ProcessReversion(slot, amount, ToolsmithHandleMul, ToolsmithBindingMul);
         }
     }
 }

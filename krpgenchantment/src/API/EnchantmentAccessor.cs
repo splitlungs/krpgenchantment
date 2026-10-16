@@ -64,7 +64,7 @@ namespace KRPGLib.Enchantment
                 EnchantmentProperties props = LoadOrCreateEnchantmentProperties(enchant, configLocation);
                 // RegisterEnchantmentProperties(enchant, configLocation);
                 // Initialize the properties
-                enchant.Initialize(props);
+                enchant.Initialize(Api, props);
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 
@@ -312,7 +312,7 @@ namespace KRPGLib.Enchantment
                 // Create a new instance & assign registered class name
                 var enchant = CreateEnchantment(enchantClass);
                 // Initialize the properties
-                enchant.Initialize(props);
+                enchant.Initialize(Api, props);
                 // Add to the Registry
                 EnchantmentRegistry.Add(enchant.Code, enchant);
 

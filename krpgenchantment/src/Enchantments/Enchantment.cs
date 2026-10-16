@@ -233,9 +233,11 @@ namespace KRPGLib.Enchantment
         /// <summary>
         /// Called right after the Enchantment is created. Must call base method to load JSON Properties.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="properties"></param>
-        public virtual void Initialize(EnchantmentProperties properties)
+        public virtual void Initialize(ICoreAPI api, EnchantmentProperties properties)
         {
+            Api = api;
             // Store loaded properties for later.
             Properties = properties.Clone();
             // Load from properties, or reset if corrupt

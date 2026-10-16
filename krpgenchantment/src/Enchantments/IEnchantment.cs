@@ -40,8 +40,9 @@ namespace KRPGLib.Enchantment.API
         /// <summary>
         /// Verifies Properties data and assigns to the instantiated Enchantment class.
         /// </summary>
+        /// <param name="api"></param>
         /// <param name="properties"></param>
-        void Initialize(EnchantmentProperties properties);
+        void Initialize(ICoreAPI api, EnchantmentProperties properties);
         /// <summary>
         /// Attempt to write this Enchantment to provided ItemStack. Returns false if it cannot enchant the item.
         /// </summary>

@@ -23,7 +23,6 @@ namespace KRPGLib.Enchantment
         public COSystem COSysServer { get; private set; } = null;
         public KRPGWandsSystem WandsSysClient { get; private set; } = null;
         public KRPGWandsSystem WandsSysServer { get; private set; } = null;
-        public ToolsmithSystem ToolsmithSysClient { get; private set; } = null;
         public ToolsmithSystem ToolsmithSysServer { get; private set; } = null;
         private static Harmony harmony;
         public override void AssetsFinalize(ICoreAPI api)
@@ -47,7 +46,6 @@ namespace KRPGLib.Enchantment
                 EnchantmentRegistry = new Dictionary<string, Enchantment>(),
                 Modifiers = new Dictionary<string, EnchantModifiers>()
             };
-
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -55,8 +53,8 @@ namespace KRPGLib.Enchantment
             cApi = api;
             EnchantAccessor.cApi = api;
             EnchantAccessor.NetSystem = api.ModLoader.GetModSystem<KRPGENetSystem>();
-            ConfigParticles();
             RegisterClientCompatibility();
+            ConfigParticles();
         }
         public override void StartServerSide(ICoreServerAPI api)
         {
@@ -82,12 +80,7 @@ namespace KRPGLib.Enchantment
                 WandsSysClient = new KRPGWandsSystem();
                 WandsSysClient.StartClientSide(cApi);
             }
-            if (cApi.ModLoader.IsModEnabled("toolsmith") == true)
-            {
-                ToolsmithSysClient = new ToolsmithSystem();
-                ToolsmithSysClient.StartClientSide(cApi);
-            }
-        }
+        } 
         /// <summary>
         /// Instantiate compatibility scripts.
         /// </summary>
