@@ -59,9 +59,9 @@ namespace KRPGLib.Enchantment
             Modifiers = new EnchantModifiers 
             {
                 { "TickDuration", 10000 }, { "PowerMultiplier", 1 }, { "AllowRifts", true }, { "UseHunger", false }, { "HungerRate", 3f },
-                { "ToolsmithHandleMul", 1.0f }, { "ToolsmithBindingMul", 0.5f }
+                { "ToolsmithHandleMul", 0.5f }, { "ToolsmithBindingMul", 0.5f }
             };
-            Version = 1.07f;
+            Version = 1.08f;
         }
         private ModSystemRifts riftSys;
         private SystemTemporalStability tempStabilitySys;
